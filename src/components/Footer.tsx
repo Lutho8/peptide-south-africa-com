@@ -60,12 +60,14 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Company</h4>
+            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Legal</h4>
             <div className="flex flex-col gap-2">
               <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About Us</Link>
               <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground">FAQ</Link>
+              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms & Conditions</Link>
               <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms of Service</Link>
+              <Link to="/shipping" className="text-sm text-muted-foreground hover:text-foreground">Shipping Policy</Link>
+              <Link to="/refund" className="text-sm text-muted-foreground hover:text-foreground">Refund Policy</Link>
             </div>
           </div>
           <div>

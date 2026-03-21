@@ -16,7 +16,10 @@ import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import AboutPage from "@/pages/AboutPage";
 import FAQPage from "@/pages/FAQPage";
-import LegalPage from "@/pages/LegalPage";
+import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
+import RefundPolicyPage from "@/pages/RefundPolicyPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import NotFound from "@/pages/NotFound";
 
@@ -43,8 +46,10 @@ const App = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/track-order" element={<TrackOrderPage />} />
               <Route path="/faq" element={<FAQPage />} />
-              <Route path="/privacy" element={<LegalPage title="Privacy Policy" />} />
-              <Route path="/terms" element={<LegalPage title="Terms of Service" />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/shipping" element={<ShippingPolicyPage />} />
+              <Route path="/refund" element={<RefundPolicyPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
