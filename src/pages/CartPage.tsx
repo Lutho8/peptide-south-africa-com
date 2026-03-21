@@ -71,7 +71,7 @@ export default function CartPage() {
               <span>Shipping</span><span className="font-semibold text-trust">Free</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Tax</span><span>$0.00</span>
+              <span>Tax</span><span>R0.00</span>
             </div>
           </div>
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
