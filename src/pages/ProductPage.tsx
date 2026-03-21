@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
 import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
+import ProductReviews from "@/components/ProductReviews";
 import { useState } from "react";
 import { formatZAR } from "@/lib/currency";
 
