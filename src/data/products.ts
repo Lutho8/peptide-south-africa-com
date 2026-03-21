@@ -33,7 +33,7 @@ export const products: Product[] = [
     slug: "fat-loss-kit",
     shortDescription: "Targeted support for sustainable fat loss and metabolic optimization.",
     description: "Our Fat Loss Kit combines the most effective research-backed peptides for accelerated fat metabolism, appetite regulation, and lean body composition. Designed for researchers focused on GLP-1 pathways and metabolic enhancement.",
-    price: 89,
+    price: 1599,
     image: product1,
     category: "Weight Loss",
     tag: "Best Seller",
