@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { ZoomIn } from "lucide-react";
+import { ZoomIn, X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Props {
   src: string;
@@ -9,7 +10,11 @@ interface Props {
 export default function ProductImageZoom({ src, alt }: Props) {
   const [zoomed, setZoomed] = useState(false);
   const [origin, setOrigin] = useState("center center");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxOrigin, setLightboxOrigin] = useState("center center");
+  const [lightboxZoomed, setLightboxZoomed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -18,6 +23,65 @@ export default function ProductImageZoom({ src, alt }: Props) {
     const y = ((e.clientY - top) / height) * 100;
     setOrigin(`${x}% ${y}%`);
   };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const x = ((touch.clientX - rect.left) / rect.width) * 100;
+    const y = ((touch.clientY - rect.top) / rect.height) * 100;
+    setLightboxOrigin(`${x}% ${y}%`);
+  };
+
+  if (isMobile) {
+    return (
+      <>
+        <div
+          className="group relative cursor-pointer overflow-hidden rounded-xl border border-border bg-muted"
+          onClick={() => setLightboxOpen(true)}
+        >
+          <img src={src} alt={alt} className="h-full w-full object-cover" />
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm">
+            <ZoomIn className="h-3.5 w-3.5" /> Tap to zoom
+          </div>
+        </div>
+
+        {lightboxOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+            onClick={() => { setLightboxOpen(false); setLightboxZoomed(false); }}
+          >
+            <button
+              className="absolute right-4 top-4 z-50 rounded-full bg-background/20 p-2 text-white backdrop-blur-sm"
+              onClick={(e) => { e.stopPropagation(); setLightboxOpen(false); setLightboxZoomed(false); }}
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div
+              className="h-full w-full overflow-hidden"
+              onClick={(e) => { e.stopPropagation(); setLightboxZoomed(!lightboxZoomed); }}
+              onTouchMove={lightboxZoomed ? handleTouchMove : undefined}
+            >
+              <img
+                src={src}
+                alt={alt}
+                className="h-full w-full object-contain transition-transform duration-300 ease-out"
+                style={{
+                  transform: lightboxZoomed ? "scale(2.5)" : "scale(1)",
+                  transformOrigin: lightboxOrigin,
+                }}
+              />
+            </div>
+            {!lightboxZoomed && (
+              <p className="absolute bottom-6 text-center text-sm text-white/70">
+                Tap to zoom · Pinch or tap again to exit
+              </p>
+            )}
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <div
