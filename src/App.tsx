@@ -17,6 +17,7 @@ import CheckoutPage from "@/pages/CheckoutPage";
 import AboutPage from "@/pages/AboutPage";
 import FAQPage from "@/pages/FAQPage";
 import LegalPage from "@/pages/LegalPage";
+import TrackOrderPage from "@/pages/TrackOrderPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
