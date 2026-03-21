@@ -98,7 +98,7 @@ export default function CheckoutPage() {
                   <p className="text-sm font-medium text-foreground">{item.product.name}</p>
                   <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
-                <span className="text-sm font-semibold text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
               </div>
             ))}
           </div>
