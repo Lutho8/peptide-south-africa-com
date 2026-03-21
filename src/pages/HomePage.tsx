@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Truck, FlaskConical, Star, CheckCircle } from "lucide-react";
+import { ArrowRight, Shield, Truck, FlaskConical, Star, CheckCircle, Package } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/data/products";
 import heroImage from "@/assets/product-hero.jpg";
@@ -11,9 +11,9 @@ const testimonials = [
 ];
 
 const steps = [
-  { icon: FlaskConical, title: "Choose Your Kit", description: "Browse our curated selection of research-grade peptide kits and guides." },
-  { icon: Shield, title: "Verified Quality", description: "Every product is lab-tested with 99%+ purity and includes a Certificate of Analysis." },
-  { icon: Truck, title: "Fast Delivery", description: "Secure, discreet shipping with tracking. Most orders arrive within 3-5 days." },
+  { icon: FlaskConical, title: "Choose Your Peptide", description: "Browse our curated selection of research-grade peptides with variant options." },
+  { icon: Shield, title: "Verified Quality", description: "Every product is lab-tested with ≥99% purity and includes a Certificate of Analysis." },
+  { icon: Truck, title: "SA Domestic Shipping", description: "Fast, discreet domestic shipping. Most orders arrive within 1-3 business days." },
   { icon: CheckCircle, title: "Start Research", description: "Follow included protocols and guides to begin your research journey." },
 ];
 
@@ -43,7 +43,7 @@ export default function HomePage() {
               <span className="text-gradient">Correctly.</span>
             </h1>
             <p className="mt-4 max-w-lg text-lg text-muted-foreground">
-              Lab-tested. 99% purity. For researchers who refuse to overpay. Trusted by thousands of researchers worldwide.
+              Lab-tested. ≥99% purity. SA domestic shipping. For researchers who refuse to overpay.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4 md:justify-start">
               <Link
@@ -53,16 +53,16 @@ export default function HomePage() {
                 Shop Now <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/about"
+                to="/track-order"
                 className="inline-flex items-center gap-2 rounded-lg border border-border px-8 py-3.5 font-semibold text-foreground transition-all hover:bg-muted"
               >
-                Our Story
+                <Package className="h-4 w-4" /> Track Order
               </Link>
             </div>
             <div className="mt-6 flex items-center justify-center gap-6 text-sm text-muted-foreground md:justify-start">
               <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> Lab Tested</span>
-              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> 99% Purity</span>
-              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> Fast Shipping</span>
+              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> ≥99% Purity</span>
+              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> SA Shipping</span>
             </div>
           </div>
           <div className="flex-1">
@@ -79,7 +79,7 @@ export default function HomePage() {
         <div className="marquee flex whitespace-nowrap">
           {Array(4).fill(null).map((_, i) => (
             <span key={i} className="mx-8 text-sm font-medium text-muted-foreground">
-              Priced Affordably &nbsp;·&nbsp; Lab Tested &nbsp;·&nbsp; 99% Purity &nbsp;·&nbsp; Fast Shipping &nbsp;·&nbsp; Research Use Only &nbsp;·&nbsp;
+              SA Domestic Shipping &nbsp;·&nbsp; Lab Tested &nbsp;·&nbsp; ≥99% Purity &nbsp;·&nbsp; COA Available &nbsp;·&nbsp; Research Use Only &nbsp;·&nbsp;
             </span>
           ))}
         </div>
@@ -174,7 +174,7 @@ export default function HomePage() {
         <div className="container text-center">
           <h2 className="font-display text-3xl font-bold text-primary-foreground">Ready to Start Your Research?</h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-            Browse our full catalog of lab-tested, research-grade peptides. Free shipping on all orders.
+            Browse our full catalog of lab-tested, research-grade peptides. SA domestic shipping on all orders.
           </p>
           <Link
             to="/shop"

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 export default function Header() {
   const { totalItems, setIsCartOpen } = useCart();
@@ -11,9 +12,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-hero-gradient">
-            <span className="text-sm font-bold text-primary-foreground">RT</span>
-          </div>
+          <img src={logo} alt="Ride The Tide logo" className="h-8 w-8" />
           Ride The Tide
         </Link>
 
