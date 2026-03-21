@@ -111,7 +111,7 @@ export const products: Product[] = [
     slug: "skin-health-blend",
     shortDescription: "GHK-Cu based formula for skin rejuvenation and collagen research.",
     description: "Featuring GHK-Cu and supporting peptides, this blend targets collagen synthesis, skin elasticity, and cellular renewal pathways. Backed by extensive dermatological research.",
-    price: 65,
+    price: 1169,
     image: product5,
     category: "Skin & Hair",
     benefits: ["Collagen synthesis stimulation", "Skin elasticity improvement", "Cellular renewal support", "Antioxidant pathway activation"],
