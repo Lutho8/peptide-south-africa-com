@@ -73,7 +73,7 @@ export const products: Product[] = [
     slug: "healing-recovery-guide",
     shortDescription: "BPC-157 and TB-500 combination for tissue repair research.",
     description: "The ultimate healing stack featuring BPC-157 and TB-500 — two of the most studied peptides for tissue repair, angiogenesis, and accelerated recovery in preclinical models.",
-    price: 75,
+    price: 1349,
     image: product3,
     category: "Healing",
     benefits: ["Tissue repair acceleration", "Angiogenesis promotion", "Anti-inflammatory pathways", "Joint and tendon support"],
