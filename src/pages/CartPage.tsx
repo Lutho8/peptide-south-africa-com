@@ -65,7 +65,7 @@ export default function CartPage() {
           <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>${totalPrice.toFixed(2)}</span>
+              <span>Subtotal</span><span>{formatZAR(totalPrice)}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>Shipping</span><span className="font-semibold text-trust">Free</span>
