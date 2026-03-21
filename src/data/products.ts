@@ -53,7 +53,7 @@ export const products: Product[] = [
     slug: "growth-hormone-bundle",
     shortDescription: "Premium GH secretagogue blend for growth hormone research.",
     description: "A comprehensive bundle featuring top-tier growth hormone secretagogues. Ideal for researchers exploring Ipamorelin, CJC-1295, and synergistic GH-releasing peptide combinations.",
-    price: 129,
+    price: 2299,
     image: product2,
     category: "Growth Hormone",
     tag: "Popular",
