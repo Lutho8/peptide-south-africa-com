@@ -28,6 +28,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AgeVerificationModal />
+          <DiscountPopup />
           <Header />
           <CartDrawer />
           <main className="min-h-screen">
