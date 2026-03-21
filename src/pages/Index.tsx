@@ -1,7 +1,5 @@
-import { Link } from "react-router-dom";
+import HomePage from "./HomePage";
 
-const Index = () => {
-  return null;
-};
+const Index = () => <HomePage />;
 
 export default Index;
