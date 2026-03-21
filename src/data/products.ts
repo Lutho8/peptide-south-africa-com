@@ -166,7 +166,7 @@ export const products: Product[] = [
     slug: "immune-support-bundle",
     shortDescription: "Thymosin Alpha-1 based immune modulation research kit.",
     description: "Built around Thymosin Alpha-1, this bundle supports immune system research including T-cell modulation, innate immunity pathways, and immune resilience studies.",
-    price: 95,
+    price: 1709,
     image: product8,
     category: "Immune",
     benefits: ["T-cell modulation research", "Innate immunity pathways", "Immune resilience studies", "Cytokine balance research"],
