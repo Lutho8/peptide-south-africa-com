@@ -39,7 +39,7 @@ export default function CartDrawer() {
                     <img src={item.product.image} alt={item.product.name} className="h-20 w-20 rounded-md object-cover" />
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
-                      <span className="text-sm font-bold text-primary">${item.product.price}</span>
+                      <span className="text-sm font-bold text-primary">{formatZAR(item.product.price)}</span>
                       <div className="mt-auto flex items-center gap-2">
                         <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
                           <Minus className="h-3 w-3" />
