@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/data/products";
+import { formatZAR } from "@/lib/currency";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
