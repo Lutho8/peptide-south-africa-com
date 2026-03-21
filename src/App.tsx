@@ -16,7 +16,10 @@ import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import AboutPage from "@/pages/AboutPage";
 import FAQPage from "@/pages/FAQPage";
-import LegalPage from "@/pages/LegalPage";
+import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
+import RefundPolicyPage from "@/pages/RefundPolicyPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import NotFound from "@/pages/NotFound";
 
