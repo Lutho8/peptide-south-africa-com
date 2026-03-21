@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
+import ProductImageZoom from "@/components/ProductImageZoom";
 import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
@@ -47,9 +48,7 @@ export default function ProductPage() {
       <section className="container pb-16">
         <div className="grid gap-10 md:grid-cols-2">
           {/* Image */}
-          <div className="overflow-hidden rounded-xl border border-border bg-muted">
-            <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
-          </div>
+          <ProductImageZoom src={product.image} alt={product.name} />
 
           {/* Info */}
           <div className="flex flex-col">
