@@ -129,7 +129,7 @@ export const products: Product[] = [
     slug: "longevity-research-kit",
     shortDescription: "Epitalon and MOTS-C for telomere and mitochondrial research.",
     description: "Explore the cutting edge of longevity science with Epitalon and MOTS-C. Study telomerase activation, mitochondrial function, and cellular aging pathways.",
-    price: 145,
+    price: 2599,
     image: product6,
     category: "Longevity",
     tag: "Premium",
