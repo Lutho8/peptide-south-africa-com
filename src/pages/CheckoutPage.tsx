@@ -79,7 +79,7 @@ export default function CheckoutPage() {
             type="submit"
             className="rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
           >
-            Place Order — ${totalPrice.toFixed(2)}
+            Place Order — {formatZAR(totalPrice)}
           </button>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> SSL Encrypted</span>
