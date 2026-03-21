@@ -148,7 +148,7 @@ export const products: Product[] = [
     slug: "cognitive-enhancement-guide",
     shortDescription: "Semax and Selank for nootropic and neuroprotection research.",
     description: "A comprehensive nootropic research package featuring Semax and Selank — two well-studied neuropeptides for cognitive enhancement, focus, and neuroprotection research.",
-    price: 85,
+    price: 1529,
     image: product7,
     category: "Cognitive",
     benefits: ["Cognitive function studies", "Neuroprotection research", "Focus and memory pathways", "BDNF expression studies"],
