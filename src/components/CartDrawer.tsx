@@ -63,7 +63,7 @@ export default function CartDrawer() {
                 <span>Shipping</span><span className="font-semibold text-trust">Free!</span>
               </div>
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>Total</span><span>${totalPrice.toFixed(2)}</span>
+                <span>Total</span><span>{formatZAR(totalPrice)}</span>
               </div>
               <Link
                 to="/checkout"

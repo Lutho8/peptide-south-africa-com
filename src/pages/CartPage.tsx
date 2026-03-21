@@ -75,7 +75,7 @@ export default function CartPage() {
             </div>
           </div>
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>Total</span><span>${totalPrice.toFixed(2)}</span>
+            <span>Total</span><span>{formatZAR(totalPrice)}</span>
           </div>
           <Link
             to="/checkout"

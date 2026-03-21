@@ -104,7 +104,7 @@ export default function CheckoutPage() {
           </div>
           <div className="mt-4 border-t border-border pt-4">
             <div className="flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
-            <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>${totalPrice.toFixed(2)}</span></div>
+            <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{formatZAR(totalPrice)}</span></div>
           </div>
         </div>
       </div>
