@@ -182,9 +182,12 @@ export default function ProductPage() {
         </div>
       </section>
 
+      {/* Reviews */}
+      <ProductReviews slug={product.slug} />
+
       {/* FAQ */}
       {product.faqs.length > 0 && (
-        <section className="container py-16">
+        <section className="container pb-16">
           <h3 className="mb-6 font-display text-2xl font-bold text-foreground">Frequently Asked Questions</h3>
           <div className="flex flex-col gap-4">
             {product.faqs.map((faq, i) => (
