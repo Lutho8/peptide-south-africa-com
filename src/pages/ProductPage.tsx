@@ -4,6 +4,7 @@ import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import { useState } from "react";
+import { formatZAR } from "@/lib/currency";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
