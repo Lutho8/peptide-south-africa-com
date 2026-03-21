@@ -48,7 +48,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-display font-bold text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-display font-bold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
                       <button onClick={() => removeFromCart(item.product.id)} className="text-destructive hover:text-destructive/80">
                         <Trash2 className="h-4 w-4" />
                       </button>
