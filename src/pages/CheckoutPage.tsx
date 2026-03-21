@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { Shield, Lock, CheckCircle } from "lucide-react";
+import { formatZAR } from "@/lib/currency";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -78,7 +79,7 @@ export default function CheckoutPage() {
             type="submit"
             className="rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
           >
-            Place Order — ${totalPrice.toFixed(2)}
+            Place Order — {formatZAR(totalPrice)}
           </button>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> SSL Encrypted</span>
@@ -97,13 +98,13 @@ export default function CheckoutPage() {
                   <p className="text-sm font-medium text-foreground">{item.product.name}</p>
                   <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                 </div>
-                <span className="text-sm font-semibold text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
               </div>
             ))}
           </div>
           <div className="mt-4 border-t border-border pt-4">
             <div className="flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
-            <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>${totalPrice.toFixed(2)}</span></div>
+            <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{formatZAR(totalPrice)}</span></div>
           </div>
         </div>
       </div>

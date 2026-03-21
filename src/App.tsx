@@ -7,6 +7,8 @@ import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import AgeVerificationModal from "@/components/AgeVerificationModal";
+import DiscountPopup from "@/components/DiscountPopup";
 import HomePage from "@/pages/HomePage";
 import ShopPage from "@/pages/ShopPage";
 import ProductPage from "@/pages/ProductPage";
@@ -26,6 +28,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AgeVerificationModal />
+          <DiscountPopup />
           <Header />
           <CartDrawer />
           <main className="min-h-screen">

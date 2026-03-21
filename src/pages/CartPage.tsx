@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { formatZAR } from "@/lib/currency";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
@@ -47,7 +48,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-display font-bold text-foreground">${(item.product.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-display font-bold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
                       <button onClick={() => removeFromCart(item.product.id)} className="text-destructive hover:text-destructive/80">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -64,17 +65,17 @@ export default function CartPage() {
           <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>${totalPrice.toFixed(2)}</span>
+              <span>Subtotal</span><span>{formatZAR(totalPrice)}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>Shipping</span><span className="font-semibold text-trust">Free</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Tax</span><span>$0.00</span>
+              <span>Tax</span><span>R0.00</span>
             </div>
           </div>
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>Total</span><span>${totalPrice.toFixed(2)}</span>
+            <span>Total</span><span>{formatZAR(totalPrice)}</span>
           </div>
           <Link
             to="/checkout"

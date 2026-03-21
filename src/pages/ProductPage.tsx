@@ -4,6 +4,7 @@ import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import { useState } from "react";
+import { formatZAR } from "@/lib/currency";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -59,7 +60,7 @@ export default function ProductPage() {
               <span className="text-sm text-muted-foreground">(47 reviews)</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product.priceRange || `$${product.price}`}
+              {product.priceRange || formatZAR(product.price)}
             </p>
             <p className="mt-4 text-muted-foreground">{product.description}</p>
 

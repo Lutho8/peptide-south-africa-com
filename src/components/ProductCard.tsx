@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/data/products";
+import { formatZAR } from "@/lib/currency";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
@@ -30,7 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="mt-1 flex-1 text-sm text-muted-foreground line-clamp-2">{product.shortDescription}</p>
         <div className="mt-3 flex items-center justify-between">
           <span className="font-display text-lg font-bold text-foreground">
-            {product.priceRange || `$${product.price}`}
+            {product.priceRange || formatZAR(product.price)}
           </span>
           <button
             onClick={() => addToCart(product)}

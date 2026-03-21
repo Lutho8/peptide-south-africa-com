@@ -1,6 +1,7 @@
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
+import { formatZAR } from "@/lib/currency";
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
@@ -38,7 +39,7 @@ export default function CartDrawer() {
                     <img src={item.product.image} alt={item.product.name} className="h-20 w-20 rounded-md object-cover" />
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
-                      <span className="text-sm font-bold text-primary">${item.product.price}</span>
+                      <span className="text-sm font-bold text-primary">{formatZAR(item.product.price)}</span>
                       <div className="mt-auto flex items-center gap-2">
                         <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
                           <Minus className="h-3 w-3" />
@@ -62,7 +63,7 @@ export default function CartDrawer() {
                 <span>Shipping</span><span className="font-semibold text-trust">Free!</span>
               </div>
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>Total</span><span>${totalPrice.toFixed(2)}</span>
+                <span>Total</span><span>{formatZAR(totalPrice)}</span>
               </div>
               <Link
                 to="/checkout"
