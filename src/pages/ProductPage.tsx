@@ -11,6 +11,7 @@ export default function ProductPage() {
   const product = getProductBySlug(slug || "");
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(0);
 
   if (!product) {
     return (
@@ -23,8 +24,10 @@ export default function ProductPage() {
     );
   }
 
+  const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
+
   const handleAdd = () => {
-    addToCart(product);
+    addToCart({ ...product, price: currentPrice });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -60,9 +63,45 @@ export default function ProductPage() {
               <span className="text-sm text-muted-foreground">(47 reviews)</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product.priceRange || formatZAR(product.price)}
+              {product.priceRange || formatZAR(currentPrice)}
             </p>
+
+            {/* Purity & Storage */}
+            {product.purity && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">Purity:</span> {product.purity}
+              </p>
+            )}
+            {product.storage && (
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">Storage:</span> {product.storage}
+              </p>
+            )}
+
             <p className="mt-4 text-muted-foreground">{product.description}</p>
+
+            {/* Variant Selector */}
+            {product.variants && product.variants.length > 0 && (
+              <div className="mt-6">
+                <label className="text-sm font-semibold text-foreground">MG</label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {product.variants.map((v, i) => (
+                    <button
+                      key={v.label}
+                      onClick={() => setSelectedVariant(i)}
+                      className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
+                        selectedVariant === i
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                      }`}
+                    >
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 font-display text-xl font-bold text-foreground">{formatZAR(currentPrice)}</p>
+              </div>
+            )}
 
             {/* Benefits */}
             <ul className="mt-6 flex flex-col gap-2">
@@ -76,17 +115,22 @@ export default function ProductPage() {
             {/* CTA */}
             <button
               onClick={handleAdd}
-              className="mt-8 w-full rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] md:w-auto md:px-12"
+              disabled={!product.inStock}
+              className="mt-8 w-full rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
             >
-              {added ? "✓ Added to Cart!" : "Add to Cart"}
+              {!product.inStock ? "Pre-Order" : added ? "✓ Added to Cart!" : "Add to Cart"}
             </button>
 
             {/* Trust */}
-            <div className="mt-6 flex flex-wrap gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Secure Checkout</span>
-              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free Shipping</span>
-              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> 99% Purity COA</span>
+            <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
+              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Third-Party Lab Tested & Batch Certified</span>
+              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Ships in 1–3 Business Days</span>
             </div>
+
+            {product.sku && (
+              <p className="mt-4 text-xs text-muted-foreground">SKU: {product.sku} &nbsp;|&nbsp; Category: {product.category}</p>
+            )}
           </div>
         </div>
       </section>
@@ -125,6 +169,15 @@ export default function ProductPage() {
               ))}
             </ol>
           </div>
+        </div>
+      </section>
+
+      {/* Research Disclaimer */}
+      <section className="border-t border-border py-8">
+        <div className="container">
+          <p className="text-center text-xs text-muted-foreground">
+            For research purposes only. Not for human use or consumption.
+          </p>
         </div>
       </section>
 

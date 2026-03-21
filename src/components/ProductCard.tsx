@@ -22,22 +22,20 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
       </Link>
       <div className="flex flex-1 flex-col p-4">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{product.category}</span>
         <Link to={`/product/${product.slug}`}>
-          <h3 className="mt-1 font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
+          <h3 className="font-display text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 flex-1 text-sm text-muted-foreground line-clamp-2">{product.shortDescription}</p>
-        <div className="mt-3 flex items-center justify-between">
-          <span className="font-display text-lg font-bold text-foreground">
-            {product.priceRange || formatZAR(product.price)}
-          </span>
+        <p className="mt-1 font-display text-base font-bold text-primary">
+          {product.priceRange || formatZAR(product.price)}
+        </p>
+        <div className="mt-3">
           <button
             onClick={() => addToCart(product)}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
+            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
-            Add to Cart
+            {product.inStock ? "Add To Cart" : "Pre-Order"}
           </button>
         </div>
       </div>
