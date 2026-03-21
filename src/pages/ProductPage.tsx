@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
+import ProductImageZoom from "@/components/ProductImageZoom";
 import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
