@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { Shield, Lock, CheckCircle } from "lucide-react";
+import { formatZAR } from "@/lib/currency";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
