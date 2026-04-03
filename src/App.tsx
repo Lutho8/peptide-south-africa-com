@@ -26,6 +26,7 @@ import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
 import CookieConsent from "@/components/CookieConsent";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
           <Footer />
           <StickyMobileCTA />
           <CookieConsent />
+          <WhatsAppButton />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
