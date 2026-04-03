@@ -65,6 +65,7 @@ const App = () => (
           <Footer />
           <StickyMobileCTA />
           <CookieConsent />
+          <WhatsAppButton />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
