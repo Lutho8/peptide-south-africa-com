@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   CheckCircle,
   ArrowRight,
@@ -15,9 +14,15 @@ import {
   User,
   Mail,
   Phone,
+  Loader2,
+  Zap,
+  Video,
+  Bot,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const WA_NUMBER = "491624747159";
+const ZOOM_LINK = "https://zoom.us/j/YOUR_MEETING_ID"; // Replace with your Zoom link
 const waLink = (msg: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 
@@ -34,6 +39,22 @@ interface LeadInfo {
   name: string;
   email: string;
   whatsapp: string;
+}
+
+interface AIProtocol {
+  protocolName: string;
+  subtitle: string;
+  duration: string;
+  whyFits: string;
+  timeline: string;
+  monthlyPrice: string;
+  fullPrice: string;
+  savings: string;
+  peptides: { name: string; dose: string; frequency: string; purpose: string }[];
+  expectedResults: { icon: string; label: string }[];
+  included: string[];
+  weeklySchedule: string;
+  warnings: string[];
 }
 
 const quizSteps = [
@@ -94,100 +115,24 @@ const quizSteps = [
   },
 ];
 
-const protocols: Record<string, {
-  title: string;
-  subtitle: string;
-  duration: string;
-  monthlyPrice: string;
-  fullPrice: string;
-  savings: string;
-  whyFits: string;
-  timeline: string;
-  included: string[];
-  results: { icon: typeof Flame; label: string }[];
-}> = {
-  "fat-loss": {
-    title: "12-Week Fat Loss Protocol",
-    subtitle: "Personalized Metabolic Transformation",
-    duration: "12 Weeks",
-    monthlyPrice: "R1,999",
-    fullPrice: "R4,999",
-    savings: "Save R997",
-    whyFits: "Based on your answers, you're an ideal candidate for our metabolic optimization protocol. Your goal of targeted fat loss, combined with your current lifestyle, means you'll see measurable results within the first 3 weeks.",
-    timeline: "Most clients see visible changes by week 3, with significant transformation by week 8–12.",
-    included: [
-      "Personalized fat loss protocol plan",
-      "Monthly guided supply",
-      "Weekly check-ins & progress reviews",
-      "Dosing schedule & timing guide",
-      "WhatsApp support access",
-      "Progress tracking",
-    ],
-    results: [
-      { icon: Flame, label: "Visceral fat reduction" },
-      { icon: Heart, label: "Improved metabolic health" },
-      { icon: Sparkles, label: "Clearer skin & more energy" },
-      { icon: Dumbbell, label: "Better body composition" },
-    ],
-  },
-  recovery: {
-    title: "Recovery & Performance Stack",
-    subtitle: "Athletic Regeneration System",
-    duration: "8–12 Weeks",
-    monthlyPrice: "R2,199",
-    fullPrice: "R5,499",
-    savings: "Save R1,098",
-    whyFits: "Your focus on recovery and performance makes this protocol perfect for you. It's designed to accelerate healing, reduce downtime, and unlock a new level of athletic output.",
-    timeline: "Expect noticeable recovery improvements within 1–2 weeks, with peak performance gains by week 6–8.",
-    included: [
-      "Personalized recovery protocol plan",
-      "Monthly guided supply",
-      "Weekly performance check-ins",
-      "Training integration guide",
-      "WhatsApp support access",
-      "Recovery tracking dashboard",
-    ],
-    results: [
-      { icon: Dumbbell, label: "Faster muscle recovery" },
-      { icon: Heart, label: "Accelerated injury healing" },
-      { icon: Flame, label: "Enhanced performance output" },
-      { icon: Sparkles, label: "Improved sleep & well-being" },
-    ],
-  },
-  both: {
-    title: "Full Transformation Protocol",
-    subtitle: "Complete Body Recomposition System",
-    duration: "12 Weeks",
-    monthlyPrice: "R2,499",
-    fullPrice: "R5,999",
-    savings: "Save R1,498",
-    whyFits: "You want it all — fat loss AND performance. This comprehensive protocol combines metabolic optimization with recovery enhancement for a complete body transformation.",
-    timeline: "Fat loss begins week 2–3, recovery improvements from week 1, full transformation visible by week 10–12.",
-    included: [
-      "Comprehensive transformation protocol",
-      "Monthly guided supply (dual protocol)",
-      "Twice-weekly check-ins",
-      "Nutrition & training integration",
-      "Priority WhatsApp support",
-      "Full progress tracking suite",
-    ],
-    results: [
-      { icon: Flame, label: "Significant fat loss" },
-      { icon: Dumbbell, label: "Muscle & performance gains" },
-      { icon: Heart, label: "Complete body recomposition" },
-      { icon: Sparkles, label: "Energy, skin, sleep improvement" },
-    ],
-  },
+const iconMap: Record<string, typeof Flame> = {
+  flame: Flame,
+  heart: Heart,
+  sparkles: Sparkles,
+  dumbbell: Dumbbell,
+  shield: Shield,
+  zap: Zap,
 };
 
 export default function QuizFunnelPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [lead, setLead] = useState<LeadInfo>({ name: "", email: "", whatsapp: "" });
-  const [leadCaptured, setLeadCaptured] = useState(false);
+  const [aiProtocol, setAiProtocol] = useState<AIProtocol | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const totalSteps = quizSteps.length;
-  // step 0..5 = quiz, step 6 = lead capture, step 7 = results
   const isQuiz = step < totalSteps;
   const isLeadCapture = step === totalSteps;
   const showResults = step > totalSteps;
@@ -198,16 +143,32 @@ export default function QuizFunnelPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!lead.name.trim() || !lead.email.trim()) return;
-    setLeadCaptured(true);
+
+    setLoading(true);
+    setError(null);
     setStep(totalSteps + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
-  const goalKey = answers.goal === "recovery" ? "recovery" : answers.goal === "both" ? "both" : "fat-loss";
-  const protocol = protocols[goalKey];
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("generate-protocol", {
+        body: { answers, leadName: lead.name },
+      });
+
+      if (fnError) throw new Error(fnError.message);
+      if (data?.error) throw new Error(data.error);
+      if (!data?.protocol) throw new Error("No protocol received");
+
+      setAiProtocol(data.protocol);
+    } catch (err) {
+      console.error("Protocol generation error:", err);
+      setError(err instanceof Error ? err.message : "Failed to generate your protocol. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ===================== QUIZ STEPS =====================
   if (isQuiz) {
@@ -283,9 +244,7 @@ export default function QuizFunnelPage() {
                 <div className="h-full rounded-full bg-hero-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
             </div>
-            <span className="text-sm font-medium text-muted-foreground">
-              Almost there!
-            </span>
+            <span className="text-sm font-medium text-muted-foreground">Almost there!</span>
           </div>
         </div>
 
@@ -293,14 +252,17 @@ export default function QuizFunnelPage() {
           <div className="mx-auto w-full max-w-md">
             <div className="mb-6 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <CheckCircle className="h-7 w-7 text-primary" />
+                <Bot className="h-7 w-7 text-primary" />
               </div>
               <h2 className="font-display text-2xl font-bold text-foreground md:text-3xl">
-                Your Protocol Is Ready!
+                Your AI Protocol Is Ready!
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Enter your details below to see your personalized recommendation and receive your protocol guide.
+                Our AI will analyze your answers and create a personalized peptide protocol tailored to your goals.
               </p>
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <Sparkles className="h-3 w-3" /> AI Powered
+              </div>
             </div>
 
             <form onSubmit={handleLeadSubmit} className="space-y-4">
@@ -317,7 +279,6 @@ export default function QuizFunnelPage() {
                   className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
-
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-foreground">
                   <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
@@ -331,7 +292,6 @@ export default function QuizFunnelPage() {
                   className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
-
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-foreground">
                   <Phone className="h-4 w-4 text-muted-foreground" /> WhatsApp Number
@@ -345,14 +305,12 @@ export default function QuizFunnelPage() {
                   className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
-
               <button
                 type="submit"
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient text-base font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
               >
-                See My Protocol <ArrowRight className="h-4 w-4" />
+                <Sparkles className="h-4 w-4" /> Get Personalized Recommendations
               </button>
-
               <p className="text-center text-xs text-muted-foreground">
                 We respect your privacy. No spam, ever.
               </p>
@@ -363,7 +321,76 @@ export default function QuizFunnelPage() {
     );
   }
 
-  // ===================== RESULTS PAGE =====================
+  // ===================== LOADING STATE =====================
+  if (showResults && loading) {
+    return (
+      <div className="flex min-h-[80vh] flex-col items-center justify-center px-4">
+        <div className="text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+          <h2 className="font-display text-2xl font-bold text-foreground">
+            Creating Your Protocol...
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Our AI is analyzing your answers and building a personalized peptide protocol.
+          </p>
+          <div className="mt-6 space-y-2">
+            {["Analyzing your goals & lifestyle", "Selecting optimal peptides", "Calculating dosing & schedule", "Preparing your recommendation"].map((t, i) => (
+              <p key={i} className="flex items-center justify-center gap-2 text-xs text-muted-foreground animate-pulse" style={{ animationDelay: `${i * 0.3}s` }}>
+                <Sparkles className="h-3 w-3 text-primary" /> {t}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ===================== ERROR STATE =====================
+  if (showResults && error) {
+    return (
+      <div className="flex min-h-[80vh] flex-col items-center justify-center px-4">
+        <div className="mx-auto max-w-md text-center">
+          <h2 className="font-display text-2xl font-bold text-foreground">Something Went Wrong</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button
+              onClick={() => {
+                setError(null);
+                setLoading(true);
+                supabase.functions.invoke("generate-protocol", {
+                  body: { answers, leadName: lead.name },
+                }).then(({ data, error: fnError }) => {
+                  if (fnError || data?.error || !data?.protocol) {
+                    setError("Failed to generate protocol. Please try again.");
+                  } else {
+                    setAiProtocol(data.protocol);
+                  }
+                  setLoading(false);
+                });
+              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground"
+            >
+              Try Again
+            </button>
+            <a
+              href={waLink("Hi, I completed the quiz but had trouble getting my results. Can you help?")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground"
+            >
+              <MessageCircle className="h-4 w-4" /> Chat With Us
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ===================== AI RESULTS PAGE =====================
+  if (!aiProtocol) return null;
+
   return (
     <div className="flex flex-col">
       <div className="border-b border-border bg-card">
@@ -376,20 +403,21 @@ export default function QuizFunnelPage() {
 
       <div className="container px-4 py-10 md:py-16">
         <div className="mx-auto max-w-3xl">
-          {/* Header */}
+          {/* AI Badge + Header */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-trust/10">
-              <CheckCircle className="h-8 w-8 text-trust" />
+            <div className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Bot className="h-3.5 w-3.5" /> AI Recommendations
+              <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px]">AI Powered</span>
             </div>
-            {leadCaptured && lead.name && (
+            {lead.name && (
               <p className="text-base font-medium text-foreground mb-1">
                 {lead.name}, here's your personalized protocol
               </p>
             )}
             <h1 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
-              {protocol.title}
+              {aiProtocol.protocolName}
             </h1>
-            <p className="mt-1 text-base text-muted-foreground sm:text-lg">{protocol.subtitle}</p>
+            <p className="mt-1 text-base text-muted-foreground sm:text-lg">{aiProtocol.subtitle}</p>
           </div>
 
           {/* Why it fits */}
@@ -397,56 +425,108 @@ export default function QuizFunnelPage() {
             <h3 className="mb-2 font-display text-base font-semibold text-foreground sm:text-lg">
               Why This Protocol Fits You
             </h3>
-            <p className="text-sm text-muted-foreground">{protocol.whyFits}</p>
+            <p className="text-sm text-muted-foreground">{aiProtocol.whyFits}</p>
           </div>
+
+          {/* Peptide Stack */}
+          {aiProtocol.peptides && aiProtocol.peptides.length > 0 && (
+            <div className="mb-8">
+              <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
+                Your Peptide Stack
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {aiProtocol.peptides.map((p, i) => (
+                  <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-card">
+                    <p className="font-display text-sm font-bold text-primary">{p.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{p.purpose}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.dose}</span>
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.frequency}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Expected Results */}
-          <div className="mb-8">
-            <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
-              What Results to Expect
-            </h3>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {protocol.results.map((r, i) => (
-                <div key={i} className="rounded-xl border border-border bg-card p-4 text-center shadow-card">
-                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                    <r.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <p className="text-xs font-semibold text-foreground">{r.label}</p>
-                </div>
-              ))}
+          {aiProtocol.expectedResults && aiProtocol.expectedResults.length > 0 && (
+            <div className="mb-8">
+              <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
+                Expected Results
+              </h3>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {aiProtocol.expectedResults.map((r, i) => {
+                  const IconComp = iconMap[r.icon] || Sparkles;
+                  return (
+                    <div key={i} className="rounded-xl border border-border bg-card p-4 text-center shadow-card">
+                      <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <IconComp className="h-5 w-5 text-primary" />
+                      </div>
+                      <p className="text-xs font-semibold text-foreground">{r.label}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                <Clock className="mb-0.5 mr-1 inline h-3 w-3" />
+                {aiProtocol.timeline}
+              </p>
             </div>
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              <Clock className="mb-0.5 mr-1 inline h-3 w-3" />
-              {protocol.timeline}
-            </p>
-          </div>
+          )}
+
+          {/* Weekly Schedule */}
+          {aiProtocol.weeklySchedule && (
+            <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
+              <h3 className="mb-2 font-display text-base font-semibold text-foreground sm:text-lg">
+                Weekly Schedule
+              </h3>
+              <p className="text-sm text-muted-foreground">{aiProtocol.weeklySchedule}</p>
+            </div>
+          )}
 
           {/* What's Included */}
-          <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
-            <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
-              What's Included
-            </h3>
-            <ul className="space-y-3">
-              {protocol.included.map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
-                  <span className="text-sm text-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {aiProtocol.included && aiProtocol.included.length > 0 && (
+            <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
+              <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
+                What's Included
+              </h3>
+              <ul className="space-y-3">
+                {aiProtocol.included.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
+                    <span className="text-sm text-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Warnings */}
+          {aiProtocol.warnings && aiProtocol.warnings.length > 0 && (
+            <div className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 sm:p-6">
+              <h3 className="mb-3 font-display text-sm font-semibold text-foreground">
+                ⚠️ Important Notes
+              </h3>
+              <ul className="space-y-2">
+                {aiProtocol.warnings.map((w, i) => (
+                  <li key={i} className="text-xs text-muted-foreground">• {w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Pricing */}
           <div className="mb-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border-2 border-border bg-background p-6 text-center shadow-card">
               <p className="text-sm font-medium text-muted-foreground">Monthly</p>
               <p className="mt-1 font-display text-3xl font-bold text-foreground">
-                {protocol.monthlyPrice}
+                {aiProtocol.monthlyPrice}
                 <span className="text-sm font-normal text-muted-foreground">/mo</span>
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">Duration: {protocol.duration}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Duration: {aiProtocol.duration}</p>
               <a
-                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the monthly ${protocol.title} plan.`)}
+                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the monthly ${aiProtocol.protocolName} plan.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
@@ -460,11 +540,11 @@ export default function QuizFunnelPage() {
               </span>
               <p className="text-sm font-medium text-muted-foreground">Full Program</p>
               <p className="mt-1 font-display text-3xl font-bold text-gradient">
-                {protocol.fullPrice}
+                {aiProtocol.fullPrice}
               </p>
-              <p className="mt-1 text-xs font-semibold text-trust">{protocol.savings}</p>
+              <p className="mt-1 text-xs font-semibold text-trust">{aiProtocol.savings}</p>
               <a
-                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the full ${protocol.title} program.`)}
+                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the full ${aiProtocol.protocolName} program.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
@@ -474,17 +554,39 @@ export default function QuizFunnelPage() {
             </div>
           </div>
 
+          {/* Zoom Consultation Booking */}
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 text-center sm:p-6">
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <Video className="h-7 w-7 text-primary" />
+            </div>
+            <h3 className="font-display text-lg font-bold text-foreground sm:text-xl">
+              Book Your Free Consultation
+            </h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+              Schedule a 1-on-1 video consultation with our peptide specialist to review your personalized protocol and answer any questions.
+            </p>
+            <a
+              href={ZOOM_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
+            >
+              <Video className="h-4 w-4" /> Book Zoom Consultation
+            </a>
+            <p className="mt-2 text-xs text-muted-foreground">Free • 30 minutes • No commitment</p>
+          </div>
+
           {/* WhatsApp CTA */}
           <div className="mb-8 rounded-2xl border border-trust/30 bg-trust/5 p-5 text-center sm:p-6">
             <MessageCircle className="mx-auto mb-2 h-8 w-8 text-trust" />
             <h3 className="font-display text-base font-semibold text-foreground sm:text-lg">
-              Have Questions? Chat With Us
+              Prefer to Chat? We're Here
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
               Our team is ready to help you get started. No pressure, no commitment.
             </p>
             <a
-              href={waLink("Hi, I just completed the quiz and have some questions about my protocol.")}
+              href={waLink(`Hi, I'm ${lead.name || "interested"}. I just got my AI protocol recommendation (${aiProtocol.protocolName}) and have some questions.`)}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-trust px-6 py-3 font-semibold text-trust-foreground transition-all hover:opacity-90 active:scale-95"
@@ -499,7 +601,7 @@ export default function QuizFunnelPage() {
               <Shield className="h-4 w-4 text-trust" /> German Certified
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-trust" /> Personalized Protocol
+              <Bot className="h-4 w-4 text-primary" /> AI Personalized
             </span>
             <span className="flex items-center gap-1.5">
               <Star className="h-4 w-4 text-trust" /> Guided Support
@@ -513,7 +615,8 @@ export default function QuizFunnelPage() {
                 setStep(0);
                 setAnswers({});
                 setLead({ name: "", email: "", whatsapp: "" });
-                setLeadCaptured(false);
+                setAiProtocol(null);
+                setError(null);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
