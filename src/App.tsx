@@ -23,6 +23,8 @@ import TermsPage from "@/pages/TermsPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
+import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
+import CookieConsent from "@/components/CookieConsent";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
