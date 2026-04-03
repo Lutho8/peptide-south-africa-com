@@ -22,7 +22,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 
 const WA_NUMBER = "491624747159";
-const ZOOM_LINK = "https://zoom.us/j/YOUR_MEETING_ID"; // Replace with your Zoom link
+const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
 const waLink = (msg: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 
