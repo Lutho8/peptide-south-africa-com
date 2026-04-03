@@ -1,294 +1,238 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle, ArrowRight, ArrowLeft, Shield, FlaskConical, Truck, Star, Zap } from "lucide-react";
-import heroImg1 from "@/assets/funnel-hero-1.jpg";
-import heroImg2 from "@/assets/funnel-hero-2.jpg";
-import heroImg3 from "@/assets/funnel-hero-3.jpg";
-import heroImg4 from "@/assets/funnel-hero-4.jpg";
-import heroImg5 from "@/assets/funnel-hero-5.jpg";
+import {
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Shield,
+  Clock,
+  Star,
+  MessageCircle,
+  Flame,
+  Dumbbell,
+  Heart,
+  Sparkles,
+} from "lucide-react";
 
-interface QuizAnswer {
+interface QuizAnswers {
   goal?: string;
+  issues?: string;
+  lifestyle?: string;
   experience?: string;
-  timeline?: string;
-  concern?: string;
+  readiness?: string;
+  budget?: string;
 }
-
-const protocols: Record<string, {
-  title: string;
-  subtitle: string;
-  description: string;
-  products: { name: string; slug: string; why: string }[];
-  duration: string;
-  price: string;
-}> = {
-  "fat-loss": {
-    title: "12-Week Fat Loss Protocol",
-    subtitle: "Metabolic Optimization Stack",
-    description: "A science-backed protocol combining GLP-1 pathway agonists with metabolic peptides for sustainable body composition research. Trusted by researchers studying visceral fat reduction and metabolic homeostasis.",
-    products: [
-      { name: "RT3 (Reta) – 10mg", slug: "rt3-reta", why: "Triple receptor agonist for comprehensive metabolic pathway activation" },
-      { name: "TZ-2 (Tirz) – 10mg", slug: "tz2-tirz", why: "Dual GIP/GLP-1 agonist for glucose homeostasis and appetite regulation" },
-      { name: "MOTS-C – 10mg", slug: "mots-c", why: "Mitochondrial peptide for fatty acid oxidation and insulin sensitivity" },
-    ],
-    duration: "12 Weeks",
-    price: "From R1,476",
-  },
-  "recovery": {
-    title: "Recovery & Performance Stack",
-    subtitle: "Athletic Regeneration Protocol",
-    description: "Engineered for researchers studying tissue repair, recovery optimization, and athletic performance. Combines healing peptides with growth hormone secretagogues for comprehensive regeneration research.",
-    products: [
-      { name: "BPC/TB-500 Blend – 20mg", slug: "bpc-tb500-blend", why: "Synergistic tissue repair and anti-inflammatory pathways" },
-      { name: "Tesamorelin – 10mg", slug: "tesamorelin", why: "GH secretion stimulation for body composition and recovery" },
-      { name: "MOTS-C – 10mg", slug: "mots-c", why: "Exercise physiology and metabolic homeostasis support" },
-    ],
-    duration: "8–12 Weeks",
-    price: "From R2,214",
-  },
-};
 
 const quizSteps = [
   {
-    question: "What's your primary research goal?",
+    question: "What's your primary health goal?",
     key: "goal" as const,
     options: [
-      { value: "fat-loss", label: "Fat Loss & Metabolic Optimization", icon: "🔥", desc: "GLP-1 pathway, body recomposition, visceral fat reduction" },
-      { value: "recovery", label: "Recovery & Athletic Performance", icon: "💪", desc: "Tissue repair, muscle recovery, growth hormone support" },
+      { value: "fat-loss", label: "Lose Stubborn Fat", icon: "🔥", desc: "Reduce body fat and improve body composition" },
+      { value: "recovery", label: "Recovery & Performance", icon: "💪", desc: "Heal faster, train harder, perform better" },
+      { value: "both", label: "Both — Full Transformation", icon: "⚡", desc: "Fat loss combined with performance gains" },
     ],
   },
   {
-    question: "What's your experience level with peptide research?",
+    question: "What are you currently struggling with?",
+    key: "issues" as const,
+    options: [
+      { value: "stubborn-fat", label: "Stubborn Belly Fat", icon: "😤", desc: "Fat that won't budge despite diet and exercise" },
+      { value: "slow-recovery", label: "Slow Recovery", icon: "🩹", desc: "Takes too long to recover between sessions" },
+      { value: "low-energy", label: "Low Energy & Motivation", icon: "😴", desc: "Feeling tired, sluggish, or unmotivated" },
+      { value: "plateau", label: "Hit a Plateau", icon: "📉", desc: "Progress has stalled despite consistent effort" },
+    ],
+  },
+  {
+    question: "How would you describe your current lifestyle?",
+    key: "lifestyle" as const,
+    options: [
+      { value: "active", label: "Active & Training", icon: "🏋️", desc: "I train regularly and eat reasonably well" },
+      { value: "moderate", label: "Moderately Active", icon: "🚶", desc: "Some exercise, could be more consistent" },
+      { value: "sedentary", label: "Getting Started", icon: "🌱", desc: "Ready to make a change but haven't started yet" },
+    ],
+  },
+  {
+    question: "Have you tried guided health protocols before?",
     key: "experience" as const,
     options: [
-      { value: "beginner", label: "I'm New to This", icon: "🌱", desc: "Looking for guidance and a clear protocol" },
-      { value: "intermediate", label: "Some Experience", icon: "📊", desc: "Familiar with reconstitution and dosing basics" },
-      { value: "advanced", label: "Experienced Researcher", icon: "🔬", desc: "Looking for advanced stacks and optimization" },
+      { value: "never", label: "No, This Is New", icon: "🆕", desc: "First time exploring a structured approach" },
+      { value: "some", label: "Tried a Few Things", icon: "📊", desc: "Some experience but nothing structured" },
+      { value: "experienced", label: "Yes, Looking for Better", icon: "🎯", desc: "Ready for something that actually works" },
     ],
   },
   {
-    question: "What's your ideal research timeline?",
-    key: "timeline" as const,
+    question: "How ready are you to invest in your health?",
+    key: "readiness" as const,
     options: [
-      { value: "4-weeks", label: "4 Weeks (Quick Study)", icon: "⚡", desc: "Short-term pilot research" },
-      { value: "8-weeks", label: "8 Weeks (Standard)", icon: "📅", desc: "Standard research cycle" },
-      { value: "12-weeks", label: "12 Weeks (Full Protocol)", icon: "🎯", desc: "Comprehensive long-term study" },
+      { value: "ready-now", label: "Ready to Start Now", icon: "🚀", desc: "I want to begin this week" },
+      { value: "exploring", label: "Exploring My Options", icon: "🔍", desc: "Want to understand what's involved first" },
+      { value: "planning", label: "Planning Ahead", icon: "📅", desc: "Looking to start in the next month" },
     ],
   },
   {
-    question: "What matters most to you?",
-    key: "concern" as const,
+    question: "What monthly budget works for you?",
+    key: "budget" as const,
     options: [
-      { value: "purity", label: "Purity & Lab Testing", icon: "🧪", desc: "COA verification and third-party testing" },
-      { value: "price", label: "Value for Money", icon: "💰", desc: "Best results without overpaying" },
-      { value: "support", label: "Guidance & Protocols", icon: "📋", desc: "Step-by-step research support" },
+      { value: "starter", label: "Under R1,500/month", icon: "💰", desc: "Focused, essential protocol" },
+      { value: "standard", label: "R1,500 – R2,500/month", icon: "⭐", desc: "Comprehensive guided program" },
+      { value: "premium", label: "R2,500+/month", icon: "👑", desc: "Full protocol with premium support" },
     ],
   },
 ];
 
+const protocols: Record<string, {
+  title: string;
+  subtitle: string;
+  duration: string;
+  monthlyPrice: string;
+  fullPrice: string;
+  savings: string;
+  whyFits: string;
+  timeline: string;
+  included: string[];
+  results: { icon: typeof Flame; label: string }[];
+}> = {
+  "fat-loss": {
+    title: "12-Week Fat Loss Protocol",
+    subtitle: "Personalized Metabolic Transformation",
+    duration: "12 Weeks",
+    monthlyPrice: "R1,999",
+    fullPrice: "R4,999",
+    savings: "Save R997",
+    whyFits: "Based on your answers, you're an ideal candidate for our metabolic optimization protocol. Your goal of targeted fat loss, combined with your current lifestyle, means you'll see measurable results within the first 3 weeks.",
+    timeline: "Most clients see visible changes by week 3, with significant transformation by week 8–12.",
+    included: [
+      "Personalized fat loss protocol plan",
+      "Monthly guided supply",
+      "Weekly check-ins & progress reviews",
+      "Dosing schedule & timing guide",
+      "WhatsApp support access",
+      "Progress tracking",
+    ],
+    results: [
+      { icon: Flame, label: "Visceral fat reduction" },
+      { icon: Heart, label: "Improved metabolic health" },
+      { icon: Sparkles, label: "Clearer skin & more energy" },
+      { icon: Dumbbell, label: "Better body composition" },
+    ],
+  },
+  recovery: {
+    title: "Recovery & Performance Stack",
+    subtitle: "Athletic Regeneration System",
+    duration: "8–12 Weeks",
+    monthlyPrice: "R2,199",
+    fullPrice: "R5,499",
+    savings: "Save R1,098",
+    whyFits: "Your focus on recovery and performance makes this protocol perfect for you. It's designed to accelerate healing, reduce downtime, and unlock a new level of athletic output.",
+    timeline: "Expect noticeable recovery improvements within 1–2 weeks, with peak performance gains by week 6–8.",
+    included: [
+      "Personalized recovery protocol plan",
+      "Monthly guided supply",
+      "Weekly performance check-ins",
+      "Training integration guide",
+      "WhatsApp support access",
+      "Recovery tracking dashboard",
+    ],
+    results: [
+      { icon: Dumbbell, label: "Faster muscle recovery" },
+      { icon: Heart, label: "Accelerated injury healing" },
+      { icon: Flame, label: "Enhanced performance output" },
+      { icon: Sparkles, label: "Improved sleep & well-being" },
+    ],
+  },
+  both: {
+    title: "Full Transformation Protocol",
+    subtitle: "Complete Body Recomposition System",
+    duration: "12 Weeks",
+    monthlyPrice: "R2,499",
+    fullPrice: "R5,999",
+    savings: "Save R1,498",
+    whyFits: "You want it all — fat loss AND performance. This comprehensive protocol combines metabolic optimization with recovery enhancement for a complete body transformation.",
+    timeline: "Fat loss begins week 2–3, recovery improvements from week 1, full transformation visible by week 10–12.",
+    included: [
+      "Comprehensive transformation protocol",
+      "Monthly guided supply (dual protocol)",
+      "Twice-weekly check-ins",
+      "Nutrition & training integration",
+      "Priority WhatsApp support",
+      "Full progress tracking suite",
+    ],
+    results: [
+      { icon: Flame, label: "Significant fat loss" },
+      { icon: Dumbbell, label: "Muscle & performance gains" },
+      { icon: Heart, label: "Complete body recomposition" },
+      { icon: Sparkles, label: "Energy, skin, sleep improvement" },
+    ],
+  },
+};
+
 export default function QuizFunnelPage() {
-  const [step, setStep] = useState(-1); // -1 = landing, 0-3 = quiz, 4 = results
-  const [answers, setAnswers] = useState<QuizAnswer>({});
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<QuizAnswers>({});
+  const totalSteps = quizSteps.length;
+  const showResults = step >= totalSteps;
 
   const handleAnswer = (key: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [key]: value }));
-    if (step < quizSteps.length - 1) {
-      setStep(step + 1);
-    } else {
-      setStep(quizSteps.length); // results
-    }
+    const updated = { ...answers, [key]: value };
+    setAnswers(updated);
+    setStep((s) => s + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const protocol = protocols[answers.goal || "fat-loss"];
-
-  // Landing / Hero state
-  if (step === -1) {
-    return (
-      <div className="flex flex-col">
-        {/* Hero Section — MEDVi-inspired */}
-        <section className="relative overflow-hidden bg-[hsl(35,30%,95%)]">
-          <div className="container relative z-10 pb-8 pt-12 text-center md:pt-20">
-            <h1 className="mx-auto max-w-4xl font-display text-4xl font-bold leading-tight text-foreground md:text-6xl">
-              Finally serious about your health?{" "}
-              <span className="text-gradient">Transform your body</span>{" "}
-              with science-backed peptide protocols
-            </h1>
-
-            <div className="mx-auto mt-10 max-w-lg space-y-4 text-left">
-              {[
-                "Lose stubborn fat with GLP-1 pathway peptides",
-                "Lab-tested, ≥99% purity guaranteed",
-                "No guesswork — full protocol included",
-                "Start from just R450, SA domestic shipping",
-                "Trusted by 500+ researchers nationwide",
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
-                  <span className="text-base text-foreground">
-                    {item.includes("R450") ? (
-                      <>
-                        <strong>Start from just R450</strong>, SA domestic shipping
-                      </>
-                    ) : item.includes("No guesswork") ? (
-                      <>
-                        <strong>No guesswork</strong> — full protocol included
-                      </>
-                    ) : (
-                      item
-                    )}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setStep(0)}
-              className="mt-10 inline-flex items-center gap-2 rounded-lg bg-[hsl(var(--foreground))] px-10 py-4 text-lg font-semibold text-[hsl(var(--background))] shadow-lg transition-all hover:opacity-90 active:scale-95"
-            >
-              FIND MY PROTOCOL
-            </button>
-            <p className="mt-3 text-sm text-muted-foreground">Takes 30 seconds · No commitment required</p>
-          </div>
-
-          {/* Photo Grid */}
-          <div className="relative mx-auto max-w-6xl px-4 pb-16">
-            <div className="grid grid-cols-5 gap-3 md:gap-4">
-              <div className="col-span-1 row-span-2 overflow-hidden rounded-2xl">
-                <img src={heroImg1} alt="Happy researcher" className="h-full w-full object-cover" width={640} height={800} />
-              </div>
-              <div className="col-span-1 overflow-hidden rounded-2xl">
-                <img src={heroImg2} alt="Confident woman" className="h-full w-full object-cover" loading="lazy" width={640} height={800} />
-              </div>
-              <div className="col-span-1 overflow-hidden rounded-2xl">
-                <img src={heroImg4} alt="Happy man" className="h-full w-full object-cover" loading="lazy" width={640} height={800} />
-              </div>
-              <div className="col-span-1 overflow-hidden rounded-2xl">
-                <img src={heroImg3} alt="Silver-haired woman" className="h-full w-full object-cover" loading="lazy" width={640} height={800} />
-              </div>
-              <div className="col-span-1 row-span-2 overflow-hidden rounded-2xl">
-                <img src={heroImg5} alt="Celebrating woman" className="h-full w-full object-cover" loading="lazy" width={640} height={800} />
-              </div>
-              <div className="col-span-3 overflow-hidden rounded-2xl">
-                <div className="flex h-full items-center justify-center bg-card p-6 text-center">
-                  <div>
-                    <div className="flex items-center justify-center gap-1 text-badge">
-                      {Array(5).fill(null).map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
-                    </div>
-                    <p className="mt-2 font-display text-lg font-semibold text-foreground">"Changed my entire research approach"</p>
-                    <p className="mt-1 text-sm text-muted-foreground">— Dr. M. Chen, Research Director</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Trust Bar */}
-        <section className="border-y border-border bg-card py-8">
-          <div className="container grid grid-cols-2 gap-6 md:grid-cols-4">
-            {[
-              { icon: FlaskConical, label: "Lab Tested", sub: "Third-party verified" },
-              { icon: Shield, label: "≥99% Purity", sub: "Every batch certified" },
-              { icon: Truck, label: "SA Shipping", sub: "1-3 business days" },
-              { icon: Zap, label: "Full Protocols", sub: "Step-by-step guides" },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center text-center">
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <item.icon className="h-5 w-5 text-primary" />
-                </div>
-                <p className="text-sm font-semibold text-foreground">{item.label}</p>
-                <p className="text-xs text-muted-foreground">{item.sub}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Social Proof */}
-        <section className="container py-16">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">Why Researchers Choose Us</span>
-            <h2 className="mt-2 font-display text-3xl font-bold text-foreground">Not Just a Store — A Research Partner</h2>
-            <p className="mt-4 text-muted-foreground">
-              We don't just sell peptides. We provide complete research protocols, dosing guides, and ongoing support.
-              Every product ships with a Certificate of Analysis and detailed documentation.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {[
-              { stat: "500+", label: "Active Researchers", desc: "Trust our products for their work" },
-              { stat: "≥99%", label: "Purity Guaranteed", desc: "Every batch lab-tested with COA" },
-              { stat: "1-3", label: "Day Delivery", desc: "Fast SA domestic shipping" },
-            ].map((item, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                <p className="font-display text-4xl font-bold text-gradient">{item.stat}</p>
-                <p className="mt-2 font-semibold text-foreground">{item.label}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="bg-hero-gradient py-16">
-          <div className="container text-center">
-            <h2 className="font-display text-3xl font-bold text-primary-foreground">Find Your Perfect Protocol in 30 Seconds</h2>
-            <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-              Answer 4 quick questions and get a personalized peptide protocol tailored to your research goals.
-            </p>
-            <button
-              onClick={() => { setStep(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-              className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
-            >
-              START THE QUIZ <ArrowRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
-      </div>
-    );
-  }
+  const goalKey = answers.goal === "recovery" ? "recovery" : answers.goal === "both" ? "both" : "fat-loss";
+  const protocol = protocols[goalKey];
 
   // Quiz Steps
-  if (step < quizSteps.length) {
+  if (!showResults) {
     const current = quizSteps[step];
-    const progress = ((step + 1) / quizSteps.length) * 100;
+    const progress = ((step + 1) / totalSteps) * 100;
 
     return (
       <div className="flex min-h-[80vh] flex-col">
         {/* Progress */}
         <div className="border-b border-border bg-card">
-          <div className="container flex items-center gap-4 py-4">
+          <div className="container flex items-center gap-4 px-4 py-4">
             {step > 0 && (
-              <button onClick={() => setStep(step - 1)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setStep(step - 1)}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+              >
                 <ArrowLeft className="h-4 w-4" /> Back
               </button>
             )}
             <div className="flex-1">
               <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-hero-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
+                <div
+                  className="h-full rounded-full bg-hero-gradient transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             </div>
             <span className="text-sm font-medium text-muted-foreground">
-              {step + 1} / {quizSteps.length}
+              {step + 1} / {totalSteps}
             </span>
           </div>
         </div>
 
         {/* Question */}
-        <div className="container flex flex-1 flex-col items-center justify-center py-12">
+        <div className="container flex flex-1 flex-col items-center justify-center px-4 py-10 md:py-16">
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground md:text-3xl">
             {current.question}
           </h2>
-          <div className="grid w-full max-w-2xl gap-4">
+          <div className="grid w-full max-w-2xl gap-3">
             {current.options.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => handleAnswer(current.key, opt.value)}
-                className="group flex items-start gap-4 rounded-xl border-2 border-border bg-card p-5 text-left shadow-card transition-all hover:border-primary hover:shadow-card-hover active:scale-[0.98]"
+                className="group flex items-start gap-4 rounded-xl border-2 border-border bg-card p-4 text-left shadow-card transition-all hover:border-primary hover:shadow-card-hover active:scale-[0.98] sm:p-5"
               >
                 <span className="text-2xl">{opt.icon}</span>
                 <div className="flex-1">
-                  <p className="font-display text-lg font-semibold text-foreground group-hover:text-primary">{opt.label}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{opt.desc}</p>
+                  <p className="font-display text-base font-semibold text-foreground group-hover:text-primary sm:text-lg">
+                    {opt.label}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{opt.desc}</p>
                 </div>
                 <ArrowRight className="mt-1 h-5 w-5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
               </button>
@@ -299,90 +243,160 @@ export default function QuizFunnelPage() {
     );
   }
 
-  // Results
+  // ===================== RESULTS PAGE =====================
   return (
     <div className="flex flex-col">
+      {/* Completion bar */}
       <div className="border-b border-border bg-card">
-        <div className="container py-4">
+        <div className="container px-4 py-4">
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-trust" style={{ width: "100%" }} />
           </div>
         </div>
       </div>
 
-      <div className="container py-12">
+      <div className="container px-4 py-10 md:py-16">
         <div className="mx-auto max-w-3xl">
           {/* Header */}
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-trust/10">
               <CheckCircle className="h-8 w-8 text-trust" />
             </div>
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">Your Personalized Protocol</span>
-            <h1 className="mt-2 font-display text-3xl font-bold text-foreground md:text-4xl">{protocol.title}</h1>
-            <p className="mt-1 text-lg text-muted-foreground">{protocol.subtitle}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Based on your answers, here's your personalized protocol
+            </p>
+            <h1 className="mt-3 font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
+              {protocol.title}
+            </h1>
+            <p className="mt-1 text-base text-muted-foreground sm:text-lg">{protocol.subtitle}</p>
           </div>
 
-          {/* Protocol Card */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-card md:p-8">
-            <p className="mb-6 text-muted-foreground">{protocol.description}</p>
+          {/* Why it fits */}
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:p-6">
+            <h3 className="mb-2 font-display text-base font-semibold text-foreground sm:text-lg">
+              Why This Protocol Fits You
+            </h3>
+            <p className="text-sm text-muted-foreground">{protocol.whyFits}</p>
+          </div>
 
-            <div className="mb-6 grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-muted p-4 text-center">
-                <p className="text-sm text-muted-foreground">Duration</p>
-                <p className="font-display text-lg font-bold text-foreground">{protocol.duration}</p>
-              </div>
-              <div className="rounded-lg bg-muted p-4 text-center">
-                <p className="text-sm text-muted-foreground">Starting At</p>
-                <p className="font-display text-lg font-bold text-gradient">{protocol.price}</p>
-              </div>
-            </div>
-
-            <h3 className="mb-4 font-display text-lg font-semibold text-foreground">Recommended Products</h3>
-            <div className="space-y-4">
-              {protocol.products.map((p, i) => (
-                <div key={i} className="flex items-start gap-4 rounded-lg border border-border bg-background p-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 font-display font-bold text-primary">
-                    {i + 1}
+          {/* Expected Results */}
+          <div className="mb-8">
+            <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
+              What Results to Expect
+            </h3>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {protocol.results.map((r, i) => (
+                <div key={i} className="rounded-xl border border-border bg-card p-4 text-center shadow-card">
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                    <r.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <Link to={`/product/${p.slug}`} className="font-semibold text-foreground hover:text-primary">
-                      {p.name}
-                    </Link>
-                    <p className="mt-1 text-sm text-muted-foreground">{p.why}</p>
-                  </div>
-                  <Link
-                    to={`/product/${p.slug}`}
-                    className="flex-shrink-0 rounded-lg bg-hero-gradient px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
-                  >
-                    View
-                  </Link>
+                  <p className="text-xs font-semibold text-foreground">{r.label}</p>
                 </div>
               ))}
             </div>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              <Clock className="mb-0.5 mr-1 inline h-3 w-3" />
+              {protocol.timeline}
+            </p>
           </div>
 
-          {/* CTAs */}
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              to="/shop"
-              className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+          {/* What's Included */}
+          <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
+            <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
+              What's Included
+            </h3>
+            <ul className="space-y-3">
+              {protocol.included.map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
+                  <span className="text-sm text-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Pricing */}
+          <div className="mb-8 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border-2 border-border bg-background p-6 text-center shadow-card">
+              <p className="text-sm font-medium text-muted-foreground">Monthly</p>
+              <p className="mt-1 font-display text-3xl font-bold text-foreground">
+                {protocol.monthlyPrice}
+                <span className="text-sm font-normal text-muted-foreground">/mo</span>
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">Duration: {protocol.duration}</p>
+              <a
+                href="https://wa.me/27000000000?text=Hi%2C%20I%20want%20to%20start%20the%20monthly%20plan"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
+              >
+                Get Started
+              </a>
+            </div>
+            <div className="relative rounded-2xl border-2 border-primary bg-background p-6 text-center shadow-glow">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-hero-gradient px-4 py-1 text-xs font-bold text-primary-foreground">
+                BEST VALUE
+              </span>
+              <p className="text-sm font-medium text-muted-foreground">Full Program</p>
+              <p className="mt-1 font-display text-3xl font-bold text-gradient">
+                {protocol.fullPrice}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-trust">{protocol.savings}</p>
+              <a
+                href="https://wa.me/27000000000?text=Hi%2C%20I%20want%20to%20start%20the%20full%20program"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+              >
+                Start My Protocol <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* WhatsApp CTA */}
+          <div className="mb-8 rounded-2xl border border-trust/30 bg-trust/5 p-5 text-center sm:p-6">
+            <MessageCircle className="mx-auto mb-2 h-8 w-8 text-trust" />
+            <h3 className="font-display text-base font-semibold text-foreground sm:text-lg">
+              Have Questions? Chat With Us
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Our team is ready to help you get started. No pressure, no commitment.
+            </p>
+            <a
+              href="https://wa.me/27000000000?text=Hi%2C%20I%20just%20completed%20the%20quiz%20and%20have%20some%20questions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-trust px-6 py-3 font-semibold text-trust-foreground transition-all hover:opacity-90 active:scale-95"
             >
-              Shop Full Catalog <ArrowRight className="h-4 w-4" />
-            </Link>
+              <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
+            </a>
+          </div>
+
+          {/* Trust footer */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
+            <span className="flex items-center gap-1.5">
+              <Shield className="h-4 w-4 text-trust" /> German Certified
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle className="h-4 w-4 text-trust" /> Personalized Protocol
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Star className="h-4 w-4 text-trust" /> Guided Support
+            </span>
+          </div>
+
+          {/* Retake */}
+          <div className="mt-8 text-center">
             <button
-              onClick={() => { setStep(-1); setAnswers({}); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-8 py-3.5 font-semibold text-foreground transition-all hover:bg-muted"
+              onClick={() => {
+                setStep(0);
+                setAnswers({});
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" /> Retake Quiz
             </button>
-          </div>
-
-          {/* Trust Footer */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Shield className="h-4 w-4 text-trust" /> Lab Tested</span>
-            <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-trust" /> ≥99% Purity</span>
-            <span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-trust" /> SA Domestic Shipping</span>
-            <span className="flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-trust" /> COA Included</span>
           </div>
         </div>
       </div>
