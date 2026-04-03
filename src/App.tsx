@@ -21,6 +21,7 @@ import RefundPolicyPage from "@/pages/RefundPolicyPage";
 import TermsPage from "@/pages/TermsPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
+import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/shipping" element={<ShippingPolicyPage />} />
               <Route path="/refund" element={<RefundPolicyPage />} />
+              <Route path="/quiz" element={<QuizFunnelPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
