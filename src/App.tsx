@@ -57,6 +57,7 @@ const App = () => (
               <Route path="/refund" element={<RefundPolicyPage />} />
               <Route path="/quiz" element={<QuizFunnelPage />} />
               <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
+              <Route path="/research" element={<ResearchHubPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
