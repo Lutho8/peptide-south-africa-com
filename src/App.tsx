@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import StickyMobileCTA from "@/components/StickyMobileCTA";
 import CartDrawer from "@/components/CartDrawer";
 import AgeVerificationModal from "@/components/AgeVerificationModal";
 import DiscountPopup from "@/components/DiscountPopup";
@@ -56,6 +57,7 @@ const App = () => (
             </Routes>
           </main>
           <Footer />
+          <StickyMobileCTA />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
