@@ -390,6 +390,29 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===================== RESEARCH HUB ===================== */}
+      <section className="bg-background py-16 md:py-20">
+        <div className="container px-4">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center sm:p-10">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+              <Brain className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+              Peptide Research Hub
+            </h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
+              Access our comprehensive database of 98+ peptides with clinical research, dosage calculators, stack builders, and scientific literature — free for the research community.
+            </p>
+            <Link
+              to="/research"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+            >
+              Explore Research Hub <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ===================== BOTTOM CTA ===================== */}
       <section className="bg-hero-gradient py-14 md:py-20">
         <div className="container px-4 text-center">
