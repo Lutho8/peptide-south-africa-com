@@ -24,6 +24,7 @@ import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
+import ResearchHubPage from "@/pages/ResearchHubPage";
 import CookieConsent from "@/components/CookieConsent";
 import NotFound from "@/pages/NotFound";
 
