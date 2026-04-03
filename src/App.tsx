@@ -21,6 +21,7 @@ import RefundPolicyPage from "@/pages/RefundPolicyPage";
 import TermsPage from "@/pages/TermsPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
+import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
