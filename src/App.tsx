@@ -61,6 +61,7 @@ const App = () => (
           </main>
           <Footer />
           <StickyMobileCTA />
+          <CookieConsent />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
