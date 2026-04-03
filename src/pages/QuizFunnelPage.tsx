@@ -12,7 +12,14 @@ import {
   Dumbbell,
   Heart,
   Sparkles,
+  User,
+  Mail,
+  Phone,
 } from "lucide-react";
+
+const WA_NUMBER = "491624747159";
+const waLink = (msg: string) =>
+  `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 
 interface QuizAnswers {
   goal?: string;
@@ -21,6 +28,12 @@ interface QuizAnswers {
   experience?: string;
   readiness?: string;
   budget?: string;
+}
+
+interface LeadInfo {
+  name: string;
+  email: string;
+  whatsapp: string;
 }
 
 const quizSteps = [
@@ -170,27 +183,39 @@ const protocols: Record<string, {
 export default function QuizFunnelPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
+  const [lead, setLead] = useState<LeadInfo>({ name: "", email: "", whatsapp: "" });
+  const [leadCaptured, setLeadCaptured] = useState(false);
+
   const totalSteps = quizSteps.length;
-  const showResults = step >= totalSteps;
+  // step 0..5 = quiz, step 6 = lead capture, step 7 = results
+  const isQuiz = step < totalSteps;
+  const isLeadCapture = step === totalSteps;
+  const showResults = step > totalSteps;
 
   const handleAnswer = (key: string, value: string) => {
-    const updated = { ...answers, [key]: value };
-    setAnswers(updated);
+    setAnswers((prev) => ({ ...prev, [key]: value }));
     setStep((s) => s + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleLeadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!lead.name.trim() || !lead.email.trim()) return;
+    setLeadCaptured(true);
+    setStep(totalSteps + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goalKey = answers.goal === "recovery" ? "recovery" : answers.goal === "both" ? "both" : "fat-loss";
   const protocol = protocols[goalKey];
 
-  // Quiz Steps
-  if (!showResults) {
+  // ===================== QUIZ STEPS =====================
+  if (isQuiz) {
     const current = quizSteps[step];
-    const progress = ((step + 1) / totalSteps) * 100;
+    const progress = ((step + 1) / (totalSteps + 1)) * 100;
 
     return (
       <div className="flex min-h-[80vh] flex-col">
-        {/* Progress */}
         <div className="border-b border-border bg-card">
           <div className="container flex items-center gap-4 px-4 py-4">
             {step > 0 && (
@@ -203,19 +228,15 @@ export default function QuizFunnelPage() {
             )}
             <div className="flex-1">
               <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-hero-gradient transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
+                <div className="h-full rounded-full bg-hero-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
               </div>
             </div>
             <span className="text-sm font-medium text-muted-foreground">
-              {step + 1} / {totalSteps}
+              {step + 1} / {totalSteps + 1}
             </span>
           </div>
         </div>
 
-        {/* Question */}
         <div className="container flex flex-1 flex-col items-center justify-center px-4 py-10 md:py-16">
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground md:text-3xl">
             {current.question}
@@ -243,10 +264,108 @@ export default function QuizFunnelPage() {
     );
   }
 
+  // ===================== LEAD CAPTURE =====================
+  if (isLeadCapture) {
+    const progress = ((totalSteps + 1) / (totalSteps + 1)) * 100;
+
+    return (
+      <div className="flex min-h-[80vh] flex-col">
+        <div className="border-b border-border bg-card">
+          <div className="container flex items-center gap-4 px-4 py-4">
+            <button
+              onClick={() => setStep(step - 1)}
+              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back
+            </button>
+            <div className="flex-1">
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-hero-gradient transition-all duration-500" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">
+              Almost there!
+            </span>
+          </div>
+        </div>
+
+        <div className="container flex flex-1 flex-col items-center justify-center px-4 py-10 md:py-16">
+          <div className="mx-auto w-full max-w-md">
+            <div className="mb-6 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <CheckCircle className="h-7 w-7 text-primary" />
+              </div>
+              <h2 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+                Your Protocol Is Ready!
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Enter your details below to see your personalized recommendation and receive your protocol guide.
+              </p>
+            </div>
+
+            <form onSubmit={handleLeadSubmit} className="space-y-4">
+              <div>
+                <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <User className="h-4 w-4 text-muted-foreground" /> Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Your full name"
+                  value={lead.name}
+                  onChange={(e) => setLead((p) => ({ ...p, name: e.target.value }))}
+                  className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  value={lead.email}
+                  onChange={(e) => setLead((p) => ({ ...p, email: e.target.value }))}
+                  className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Phone className="h-4 w-4 text-muted-foreground" /> WhatsApp Number
+                  <span className="text-xs text-muted-foreground">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+27 XX XXX XXXX"
+                  value={lead.whatsapp}
+                  onChange={(e) => setLead((p) => ({ ...p, whatsapp: e.target.value }))}
+                  className="flex h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient text-base font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+              >
+                See My Protocol <ArrowRight className="h-4 w-4" />
+              </button>
+
+              <p className="text-center text-xs text-muted-foreground">
+                We respect your privacy. No spam, ever.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ===================== RESULTS PAGE =====================
   return (
     <div className="flex flex-col">
-      {/* Completion bar */}
       <div className="border-b border-border bg-card">
         <div className="container px-4 py-4">
           <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -262,10 +381,12 @@ export default function QuizFunnelPage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-trust/10">
               <CheckCircle className="h-8 w-8 text-trust" />
             </div>
-            <p className="text-sm font-medium text-muted-foreground">
-              Based on your answers, here's your personalized protocol
-            </p>
-            <h1 className="mt-3 font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
+            {leadCaptured && lead.name && (
+              <p className="text-base font-medium text-foreground mb-1">
+                {lead.name}, here's your personalized protocol
+              </p>
+            )}
+            <h1 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
               {protocol.title}
             </h1>
             <p className="mt-1 text-base text-muted-foreground sm:text-lg">{protocol.subtitle}</p>
@@ -325,7 +446,7 @@ export default function QuizFunnelPage() {
               </p>
               <p className="mt-1 text-xs text-muted-foreground">Duration: {protocol.duration}</p>
               <a
-                href="https://wa.me/27000000000?text=Hi%2C%20I%20want%20to%20start%20the%20monthly%20plan"
+                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the monthly ${protocol.title} plan.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
@@ -343,7 +464,7 @@ export default function QuizFunnelPage() {
               </p>
               <p className="mt-1 text-xs font-semibold text-trust">{protocol.savings}</p>
               <a
-                href="https://wa.me/27000000000?text=Hi%2C%20I%20want%20to%20start%20the%20full%20program"
+                href={waLink(`Hi, I'm ${lead.name || "interested"}. I'd like to start the full ${protocol.title} program.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
@@ -363,7 +484,7 @@ export default function QuizFunnelPage() {
               Our team is ready to help you get started. No pressure, no commitment.
             </p>
             <a
-              href="https://wa.me/27000000000?text=Hi%2C%20I%20just%20completed%20the%20quiz%20and%20have%20some%20questions"
+              href={waLink("Hi, I just completed the quiz and have some questions about my protocol.")}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-trust px-6 py-3 font-semibold text-trust-foreground transition-all hover:opacity-90 active:scale-95"
@@ -391,6 +512,8 @@ export default function QuizFunnelPage() {
               onClick={() => {
                 setStep(0);
                 setAnswers({});
+                setLead({ name: "", email: "", whatsapp: "" });
+                setLeadCaptured(false);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
