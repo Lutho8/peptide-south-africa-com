@@ -23,6 +23,8 @@ import TermsPage from "@/pages/TermsPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
+import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
+import CookieConsent from "@/components/CookieConsent";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,11 +55,13 @@ const App = () => (
               <Route path="/shipping" element={<ShippingPolicyPage />} />
               <Route path="/refund" element={<RefundPolicyPage />} />
               <Route path="/quiz" element={<QuizFunnelPage />} />
+              <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
           <StickyMobileCTA />
+          <CookieConsent />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>
