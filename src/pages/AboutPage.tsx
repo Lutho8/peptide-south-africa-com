@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import heroImg1 from "@/assets/funnel-hero-1.jpg";
 import heroImg3 from "@/assets/funnel-hero-3.jpg";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import RelatedContent from "@/components/RelatedContent";
+import { entityClusters } from "@/lib/seo";
 
 const credentials = [
   { icon: Award, title: "German Certified Compounds", desc: "All protocols use compounds that meet strict German pharmaceutical quality standards." },
@@ -80,6 +83,8 @@ const values = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col">
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
+
       {/* Hero */}
       <section className="relative overflow-hidden bg-card">
         <div className="container px-4 py-16 md:py-24">
@@ -283,6 +288,15 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+
+      <RelatedContent
+        title="Explore Our Protocols"
+        links={[
+          ...entityClusters.fatLoss.links.slice(0, 2),
+          ...entityClusters.healing.links.slice(0, 1),
+          entityClusters.trust.links.find(l => l.href === "/faq")!,
+        ]}
+      />
     </div>
   );
 }

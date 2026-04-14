@@ -7,6 +7,10 @@ import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import { useState } from "react";
 import { formatZAR } from "@/lib/currency";
+import JsonLd from "@/components/JsonLd";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import RelatedContent from "@/components/RelatedContent";
+import { productSchema, entityClusters } from "@/lib/seo";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -36,13 +40,33 @@ export default function ProductPage() {
 
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
+  // Determine entity cluster for internal linking
+  const clusterLinks = product.category === "GLP"
+    ? entityClusters.fatLoss.links.filter(l => l.href !== `/product/${product.slug}`)
+    : product.category === "Healing"
+    ? entityClusters.healing.links.filter(l => l.href !== `/product/${product.slug}`)
+    : entityClusters.growthHormone.links.filter(l => l.href !== `/product/${product.slug}`);
+
   return (
     <div>
-      <div className="container py-8">
-        <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to Shop
-        </Link>
-      </div>
+      <JsonLd data={productSchema(product)} />
+      {product.faqs.length > 0 && (
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: product.faqs.map(f => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }} />
+      )}
+      <Breadcrumbs crumbs={[
+        { label: "Home", href: "/" },
+        { label: "Shop", href: "/shop" },
+        { label: product.category, href: `/shop?category=${encodeURIComponent(product.category)}` },
+        { label: product.name },
+      ]} />
 
       {/* Product Detail */}
       <section className="container pb-16">
@@ -199,7 +223,10 @@ export default function ProductPage() {
         </section>
       )}
 
-      {/* Related */}
+      {/* Entity-linked related content */}
+      <RelatedContent title="Related Protocols & Research" links={clusterLinks} />
+
+      {/* Related Products */}
       {related.length > 0 && (
         <section className="border-t border-border bg-card py-16">
           <div className="container">
