@@ -19,6 +19,9 @@ import heroImg2 from "@/assets/funnel-hero-2.jpg";
 import heroImg3 from "@/assets/funnel-hero-3.jpg";
 import heroImg4 from "@/assets/funnel-hero-4.jpg";
 import heroImg5 from "@/assets/funnel-hero-5.jpg";
+import JsonLd from "@/components/JsonLd";
+import RelatedContent from "@/components/RelatedContent";
+import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
 
 const results = [
   { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
@@ -65,6 +68,8 @@ const whyItWorks = [
 export default function HomePage() {
   return (
     <div className="flex flex-col">
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
       {/* ===================== HERO ===================== */}
       <section className="relative overflow-hidden bg-card">
         <div className="container relative z-10 px-4 pb-10 pt-14 md:pt-24 md:pb-16">
@@ -412,6 +417,17 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ===================== ENTITY LINKS ===================== */}
+      <RelatedContent
+        title="Explore By Goal"
+        links={[
+          ...entityClusters.fatLoss.links.slice(0, 2),
+          ...entityClusters.healing.links.slice(0, 1),
+          ...entityClusters.growthHormone.links.slice(0, 1),
+          ...entityClusters.trust.links.slice(0, 2),
+        ]}
+      />
 
       {/* ===================== BOTTOM CTA ===================== */}
       <section className="bg-hero-gradient py-14 md:py-20">
