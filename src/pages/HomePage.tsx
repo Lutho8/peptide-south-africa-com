@@ -21,6 +21,7 @@ import heroImg4 from "@/assets/funnel-hero-4.jpg";
 import heroImg5 from "@/assets/funnel-hero-5.jpg";
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
+import MediaLogos from "@/components/MediaLogos";
 import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
 
 const results = [
@@ -180,6 +181,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ===================== AS SEEN IN ===================== */}
+      <MediaLogos variant="muted" />
 
       {/* ===================== HOW IT WORKS ===================== */}
       <section className="border-y border-border bg-background py-16 md:py-20">
