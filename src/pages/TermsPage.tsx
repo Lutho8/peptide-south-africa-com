@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+
+const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const termsSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/terms#page`,
+  name: "Terms and Conditions — Ride The Tide",
+  url: `${SITE_URL}/terms`,
+  description:
+    "Website Terms and Conditions of Use for Ride The Tide (Pty) Ltd. Educational content, South African jurisdiction, user obligations, and disclaimers.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  about: { "@type": "Thing", name: "Terms of Service" },
+};
 
 export default function TermsPage() {
   return (
+    <>
+      <JsonLd data={termsSchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Terms", href: "/terms" }]} />
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Website Terms and Conditions of Use</h1>
@@ -224,5 +244,6 @@ export default function TermsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

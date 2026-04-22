@@ -1,6 +1,33 @@
 import { ExternalLink, FlaskConical, BookOpen, Calculator, Layers, Search } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
 
 const PEPTIDE_PRO_URL = "https://peptide-mastery.lovable.app";
+const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const researchHubSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": `${SITE_URL}/research#page`,
+  name: "Peptide Research Hub",
+  url: `${SITE_URL}/research`,
+  description:
+    "Comprehensive peptide research database with 98+ peptides, clinical citations, reconstitution calculator, stack builder, and dosage protocols.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: [
+    { "@type": "Thing", name: "Peptide therapy" },
+    { "@type": "Thing", name: "Retatrutide" },
+    { "@type": "Thing", name: "BPC-157" },
+    { "@type": "Thing", name: "Tesamorelin" },
+    { "@type": "Thing", name: "Tirzepatide" },
+    { "@type": "Thing", name: "GHK-Cu" },
+  ],
+  hasPart: [
+    { "@type": "WebApplication", name: "Reconstitution Calculator", applicationCategory: "HealthApplication" },
+    { "@type": "WebApplication", name: "Stack Builder", applicationCategory: "HealthApplication" },
+    { "@type": "DataCatalog", name: "Peptide Research Library", description: "500+ scientific citations and clinical trial data." },
+  ],
+};
 
 const tools = [
   { icon: Search, title: "Browse 98+ Peptides", desc: "Search and filter our complete research-grade peptide database.", color: "bg-accent/10 text-accent" },
@@ -13,6 +40,8 @@ const tools = [
 export default function ResearchHubPage() {
   return (
     <div className="flex flex-col">
+      <JsonLd data={researchHubSchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Research Hub", href: "/research" }]} />
       {/* Hero */}
       <section className="bg-hero-gradient py-16 sm:py-20">
         <div className="container px-4 text-center">

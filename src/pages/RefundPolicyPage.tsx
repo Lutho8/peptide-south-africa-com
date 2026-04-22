@@ -1,5 +1,26 @@
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+
+const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const refundSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/refund#page`,
+  name: "Refund Policy — Ride The Tide",
+  url: `${SITE_URL}/refund`,
+  description:
+    "Refund eligibility for damaged, lost, or incorrect orders. Research-use products are non-returnable once opened. 2-hour cancellation window.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  about: { "@type": "Thing", name: "Returns & Refunds" },
+};
+
 export default function RefundPolicyPage() {
   return (
+    <>
+      <JsonLd data={refundSchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Refund Policy", href: "/refund" }]} />
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Refund Policy</h1>
@@ -44,5 +65,6 @@ export default function RefundPolicyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

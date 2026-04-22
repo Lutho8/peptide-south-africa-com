@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
 import { products, categories, getProductsByCategory } from "@/data/products";
+
+const SITE_URL = "https://tide-shop-clone.lovable.app";
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,6 +13,21 @@ export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState(initialCat);
 
   const filtered = getProductsByCategory(activeCategory);
+
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `Ride The Tide — ${activeCategory === "All" ? "All Products" : activeCategory}`,
+    description:
+      "Research-grade peptide kits, guides, and bundles including Retatrutide, Tirzepatide, BPC-157, Tesamorelin, and GHK-Cu.",
+    numberOfItems: filtered.length,
+    itemListElement: filtered.slice(0, 20).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/product/${p.slug}`,
+      name: p.name,
+    })),
+  };
 
   const handleCategory = (cat: string) => {
     setActiveCategory(cat);
@@ -20,6 +39,9 @@ export default function ShopPage() {
   };
 
   return (
+    <>
+      <JsonLd data={itemListSchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, ...(activeCategory !== "All" ? [{ label: activeCategory }] : [])]} />
     <div className="container py-12">
       <div className="mb-8">
         <h1 className="font-display text-3xl font-bold text-foreground">Shop All Products</h1>
@@ -56,5 +78,6 @@ export default function ShopPage() {
         </div>
       )}
     </div>
+    </>
   );
 }
