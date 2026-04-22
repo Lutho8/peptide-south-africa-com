@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import CartDrawer from "@/components/CartDrawer";
@@ -40,6 +41,7 @@ const App = () => (
         <BrowserRouter>
           <AgeVerificationModal />
           <DiscountPopup />
+          <AnnouncementBar />
           <Header />
           <CartDrawer />
           <main className="min-h-screen">
