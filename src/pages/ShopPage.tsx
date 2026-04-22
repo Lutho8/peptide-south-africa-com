@@ -1,11 +1,39 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPin, Truck } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import { products, categories, getProductsByCategory } from "@/data/products";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const protocols = [
+  {
+    title: "Fat Loss Protocol",
+    desc: "12-week guided program. Triple-agonist GLP-1 strategy + clinician check-ins.",
+    icon: Flame,
+    href: "/fat-loss-protocol",
+    pill: "Most Popular",
+    accent: "from-primary/15 to-primary/5",
+  },
+  {
+    title: "Recovery & Healing",
+    desc: "BPC-157 + TB-500 stack for tissue repair, injury recovery, and performance.",
+    icon: Activity,
+    href: "/quiz?goal=recovery",
+    pill: "Athlete Favourite",
+    accent: "from-trust/15 to-trust/5",
+  },
+  {
+    title: "Longevity & Aesthetics",
+    desc: "GHK-Cu, Epitalon and growth hormone secretagogues for skin, hair and cellular health.",
+    icon: Sparkles,
+    href: "/quiz?goal=longevity",
+    pill: "New",
+    accent: "from-badge/15 to-badge/5",
+  },
+];
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,43 +69,175 @@ export default function ShopPage() {
   return (
     <>
       <JsonLd data={itemListSchema} />
-      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, ...(activeCategory !== "All" ? [{ label: activeCategory }] : [])]} />
-    <div className="container py-12">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-foreground">Shop All Products</h1>
-        <p className="mt-2 text-muted-foreground">Browse our full catalog of research-grade peptide kits, guides, and bundles.</p>
-      </div>
+      <Breadcrumbs
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Shop", href: "/shop" },
+          ...(activeCategory !== "All" ? [{ label: activeCategory }] : []),
+        ]}
+      />
 
-      {/* Filters */}
-      <div className="mb-8 flex flex-wrap gap-2">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => handleCategory(cat)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
-              activeCategory === cat
-                ? "bg-primary text-primary-foreground"
-                : "border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      {/* ============ HERO ============ */}
+      <section className="border-b border-border bg-card">
+        <div className="container px-4 py-10 md:py-14">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-block rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+              Lab-tested · ≥99% HPLC purity · Shipped from South Africa
+            </span>
+            <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
+              Buy Peptides — or Start a <span className="text-gradient">Guided Protocol</span>.
+            </h1>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+              Every batch is third-party HPLC tested. Every protocol is built by a clinician.
+              Pick a single compound or commit to a full transformation.
+            </p>
 
-      {/* Products Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filtered.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                to="/quiz"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
+              >
+                Find My Protocol <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href="#products"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted sm:w-auto"
+              >
+                Browse Compounds
+              </a>
+            </div>
+          </div>
 
-      {filtered.length === 0 && (
-        <div className="py-20 text-center text-muted-foreground">
-          No products found in this category.
+          {/* Trust strip — directly counters Vril/Peptide Supply credibility */}
+          <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { icon: FlaskConical, label: "≥99% HPLC", sub: "Every batch" },
+              { icon: ShieldCheck, label: "COA on every product", sub: "3rd-party verified" },
+              { icon: MapPin, label: "South Africa based", sub: "Local support" },
+              { icon: Truck, label: "Free shipping > R1,500", sub: "1–3 day dispatch" },
+            ].map((t, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 rounded-xl border border-border bg-background p-3 text-left"
+              >
+                <t.icon className="h-5 w-5 flex-shrink-0 text-primary" />
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-semibold text-foreground">{t.label}</p>
+                  <p className="truncate text-[10px] text-muted-foreground">{t.sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
-    </div>
+      </section>
+
+      {/* ============ PROTOCOLS (Maximus-style) ============ */}
+      <section className="bg-background py-12 md:py-16">
+        <div className="container px-4">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+                Guided Programs
+              </span>
+              <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
+                Start with a Protocol — not a Vial
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Outcomes-led programs that combine the right compounds, dosing schedule, and check-ins.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {protocols.map((p) => (
+              <Link
+                key={p.title}
+                to={p.href}
+                className={`group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${p.accent} p-6 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-1`}
+              >
+                <span className="absolute right-4 top-4 rounded-full bg-background/80 px-2.5 py-0.5 text-[10px] font-semibold text-foreground backdrop-blur">
+                  {p.pill}
+                </span>
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-background shadow-card">
+                  <p.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-foreground">{p.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                  Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CATALOG ============ */}
+      <section id="products" className="border-t border-border bg-card py-12 md:py-16">
+        <div className="container px-4">
+          <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+                Compound Catalog
+              </span>
+              <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
+                {activeCategory === "All" ? "All Research Peptides" : activeCategory}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested
+              </p>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="mb-8 flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleCategory(cat)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                  activeCategory === cat
+                    ? "bg-primary text-primary-foreground shadow-glow"
+                    : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+
+          {filtered.length === 0 && (
+            <div className="py-20 text-center text-muted-foreground">
+              No products found in this category.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ============ CONVERSION CTA ============ */}
+      <section className="bg-hero-gradient py-12">
+        <div className="container px-4 text-center">
+          <h2 className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
+            Not sure which compound is right for you?
+          </h2>
+          <p className="mx-auto mt-2 max-w-lg text-sm text-primary-foreground/80">
+            Take a 2-minute quiz and get a personalized protocol — built around your goal, body and lifestyle.
+          </p>
+          <Link
+            to="/quiz"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-card px-8 py-3.5 font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
+          >
+            Start Free Assessment <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
     </>
   );
 }
