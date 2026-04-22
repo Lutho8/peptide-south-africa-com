@@ -1,5 +1,26 @@
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+
+const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const shippingSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/shipping#page`,
+  name: "Shipping Policy — Ride The Tide",
+  url: `${SITE_URL}/shipping`,
+  description:
+    "Ride The Tide shipping policy: same-day dispatch for orders before 2:00 PM ET, UPS and USPS carriers, tracking, pre-order timelines, and delivery responsibility.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  about: { "@type": "Thing", name: "Shipping & Delivery" },
+};
+
 export default function ShippingPolicyPage() {
   return (
+    <>
+      <JsonLd data={shippingSchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shipping Policy", href: "/shipping" }]} />
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Shipping Policy</h1>

@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+
+const SITE_URL = "https://tide-shop-clone.lovable.app";
+
+const privacySchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/privacy#page`,
+  name: "Privacy Policy — Ride The Tide",
+  url: `${SITE_URL}/privacy`,
+  description:
+    "POPIA-compliant Privacy Policy explaining how Ride The Tide collects, uses, stores, and safeguards personal information of South African users.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  about: { "@type": "Thing", name: "Privacy & Data Protection" },
+};
 
 export default function PrivacyPolicyPage() {
   return (
+    <>
+      <JsonLd data={privacySchema} />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Privacy Policy", href: "/privacy" }]} />
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Privacy Policy</h1>
