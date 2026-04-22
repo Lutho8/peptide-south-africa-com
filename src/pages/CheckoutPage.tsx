@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { Shield, Lock, CheckCircle } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
+import SecurityChecklist from "@/components/SecurityChecklist";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -91,25 +92,30 @@ export default function CheckoutPage() {
           </div>
         </form>
 
-        {/* Order summary */}
-        <div className="rounded-lg border border-border bg-card p-6 h-fit">
-          <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
-          <div className="mt-4 flex flex-col gap-3">
-            {items.map((item) => (
-              <div key={item.product.id} className="flex items-center gap-3">
-                <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{item.product.name}</p>
-                  <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+        {/* Order summary + trust */}
+        <div className="flex flex-col gap-4">
+          <div className="rounded-lg border border-border bg-card p-6 h-fit">
+            <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
+            <div className="mt-4 flex flex-col gap-3">
+              {items.map((item) => (
+                <div key={item.product.id} className="flex items-center gap-3">
+                  <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">{item.product.name}</p>
+                    <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
                 </div>
-                <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="mt-4 border-t border-border pt-4">
+              <div className="flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
+              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{formatZAR(totalPrice)}</span></div>
+            </div>
           </div>
-          <div className="mt-4 border-t border-border pt-4">
-            <div className="flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
-            <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{formatZAR(totalPrice)}</span></div>
-          </div>
+
+          {/* Reduce purchase anxiety */}
+          <SecurityChecklist />
         </div>
       </div>
     </div>

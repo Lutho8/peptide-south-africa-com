@@ -22,6 +22,7 @@ import heroImg5 from "@/assets/funnel-hero-5.jpg";
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
+import ClinicianHero from "@/components/ClinicianHero";
 import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
 
 const results = [
@@ -372,6 +373,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ===================== CLINICIAN ===================== */}
+      <ClinicianHero />
 
       {/* ===================== WHY THIS WORKS ===================== */}
       <section className="border-y border-border bg-card py-16 md:py-20">

@@ -26,6 +26,7 @@ import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
+import ClinicianPage from "@/pages/ClinicianPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/quiz" element={<QuizFunnelPage />} />
               <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
               <Route path="/research" element={<ResearchHubPage />} />
+              <Route path="/clinician" element={<ClinicianPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
