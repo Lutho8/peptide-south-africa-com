@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import { products, categories, getProductsByCategory } from "@/data/products";
+import MediaLogos from "@/components/MediaLogos";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
@@ -130,6 +131,9 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
+
+      {/* ============ AS SEEN IN ============ */}
+      <MediaLogos variant="muted" />
 
       {/* ============ PROTOCOLS (Maximus-style) ============ */}
       <section className="bg-background py-12 md:py-16">
