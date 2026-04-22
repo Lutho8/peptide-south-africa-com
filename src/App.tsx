@@ -28,6 +28,7 @@ import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import LiveActivity from "@/components/LiveActivity";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,7 @@ const App = () => (
           <StickyMobileCTA />
           <CookieConsent />
           <WhatsAppButton />
+          <LiveActivity />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>

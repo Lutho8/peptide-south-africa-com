@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatZAR } from "@/lib/currency";
+import CartCountdown from "@/components/CartCountdown";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
@@ -62,6 +63,7 @@ export default function CartPage() {
 
         {/* Summary */}
         <div className="rounded-lg border border-border bg-card p-6 shadow-card h-fit">
+          <CartCountdown variant="banner" className="mb-4" />
           <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">

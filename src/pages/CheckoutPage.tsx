@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { Shield, Lock, CheckCircle } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
+import CartCountdown from "@/components/CartCountdown";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -38,7 +39,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="container py-12">
-      <h1 className="mb-8 font-display text-3xl font-bold text-foreground">Checkout</h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
+        <CartCountdown variant="compact" />
+      </div>
       <div className="grid gap-8 lg:grid-cols-3">
         <form onSubmit={handleSubmit} className="lg:col-span-2 flex flex-col gap-6">
           {/* Contact */}
