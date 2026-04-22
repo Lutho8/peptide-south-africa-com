@@ -309,10 +309,10 @@ export default function ClinicianPage() {
       <RelatedContent
         title="Continue Exploring"
         links={[
-          { label: "Our Lab Standards & COAs", href: "/about" },
-          { label: "12-Week Fat Loss Protocol", href: "/fat-loss-protocol" },
-          { label: "Peptide Research Hub", href: "/research" },
-          { label: "FAQ", href: "/faq" },
+          { label: "Our Lab Standards & COAs", href: "/about", description: "Third-party HPLC testing, batch tracking and COA archive." },
+          { label: "12-Week Fat Loss Protocol", href: "/fat-loss-protocol", description: "Lutho's flagship guided program for sustainable body recomposition." },
+          { label: "Peptide Research Hub", href: "/research", description: "Reviewed database of 98+ peptides with dosing & literature." },
+          { label: "FAQ", href: "/faq", description: "Common questions on safety, shipping and protocol design." },
         ]}
       />
     </>
