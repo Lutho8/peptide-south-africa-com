@@ -2,6 +2,7 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { formatZAR } from "@/lib/currency";
+import CartCountdown from "@/components/CartCountdown";
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
@@ -59,6 +60,7 @@ export default function CartDrawer() {
             </div>
 
             <div className="border-t border-border p-4">
+              <CartCountdown variant="banner" className="mb-3" />
               <div className="mb-2 flex justify-between text-sm text-muted-foreground">
                 <span>Shipping</span><span className="font-semibold text-trust">Free!</span>
               </div>
