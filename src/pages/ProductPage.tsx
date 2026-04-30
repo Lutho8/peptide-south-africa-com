@@ -69,7 +69,7 @@ export default function ProductPage() {
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        mainEntity: [...product.faqs, ...GLOBAL_FAQS].map(f => ({
+        mainEntity: [...product.faqs, ...globalFaqs].map(f => ({
           "@type": "Question",
           name: f.question,
           acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -224,7 +224,7 @@ export default function ProductPage() {
 
       {/* FAQ — accordion */}
       {(() => {
-        const allFaqs = [...product.faqs, ...GLOBAL_FAQS];
+        const allFaqs = [...product.faqs, ...globalFaqs];
         return (
           <section className="container pb-16">
             <h3 className="mb-6 font-display text-2xl font-bold text-foreground">Frequently Asked Questions</h3>

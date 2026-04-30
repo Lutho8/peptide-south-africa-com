@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { syncToNocobase } from "@/lib/nocobase";
 
 export default function Footer() {
   const { user, isAdmin, signOut } = useAuth();
@@ -11,6 +12,7 @@ export default function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
+      syncToNocobase("lead.upsert", { email, source: "newsletter", stage: "subscriber" });
       setSubscribed(true);
       setEmail("");
     }
@@ -90,7 +92,7 @@ export default function Footer() {
               <Link to="/auth" className="hover:text-foreground">Sign in</Link>
             ) : (
               <>
-                {isAdmin && <Link to="/admin/testimonials" className="hover:text-foreground">Admin</Link>}
+                {isAdmin && <Link to="/admin" className="hover:text-foreground">Admin</Link>}
                 <button onClick={signOut} className="hover:text-foreground">Sign out</button>
               </>
             )}

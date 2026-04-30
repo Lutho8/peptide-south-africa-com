@@ -30,6 +30,9 @@ import ResearchHubPage from "@/pages/ResearchHubPage";
 import ClinicianPage from "@/pages/ClinicianPage";
 import AuthPage from "@/pages/AuthPage";
 import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
+import AdminIndexPage from "@/pages/admin/AdminIndexPage";
+import AdminFAQsPage from "@/pages/admin/AdminFAQsPage";
+import AdminDiscountEligibilityPage from "@/pages/admin/AdminDiscountEligibilityPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
@@ -69,7 +72,10 @@ const App = () => (
                 <Route path="/research" element={<ResearchHubPage />} />
                 <Route path="/clinician" element={<ClinicianPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/admin" element={<AdminIndexPage />} />
                 <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
+                <Route path="/admin/faqs" element={<AdminFAQsPage />} />
+                <Route path="/admin/discounts" element={<AdminDiscountEligibilityPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
