@@ -1,69 +1,103 @@
 ## Goal
-Turn the homepage into a conversion engine. Strip abstract copy, lead with a clear product offer + "Buy Now" CTAs, add a Vril-style cinematic hero background (light mode), insert the real-people testimonial strip, surface the 10% first-order code prominently, and remove the clinician hero block.
 
-## Reference read
-- vrilpeptides.com hero: full-bleed cinematic motion background (subtle slow-pan video / animated gradient), single dominant CTA, minimal copy.
-- Uploaded reference image (5 portraits + 5-star testimonial strip): real customers, friendly, builds instant social proof.
-- Current hero (uploaded screenshot) is too abstract — "Research-grade peptides delivered in 48 hours" + 4 stat tiles + tiny vial. Needs: clearer offer, dominant Buy CTA, motion, social proof.
+Four conversion-focused upgrades:
+1. Accordion FAQs on the product detail page
+2. CMS-backed customer testimonials (admin-editable via Lovable Cloud)
+3. Hero featured product card → cart that opens the cart drawer in place
+4. Auto-apply RIDETHETIDE10 (10% off) for first-order, signed-in customers
 
-## Changes
+---
 
-### 1. New cinematic light-mode hero background
-- **Create** `src/components/HeroBackdrop.tsx` — full-bleed light-mode animated layer using:
-  - Slow-drifting conic + radial gradients (primary teal + soft sky blue) on a near-white base.
-  - A subtle animated SVG molecule / hex grid that slowly pans (CSS `@keyframes` translate, 40s loop).
-  - Optional looping muted MP4/WebM (lab/peptide visuals) at 25% opacity behind the gradient — gracefully degrades to gradient-only if asset missing.
-  - Respects `prefers-reduced-motion`.
-- Forces light surface tones regardless of theme (uses fixed light HSL tokens) so the section feels bright like vrilpeptides but inverted.
+## 1. Product Page — Accordion FAQs
 
-### 2. Rebuild `HeroShop.tsx` for conversion
-- Drop the 4 stat-tile column on the right. Replace with a **product offer card**:
-  - Hero product image (RT3 / best-seller).
-  - Name, ≥99% HPLC pill, ZAR price (strike-through original + discounted with code).
-  - Primary CTA: **"Buy Now"** (full-width, large, gradient) → adds to cart + opens drawer.
-  - Secondary text link: "View all peptides →".
-- Left column trimmed:
-  - Eyebrow trust pill (kept).
-  - Headline shortened: e.g. "Premium Peptides. Shipped in 48h." (less abstract).
-  - One-line subhead with the offer: **"Get 10% off your first order — code RIDETHETIDE10"** in a high-contrast ribbon.
-  - Dual CTAs become: **"Buy Now"** (primary, scrolls to rail / opens shop) + "Find My Protocol" (ghost, smaller).
-  - Compact urgency line (orders/24h + free shipping over R1,500).
-  - 5-star micro proof line (kept).
-- Remove `FloatingVial` import (visual noise; backdrop replaces it). Keep `CursorOrb` only on desktop.
+Replace the static FAQ list at the bottom of `src/pages/ProductPage.tsx` with the existing shadcn `Accordion` component (already in `src/components/ui/accordion.tsx`).
 
-### 3. Real-people social proof strip (from upload)
-- **Create** `src/components/CustomerProofStrip.tsx`:
-  - 5 portrait cards in a row (desktop) / horizontal scroll (mobile).
-  - Centered overlay card with 5 stars + "This changed everything for me" + "— Sarah M., Johannesburg".
-  - Use 5 royalty-free portrait images sourced via `imagegen` (diverse, friendly, SA-relevant) saved to `src/assets/`.
-- Inserted on `HomePage` directly under `FeaturedProductRail` (replaces visual gap left by clinician removal).
+- One `<AccordionItem>` per `product.faqs` entry, all collapsed by default, single-open behavior.
+- Keep the existing `JsonLd` FAQPage schema for SEO unchanged.
+- Add a few global "objection-killer" FAQs (shipping time, COA, returns, payment security, age requirement) appended to every product so even products with sparse FAQ data get strong pre-checkout reassurance.
 
-### 4. 10% offer reinforcement
-- **Edit** `AnnouncementBar.tsx` — make the "RIDETHETIDE10" message the first/sticky message (already exists in rotation; pin it as default).
-- Hero subhead ribbon (above) repeats the code.
-- Add a compact **"Apply 10% off"** chip on every featured product card price row (links to `/shop?code=RIDETHETIDE10`). Edit `FeaturedProductRail.tsx` only — leave shared `ProductCard` untouched.
+---
 
-### 5. "Buy Now" CTAs in key sections
-- **HOW IT WORKS** bottom CTA: change "Get Started" → **"Buy Now"** linking to `/shop`.
-- **THE OFFER** pricing cards: relabel "Start My Protocol" → **"Buy Now — R4,999"**, secondary card → **"Buy Monthly — R1,999"**.
-- **BOTTOM CTA**: change to **"Buy Now"** + keep quiz as secondary tiny link.
-- Sticky mobile CTA (already exists) — verify it reads "Buy Now" and links to `/shop`.
+## 2. CMS-backed Testimonials (Lovable Cloud)
 
-### 6. Remove clinician hero block
-- **Edit** `src/pages/HomePage.tsx` — delete `<ClinicianHero />` and its import. Page route `/clinician` stays (footer link intact).
+### Database (one migration)
+- New table `testimonials`: `name`, `location`, `quote`, `rating` (1–5), `photo_url`, `display_order`, `is_published`.
+- New storage bucket `testimonial-photos` (public read).
+- RLS:
+  - Public can read **published** testimonials.
+  - Only users with `admin` role can insert/update/delete.
+- Add `user_roles` table + `app_role` enum + `has_role()` security-definer function (per project standards).
+- Seed the table with the 5 current portraits + Sarah M. quote so nothing visually changes on first load.
 
-### 7. Light-mode safety
-- The hero backdrop forces a light palette inline — no theme changes elsewhere.
-- Verify text contrast (foreground HSL on near-white) — fall back to navy text inside hero.
+### Frontend
+- Refactor `src/components/CustomerProofStrip.tsx` to fetch from `testimonials` (ordered by `display_order`, only published). Keep current visual design. Falls back gracefully to a skeleton while loading.
+- New admin page `/admin/testimonials`:
+  - Auth-gated; redirects non-admins.
+  - Table view + add/edit modal (name, location, quote, rating slider, photo upload to bucket, published toggle, display order).
+  - Reachable from the footer only when the logged-in user is an admin.
 
-## Files
-- **Create**: `src/components/HeroBackdrop.tsx`, `src/components/CustomerProofStrip.tsx`, ~5 portrait images in `src/assets/`.
-- **Edit**: `src/components/HeroShop.tsx` (major rewrite), `src/pages/HomePage.tsx` (remove clinician, add proof strip, swap CTAs), `src/components/FeaturedProductRail.tsx` (add 10% chip), `src/components/AnnouncementBar.tsx` (pin 10% message).
-- **Untouched**: ProductCard, CartContext, business logic, other pages.
+### Auth
+- Add lightweight email/password + Google sign-in pages (`/auth`) and `/reset-password` since admin needs to log in. No public-facing profile area.
 
-## Acceptance
-- Above-the-fold shows: short headline, 10% offer ribbon, **Buy Now** primary CTA, hero product card with price + Buy Now, animated light backdrop, 5-star micro proof.
-- Real-people testimonial strip appears mid-page, matching the uploaded reference layout.
-- "Buy Now" appears as the dominant CTA in hero, pricing, and final CTA sections.
-- Clinician hero gone from `/`.
-- Light backdrop animates smoothly, disabled under `prefers-reduced-motion`, no mobile jank.
+---
+
+## 3. Hero Card — In-Place Add to Cart
+
+The "Buy Now" button on the hero featured-product card already calls `addToCart(hero)` (which auto-opens the cart drawer). Today the button **also navigates** because of the visible "Buy Now" CTA right next to it doing nothing extra — the experience is fine but the copy is misleading.
+
+Adjustments in `src/components/HeroShop.tsx`:
+- Rename the in-card primary button copy to **"Add to Cart — Save 10%"** and keep `addToCart` behaviour (cart drawer slides open).
+- Add a secondary in-card link **"View details →"** to `/product/{slug}` for users who want more info.
+- Show a small "✓ Added — discount applied" toast confirmation on click via existing `use-toast`.
+- No page navigation occurs from the Add action.
+
+---
+
+## 4. Auto-Applied 10% First-Order Discount
+
+### Logic
+- Extend `CartContext` with: `discountCode`, `discountAmount`, `discountedTotal`, `isDiscountEligible`.
+- Eligibility = signed-in user **AND** they have no prior `orders` row. (We'll add a tiny `orders` table — id, user_id, created_at, total — and write a row on successful checkout completion. Until they have one order, every cart auto-applies `RIDETHETIDE10` at 10% off.)
+- When eligible, the context exposes `discountCode = "RIDETHETIDE10"` and computes `discountedTotal = totalPrice * 0.9`.
+- Anonymous users see the offer banner ("Sign in to auto-apply 10% off") instead of the discount line.
+
+### UI surfaces updated
+- `CartDrawer.tsx` — adds a green "RIDETHETIDE10 applied (−10%)" row above total; total updates live.
+- `CartPage.tsx` — same line in the order summary block.
+- `CheckoutPage.tsx` — pre-fills the promo field, locks it (read-only), shows discounted total.
+- Hero ribbon copy updated: "Sign in to auto-apply 10% off your first order."
+
+### Order tracking
+- New `orders` table with RLS (users see their own).
+- On successful checkout, insert a row so the discount stops applying to subsequent carts for that user.
+
+---
+
+## Files Touched
+
+**Created**
+- `src/pages/AuthPage.tsx`, `src/pages/ResetPasswordPage.tsx`
+- `src/pages/admin/AdminTestimonialsPage.tsx`
+- `src/hooks/useUserRole.ts`, `src/hooks/useFirstOrderDiscount.ts`
+- `src/components/admin/TestimonialForm.tsx`
+
+**Edited**
+- `src/pages/ProductPage.tsx` — accordion FAQs
+- `src/components/CustomerProofStrip.tsx` — fetch from DB
+- `src/components/HeroShop.tsx` — in-place add to cart, copy fix
+- `src/context/CartContext.tsx` — discount fields
+- `src/components/CartDrawer.tsx`, `src/pages/CartPage.tsx`, `src/pages/CheckoutPage.tsx` — show discount
+- `src/components/AnnouncementBar.tsx` — copy update
+- `src/App.tsx` — new routes
+- `src/components/Footer.tsx` — admin link (conditional)
+
+**Migration**
+- `testimonials`, `user_roles`, `app_role` enum, `has_role()` function, `orders` table, RLS policies, `testimonial-photos` storage bucket, seed data.
+
+---
+
+## Open dependency
+
+Implementing #4 requires authentication (email/password + Google). I'll set this up as part of the build. No additional secrets required — Google sign-in works through Lovable Cloud out of the box.
+
+After approval I'll run the database migration first, then implement the frontend in one pass.
