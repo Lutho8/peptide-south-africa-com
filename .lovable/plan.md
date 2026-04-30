@@ -1,63 +1,69 @@
-## Competitive read
-
-**peptides.co.za** — generic banner ("15 Years Experience"), green/black template, no products above the fold, no urgency, weak typography. Easy to beat on credibility + product visibility.
-
-**vrilpeptides.com** — cinematic black-and-white hero, single "SHOP →" CTA, 4 trust stats (Compounds / Purity / Shipping / Pay), then a clean compound grid with PURITY % on every card. Premium aesthetic, no urgency, no protocols, no clinician.
-
-**Our edge to lean into**: HPLC purity % on every card (matches Vril), ZAR pricing, named clinician, guided protocols, urgency + scarcity, live activity — none of which they have.
-
 ## Goal
+Turn the homepage into a conversion engine. Strip abstract copy, lead with a clear product offer + "Buy Now" CTAs, add a Vril-style cinematic hero background (light mode), insert the real-people testimonial strip, surface the 10% first-order code prominently, and remove the clinician hero block.
 
-Replace the current quiz-funnel hero with a **shop-first hero** that puts product, price, purity and a one-click "Add to Cart" above the fold, plus cinematic motion. Conversion elements ship first; creative motion second.
+## Reference read
+- vrilpeptides.com hero: full-bleed cinematic motion background (subtle slow-pan video / animated gradient), single dominant CTA, minimal copy.
+- Uploaded reference image (5 portraits + 5-star testimonial strip): real customers, friendly, builds instant social proof.
+- Current hero (uploaded screenshot) is too abstract — "Research-grade peptides delivered in 48 hours" + 4 stat tiles + tiny vial. Needs: clearer offer, dominant Buy CTA, motion, social proof.
 
-## What the new hero must contain (above the fold, in priority order)
+## Changes
 
-1. **Eyebrow trust bar** — "≥99% HPLC · COA on every batch · Ships from South Africa in 1–3 days"
-2. **Hero headline (shop-led, not funnel-led)** — e.g. *"Research-grade peptides. Delivered in 48 hours."* with gradient accent on the differentiator.
-3. **Sub-line** — single sentence on third-party testing + ZAR pricing transparency.
-4. **Dual CTA** — primary "Shop Peptides →" (to `/shop`), secondary "Find My Protocol" (to `/quiz`). Shop wins visual weight.
-5. **Live trust stat strip** (Vril-style, 4 tiles): Compounds (count from `products.ts`), Purity (≥99% HPLC), Shipping (1–3 days SA), Pay (Card · EFT · Crypto).
-6. **Featured product rail** — horizontally-scrolling card carousel of 4–6 best-sellers (RT3, BPC-157, GLOW Stack, GHK-Cu, Tirzepatide, Tesamorelin) showing image, purity %, ZAR price, and an inline **Add to Cart** button (uses existing `CartContext`). This is the single biggest conversion lift vs. both competitors.
-7. **Urgency ribbon under rail** — "🔥 23 orders in the last 24 hours · Free shipping over R1,500 · Code RIDETHETIDE10 for 10% off first order"
-8. **Mini social proof** — compact star rating ("4.9 / 5 from 1,200+ South African researchers") + 1-line testimonial.
+### 1. New cinematic light-mode hero background
+- **Create** `src/components/HeroBackdrop.tsx` — full-bleed light-mode animated layer using:
+  - Slow-drifting conic + radial gradients (primary teal + soft sky blue) on a near-white base.
+  - A subtle animated SVG molecule / hex grid that slowly pans (CSS `@keyframes` translate, 40s loop).
+  - Optional looping muted MP4/WebM (lab/peptide visuals) at 25% opacity behind the gradient — gracefully degrades to gradient-only if asset missing.
+  - Respects `prefers-reduced-motion`.
+- Forces light surface tones regardless of theme (uses fixed light HSL tokens) so the section feels bright like vrilpeptides but inverted.
 
-## Conversion elements (ship first — P0)
+### 2. Rebuild `HeroShop.tsx` for conversion
+- Drop the 4 stat-tile column on the right. Replace with a **product offer card**:
+  - Hero product image (RT3 / best-seller).
+  - Name, ≥99% HPLC pill, ZAR price (strike-through original + discounted with code).
+  - Primary CTA: **"Buy Now"** (full-width, large, gradient) → adds to cart + opens drawer.
+  - Secondary text link: "View all peptides →".
+- Left column trimmed:
+  - Eyebrow trust pill (kept).
+  - Headline shortened: e.g. "Premium Peptides. Shipped in 48h." (less abstract).
+  - One-line subhead with the offer: **"Get 10% off your first order — code RIDETHETIDE10"** in a high-contrast ribbon.
+  - Dual CTAs become: **"Buy Now"** (primary, scrolls to rail / opens shop) + "Find My Protocol" (ghost, smaller).
+  - Compact urgency line (orders/24h + free shipping over R1,500).
+  - 5-star micro proof line (kept).
+- Remove `FloatingVial` import (visual noise; backdrop replaces it). Keep `CursorOrb` only on desktop.
 
-- Featured product rail with inline Add-to-Cart (no extra page view needed).
-- Live order count / urgency ribbon.
-- Stock-status pill on each featured card ("In stock · ships today" vs "Only 4 left").
-- Sticky "Add to Cart" toast confirmation reusing existing toaster.
-- Persist quiz CTA but demote it visually — the funnel still exists for high-intent buyers; the shop is now the default path.
+### 3. Real-people social proof strip (from upload)
+- **Create** `src/components/CustomerProofStrip.tsx`:
+  - 5 portrait cards in a row (desktop) / horizontal scroll (mobile).
+  - Centered overlay card with 5 stars + "This changed everything for me" + "— Sarah M., Johannesburg".
+  - Use 5 royalty-free portrait images sourced via `imagegen` (diverse, friendly, SA-relevant) saved to `src/assets/`.
+- Inserted on `HomePage` directly under `FeaturedProductRail` (replaces visual gap left by clinician removal).
 
-## Creative / cinematic layer (ship second — P1, must not delay P0)
+### 4. 10% offer reinforcement
+- **Edit** `AnnouncementBar.tsx` — make the "RIDETHETIDE10" message the first/sticky message (already exists in rotation; pin it as default).
+- Hero subhead ribbon (above) repeats the code.
+- Add a compact **"Apply 10% off"** chip on every featured product card price row (links to `/shop?code=RIDETHETIDE10`). Edit `FeaturedProductRail.tsx` only — leave shared `ProductCard` untouched.
 
-- **Cursor-following gradient orb** — soft blurred radial gradient that tracks `mousemove` behind the hero text. Pure CSS transform + `requestAnimationFrame`, no library.
-- **Scroll-driven 3D vial** — a single floating peptide vial in the hero corner that rotates and parallax-shifts on scroll. Implementation choice: lightweight CSS 3D transform tied to `scrollY` (no Three.js) to keep bundle small. If user later wants real 3D, swap to `@react-three/fiber@^8.18` + a low-poly vial.
-- **Cinematic section transitions** — wrap each homepage section in a Framer-Motion `whileInView` fade + slow upward translate (600ms ease-out). Add Framer Motion (`framer-motion`) — already commonly used in the project's animation tokens.
-- **Marquee trust bar** — reuse existing `.marquee` utility for the "AS SEEN IN" / purity claims band right under the hero.
-- **Micro-interactions** — product cards lift + glow on hover (already partially present), CTA button has a subtle sheen sweep.
+### 5. "Buy Now" CTAs in key sections
+- **HOW IT WORKS** bottom CTA: change "Get Started" → **"Buy Now"** linking to `/shop`.
+- **THE OFFER** pricing cards: relabel "Start My Protocol" → **"Buy Now — R4,999"**, secondary card → **"Buy Monthly — R1,999"**.
+- **BOTTOM CTA**: change to **"Buy Now"** + keep quiz as secondary tiny link.
+- Sticky mobile CTA (already exists) — verify it reads "Buy Now" and links to `/shop`.
 
-## Files to change
+### 6. Remove clinician hero block
+- **Edit** `src/pages/HomePage.tsx` — delete `<ClinicianHero />` and its import. Page route `/clinician` stays (footer link intact).
 
-- **Edit** `src/pages/HomePage.tsx` — replace the entire HERO `<section>` (lines ~75–184) with the new shop-first hero. Keep all sections below intact.
-- **Create** `src/components/HeroShop.tsx` — the new hero (headline, CTAs, trust stats, urgency ribbon).
-- **Create** `src/components/FeaturedProductRail.tsx` — horizontal scroll rail with inline Add-to-Cart, pulls from `products.ts` (filter by `tag === "Best Seller"` or a hand-picked id list).
-- **Create** `src/components/CursorOrb.tsx` — cursor-tracking gradient blob, mounted inside HeroShop, `pointer-events-none`, hidden on mobile + when `prefers-reduced-motion`.
-- **Create** `src/components/FloatingVial.tsx` — scroll-parallax 3D-transformed vial in hero corner (CSS-only, hidden on mobile).
-- **Create** `src/components/SectionReveal.tsx` — reusable Framer-Motion wrapper for cinematic section entrances; apply to existing HomePage sections.
-- **Edit** `src/index.css` — add 1–2 keyframes (sheen sweep on primary CTA, slow gradient drift behind hero) and a `prefers-reduced-motion` guard.
-- **Add dep** `framer-motion` (latest compatible with React 18).
+### 7. Light-mode safety
+- The hero backdrop forces a light palette inline — no theme changes elsewhere.
+- Verify text contrast (foreground HSL on near-white) — fall back to navy text inside hero.
 
-## Out of scope
-
-- Three.js / @react-three/fiber (defer until user explicitly wants real 3D — CSS approach ships faster and avoids ~150KB bundle).
-- Touching ProductCard, CartContext, or any business logic.
-- Other pages (Shop, Product, Checkout) — homepage hero only.
+## Files
+- **Create**: `src/components/HeroBackdrop.tsx`, `src/components/CustomerProofStrip.tsx`, ~5 portrait images in `src/assets/`.
+- **Edit**: `src/components/HeroShop.tsx` (major rewrite), `src/pages/HomePage.tsx` (remove clinician, add proof strip, swap CTAs), `src/components/FeaturedProductRail.tsx` (add 10% chip), `src/components/AnnouncementBar.tsx` (pin 10% message).
+- **Untouched**: ProductCard, CartContext, business logic, other pages.
 
 ## Acceptance
-
-- Above-the-fold on 1090×732 (current viewport) shows: headline, dual CTA, 4 trust stats, and the first 2–3 featured product cards with prices + Add-to-Cart.
-- Clicking Add-to-Cart on the rail adds the item via existing CartContext and opens the cart drawer.
-- Cursor orb tracks mouse on desktop, disabled on mobile + reduced-motion.
-- All sections fade-up on scroll into view.
-- No regressions on mobile (rail becomes swipeable, vial + orb hidden, CTAs stack).
+- Above-the-fold shows: short headline, 10% offer ribbon, **Buy Now** primary CTA, hero product card with price + Buy Now, animated light backdrop, 5-star micro proof.
+- Real-people testimonial strip appears mid-page, matching the uploaded reference layout.
+- "Buy Now" appears as the dominant CTA in hero, pricing, and final CTA sections.
+- Clinician hero gone from `/`.
+- Light backdrop animates smoothly, disabled under `prefers-reduced-motion`, no mobile jank.
