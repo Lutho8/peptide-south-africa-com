@@ -1,115 +1,100 @@
 ## Goal
-Ship four conversion-and-ops upgrades:
-1. Admin "Discount Eligibility" panel that explains, per logged-in user, exactly why `RIDETHETIDE10` does or doesn't apply.
-2. CMS-backed Global Product FAQs editable from `/admin`.
-3. Robust fallback avatar for testimonials when the photo URL is missing or fails to load.
-4. Scaffold full Nocobase CRM sync (newsletter, discount popup, quiz, signup, abandoned cart, orders) — placeholder credentials, ready to plug in.
+
+Tighten conversion across five touchpoints: standardize CRM tagging, send a single, personalized abandoned-cart reminder, surface stock urgency honestly, treat product variants as distinct cart lines, and reinforce trust on checkout.
 
 ---
 
-## 1. Discount Eligibility Admin Panel
-New page at `/admin/discounts` (admin-gated like testimonials).
+## 1. Nocobase tagging & lifecycle rules
 
-UI:
-- Search box: enter user email → look up via a new edge function `admin-discount-eligibility` (calls `auth.admin.getUserByEmail`, then counts rows in `orders`).
-- Result card shows, in plain English:
-  - ✅/❌ User exists
-  - ✅/❌ Logged in (always true if found)
-  - ✅/❌ No prior orders (`orders` count = 0)
-  - Final verdict: **Eligible for `RIDETHETIDE10`** or **Not eligible — reason: already has N orders**.
-- Recent-orders mini table for context.
+Centralize tag/stage logic in `src/lib/nocobase.ts` so every call site sends consistent data.
 
-Why edge function: `auth.admin.*` requires the service-role key, which must stay server-side. Function validates caller is admin via `has_role()` before responding.
+- Add `LeadSource` type: `"newsletter" | "discount_popup" | "quiz" | "signup" | "cart_abandoned" | "order"`.
+- Add `tagsForSource(source)` and `stageForSource(source)`:
+  - newsletter → stage `subscriber`, tags `["newsletter"]`
+  - discount_popup → stage `lead`, tags `["discount_popup", "first_order_discount"]`
+  - quiz → stage `quiz_completed`, tags `["quiz", "<quiz.goal>"]`
+  - signup → stage `account_created`, tags `["signup"]`
+  - cart_abandoned → stage `cart_abandoner`, tags `["cart", "abandoned_24h"]` (+ `"discount_eligible"` when applicable)
+  - order → stage `customer` (or `repeat_customer` if `is_repeat`), tags `["purchase"]`
+- New helper `captureLead({ email, source, extra })` that wraps `syncToNocobase("lead.upsert", …)` with the canonical stage + tags merged with `extra`.
+- Update Footer, DiscountPopup, QuizFunnelPage, useAuth signup hook, CheckoutPage, and the abandoned-cart edge function to call the helper instead of building payloads inline.
+- In `nocobase-sync` edge function: stop overwriting `stage` when caller already sent one; only fill defaults when missing. Keep collection routing as-is.
 
-Add link card on `/admin` index (also new — small landing page listing Testimonials, FAQs, Discount Eligibility).
+## 2. Abandoned-cart: once per cart + personalized offer
 
----
+- Add `cart_signature` (text) to `cart_snapshots` (sha-1 of sorted product_id+qty list) and `discount_pct` (numeric, default 0). Migration only — no data backfill needed.
+- In `CartContext`, compute the signature client-side and include it in the upsert. When items change, if signature differs from last snapshot, the upsert resets `notified_at` to null so a new cart triggers a new reminder; if signature is the same, leave `notified_at` untouched (prevents repeat reminders for the same cart).
+- In `nocobase-abandoned-cart` edge function:
+  - Filter only `notified_at IS NULL` and `updated_at < now() - 24h` (already done).
+  - For each snapshot, check eligibility: count `orders` for that user. If zero → set `discount_pct = 10` and tag `discount_eligible`; else `0` and tag `repeat_customer_recovery`.
+  - Push to Nocobase with `{ discount_code: "RIDETHETIDE10" | null, discount_pct, items, subtotal, projected_total }`.
+  - Always stamp `notified_at` after push so the same cart never fires twice.
 
-## 2. CMS-Backed Global Product FAQs
-New table `product_faqs` (question, answer, display_order, is_published, scope `'global' | 'product'`, optional `product_slug`).
+## 3. Stock levels with low-stock messaging
 
-- RLS: anyone reads published rows; admin role full CRUD.
-- Seed migration inserts the current hard-coded global FAQs (shipping, COAs, security, etc.) so nothing visibly changes on launch.
+- Extend `Product` interface in `src/data/products.ts`:
+  - `stock?: number` (units remaining; omit/`null` means "in stock, no count shown").
+  - Keep existing `inStock` for pre-order vs in-stock state.
+- Seed realistic stock counts on each in-stock product (e.g. RT3 12, GHK-Cu 8, Tesamorelin 5, GLOW70 18). Pre-order items keep `inStock: false` and no stock number.
+- New `<StockBadge product />` component with three states:
+  - `inStock === false` → "Pre-Order — Reserve Yours"
+  - `stock <= 5` → orange/amber "Only {n} left in stock" (urgency, but truthful).
+  - `stock > 5` or undefined → existing green "In Stock" pill.
+- Use it in `ProductCard` (replaces current pill) and on `ProductPage` (above the Add-to-Cart button).
+- No fake countdowns; no decreasing stock on view. Numbers come from the product data file so the user can edit them.
 
-Frontend:
-- New `/admin/faqs` page — same shape as Testimonials admin (list + form, drag-free order field, publish toggle, scope dropdown).
-- `ProductPage.tsx` swaps its hard-coded global FAQ array for a `useQuery` against `product_faqs` where `scope='global' AND is_published=true`, ordered by `display_order`. Product-specific FAQs from `products.ts` stay where they are (those are tied to product data, not editorial copy).
+## 4. Variant-aware cart & checkout
 
----
+Variants currently mutate `product.price` before adding, so two different MG sizes of the same product collapse into one cart row. Fix by keying cart items on a composite id.
 
-## 3. Testimonial Fallback Avatar
-Create `<Avatar />` helper in `CustomerProofStrip.tsx` (and reuse on the testimonial admin list):
-- If `photo_url` is missing → render initials chip (first letter of name on navy/teal gradient).
-- If `photo_url` is present but `<img onError>` fires → swap to the same initials chip.
-- Component is presentation-only, no DB changes.
+- Change `CartItem` in `CartContext`:
+  ```ts
+  interface CartItem {
+    product: Product;
+    variantLabel?: string;    // e.g. "10mg"
+    unitPrice: number;        // resolved at add-time
+    quantity: number;
+    lineId: string;           // `${product.id}::${variantLabel ?? "default"}`
+  }
+  ```
+- `addToCart(product, { variantLabel, unitPrice })`: dedupe by `lineId`. Update all callers:
+  - `ProductPage` passes the selected variant.
+  - `ProductCard` and `HeroShop` pass `undefined` for products without variants, or the first variant if one exists (with a "Select size" link to the PDP for multi-variant items, instead of silently picking).
+  - `removeFromCart`/`updateQuantity` switch from `productId` to `lineId`.
+- Show variant label in `CartDrawer`, `CartPage`, `CheckoutPage` order summary, and the order payload sent to Nocobase + `orders` table (extend the items JSON with `variant_label`).
+- Subtotal/discount math uses `unitPrice * quantity` instead of `product.price`.
 
----
+## 5. Checkout trust badges & guarantees
 
-## 4. Nocobase CRM Integration Scaffold
-Since you don't have Nocobase set up yet, this lays the rails so plugging in credentials later is a 1-minute job.
-
-### Secrets (placeholders, you fill later)
-Add three runtime secrets via the secrets tool: `NOCOBASE_BASE_URL`, `NOCOBASE_API_TOKEN`, `NOCOBASE_WEBHOOK_SECRET`.
-
-### Edge function: `nocobase-sync`
-Single function with action-based payload (`action: "lead.upsert" | "order.created" | "quiz.completed" | "cart.abandoned"`). Each action POSTs to the matching Nocobase collection endpoint. Function no-ops gracefully (logs + returns 200) when secrets are blank, so the app never breaks pre-setup.
-
-### Lead capture wiring
-| Source | Trigger | Payload to Nocobase |
-|---|---|---|
-| Newsletter (footer) | submit | email, source=`newsletter`, stage=`subscriber` |
-| Discount popup | submit | email, source=`discount_popup`, stage=`subscriber`, tag=`first_order_discount` |
-| Quiz `/quiz` | final step | email, answers JSON, AI protocol summary, stage=`quiz_completed` |
-| Account signup | `onAuthStateChange SIGNED_UP` | user_id, email, stage=`registered` |
-| Order placed | checkout success | user_id, email, line items, total, stage=`first_purchase`/`repeat` |
-
-### Abandoned cart
-- New table `cart_snapshots` (user_id, items jsonb, subtotal, updated_at).
-- `CartContext` upserts a snapshot for logged-in users on every cart change (debounced).
-- Scheduled edge function `nocobase-abandoned-cart` runs hourly via `pg_cron`: finds snapshots > 24h old with no matching order in that window → sends `cart.abandoned` event to Nocobase, then marks the snapshot as notified.
-
-### Lifecycle stage stamping
-Helper `computeLifecycleStage(user)` on the server (in `nocobase-sync`) reads `orders` count to decide `subscriber → quiz_completed → first_purchase → repeat`. Every sync call recomputes and includes `stage` so your Nocobase workflows can trigger on stage transitions.
-
-### Admin visibility
-Add a small "Nocobase status" card on `/admin` landing page showing whether secrets are configured + last sync timestamp + last error (read from a new tiny `integration_logs` table the function writes to).
-
-### Setup checklist (delivered as `NOCOBASE_SETUP.md`)
-Step-by-step: spin up Nocobase, create collections (`leads`, `orders`, `quiz_responses`, `cart_events`) with required fields, generate API token, paste into Lovable secrets, done.
+- New `<CheckoutTrustBar />` component placed directly above the Place Order button:
+  - Row of badges: Visa / Mastercard / Amex / Discover icons (lucide `CreditCard` placeholder + simple SVG marks), "Secured by 256-bit SSL", "PCI-DSS Compliant".
+  - Three guarantee tiles below: "Free Shipping over R1000", "Same-Day Dispatch (orders before 2pm)", "30-Day Money-Back Guarantee".
+- Keep the existing `SecurityChecklist` in the right column; the new bar reinforces inside the form where the eye lands before submit.
+- Add "Discreet packaging" + "Tracked courier (Aramex/Pep)" microcopy under shipping address block.
 
 ---
 
-## Files to create
-- `src/pages/admin/AdminIndexPage.tsx`
-- `src/pages/admin/AdminDiscountEligibilityPage.tsx`
-- `src/pages/admin/AdminFAQsPage.tsx`
-- `src/components/Avatar.tsx`
-- `supabase/functions/admin-discount-eligibility/index.ts`
-- `supabase/functions/nocobase-sync/index.ts`
-- `supabase/functions/nocobase-abandoned-cart/index.ts`
-- `src/lib/nocobase.ts` (client-side invoker)
-- `NOCOBASE_SETUP.md`
+## Technical details
 
-## Files to edit
-- `src/App.tsx` — new admin routes
-- `src/components/CustomerProofStrip.tsx` — use Avatar
-- `src/pages/ProductPage.tsx` — fetch global FAQs from DB
-- `src/components/Footer.tsx` — wire newsletter to nocobase-sync
-- `src/components/DiscountPopup.tsx` (or wherever it lives) — wire to nocobase-sync
-- `src/pages/QuizPage.tsx` — fire quiz.completed
-- `src/hooks/useAuth.tsx` — fire lead.upsert on SIGNED_UP
-- `src/pages/CheckoutPage.tsx` — fire order.created
-- `src/context/CartContext.tsx` — upsert cart_snapshots
+- **Migration**: `ALTER TABLE cart_snapshots ADD COLUMN cart_signature text, ADD COLUMN discount_pct numeric NOT NULL DEFAULT 0;` plus an index on `(notified_at, updated_at)` to keep the hourly sweep cheap.
+- **Edge function update**: `nocobase-abandoned-cart` queries `orders` via service-role client (already does) to determine eligibility before push.
+- **No DB schema needed** for stock — data file is the single source of truth so the user can edit without migrations. (If they later want CMS-managed stock we can move it to Lovable Cloud.)
+- **Cart line keying** is the trickiest change; we'll keep one `addToCart` signature with an optional second arg so existing single-product calls keep working at the type level.
 
-## Migrations
-- `product_faqs` table + seed
-- `cart_snapshots` table
-- `integration_logs` table
-- `pg_cron` schedule for abandoned-cart sweep
+## Files
 
-## Order of implementation
-1. Migrations (FAQs, cart snapshots, logs)
-2. Avatar fallback (smallest, instant value)
-3. FAQ admin + ProductPage swap
-4. Discount eligibility edge function + admin page
-5. Nocobase scaffold (secrets prompt → edge functions → wiring → cron → docs)
+**Edit**
+- `src/lib/nocobase.ts` — add helper, source/stage/tag maps
+- `src/components/Footer.tsx`, `src/components/DiscountPopup.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/hooks/useAuth.tsx`, `src/pages/CheckoutPage.tsx` — switch to helper
+- `src/data/products.ts` — add `stock` field + seed values
+- `src/components/ProductCard.tsx`, `src/pages/ProductPage.tsx` — use `StockBadge`, pass variant on add
+- `src/context/CartContext.tsx` — variant-aware lines, signature snapshot
+- `src/components/CartDrawer.tsx`, `src/pages/CartPage.tsx`, `src/pages/CheckoutPage.tsx` — show variant + line keying
+- `src/components/HeroShop.tsx` — multi-variant products link to PDP instead of silent add
+- `supabase/functions/nocobase-abandoned-cart/index.ts` — eligibility + once-only logic
+- `supabase/functions/nocobase-sync/index.ts` — preserve caller-supplied stage
+
+**Create**
+- `src/components/StockBadge.tsx`
+- `src/components/CheckoutTrustBar.tsx`
+- `supabase/migrations/<timestamp>_cart_snapshots_signature.sql`
