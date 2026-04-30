@@ -162,6 +162,17 @@ export default function QuizFunnelPage() {
       if (!data?.protocol) throw new Error("No protocol received");
 
       setAiProtocol(data.protocol);
+
+      // Push to Nocobase CRM
+      const { syncToNocobase } = await import("@/lib/nocobase");
+      syncToNocobase("quiz.completed", {
+        name: lead.name,
+        email: lead.email,
+        whatsapp: lead.whatsapp,
+        answers,
+        protocol_summary: data.protocol?.summary ?? null,
+        stage: "quiz_completed",
+      });
     } catch (err) {
       console.error("Protocol generation error:", err);
       setError(err instanceof Error ? err.message : "Failed to generate your protocol. Please try again.");

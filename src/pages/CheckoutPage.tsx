@@ -46,6 +46,24 @@ export default function CheckoutPage() {
         discount_code: discountCode,
       });
       await refreshOrders();
+      // Clear abandoned cart snapshot now that order is placed
+      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      // Push order to Nocobase
+      const { syncToNocobase } = await import("@/lib/nocobase");
+      syncToNocobase("order.created", {
+        user_id: user.id,
+        email: user.email,
+        items: items.map((i) => ({
+          product_id: i.product.id,
+          name: i.product.name,
+          quantity: i.quantity,
+          price: i.product.price,
+        })),
+        subtotal,
+        discount_code: discountCode,
+        discount_amount: discountAmount,
+        total: totalPrice,
+      });
     }
     clearCart();
     setSubmitted(true);

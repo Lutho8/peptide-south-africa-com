@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          items: Json
+          notified_at: string | null
+          subtotal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items?: Json
+          notified_at?: string | null
+          subtotal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: Json
+          notified_at?: string | null
+          subtotal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      integration_logs: {
+        Row: {
+          action: string
+          created_at: string
+          error: string | null
+          id: string
+          integration: string
+          payload: Json | null
+          status: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          integration: string
+          payload?: Json | null
+          status: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          integration?: string
+          payload?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -35,6 +95,42 @@ export type Database = {
           id?: string
           total?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      product_faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          display_order: number
+          id: string
+          is_published: boolean
+          product_slug: string | null
+          question: string
+          scope: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          product_slug?: string | null
+          question: string
+          scope?: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          product_slug?: string | null
+          question?: string
+          scope?: string
+          updated_at?: string
         }
         Relationships: []
       }
