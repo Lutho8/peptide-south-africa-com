@@ -138,6 +138,27 @@
     50% { translate: 0 -12px; }
   }
 
+  @keyframes backdrop-drift {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(-2%, 1%, 0) scale(1.05); }
+  }
+  @keyframes orb-float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -20px); }
+  }
+  @keyframes orb-float-2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-40px, 30px); }
+  }
+  @keyframes molecule-pan {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-56px, -64px); }
+  }
+  @keyframes shimmer-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .marquee, [style*="vial-float"] { animation: none !important; }
   }
