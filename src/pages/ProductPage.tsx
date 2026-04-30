@@ -59,17 +59,15 @@ export default function ProductPage() {
   return (
     <div>
       <JsonLd data={productSchema(product)} />
-      {product.faqs.length > 0 && (
-        <JsonLd data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: product.faqs.map(f => ({
-            "@type": "Question",
-            name: f.question,
-            acceptedAnswer: { "@type": "Answer", text: f.answer },
-          })),
-        }} />
-      )}
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [...product.faqs, ...GLOBAL_FAQS].map(f => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }} />
       <Breadcrumbs crumbs={[
         { label: "Home", href: "/" },
         { label: "Shop", href: "/shop" },
