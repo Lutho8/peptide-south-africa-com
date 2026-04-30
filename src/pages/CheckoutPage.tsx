@@ -103,6 +103,10 @@ export default function CheckoutPage() {
               <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               <input required defaultValue="South Africa" placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
+            <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <PackageCheck className="h-3.5 w-3.5 text-trust" />
+              Discreet, unbranded packaging · Tracked courier (Aramex / PEP Paxi)
+            </p>
           </div>
 
           {/* Discount field */}
@@ -136,6 +140,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          <CheckoutTrustBar />
+
           <button
             type="submit"
             disabled={busy}
@@ -154,13 +160,16 @@ export default function CheckoutPage() {
             <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
             <div className="mt-4 flex flex-col gap-3">
               {items.map((item) => (
-                <div key={item.product.id} className="flex items-center gap-3">
+                <div key={item.lineId} className="flex items-center gap-3">
                   <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{item.product.name}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {item.product.name}
+                      {item.variantLabel && <span className="ml-1 text-muted-foreground">· {item.variantLabel}</span>}
+                    </p>
                     <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
+                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
                 </div>
               ))}
             </div>
