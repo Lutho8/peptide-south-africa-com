@@ -163,15 +163,19 @@ export default function QuizFunnelPage() {
 
       setAiProtocol(data.protocol);
 
-      // Push to Nocobase CRM
-      const { syncToNocobase } = await import("@/lib/nocobase");
-      syncToNocobase("quiz.completed", {
-        name: lead.name,
+      // Push to Nocobase CRM with quiz tags + goal
+      const { captureLead } = await import("@/lib/nocobase");
+      const goalTag = answers.goal ? [`goal:${answers.goal}`] : [];
+      captureLead({
+        source: "quiz",
         email: lead.email,
-        whatsapp: lead.whatsapp,
-        answers,
-        protocol_summary: data.protocol?.summary ?? null,
-        stage: "quiz_completed",
+        extraTags: goalTag,
+        extra: {
+          name: lead.name,
+          whatsapp: lead.whatsapp,
+          answers,
+          protocol_summary: data.protocol?.summary ?? null,
+        },
       });
     } catch (err) {
       console.error("Protocol generation error:", err);

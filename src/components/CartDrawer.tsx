@@ -36,20 +36,23 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto p-4">
               <div className="flex flex-col gap-4">
                 {items.map((item) => (
-                  <div key={item.product.id} className="flex gap-4 rounded-lg border border-border p-3">
+                  <div key={item.lineId} className="flex gap-4 rounded-lg border border-border p-3">
                     <img src={item.product.image} alt={item.product.name} className="h-20 w-20 rounded-md object-cover" />
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
-                      <span className="text-sm font-bold text-primary">{formatZAR(item.product.price)}</span>
+                      {item.variantLabel && (
+                        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{item.variantLabel}</span>
+                      )}
+                      <span className="text-sm font-bold text-primary">{formatZAR(item.unitPrice)}</span>
                       <div className="mt-auto flex items-center gap-2">
-                        <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
+                        <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
                           <Minus className="h-3 w-3" />
                         </button>
                         <span className="min-w-[2ch] text-center text-sm font-medium">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="rounded-md border border-border p-1 hover:bg-muted">
+                        <button onClick={() => updateQuantity(item.lineId, item.quantity + 1)} className="rounded-md border border-border p-1 hover:bg-muted">
                           <Plus className="h-3 w-3" />
                         </button>
-                        <button onClick={() => removeFromCart(item.product.id)} className="ml-auto text-xs text-destructive hover:underline">
+                        <button onClick={() => removeFromCart(item.lineId)} className="ml-auto text-xs text-destructive hover:underline">
                           Remove
                         </button>
                       </div>

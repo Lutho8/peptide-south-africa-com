@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { syncToNocobase } from "@/lib/nocobase";
+import { captureLead } from "@/lib/nocobase";
 
 export default function Footer() {
   const { user, isAdmin, signOut } = useAuth();
@@ -12,7 +12,7 @@ export default function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      syncToNocobase("lead.upsert", { email, source: "newsletter", stage: "subscriber" });
+      captureLead({ source: "newsletter", email });
       setSubscribed(true);
       setEmail("");
     }

@@ -16,7 +16,9 @@ export type Database = {
     Tables: {
       cart_snapshots: {
         Row: {
+          cart_signature: string | null
           created_at: string
+          discount_pct: number
           id: string
           items: Json
           notified_at: string | null
@@ -25,7 +27,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cart_signature?: string | null
           created_at?: string
+          discount_pct?: number
           id?: string
           items?: Json
           notified_at?: string | null
@@ -34,7 +38,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cart_signature?: string | null
           created_at?: string
+          discount_pct?: number
           id?: string
           items?: Json
           notified_at?: string | null

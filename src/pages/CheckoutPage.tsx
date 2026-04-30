@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, CheckCircle, Tag } from "lucide-react";
+import { Shield, Lock, CheckCircle, Tag, PackageCheck } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
+import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CheckoutPage() {
@@ -49,21 +50,27 @@ export default function CheckoutPage() {
       // Clear abandoned cart snapshot now that order is placed
       await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
       // Push order to Nocobase
-      const { syncToNocobase } = await import("@/lib/nocobase");
+      const { syncToNocobase, captureLead } = await import("@/lib/nocobase");
+      const itemsPayload = items.map((i) => ({
+        product_id: i.product.id,
+        name: i.product.name,
+        variant_label: i.variantLabel ?? null,
+        quantity: i.quantity,
+        price: i.unitPrice,
+      }));
       syncToNocobase("order.created", {
         user_id: user.id,
         email: user.email,
-        items: items.map((i) => ({
-          product_id: i.product.id,
-          name: i.product.name,
-          quantity: i.quantity,
-          price: i.product.price,
-        })),
+        items: itemsPayload,
         subtotal,
         discount_code: discountCode,
         discount_amount: discountAmount,
         total: totalPrice,
+        stage: "customer",
+        tags: ["purchase"],
       });
+      // Also upsert the lead so CRM lifecycle stage moves to "customer".
+      captureLead({ source: "order", email: user.email, extra: { user_id: user.id, total: totalPrice } });
     }
     clearCart();
     setSubmitted(true);
@@ -96,6 +103,10 @@ export default function CheckoutPage() {
               <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               <input required defaultValue="South Africa" placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
+            <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <PackageCheck className="h-3.5 w-3.5 text-trust" />
+              Discreet, unbranded packaging · Tracked courier (Aramex / PEP Paxi)
+            </p>
           </div>
 
           {/* Discount field */}
@@ -129,6 +140,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          <CheckoutTrustBar />
+
           <button
             type="submit"
             disabled={busy}
@@ -147,13 +160,16 @@ export default function CheckoutPage() {
             <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
             <div className="mt-4 flex flex-col gap-3">
               {items.map((item) => (
-                <div key={item.product.id} className="flex items-center gap-3">
+                <div key={item.lineId} className="flex items-center gap-3">
                   <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{item.product.name}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {item.product.name}
+                      {item.variantLabel && <span className="ml-1 text-muted-foreground">· {item.variantLabel}</span>}
+                    </p>
                     <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.product.price * item.quantity)}</span>
+                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
                 </div>
               ))}
             </div>
