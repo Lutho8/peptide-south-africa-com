@@ -68,6 +68,7 @@ export const products: Product[] = [
       { question: "How should I store this?", answer: "Refrigerate after reconstitution. Store lyophilized powder at -20°C." },
     ],
     inStock: true,
+    stock: 12,
   },
   {
     id: "2",
@@ -89,6 +90,7 @@ export const products: Product[] = [
       { question: "Is the COA publicly available?", answer: "Yes, every product page includes a direct link to the Certificate of Analysis." },
     ],
     inStock: true,
+    stock: 8,
   },
   {
     id: "3",
@@ -110,6 +112,7 @@ export const products: Product[] = [
       { question: "What category does Tesamorelin fall under?", answer: "It's classified as a GHRH analog, targeting the growth hormone axis." },
     ],
     inStock: true,
+    stock: 4,
   },
   {
     id: "4",
@@ -209,6 +212,7 @@ export const products: Product[] = [
       { question: "What makes GLOW70 different from GHK-Cu?", answer: "GLOW70 is a multi-peptide complex targeting broader skin health pathways beyond copper peptide mechanisms." },
     ],
     inStock: true,
+    stock: 18,
   },
   {
     id: "8",
