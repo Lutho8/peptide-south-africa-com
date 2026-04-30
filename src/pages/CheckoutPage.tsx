@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, CheckCircle, Tag } from "lucide-react";
+import { Shield, Lock, CheckCircle, Tag, PackageCheck } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
+import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CheckoutPage() {
@@ -49,21 +50,27 @@ export default function CheckoutPage() {
       // Clear abandoned cart snapshot now that order is placed
       await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
       // Push order to Nocobase
-      const { syncToNocobase } = await import("@/lib/nocobase");
+      const { syncToNocobase, captureLead } = await import("@/lib/nocobase");
+      const itemsPayload = items.map((i) => ({
+        product_id: i.product.id,
+        name: i.product.name,
+        variant_label: i.variantLabel ?? null,
+        quantity: i.quantity,
+        price: i.unitPrice,
+      }));
       syncToNocobase("order.created", {
         user_id: user.id,
         email: user.email,
-        items: items.map((i) => ({
-          product_id: i.product.id,
-          name: i.product.name,
-          quantity: i.quantity,
-          price: i.product.price,
-        })),
+        items: itemsPayload,
         subtotal,
         discount_code: discountCode,
         discount_amount: discountAmount,
         total: totalPrice,
+        stage: "customer",
+        tags: ["purchase"],
       });
+      // Also upsert the lead so CRM lifecycle stage moves to "customer".
+      captureLead({ source: "order", email: user.email, extra: { user_id: user.id, total: totalPrice } });
     }
     clearCart();
     setSubmitted(true);
