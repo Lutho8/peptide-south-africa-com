@@ -29,6 +29,8 @@ export interface Product {
   howItWorks: string[];
   faqs: { question: string; answer: string }[];
   inStock: boolean;
+  /** Units remaining. Omit/undefined = "in stock" with no count shown. */
+  stock?: number;
   variants?: Variant[];
   purity?: string;
   storage?: string;
