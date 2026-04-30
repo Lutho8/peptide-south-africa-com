@@ -5,21 +5,17 @@ import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatZAR } from "@/lib/currency";
 import JsonLd from "@/components/JsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { supabase } from "@/integrations/supabase/client";
 
-const GLOBAL_FAQS = [
-  { question: "How fast does it ship?", answer: "Orders placed before 2pm SAST ship same day. Most South African addresses receive their order within 1–3 business days via tracked courier." },
-  { question: "Is a Certificate of Analysis (COA) included?", answer: "Yes — every batch is third-party HPLC tested and a COA is included with your order. You can also request a digital copy via email." },
-  { question: "Is my payment information secure?", answer: "All transactions are SSL encrypted and processed by PCI-compliant gateways. We never store your card details." },
-  { question: "What's your return policy?", answer: "Unopened products can be returned within 14 days for a full refund. Opened research compounds are non-refundable for safety reasons." },
-  { question: "Do I need to be 18+ to order?", answer: "Yes. All purchases require age verification. Products are sold strictly for research purposes only." },
-];
+interface CmsFaq { question: string; answer: string }
+
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +23,17 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("product_faqs")
+      .select("question, answer")
+      .eq("scope", "global")
+      .eq("is_published", true)
+      .order("display_order")
+      .then(({ data }) => setGlobalFaqs(data ?? []));
+  }, []);
 
   if (!product) {
     return (
