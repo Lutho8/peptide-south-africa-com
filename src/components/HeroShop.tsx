@@ -59,10 +59,11 @@ export default function HeroShop() {
         >
           <Tag className="h-4 w-4" />
           <span>
-            Get <span className="font-bold">10% off your first order</span> · code{" "}
-            <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">
-              RIDETHETIDE10
-            </span>
+            {eligible
+              ? <>Your <span className="font-bold">10% off</span> is auto-applied · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>
+              : user
+                ? <>Welcome back · use code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span> on select items</>
+                : <><Link to="/auth" className="underline underline-offset-2 hover:opacity-90">Sign in</Link> to auto-apply <span className="font-bold">10% off your first order</span> · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>}
           </span>
         </motion.div>
 
