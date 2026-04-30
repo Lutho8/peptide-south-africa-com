@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function StickyMobileCTA() {
@@ -21,10 +21,10 @@ export default function StickyMobileCTA() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 p-3 backdrop-blur-lg md:hidden">
       <Link
-        to="/quiz"
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3.5 text-base font-semibold text-primary-foreground shadow-glow transition-all active:scale-95"
+        to="/shop"
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow transition-all active:scale-95"
       >
-        Get Started <ArrowRight className="h-4 w-4" />
+        <ShoppingCart className="h-4 w-4" /> Buy Now <ArrowRight className="h-4 w-4" />
       </Link>
     </div>
   );
