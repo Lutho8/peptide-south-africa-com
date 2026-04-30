@@ -60,9 +60,9 @@ Deno.serve(async (req) => {
 
   const payload = body.payload ?? {};
 
-  // Stamp lifecycle stage if not provided
-  if (!("stage" in payload)) {
-    if (action === "order.created") payload.stage = "first_purchase";
+  // Stamp lifecycle stage only when caller didn't provide one (don't override).
+  if (!("stage" in payload) || !payload.stage) {
+    if (action === "order.created") payload.stage = "customer";
     else if (action === "quiz.completed") payload.stage = "quiz_completed";
     else if (action === "cart.abandoned") payload.stage = "cart_abandoner";
     else payload.stage = "subscriber";
