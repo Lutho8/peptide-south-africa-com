@@ -112,22 +112,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return;
       }
       const sigChanged = lastSentSig.current !== signature;
-      const payload: Record<string, unknown> = {
-        user_id: user.id,
-        items: items.map((i) => ({
-          product_id: i.product.id,
-          name: i.product.name,
-          variant_label: i.variantLabel ?? null,
-          quantity: i.quantity,
-          price: i.unitPrice,
-        })),
-        subtotal,
-        cart_signature: signature,
-      };
-      // Only reset notified_at when the cart actually changed; otherwise keep
-      // whatever the edge function stamped to avoid duplicate reminders.
-      if (sigChanged) payload.notified_at = null;
-      await supabase.from("cart_snapshots").upsert(payload, { onConflict: "user_id" });
+      const itemsPayload = items.map((i) => ({
+        product_id: i.product.id,
+        name: i.product.name,
+        variant_label: i.variantLabel ?? null,
+        quantity: i.quantity,
+        price: i.unitPrice,
+      }));
+      await supabase.from("cart_snapshots").upsert(
+        {
+          user_id: user.id,
+          items: itemsPayload,
+          subtotal,
+          cart_signature: signature,
+          // Only reset notified_at when the cart actually changed; otherwise
+          // keep whatever the edge function stamped to avoid duplicate reminders.
+          ...(sigChanged ? { notified_at: null } : {}),
+        },
+        { onConflict: "user_id" },
+      );
       lastSentSig.current = signature;
     }, 1500);
     return () => { if (snapTimer.current) clearTimeout(snapTimer.current); };
