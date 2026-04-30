@@ -14,15 +14,13 @@ import {
   Brain,
   Award,
 } from "lucide-react";
-import heroImg1 from "@/assets/funnel-hero-1.jpg";
-import heroImg2 from "@/assets/funnel-hero-2.jpg";
-import heroImg3 from "@/assets/funnel-hero-3.jpg";
-import heroImg4 from "@/assets/funnel-hero-4.jpg";
-import heroImg5 from "@/assets/funnel-hero-5.jpg";
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
 import ClinicianHero from "@/components/ClinicianHero";
+import HeroShop from "@/components/HeroShop";
+import FeaturedProductRail from "@/components/FeaturedProductRail";
+import SectionReveal from "@/components/SectionReveal";
 import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
 
 const results = [
@@ -72,119 +70,16 @@ export default function HomePage() {
     <div className="flex flex-col">
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
-      {/* ===================== HERO ===================== */}
-      <section className="relative overflow-hidden bg-card">
-        <div className="container relative z-10 px-4 pb-10 pt-14 md:pt-24 md:pb-16">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="mb-5 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              Personalized Health Protocols
-            </span>
+      {/* ===================== HERO (shop-first) ===================== */}
+      <HeroShop />
 
-            <h1 className="font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
-              Finally serious about fat loss?{" "}
-              <span className="text-gradient">
-                Lose 10 kg of stubborn fat.
-              </span>{" "}
-              Boost performance and strength in 6 weeks.
-            </h1>
-
-            <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Get a personalized protocol designed for your body, goals, and
-              lifestyle — with guided support every step of the way.
-            </p>
-
-            {/* Benefits */}
-            <div className="mx-auto mt-8 max-w-md space-y-3 text-left">
-              {[
-                "Lose fat and improve performance within weeks",
-                "Personalized protocol based on your body and goals",
-                "Simple weekly guidance and support",
-                "No confusion, no guesswork — everything mapped out",
-                "Designed for real results, not quick fixes",
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
-                  <span className="text-sm text-foreground sm:text-base">{item}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTAs */}
-            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Link
-                to="/quiz"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-10 py-4 text-lg font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
-              >
-                Get Started <ArrowRight className="h-5 w-5" />
-              </Link>
-              <Link
-                to="/quiz"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-10 py-4 text-lg font-semibold text-foreground transition-all hover:bg-muted sm:w-auto"
-              >
-                Start My Plan
-              </Link>
-            </div>
-
-            {/* Trust line */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:gap-6 sm:text-sm">
-              <span className="flex items-center gap-1.5">
-                <Shield className="h-4 w-4 text-trust" /> German Certified
-              </span>
-              <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-trust" /> Personalized Approach
-              </span>
-              <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-trust" /> Results-Focused
-              </span>
-            </div>
-
-            <p className="mt-3 text-xs text-muted-foreground">
-              Used by clients in Cape Town and Johannesburg
-            </p>
-          </div>
-        </div>
-
-        {/* Photo grid */}
-        <div className="relative mx-auto max-w-5xl px-4 pb-12">
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-3">
-            <div className="col-span-1 row-span-2 hidden overflow-hidden rounded-2xl sm:block">
-              <img src={heroImg1} alt="Client transformation" className="h-full w-full object-cover" />
-            </div>
-            <div className="col-span-1 overflow-hidden rounded-2xl">
-              <img src={heroImg2} alt="Healthy lifestyle" className="h-full w-full object-cover" loading="lazy" />
-            </div>
-            <div className="col-span-1 overflow-hidden rounded-2xl">
-              <img src={heroImg4} alt="Active lifestyle" className="h-full w-full object-cover" loading="lazy" />
-            </div>
-            <div className="col-span-1 overflow-hidden rounded-2xl">
-              <img src={heroImg3} alt="Wellness journey" className="h-full w-full object-cover" loading="lazy" />
-            </div>
-            <div className="col-span-1 row-span-2 hidden overflow-hidden rounded-2xl sm:block">
-              <img src={heroImg5} alt="Transformation result" className="h-full w-full object-cover" loading="lazy" />
-            </div>
-            <div className="col-span-3 overflow-hidden rounded-2xl">
-              <div className="flex h-full items-center justify-center bg-muted p-5 text-center">
-                <div>
-                  <div className="flex items-center justify-center gap-1 text-badge">
-                    {Array(5).fill(null).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current sm:h-5 sm:w-5" />
-                    ))}
-                  </div>
-                  <p className="mt-2 font-display text-sm font-semibold text-foreground sm:text-lg">
-                    "This changed everything for me"
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                    — Sarah M., Johannesburg
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
+      <FeaturedProductRail />
 
       {/* ===================== AS SEEN IN ===================== */}
-      <MediaLogos variant="muted" />
+      <SectionReveal>
+        <MediaLogos variant="muted" />
+      </SectionReveal>
 
       {/* ===================== HOW IT WORKS ===================== */}
       <section className="border-y border-border bg-background py-16 md:py-20">
