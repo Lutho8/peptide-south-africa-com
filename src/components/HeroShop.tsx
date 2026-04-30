@@ -15,15 +15,32 @@ import CursorOrb from "./CursorOrb";
 import HeroBackdrop from "./HeroBackdrop";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import { formatZAR } from "@/lib/currency";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HeroShop() {
   const reduce = useReducedMotion();
   const { addToCart } = useCart();
+  const { user, hasFirstOrder } = useAuth();
+  const { toast } = useToast();
+  const eligible = !!user && hasFirstOrder === false;
 
   // Hero featured product = RT3 (best seller)
   const hero = products.find((p) => p.id === "1") ?? products[0];
   const discounted = Math.round(hero.price * 0.9);
+
+  const handleAdd = () => {
+    addToCart(hero);
+    toast({
+      title: "✓ Added to cart",
+      description: eligible
+        ? "RIDETHETIDE10 (10% off) auto-applied."
+        : user
+          ? "You've already ordered before — discount no longer eligible."
+          : "Sign in to auto-apply 10% off your first order.",
+    });
+  };
 
   return (
     <section className="relative isolate overflow-hidden">
