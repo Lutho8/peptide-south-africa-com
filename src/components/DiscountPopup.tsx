@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Gift } from "lucide-react";
-import { syncToNocobase } from "@/lib/nocobase";
+import { captureLead } from "@/lib/nocobase";
 
 const POPUP_DISMISSED_KEY = "rtt_discount_dismissed";
 
@@ -25,12 +25,7 @@ export default function DiscountPopup() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      syncToNocobase("lead.upsert", {
-        email,
-        source: "discount_popup",
-        stage: "subscriber",
-        tag: "first_order_discount",
-      });
+      captureLead({ source: "discount_popup", email });
       setSubmitted(true);
       localStorage.setItem(POPUP_DISMISSED_KEY, "true");
       setTimeout(() => setShow(false), 3000);

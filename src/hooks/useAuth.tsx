@@ -48,12 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isNew = sess.user.created_at &&
           Date.now() - new Date(sess.user.created_at).getTime() < 60_000;
         if (isNew) {
-          import("@/lib/nocobase").then(({ syncToNocobase }) => {
-            syncToNocobase("lead.upsert", {
-              user_id: sess.user.id,
-              email: sess.user.email,
+          import("@/lib/nocobase").then(({ captureLead }) => {
+            captureLead({
               source: "signup",
-              stage: "registered",
+              email: sess.user.email ?? null,
+              extra: { user_id: sess.user.id },
             });
           });
         }
