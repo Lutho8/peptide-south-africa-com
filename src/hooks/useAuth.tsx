@@ -39,10 +39,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       checkRoleAndOrders(sess?.user?.id);
+      // Push new signups to Nocobase CRM
+      if (event === "SIGNED_IN" && sess?.user) {
+        const isNew = sess.user.created_at &&
+          Date.now() - new Date(sess.user.created_at).getTime() < 60_000;
+        if (isNew) {
+          import("@/lib/nocobase").then(({ syncToNocobase }) => {
+            syncToNocobase("lead.upsert", {
+              user_id: sess.user.id,
+              email: sess.user.email,
+              source: "signup",
+              stage: "registered",
+            });
+          });
+        }
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {

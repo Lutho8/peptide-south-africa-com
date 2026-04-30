@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import type { Product } from "@/data/products";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CartItem {
   product: Product;
@@ -70,6 +71,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const discountAmount = isDiscountEligible ? subtotal * FIRST_ORDER_PCT : 0;
   const totalPrice = subtotal - discountAmount;
   const discountCode = isDiscountEligible ? FIRST_ORDER_CODE : null;
+
+  // Persist abandoned-cart snapshot for logged-in users (debounced)
+  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    if (snapTimer.current) clearTimeout(snapTimer.current);
+    snapTimer.current = setTimeout(() => {
+      if (items.length === 0) {
+        supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      } else {
+        supabase.from("cart_snapshots").upsert({
+          user_id: user.id,
+          items: items.map((i) => ({
+            product_id: i.product.id,
+            name: i.product.name,
+            quantity: i.quantity,
+            price: i.product.price,
+          })),
+          subtotal,
+          notified_at: null,
+        }, { onConflict: "user_id" });
+      }
+    }, 1500);
+    return () => { if (snapTimer.current) clearTimeout(snapTimer.current); };
+  }, [items, user, subtotal]);
 
   return (
     <CartContext.Provider
