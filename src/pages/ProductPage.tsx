@@ -13,6 +13,7 @@ import RelatedContent from "@/components/RelatedContent";
 import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
+import StockBadge from "@/components/StockBadge";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -49,7 +50,8 @@ export default function ProductPage() {
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
 
   const handleAdd = () => {
-    addToCart({ ...product, price: currentPrice });
+    const variantLabel = product.variants?.[selectedVariant]?.label;
+    addToCart(product, { variantLabel, unitPrice: currentPrice });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -150,11 +152,16 @@ export default function ProductPage() {
               ))}
             </ul>
 
+            {/* Stock urgency */}
+            <div className="mt-6">
+              <StockBadge product={product} size="md" />
+            </div>
+
             {/* CTA */}
             <button
               onClick={handleAdd}
               disabled={!product.inStock}
-              className="mt-8 w-full rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
+              className="mt-4 w-full rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
             >
               {!product.inStock ? "Pre-Order" : added ? "✓ Added to Cart!" : "Add to Cart"}
             </button>
