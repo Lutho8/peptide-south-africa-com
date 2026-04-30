@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import c1 from "@/assets/customer-1.jpg";
-import c2 from "@/assets/customer-2.jpg";
-import c3 from "@/assets/customer-3.jpg";
-import c4 from "@/assets/customer-4.jpg";
-import c5 from "@/assets/customer-5.jpg";
+import Avatar from "@/components/Avatar";
 
 interface Testimonial {
   id: string;
@@ -15,8 +11,6 @@ interface Testimonial {
   rating: number;
   photo_url: string | null;
 }
-
-const fallbackPhotos = [c1, c2, c3, c4, c5];
 
 export default function CustomerProofStrip() {
   const [items, setItems] = useState<Testimonial[]>([]);
@@ -48,11 +42,11 @@ export default function CustomerProofStrip() {
                 key={p?.id ?? i}
                 className="relative aspect-[4/5] w-[180px] flex-shrink-0 overflow-hidden rounded-2xl bg-muted shadow-card md:w-auto"
               >
-                <img
-                  src={p?.photo_url || fallbackPhotos[i % fallbackPhotos.length]}
+                <Avatar
+                  name={p?.name ?? "Customer"}
+                  src={p?.photo_url ?? undefined}
                   alt={p ? `Customer testimonial — ${p.name}` : "Customer"}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                  className="h-full w-full transition-transform duration-700 hover:scale-105"
                 />
               </div>
             ))}
