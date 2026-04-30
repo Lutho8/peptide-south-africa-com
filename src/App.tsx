@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/Footer";
@@ -27,6 +28,8 @@ import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
 import ClinicianPage from "@/pages/ClinicianPage";
+import AuthPage from "@/pages/AuthPage";
+import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
@@ -37,43 +40,47 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CartProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AgeVerificationModal />
-          <DiscountPopup />
-          <AnnouncementBar />
-          <Header />
-          <CartDrawer />
-          <main className="min-h-screen">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/shop" element={<ShopPage />} />
-              <Route path="/product/:slug" element={<ProductPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/track-order" element={<TrackOrderPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/shipping" element={<ShippingPolicyPage />} />
-              <Route path="/refund" element={<RefundPolicyPage />} />
-              <Route path="/quiz" element={<QuizFunnelPage />} />
-              <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
-              <Route path="/research" element={<ResearchHubPage />} />
-              <Route path="/clinician" element={<ClinicianPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-          <StickyMobileCTA />
-          <CookieConsent />
-          <WhatsAppButton />
-          <LiveActivity />
-        </BrowserRouter>
-      </CartProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <CartProvider>
+            <Toaster />
+            <Sonner />
+            <AgeVerificationModal />
+            <DiscountPopup />
+            <AnnouncementBar />
+            <Header />
+            <CartDrawer />
+            <main className="min-h-screen">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/product/:slug" element={<ProductPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/track-order" element={<TrackOrderPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/shipping" element={<ShippingPolicyPage />} />
+                <Route path="/refund" element={<RefundPolicyPage />} />
+                <Route path="/quiz" element={<QuizFunnelPage />} />
+                <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
+                <Route path="/research" element={<ResearchHubPage />} />
+                <Route path="/clinician" element={<ClinicianPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+            <StickyMobileCTA />
+            <CookieConsent />
+            <WhatsAppButton />
+            <LiveActivity />
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
