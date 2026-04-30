@@ -11,6 +11,15 @@ import JsonLd from "@/components/JsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import { productSchema, entityClusters } from "@/lib/seo";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+
+const GLOBAL_FAQS = [
+  { question: "How fast does it ship?", answer: "Orders placed before 2pm SAST ship same day. Most South African addresses receive their order within 1–3 business days via tracked courier." },
+  { question: "Is a Certificate of Analysis (COA) included?", answer: "Yes — every batch is third-party HPLC tested and a COA is included with your order. You can also request a digital copy via email." },
+  { question: "Is my payment information secure?", answer: "All transactions are SSL encrypted and processed by PCI-compliant gateways. We never store your card details." },
+  { question: "What's your return policy?", answer: "Unopened products can be returned within 14 days for a full refund. Opened research compounds are non-refundable for safety reasons." },
+  { question: "Do I need to be 18+ to order?", answer: "Yes. All purchases require age verification. Products are sold strictly for research purposes only." },
+];
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -50,17 +59,15 @@ export default function ProductPage() {
   return (
     <div>
       <JsonLd data={productSchema(product)} />
-      {product.faqs.length > 0 && (
-        <JsonLd data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: product.faqs.map(f => ({
-            "@type": "Question",
-            name: f.question,
-            acceptedAnswer: { "@type": "Answer", text: f.answer },
-          })),
-        }} />
-      )}
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [...product.faqs, ...GLOBAL_FAQS].map(f => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }} />
       <Breadcrumbs crumbs={[
         { label: "Home", href: "/" },
         { label: "Shop", href: "/shop" },
@@ -208,20 +215,27 @@ export default function ProductPage() {
       {/* Reviews */}
       <ProductReviews slug={product.slug} />
 
-      {/* FAQ */}
-      {product.faqs.length > 0 && (
-        <section className="container pb-16">
-          <h3 className="mb-6 font-display text-2xl font-bold text-foreground">Frequently Asked Questions</h3>
-          <div className="flex flex-col gap-4">
-            {product.faqs.map((faq, i) => (
-              <div key={i} className="rounded-lg border border-border bg-card p-5">
-                <h4 className="font-display font-semibold text-foreground">{faq.question}</h4>
-                <p className="mt-2 text-sm text-muted-foreground">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* FAQ — accordion */}
+      {(() => {
+        const allFaqs = [...product.faqs, ...GLOBAL_FAQS];
+        return (
+          <section className="container pb-16">
+            <h3 className="mb-6 font-display text-2xl font-bold text-foreground">Frequently Asked Questions</h3>
+            <Accordion type="single" collapsible className="rounded-xl border border-border bg-card px-5">
+              {allFaqs.map((faq, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="last:border-b-0">
+                  <AccordionTrigger className="text-left font-display font-semibold text-foreground">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </section>
+        );
+      })()}
 
       {/* Entity-linked related content */}
       <RelatedContent title="Related Protocols & Research" links={clusterLinks} />

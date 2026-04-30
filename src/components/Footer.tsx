@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Mail } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Footer() {
+  const { user, isAdmin, signOut } = useAuth();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -81,8 +83,18 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.
+        <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
+          <div className="flex items-center gap-3 text-xs">
+            {!user ? (
+              <Link to="/auth" className="hover:text-foreground">Sign in</Link>
+            ) : (
+              <>
+                {isAdmin && <Link to="/admin/testimonials" className="hover:text-foreground">Admin</Link>}
+                <button onClick={signOut} className="hover:text-foreground">Sign out</button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </footer>

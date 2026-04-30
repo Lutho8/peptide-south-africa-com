@@ -15,15 +15,32 @@ import CursorOrb from "./CursorOrb";
 import HeroBackdrop from "./HeroBackdrop";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import { formatZAR } from "@/lib/currency";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HeroShop() {
   const reduce = useReducedMotion();
   const { addToCart } = useCart();
+  const { user, hasFirstOrder } = useAuth();
+  const { toast } = useToast();
+  const eligible = !!user && hasFirstOrder === false;
 
   // Hero featured product = RT3 (best seller)
   const hero = products.find((p) => p.id === "1") ?? products[0];
   const discounted = Math.round(hero.price * 0.9);
+
+  const handleAdd = () => {
+    addToCart(hero);
+    toast({
+      title: "✓ Added to cart",
+      description: eligible
+        ? "RIDETHETIDE10 (10% off) auto-applied."
+        : user
+          ? "You've already ordered before — discount no longer eligible."
+          : "Sign in to auto-apply 10% off your first order.",
+    });
+  };
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -42,10 +59,11 @@ export default function HeroShop() {
         >
           <Tag className="h-4 w-4" />
           <span>
-            Get <span className="font-bold">10% off your first order</span> · code{" "}
-            <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">
-              RIDETHETIDE10
-            </span>
+            {eligible
+              ? <>Your <span className="font-bold">10% off</span> is auto-applied · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>
+              : user
+                ? <>Welcome back · use code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span> on select items</>
+                : <><Link to="/auth" className="underline underline-offset-2 hover:opacity-90">Sign in</Link> to auto-apply <span className="font-bold">10% off your first order</span> · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>}
           </span>
         </motion.div>
 
@@ -197,13 +215,19 @@ export default function HeroShop() {
                 </div>
 
                 <button
-                  onClick={() => addToCart(hero)}
+                  onClick={handleAdd}
                   className="group mt-4 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-hero-gradient py-3.5 text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-95 active:scale-[0.98]"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  Buy Now
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  Add to Cart {eligible && "— Save 10%"}
                 </button>
+
+                <Link
+                  to={`/product/${hero.slug}`}
+                  className="mt-2 block text-center text-xs font-semibold text-primary hover:underline"
+                >
+                  View product details →
+                </Link>
 
                 <p className="mt-3 text-center text-[11px] text-muted-foreground">
                   In stock · ships today · COA included

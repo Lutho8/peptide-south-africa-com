@@ -5,7 +5,7 @@ import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
 
   if (items.length === 0) {
     return (
@@ -67,8 +67,13 @@ export default function CartPage() {
           <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>{formatZAR(totalPrice)}</span>
+              <span>Subtotal</span><span>{formatZAR(subtotal)}</span>
             </div>
+            {isDiscountEligible && (
+              <div className="flex justify-between font-semibold text-trust">
+                <span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-muted-foreground">
               <span>Shipping</span><span className="font-semibold text-trust">Free</span>
             </div>
@@ -76,6 +81,11 @@ export default function CartPage() {
               <span>Tax</span><span>R0.00</span>
             </div>
           </div>
+          {!isDiscountEligible && (
+            <Link to="/auth" className="mt-4 block rounded-lg bg-primary/10 px-3 py-2.5 text-center text-xs font-semibold text-primary hover:bg-primary/15">
+              🎁 Sign in to auto-apply RIDETHETIDE10 (10% off your first order)
+            </Link>
+          )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
             <span>Total</span><span>{formatZAR(totalPrice)}</span>
           </div>
