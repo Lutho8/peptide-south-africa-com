@@ -17,9 +17,9 @@ import {
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
-import ClinicianHero from "@/components/ClinicianHero";
 import HeroShop from "@/components/HeroShop";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
+import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
 import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
 
@@ -76,6 +76,9 @@ export default function HomePage() {
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />
 
+      {/* ===================== REAL CUSTOMERS ===================== */}
+      <CustomerProofStrip />
+
       {/* ===================== AS SEEN IN ===================== */}
       <SectionReveal>
         <MediaLogos variant="muted" />
@@ -129,10 +132,10 @@ export default function HomePage() {
 
           <div className="mt-10 text-center">
             <Link
-              to="/quiz"
+              to="/shop"
               className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              Get Started <ArrowRight className="h-4 w-4" />
+              Buy Now <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -204,10 +207,10 @@ export default function HomePage() {
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">Flexible, cancel anytime</p>
                 <Link
-                  to="/quiz"
+                  to="/shop"
                   className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
                 >
-                  Get Started
+                  Buy Monthly — R1,999
                 </Link>
               </div>
               <div className="relative rounded-2xl border-2 border-primary bg-background p-6 text-center shadow-glow">
@@ -220,10 +223,10 @@ export default function HomePage() {
                 </p>
                 <p className="mt-2 text-xs text-trust font-semibold">Save R997 — 17% off</p>
                 <Link
-                  to="/quiz"
+                  to="/shop"
                   className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
                 >
-                  Start My Protocol <ArrowRight className="h-4 w-4" />
+                  Buy Now — R4,999 <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -269,8 +272,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===================== CLINICIAN ===================== */}
-      <ClinicianHero />
+      {/* ===================== (clinician hero removed for conversion focus) ===================== */}
 
       {/* ===================== WHY THIS WORKS ===================== */}
       <section className="border-y border-border bg-card py-16 md:py-20">
@@ -336,20 +338,20 @@ export default function HomePage() {
       <section className="bg-hero-gradient py-14 md:py-20">
         <div className="container px-4 text-center">
           <h2 className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
-            Ready to Transform Your Body?
+            Ready to start? Save 10% on your first order.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-            Take a 2-minute assessment and get your personalized protocol —
-            designed around your body, your goals, and your lifestyle.
+            Use code <span className="font-mono font-bold">RIDETHETIDE10</span> at checkout.
+            Free shipping over R1,500. Same-day dispatch from South Africa.
           </p>
           <Link
-            to="/quiz"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
+            to="/shop"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-bold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
           >
-            Get Started <ArrowRight className="h-5 w-5" />
+            Buy Now <ArrowRight className="h-5 w-5" />
           </Link>
-          <p className="mt-3 text-sm text-primary-foreground/60">
-            No commitment required · Takes under 2 minutes
+          <p className="mt-3 text-sm text-primary-foreground/70">
+            Or <Link to="/quiz" className="underline">take the 2-min quiz</Link> for a personalised protocol
           </p>
         </div>
       </section>
