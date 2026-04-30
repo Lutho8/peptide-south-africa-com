@@ -31,7 +31,9 @@ export default function HeroShop() {
   const discounted = Math.round(hero.price * 0.9);
 
   const handleAdd = () => {
-    addToCart(hero);
+    // Hero product may have variants; pick the first as a sensible default.
+    const v = hero.variants?.[0];
+    addToCart(hero, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     toast({
       title: "✓ Added to cart",
       description: eligible

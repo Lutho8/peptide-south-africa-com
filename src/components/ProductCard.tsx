@@ -1,11 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/data/products";
 import { formatZAR } from "@/lib/currency";
+import StockBadge from "@/components/StockBadge";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const hasMultipleVariants = (product.variants?.length ?? 0) > 1;
+
+  const handleAdd = () => {
+    if (!product.inStock) {
+      navigate(`/product/${product.slug}`);
+      return;
+    }
+    if (hasMultipleVariants) {
+      // Force the user to pick a size on the PDP rather than silently choose.
+      navigate(`/product/${product.slug}#variants`);
+      return;
+    }
+    const onlyVariant = product.variants?.[0];
+    addToCart(product, onlyVariant ? { variantLabel: onlyVariant.label, unitPrice: onlyVariant.price } : undefined);
+  };
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
@@ -21,16 +38,8 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.tag}
           </span>
         )}
-        {/* Stock pill — top right */}
-        <span
-          className={`absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold ${
-            product.inStock
-              ? "bg-trust/10 text-trust ring-1 ring-trust/20"
-              : "bg-muted text-muted-foreground ring-1 ring-border"
-          }`}
-        >
-          <span className={`h-1.5 w-1.5 rounded-full ${product.inStock ? "bg-trust" : "bg-muted-foreground"}`} />
-          {product.inStock ? "In Stock" : "Pre-Order"}
+        <span className="absolute right-3 top-3">
+          <StockBadge product={product} />
         </span>
       </Link>
 
@@ -61,9 +70,9 @@ export default function ProductCard({ product }: { product: Product }) {
           <p className="font-display text-base font-bold text-primary">
             {product.priceRange || formatZAR(product.price)}
           </p>
-          {product.variants && product.variants.length > 1 && (
+          {hasMultipleVariants && (
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              {product.variants.length} sizes
+              {product.variants!.length} sizes
             </span>
           )}
         </div>
@@ -76,11 +85,11 @@ export default function ProductCard({ product }: { product: Product }) {
             View
           </Link>
           <button
-            onClick={() => addToCart(product)}
+            onClick={handleAdd}
             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            {product.inStock ? "Add To Cart" : "Notify Me"}
+            {!product.inStock ? "Notify Me" : hasMultipleVariants ? "Select Size" : "Add To Cart"}
           </button>
         </div>
       </div>
