@@ -15,6 +15,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
+import SEO from "@/components/SEO";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -78,6 +79,13 @@ export default function ProductPage() {
           acceptedAnswer: { "@type": "Answer", text: f.answer },
         })),
       }} />
+      <SEO
+        title={`${product.name} — Buy in South Africa | ≥99% Purity COA`}
+        description={`${product.shortDescription || product.description.slice(0, 140)} Shipped same-day in South Africa with COA. ZAR pricing.`}
+        path={`/product/${product.slug}`}
+        image={typeof product.image === "string" ? product.image : undefined}
+        type="product"
+      />
       <Breadcrumbs crumbs={[
         { label: "Home", href: "/" },
         { label: "Shop", href: "/shop" },
