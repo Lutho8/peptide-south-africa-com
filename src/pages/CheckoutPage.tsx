@@ -47,12 +47,18 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
+    let newOrderId: string | null = null;
     if (user) {
-      await supabase.from("orders").insert({
-        user_id: user.id,
-        total: totalPrice,
-        discount_code: discountCode,
-      });
+      const { data: orderRow } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          total: totalPrice,
+          discount_code: discountCode,
+        })
+        .select("id")
+        .single();
+      newOrderId = orderRow?.id ?? null;
       await refreshOrders();
       // Clear abandoned cart snapshot now that order is placed
       await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
@@ -66,6 +72,7 @@ export default function CheckoutPage() {
         price: i.unitPrice,
       }));
       syncToNocobase("order.created", {
+        order_id: newOrderId,
         user_id: user.id,
         email: user.email,
         items: itemsPayload,
@@ -76,10 +83,26 @@ export default function CheckoutPage() {
         stage: "customer",
         tags: ["purchase"],
       });
-      // Also upsert the lead so CRM lifecycle stage moves to "customer".
-      captureLead({ source: "order", email: user.email, extra: { user_id: user.id, total: totalPrice } });
+      // Final lead capture: lifecycle → customer, with full order context for CRM accuracy.
+      const extraTags = ["order_confirmed"];
+      if (discountCode === "RIDETHETIDE10") extraTags.push("first_order_discount_used");
+      captureLead({
+        source: "order",
+        email: user.email,
+        extraTags,
+        extra: {
+          order_id: newOrderId,
+          user_id: user.id,
+          items: itemsPayload,
+          subtotal,
+          discount_code: discountCode,
+          discount_amount: discountAmount,
+          total: totalPrice,
+        },
+      });
     }
     clearCart();
+    setOrderId(newOrderId);
     setSubmitted(true);
     setBusy(false);
   };
