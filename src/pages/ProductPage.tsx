@@ -231,6 +231,13 @@ export default function ProductPage() {
       <ProductReviews slug={product.slug} />
 
       {/* FAQ — accordion */}
+      {/* Delivery & Returns */}
+      <section className="container pb-8">
+        <h3 className="mb-4 font-display text-2xl font-bold text-foreground">Delivery &amp; Returns</h3>
+        <DeliveryReturnsAccordion />
+      </section>
+
+      {/* FAQ — accordion */}
       {(() => {
         const allFaqs = [...product.faqs, ...globalFaqs];
         return (
