@@ -9,6 +9,7 @@ import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import { supabase } from "@/integrations/supabase/client";
+import SEO from "@/components/SEO";
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
@@ -19,7 +20,9 @@ export default function CheckoutPage() {
 
   if (submitted) {
     return (
-      <div className="container flex flex-col items-center justify-center py-32">
+      <>
+        <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, same-day dispatch in South Africa." path="/checkout" noindex />
+        <div className="container flex flex-col items-center justify-center py-32">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-trust/10">
           <CheckCircle className="h-10 w-10 text-trust" />
         </div>
@@ -31,7 +34,8 @@ export default function CheckoutPage() {
           </p>
         )}
         <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">Continue Shopping</Link>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -108,6 +112,8 @@ export default function CheckoutPage() {
   };
 
   return (
+    <>
+    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, same-day dispatch in South Africa." path="/checkout" noindex />
     <div className="container py-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
@@ -215,5 +221,6 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

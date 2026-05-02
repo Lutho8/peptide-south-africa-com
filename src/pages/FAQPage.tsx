@@ -4,6 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import { faqSchema, entityClusters } from "@/lib/seo";
+import SEO from "@/components/SEO";
 
 const faqs = [
   { question: "What are peptides?", answer: "Peptides are short chains of amino acids that serve as building blocks for proteins. They play crucial roles in biological processes including fat metabolism, tissue repair, immune function, and hormone regulation. Common research peptides include Retatrutide (RT3), BPC-157, Tesamorelin, and GHK-Cu." },
@@ -24,7 +25,9 @@ export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="flex flex-col">
+    <>
+      <SEO title="Peptide FAQ — Dosing, Storage, Legality in South Africa" description="Answers to common questions about peptides in South Africa: legality, storage, dosing, shipping, and how our GP-led protocols work." path="/faq" />
+      <div className="flex flex-col">
       <JsonLd data={faqSchema(faqsForSchema)} />
       <Breadcrumbs crumbs={[
         { label: "Home", href: "/" },
@@ -72,5 +75,6 @@ export default function FAQPage() {
         ]}
       />
     </div>
+    </>
   );
 }

@@ -20,6 +20,7 @@ import {
   Bot,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import SEO from "@/components/SEO";
 
 const WA_NUMBER = "491624747159";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -191,7 +192,9 @@ export default function QuizFunnelPage() {
     const progress = ((step + 1) / (totalSteps + 1)) * 100;
 
     return (
-      <div className="flex min-h-[80vh] flex-col">
+      <>
+        <SEO title="Free Peptide Protocol Quiz — Personalized Stack Recommendation" description="Take our 6-step quiz and get a personalized peptide protocol recommendation reviewed by a South African GP. Free, takes 2 minutes." path="/quiz" />
+        <div className="flex min-h-[80vh] flex-col">
         <div className="border-b border-border bg-card">
           <div className="container flex items-center gap-4 px-4 py-4">
             {step > 0 && (
@@ -237,6 +240,7 @@ export default function QuizFunnelPage() {
           </div>
         </div>
       </div>
+      </>
     );
   }
 

@@ -16,6 +16,7 @@ import heroImg3 from "@/assets/funnel-hero-3.jpg";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import { entityClusters } from "@/lib/seo";
+import SEO from "@/components/SEO";
 
 const credentials = [
   { icon: Award, title: "German Certified Compounds", desc: "All protocols use compounds that meet strict German pharmaceutical quality standards." },
@@ -82,7 +83,9 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col">
+    <>
+      <SEO title="About Ride The Tide — GP-Led Peptide Protocols in South Africa" description="Meet the South African GPs and pharmacists behind Ride The Tide. German-certified sourcing, third-party lab testing, and physician-supervised peptide protocols." path="/about" />
+      <div className="flex flex-col">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
 
       {/* Hero */}
@@ -298,5 +301,6 @@ export default function AboutPage() {
         ]}
       />
     </div>
+    </>
   );
 }

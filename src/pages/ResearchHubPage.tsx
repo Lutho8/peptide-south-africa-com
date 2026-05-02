@@ -1,6 +1,7 @@
 import { ExternalLink, FlaskConical, BookOpen, Calculator, Layers, Search } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import SEO from "@/components/SEO";
 
 const PEPTIDE_PRO_URL = "https://peptide-mastery.lovable.app";
 const SITE_URL = "https://tide-shop-clone.lovable.app";
@@ -39,7 +40,9 @@ const tools = [
 
 export default function ResearchHubPage() {
   return (
-    <div className="flex flex-col">
+    <>
+      <SEO title="Peptide Research Hub — 500+ Citations & Protocol Pro Tool" description="Evidence-based peptide research with 500+ citations. Use our Protocol Pro tool to design and study compound stacks. Curated for South African researchers." path="/research" />
+      <div className="flex flex-col">
       <JsonLd data={researchHubSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Research Hub", href: "/research" }]} />
       {/* Hero */}
@@ -127,5 +130,6 @@ export default function ResearchHubPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

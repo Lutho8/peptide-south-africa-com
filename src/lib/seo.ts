@@ -1,5 +1,39 @@
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.ridethetide.site";
 const SITE_NAME = "Ride The Tide";
+
+/** LocalBusiness + MedicalBusiness schema for South Africa GEO ranking. */
+export const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": ["MedicalBusiness", "OnlineStore", "LocalBusiness"],
+  "@id": `${SITE_URL}/#localbusiness`,
+  name: SITE_NAME,
+  url: SITE_URL,
+  image: `${SITE_URL}/favicon.png`,
+  priceRange: "R450 – R5,000",
+  currenciesAccepted: "ZAR",
+  paymentAccepted: "Credit Card, EFT, Instant EFT",
+  description:
+    "GP-led, German-certified peptide protocols for fat loss, healing, and performance. Same-day dispatch across South Africa.",
+  address: {
+    "@type": "PostalAddress",
+    addressCountry: "ZA",
+    addressRegion: "Gauteng",
+    addressLocality: "Johannesburg",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: -26.2041,
+    longitude: 28.0473,
+  },
+  areaServed: { "@type": "Country", name: "South Africa" },
+  medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    opens: "08:00",
+    closes: "17:00",
+  },
+};
 
 export const organizationSchema = {
   "@context": "https://schema.org",
@@ -52,8 +86,17 @@ export const websiteSchema = {
   "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
   url: SITE_URL,
+  inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
-  description: "Personalized peptide protocols with German-certified compounds. GP-led fat loss, healing, and performance programs in South Africa.",
+  description: "GP-led, German-certified peptide protocols and research compounds for fat loss, healing and performance. South Africa.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/shop?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
 };
 
 export function productSchema(product: {
