@@ -34,7 +34,8 @@ export default function CheckoutPage() {
           </p>
         )}
         <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">Continue Shopping</Link>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -111,6 +112,8 @@ export default function CheckoutPage() {
   };
 
   return (
+    <>
+    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, same-day dispatch in South Africa." path="/checkout" noindex />
     <div className="container py-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
