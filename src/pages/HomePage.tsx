@@ -21,7 +21,7 @@ import HeroShop from "@/components/HeroShop";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
-import { organizationSchema, websiteSchema, entityClusters } from "@/lib/seo";
+import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
 
 const results = [
@@ -68,11 +68,11 @@ const whyItWorks = [
 
 export default function HomePage() {
   return (
-    <SEO title="Buy Peptides Online South Africa — GP-Led Protocols" description="South Africa's GP-led peptide service. ≥99% purity, German-certified, third-party lab tested. Fat loss, healing & performance. Same-day dispatch in ZA." path="/" />
+    <div className="flex flex-col">
       <SEO title="Buy Peptides Online South Africa — GP-Led Protocols" description="South Africa's GP-led peptide service. ≥99% purity, German-certified, third-party lab tested. Fat loss, healing & performance. Same-day dispatch in ZA." path="/" />
-      <div className="flex flex-col">
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
+      <JsonLd data={localBusinessSchema} />
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
 
