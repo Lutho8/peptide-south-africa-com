@@ -69,8 +69,7 @@ export default function ShopPage() {
   };
 
   return (
-    <>
-      <SEO title="Research Peptides South Africa — Retatrutide, BPC-157, Tesamorelin" description="Shop ≥99% purity research peptides in South Africa. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch." path="/shop" />
+    <SEO title="Research Peptides South Africa — Retatrutide, BPC-157, Tesamorelin" description="Shop ≥99% purity research peptides in South Africa. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch." path="/shop" />
       <>
       <JsonLd data={itemListSchema} />
       <Breadcrumbs
@@ -245,6 +244,5 @@ export default function ShopPage() {
           </Link>
         </div>
       </section>
-    </>
   );
 }
