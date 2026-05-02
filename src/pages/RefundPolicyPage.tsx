@@ -19,8 +19,8 @@ const refundSchema = {
 
 export default function RefundPolicyPage() {
   return (
-    <SEO title="Refund Policy — 30-Day Satisfaction Guarantee" description="Our 30-day satisfaction guarantee on sealed vials. Read our full refund and returns policy for South African orders." path="/refund" />
-      <>
+    <>
+      <SEO title="Refund Policy — 30-Day Satisfaction Guarantee" description="Our 30-day satisfaction guarantee on sealed vials. Read our full refund and returns policy for South African orders." path="/refund" />
       <JsonLd data={refundSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Refund Policy", href: "/refund" }]} />
     <div className="container py-16">

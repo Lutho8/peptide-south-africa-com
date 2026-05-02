@@ -20,8 +20,8 @@ const termsSchema = {
 
 export default function TermsPage() {
   return (
-    <SEO title="Terms & Conditions" description="Ride The Tide terms of service for South African customers. Research-use disclaimers and prescription pathway terms." path="/terms" />
-      <>
+    <>
+      <SEO title="Terms & Conditions" description="Ride The Tide terms of service for South African customers. Research-use disclaimers and prescription pathway terms." path="/terms" />
       <JsonLd data={termsSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Terms", href: "/terms" }]} />
     <div className="container py-16">
