@@ -19,7 +19,8 @@ export default function CartPage() {
         <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">
           Browse Products
         </Link>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -105,6 +106,5 @@ export default function CartPage() {
         </div>
       </div>
     </div>
-    </>
   );
 }
