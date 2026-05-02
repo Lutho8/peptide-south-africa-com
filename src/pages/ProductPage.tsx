@@ -14,6 +14,7 @@ import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
+import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 
 interface CmsFaq { question: string; answer: string }
 
