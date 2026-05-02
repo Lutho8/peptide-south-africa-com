@@ -21,7 +21,6 @@ const privacySchema = {
 export default function PrivacyPolicyPage() {
   return (
     <SEO title="Privacy Policy — POPIA Compliant" description="How Ride The Tide handles your personal information. Fully compliant with South Africa's POPIA data-protection law." path="/privacy" />
-      <SEO title="Privacy Policy — POPIA Compliant" description="How Ride The Tide handles your personal information. Fully compliant with South Africa's POPIA data-protection law." path="/privacy" />
       <>
       <JsonLd data={privacySchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Privacy Policy", href: "/privacy" }]} />
