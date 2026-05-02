@@ -14,6 +14,7 @@ import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
+import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -228,6 +229,13 @@ export default function ProductPage() {
 
       {/* Reviews */}
       <ProductReviews slug={product.slug} />
+
+      {/* FAQ — accordion */}
+      {/* Delivery & Returns */}
+      <section className="container pb-8">
+        <h3 className="mb-4 font-display text-2xl font-bold text-foreground">Delivery &amp; Returns</h3>
+        <DeliveryReturnsAccordion />
+      </section>
 
       {/* FAQ — accordion */}
       {(() => {

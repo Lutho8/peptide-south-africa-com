@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, CheckCircle, Tag, PackageCheck } from "lucide-react";
+import { Shield, Lock, CheckCircle, Tag } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
+import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CheckoutPage() {
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const { user, refreshOrders } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   if (submitted) {
     return (
@@ -23,6 +25,11 @@ export default function CheckoutPage() {
         </div>
         <h1 className="mt-4 font-display text-2xl font-bold text-foreground">Order Confirmed!</h1>
         <p className="mt-2 text-muted-foreground">Thank you for your purchase. You'll receive a confirmation email shortly.</p>
+        {orderId && (
+          <p className="mt-1 text-sm font-mono text-foreground">
+            Order #{orderId.slice(0, 8).toUpperCase()}
+          </p>
+        )}
         <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">Continue Shopping</Link>
       </div>
     );
@@ -40,12 +47,18 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
+    let newOrderId: string | null = null;
     if (user) {
-      await supabase.from("orders").insert({
-        user_id: user.id,
-        total: totalPrice,
-        discount_code: discountCode,
-      });
+      const { data: orderRow } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          total: totalPrice,
+          discount_code: discountCode,
+        })
+        .select("id")
+        .single();
+      newOrderId = orderRow?.id ?? null;
       await refreshOrders();
       // Clear abandoned cart snapshot now that order is placed
       await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
@@ -59,6 +72,7 @@ export default function CheckoutPage() {
         price: i.unitPrice,
       }));
       syncToNocobase("order.created", {
+        order_id: newOrderId,
         user_id: user.id,
         email: user.email,
         items: itemsPayload,
@@ -69,10 +83,26 @@ export default function CheckoutPage() {
         stage: "customer",
         tags: ["purchase"],
       });
-      // Also upsert the lead so CRM lifecycle stage moves to "customer".
-      captureLead({ source: "order", email: user.email, extra: { user_id: user.id, total: totalPrice } });
+      // Final lead capture: lifecycle → customer, with full order context for CRM accuracy.
+      const extraTags = ["order_confirmed"];
+      if (discountCode === "RIDETHETIDE10") extraTags.push("first_order_discount_used");
+      captureLead({
+        source: "order",
+        email: user.email,
+        extraTags,
+        extra: {
+          order_id: newOrderId,
+          user_id: user.id,
+          items: itemsPayload,
+          subtotal,
+          discount_code: discountCode,
+          discount_amount: discountAmount,
+          total: totalPrice,
+        },
+      });
     }
     clearCart();
+    setOrderId(newOrderId);
     setSubmitted(true);
     setBusy(false);
   };
@@ -103,11 +133,9 @@ export default function CheckoutPage() {
               <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               <input required defaultValue="South Africa" placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
-            <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-              <PackageCheck className="h-3.5 w-3.5 text-trust" />
-              Discreet, unbranded packaging · Tracked courier (Aramex / PEP Paxi)
-            </p>
           </div>
+
+          <DeliveryReturnsAccordion defaultOpen="shipping" />
 
           {/* Discount field */}
           <div className="rounded-lg border border-border bg-card p-6">

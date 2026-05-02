@@ -1,100 +1,74 @@
 ## Goal
 
-Tighten conversion across five touchpoints: standardize CRM tagging, send a single, personalized abandoned-cart reminder, surface stock urgency honestly, treat product variants as distinct cart lines, and reinforce trust on checkout.
+Add a reusable, collapsible **Delivery & Returns** section to both the checkout and product pages, with locked-in microcopy. Then fire a final CRM lead capture event when an order is confirmed, including order id, items, and applied discount code.
 
----
+## 1. New component: `DeliveryReturnsAccordion`
 
-## 1. Nocobase tagging & lifecycle rules
+Create `src/components/DeliveryReturnsAccordion.tsx` using the existing shadcn `Accordion` primitive so it stays on-brand and matches existing PDP accordions.
 
-Centralize tag/stage logic in `src/lib/nocobase.ts` so every call site sends consistent data.
+Three collapsible items, all closed by default (or "shipping" open by default on checkout):
 
-- Add `LeadSource` type: `"newsletter" | "discount_popup" | "quiz" | "signup" | "cart_abandoned" | "order"`.
-- Add `tagsForSource(source)` and `stageForSource(source)`:
-  - newsletter → stage `subscriber`, tags `["newsletter"]`
-  - discount_popup → stage `lead`, tags `["discount_popup", "first_order_discount"]`
-  - quiz → stage `quiz_completed`, tags `["quiz", "<quiz.goal>"]`
-  - signup → stage `account_created`, tags `["signup"]`
-  - cart_abandoned → stage `cart_abandoner`, tags `["cart", "abandoned_24h"]` (+ `"discount_eligible"` when applicable)
-  - order → stage `customer` (or `repeat_customer` if `is_repeat`), tags `["purchase"]`
-- New helper `captureLead({ email, source, extra })` that wraps `syncToNocobase("lead.upsert", …)` with the canonical stage + tags merged with `extra`.
-- Update Footer, DiscountPopup, QuizFunnelPage, useAuth signup hook, CheckoutPage, and the abandoned-cart edge function to call the helper instead of building payloads inline.
-- In `nocobase-sync` edge function: stop overwriting `stage` when caller already sent one; only fill defaults when missing. Keep collection routing as-is.
+- **Shipping & Timing**
+  - Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri).
+  - Delivered nationwide in South Africa via Aramex / PEP Paxi.
+  - Estimated delivery: **1–3 business days** to major metros, **2–5 business days** to regional/rural addresses.
+  - Tracking link emailed as soon as the courier collects.
 
-## 2. Abandoned-cart: once per cart + personalized offer
+- **Discreet, Unbranded Packaging**
+  - Plain, unmarked outer box — no Ride The Tide branding, logos, or product references on the exterior.
+  - Sealed, temperature-stable inner packaging with a silica desiccant.
+  - Sender shown on the waybill as a neutral fulfilment name.
 
-- Add `cart_signature` (text) to `cart_snapshots` (sha-1 of sorted product_id+qty list) and `discount_pct` (numeric, default 0). Migration only — no data backfill needed.
-- In `CartContext`, compute the signature client-side and include it in the upsert. When items change, if signature differs from last snapshot, the upsert resets `notified_at` to null so a new cart triggers a new reminder; if signature is the same, leave `notified_at` untouched (prevents repeat reminders for the same cart).
-- In `nocobase-abandoned-cart` edge function:
-  - Filter only `notified_at IS NULL` and `updated_at < now() - 24h` (already done).
-  - For each snapshot, check eligibility: count `orders` for that user. If zero → set `discount_pct = 10` and tag `discount_eligible`; else `0` and tag `repeat_customer_recovery`.
-  - Push to Nocobase with `{ discount_code: "RIDETHETIDE10" | null, discount_pct, items, subtotal, projected_total }`.
-  - Always stamp `notified_at` after push so the same cart never fires twice.
+- **Returns & Guarantee**
+  - **30-day satisfaction guarantee** on unopened, sealed vials.
+  - Damaged-in-transit or incorrect items: replaced free of charge, reported within 48 hours of delivery.
+  - For health and safety reasons, opened or reconstituted vials are non-returnable (industry standard).
+  - Refunds processed to the original payment method within 5–7 business days of receiving the return.
 
-## 3. Stock levels with low-stock messaging
+Props:
+- `defaultOpen?: "shipping" | "packaging" | "returns" | null`
+- `className?: string`
 
-- Extend `Product` interface in `src/data/products.ts`:
-  - `stock?: number` (units remaining; omit/`null` means "in stock, no count shown").
-  - Keep existing `inStock` for pre-order vs in-stock state.
-- Seed realistic stock counts on each in-stock product (e.g. RT3 12, GHK-Cu 8, Tesamorelin 5, GLOW70 18). Pre-order items keep `inStock: false` and no stock number.
-- New `<StockBadge product />` component with three states:
-  - `inStock === false` → "Pre-Order — Reserve Yours"
-  - `stock <= 5` → orange/amber "Only {n} left in stock" (urgency, but truthful).
-  - `stock > 5` or undefined → existing green "In Stock" pill.
-- Use it in `ProductCard` (replaces current pill) and on `ProductPage` (above the Add-to-Cart button).
-- No fake countdowns; no decreasing stock on view. Numbers come from the product data file so the user can edit them.
+Visual: navy/teal accents already used on the trust bar; small lucide icons (`Truck`, `PackageCheck`, `RotateCcw`) per row.
 
-## 4. Variant-aware cart & checkout
+## 2. Wire it into Checkout
 
-Variants currently mutate `product.price` before adding, so two different MG sizes of the same product collapse into one cart row. Fix by keying cart items on a composite id.
+In `src/pages/CheckoutPage.tsx`:
+- Add `<DeliveryReturnsAccordion defaultOpen="shipping" />` directly under the Shipping Address card.
+- Remove the now-duplicated one-line "Discreet, unbranded packaging…" microcopy (it lives in the accordion).
 
-- Change `CartItem` in `CartContext`:
-  ```ts
-  interface CartItem {
-    product: Product;
-    variantLabel?: string;    // e.g. "10mg"
-    unitPrice: number;        // resolved at add-time
-    quantity: number;
-    lineId: string;           // `${product.id}::${variantLabel ?? "default"}`
-  }
-  ```
-- `addToCart(product, { variantLabel, unitPrice })`: dedupe by `lineId`. Update all callers:
-  - `ProductPage` passes the selected variant.
-  - `ProductCard` and `HeroShop` pass `undefined` for products without variants, or the first variant if one exists (with a "Select size" link to the PDP for multi-variant items, instead of silently picking).
-  - `removeFromCart`/`updateQuantity` switch from `productId` to `lineId`.
-- Show variant label in `CartDrawer`, `CartPage`, `CheckoutPage` order summary, and the order payload sent to Nocobase + `orders` table (extend the items JSON with `variant_label`).
-- Subtotal/discount math uses `unitPrice * quantity` instead of `product.price`.
+## 3. Wire it into Product pages
 
-## 5. Checkout trust badges & guarantees
+In `src/pages/ProductPage.tsx`:
+- Add `<DeliveryReturnsAccordion />` (all closed) in the right-hand column under the existing trust/CTA block, above the FAQ accordion. This keeps PDP scannable while making the policy one click away.
 
-- New `<CheckoutTrustBar />` component placed directly above the Place Order button:
-  - Row of badges: Visa / Mastercard / Amex / Discover icons (lucide `CreditCard` placeholder + simple SVG marks), "Secured by 256-bit SSL", "PCI-DSS Compliant".
-  - Three guarantee tiles below: "Free Shipping over R1000", "Same-Day Dispatch (orders before 2pm)", "30-Day Money-Back Guarantee".
-- Keep the existing `SecurityChecklist` in the right column; the new bar reinforces inside the form where the eye lands before submit.
-- Add "Discreet packaging" + "Tracked courier (Aramex/Pep)" microcopy under shipping address block.
+## 4. Final lead capture on order confirmation
 
----
+Currently `CheckoutPage.handleSubmit` sets `submitted=true` after inserting the order, but the inserted order's id isn't captured and no `lead.upsert` is fired with the final order context.
 
-## Technical details
+Changes in `src/pages/CheckoutPage.tsx`:
+- Change the order insert to `.insert({...}).select("id").single()` so we get `orderId`.
+- Store `orderId` in component state so the confirmation screen can show it.
+- After the existing `order.created` sync, also fire a final `captureLead` with `source: "order"` carrying:
+  - `order_id`
+  - `email`
+  - `user_id`
+  - `subtotal`, `discount_code`, `discount_amount`, `total`
+  - `items` (same shape as the order payload: product_id, name, variant_label, quantity, price)
+  - `extraTags`: `["order_confirmed"]` plus `"first_order_discount_used"` when `discountCode === "RIDETHETIDE10"`
+- Render `Order #<short-id>` on the confirmation screen for user reassurance.
 
-- **Migration**: `ALTER TABLE cart_snapshots ADD COLUMN cart_signature text, ADD COLUMN discount_pct numeric NOT NULL DEFAULT 0;` plus an index on `(notified_at, updated_at)` to keep the hourly sweep cheap.
-- **Edge function update**: `nocobase-abandoned-cart` queries `orders` via service-role client (already does) to determine eligibility before push.
-- **No DB schema needed** for stock — data file is the single source of truth so the user can edit without migrations. (If they later want CMS-managed stock we can move it to Lovable Cloud.)
-- **Cart line keying** is the trickiest change; we'll keep one `addToCart` signature with an optional second arg so existing single-product calls keep working at the type level.
+Guardrails:
+- Both syncs remain fire-and-forget (already non-throwing in `lib/nocobase.ts`).
+- Guest checkout (no `user`) still works — lead capture is skipped, matching today's behaviour.
+
+## Technical notes
+
+- No schema changes; `captureLead` already accepts arbitrary `extra` and `extraTags`.
+- The `nocobase-sync` edge function already routes `lead.upsert` → `leads` collection and stamps stage when missing; passing `stage` via `captureLead` ("customer") keeps lifecycle correct.
+- All copy is centralised in the new component so future edits are one-file.
 
 ## Files
 
-**Edit**
-- `src/lib/nocobase.ts` — add helper, source/stage/tag maps
-- `src/components/Footer.tsx`, `src/components/DiscountPopup.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/hooks/useAuth.tsx`, `src/pages/CheckoutPage.tsx` — switch to helper
-- `src/data/products.ts` — add `stock` field + seed values
-- `src/components/ProductCard.tsx`, `src/pages/ProductPage.tsx` — use `StockBadge`, pass variant on add
-- `src/context/CartContext.tsx` — variant-aware lines, signature snapshot
-- `src/components/CartDrawer.tsx`, `src/pages/CartPage.tsx`, `src/pages/CheckoutPage.tsx` — show variant + line keying
-- `src/components/HeroShop.tsx` — multi-variant products link to PDP instead of silent add
-- `supabase/functions/nocobase-abandoned-cart/index.ts` — eligibility + once-only logic
-- `supabase/functions/nocobase-sync/index.ts` — preserve caller-supplied stage
-
-**Create**
-- `src/components/StockBadge.tsx`
-- `src/components/CheckoutTrustBar.tsx`
-- `supabase/migrations/<timestamp>_cart_snapshots_signature.sql`
+- **Create:** `src/components/DeliveryReturnsAccordion.tsx`
+- **Edit:** `src/pages/CheckoutPage.tsx`, `src/pages/ProductPage.tsx`
