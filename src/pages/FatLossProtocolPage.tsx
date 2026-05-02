@@ -538,5 +538,6 @@ export default function FatLossProtocolPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

@@ -244,5 +244,6 @@ export default function ShopPage() {
           </Link>
         </div>
       </section>
+    </>
   );
 }

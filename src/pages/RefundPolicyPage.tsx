@@ -67,5 +67,6 @@ export default function RefundPolicyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

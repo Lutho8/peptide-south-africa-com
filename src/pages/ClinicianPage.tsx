@@ -317,5 +317,6 @@ export default function ClinicianPage() {
           { label: "FAQ", href: "/faq", description: "Common questions on safety, shipping and protocol design." },
         ]}
       />
+    </>
   );
 }

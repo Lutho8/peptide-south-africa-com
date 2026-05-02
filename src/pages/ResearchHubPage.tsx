@@ -130,5 +130,6 @@ export default function ResearchHubPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }
