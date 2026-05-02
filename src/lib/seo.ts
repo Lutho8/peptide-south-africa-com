@@ -86,8 +86,17 @@ export const websiteSchema = {
   "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
   url: SITE_URL,
+  inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
-  description: "Personalized peptide protocols with German-certified compounds. GP-led fat loss, healing, and performance programs in South Africa.",
+  description: "GP-led, German-certified peptide protocols and research compounds for fat loss, healing and performance. South Africa.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/shop?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
 };
 
 export function productSchema(product: {
