@@ -85,6 +85,7 @@ const personSchema = {
 export default function ClinicianPage() {
   return (
     <SEO title="For Clinicians — Partner With Ride The Tide South Africa" description="South African GPs and practitioners: prescribe and supply German-certified peptides through Ride The Tide's compliant, GP-led protocol pathway." path="/clinician" />
+      <SEO title="For Clinicians — Partner With Ride The Tide South Africa" description="South African GPs and practitioners: prescribe and supply German-certified peptides through Ride The Tide's compliant, GP-led protocol pathway." path="/clinician" />
       <>
       <JsonLd data={personSchema} />
       <Breadcrumbs

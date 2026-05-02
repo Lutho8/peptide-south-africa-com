@@ -11,6 +11,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
+        <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
         <div className="container flex flex-col items-center justify-center py-32">
         <ShoppingBag className="mb-4 h-20 w-20 text-muted-foreground/20" />
         <h1 className="font-display text-2xl font-bold text-foreground">Your cart is empty</h1>

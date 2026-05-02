@@ -54,6 +54,7 @@ export default function AuthPage() {
 
   return (
     <SEO title="Sign In" description="Sign in or create your Ride The Tide account." path="/auth" noindex />
+      <SEO title="Sign In" description="Sign in or create your Ride The Tide account." path="/auth" noindex />
       <div className="container flex min-h-[80vh] items-center justify-center py-12">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-card">
         <h1 className="font-display text-2xl font-bold text-foreground">

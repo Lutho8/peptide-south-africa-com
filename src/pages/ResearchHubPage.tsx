@@ -41,6 +41,7 @@ const tools = [
 export default function ResearchHubPage() {
   return (
     <SEO title="Peptide Research Hub — 500+ Citations & Protocol Pro Tool" description="Evidence-based peptide research with 500+ citations. Use our Protocol Pro tool to design and study compound stacks. Curated for South African researchers." path="/research" />
+      <SEO title="Peptide Research Hub — 500+ Citations & Protocol Pro Tool" description="Evidence-based peptide research with 500+ citations. Use our Protocol Pro tool to design and study compound stacks. Curated for South African researchers." path="/research" />
       <div className="flex flex-col">
       <JsonLd data={researchHubSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Research Hub", href: "/research" }]} />
