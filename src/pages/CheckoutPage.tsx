@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, CheckCircle, Tag, PackageCheck } from "lucide-react";
+import { Shield, Lock, CheckCircle, Tag } from "lucide-react";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
