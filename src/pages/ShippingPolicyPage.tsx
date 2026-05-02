@@ -1,5 +1,6 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import SEO from "@/components/SEO";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
@@ -19,6 +20,8 @@ const shippingSchema = {
 export default function ShippingPolicyPage() {
   return (
     <>
+      <SEO title="Shipping Policy — Discreet, Same-Day Dispatch South Africa" description="1–3 business day delivery to major South African metros. Discreet, unbranded packaging. Same-day dispatch on orders before 14:00 SAST." path="/shipping" />
+      <>
       <JsonLd data={shippingSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shipping Policy", href: "/shipping" }]} />
     <div className="container py-16">

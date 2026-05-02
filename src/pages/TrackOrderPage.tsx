@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Package, Search } from "lucide-react";
+import SEO from "@/components/SEO";
 
 export default function TrackOrderPage() {
   const [orderId, setOrderId] = useState("");
@@ -12,7 +13,9 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="container py-16">
+    <>
+      <SEO title="Track Your Order — Ride The Tide South Africa" description="Track your peptide order shipped from within South Africa. Same-day dispatch on orders before 14:00 SAST." path="/track-order" />
+      <div className="container py-16">
       <div className="mx-auto max-w-md text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Package className="h-8 w-8" />

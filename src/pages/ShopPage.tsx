@@ -6,6 +6,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import { products, categories, getProductsByCategory } from "@/data/products";
 import MediaLogos from "@/components/MediaLogos";
+import SEO from "@/components/SEO";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
@@ -69,6 +70,8 @@ export default function ShopPage() {
 
   return (
     <>
+      <SEO title="Research Peptides South Africa — Retatrutide, BPC-157, Tesamorelin" description="Shop ≥99% purity research peptides in South Africa. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch." path="/shop" />
+      <>
       <JsonLd data={itemListSchema} />
       <Breadcrumbs
         crumbs={[

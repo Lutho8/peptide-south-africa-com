@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import SEO from "@/components/SEO";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -52,7 +53,9 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="container flex min-h-[80vh] items-center justify-center py-12">
+    <>
+      <SEO title="Sign In" description="Sign in or create your Ride The Tide account." path="/auth" noindex />
+      <div className="container flex min-h-[80vh] items-center justify-center py-12">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-card">
         <h1 className="font-display text-2xl font-bold text-foreground">
           {mode === "signin" ? "Sign in" : "Create your account"}

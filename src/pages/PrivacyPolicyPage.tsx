@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import SEO from "@/components/SEO";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
@@ -20,6 +21,8 @@ const privacySchema = {
 export default function PrivacyPolicyPage() {
   return (
     <>
+      <SEO title="Privacy Policy — POPIA Compliant" description="How Ride The Tide handles your personal information. Fully compliant with South Africa's POPIA data-protection law." path="/privacy" />
+      <>
       <JsonLd data={privacySchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Privacy Policy", href: "/privacy" }]} />
     <div className="container py-16">

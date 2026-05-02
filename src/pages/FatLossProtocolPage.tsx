@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import {
   ArrowRight,
   CheckCircle,
@@ -52,7 +53,9 @@ function BMICalculator() {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
+    <>
+      <SEO title="Peptide Fat Loss Protocol South Africa — GLP-1 Therapy" description="12-week GP-led fat loss protocol using Retatrutide and Tirzepatide. Includes BMI calculator, dosing guide, and physician oversight. South Africa." path="/fat-loss-protocol" />
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
       <div className="space-y-6">
         <div>
           <div className="flex items-center justify-between mb-2">

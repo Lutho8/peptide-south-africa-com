@@ -3,13 +3,16 @@ import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
+import SEO from "@/components/SEO";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
 
   if (items.length === 0) {
     return (
-      <div className="container flex flex-col items-center justify-center py-32">
+      <>
+        <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
+        <div className="container flex flex-col items-center justify-center py-32">
         <ShoppingBag className="mb-4 h-20 w-20 text-muted-foreground/20" />
         <h1 className="font-display text-2xl font-bold text-foreground">Your cart is empty</h1>
         <p className="mt-2 text-muted-foreground">Add some products to get started.</p>
