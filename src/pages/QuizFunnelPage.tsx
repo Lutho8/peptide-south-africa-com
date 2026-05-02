@@ -646,6 +646,5 @@ export default function QuizFunnelPage() {
         </div>
       </div>
     </div>
-    </>
   );
 }
