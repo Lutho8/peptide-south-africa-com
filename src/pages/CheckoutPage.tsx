@@ -133,11 +133,9 @@ export default function CheckoutPage() {
               <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               <input required defaultValue="South Africa" placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
-            <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-              <PackageCheck className="h-3.5 w-3.5 text-trust" />
-              Discreet, unbranded packaging · Tracked courier (Aramex / PEP Paxi)
-            </p>
           </div>
+
+          <DeliveryReturnsAccordion defaultOpen="shipping" />
 
           {/* Discount field */}
           <div className="rounded-lg border border-border bg-card p-6">
