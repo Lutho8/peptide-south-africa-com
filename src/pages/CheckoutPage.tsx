@@ -7,6 +7,7 @@ import { formatZAR } from "@/lib/currency";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
+import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CheckoutPage() {
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const { user, refreshOrders } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   if (submitted) {
     return (
@@ -23,6 +25,11 @@ export default function CheckoutPage() {
         </div>
         <h1 className="mt-4 font-display text-2xl font-bold text-foreground">Order Confirmed!</h1>
         <p className="mt-2 text-muted-foreground">Thank you for your purchase. You'll receive a confirmation email shortly.</p>
+        {orderId && (
+          <p className="mt-1 text-sm font-mono text-foreground">
+            Order #{orderId.slice(0, 8).toUpperCase()}
+          </p>
+        )}
         <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">Continue Shopping</Link>
       </div>
     );
