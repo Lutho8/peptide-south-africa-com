@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   ArrowRight,
   CheckCircle,
@@ -130,6 +131,7 @@ export default function FatLossProtocolPage() {
   return (
     <div className="flex flex-col">
       <SEO title="Peptide Fat Loss Protocol South Africa — GLP-1 Therapy" description="12-week GP-led fat loss protocol using Retatrutide and Tirzepatide. Includes BMI calculator, dosing guide, and physician oversight. South Africa." path="/fat-loss-protocol" />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Fat Loss Protocol", href: "/fat-loss-protocol" }]} />
       {/* HERO */}
       <section className="bg-hero-gradient py-16 sm:py-24">
         <div className="container px-4">

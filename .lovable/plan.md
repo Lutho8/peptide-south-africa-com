@@ -1,81 +1,79 @@
-# SEO + GEO Overhaul — Outrank researchpeptides.co.za
+# Sitemap submission, BreadcrumbList JSON-LD, and SEO/JSX audit
 
-## The core problem
+## 1. Submit sitemap to Google Search Console (manual — you must do this)
 
-Right now every route serves the **same `<title>` and `<meta description>`** from `index.html` ("Ride The Tide — Personalized Peptide Protocols"). Googlebot does render JS, but:
+I cannot programmatically submit to Google Search Console — it requires your authenticated Google account and ownership verification of `www.ridethetide.site`. Here is the exact procedure:
 
-- There is **no `sitemap.xml`** and `robots.txt` doesn't reference one — Google has no list of URLs to crawl.
-- There are **no per-page meta tags** (title, description, canonical, OG) — every product, the shop, FAQ, about, etc. all look identical to crawlers on first byte.
-- There is **no `llms.txt`** for GEO (Generative Engine Optimization — ChatGPT/Perplexity/Claude/Gemini visibility).
-- The site isn't registered with **Google Search Console** / **Bing Webmaster Tools** (no verification meta tag).
-- No localized signals for **South Africa** (hreflang, geo meta, LocalBusiness schema with SA address).
+**A. Verify the domain (once)**
+1. Open https://search.google.com/search-console
+2. Add property → "URL prefix" → `https://www.ridethetide.site`
+3. Choose **HTML tag** verification, copy the `content="…"` value
+4. Tell me the value — I'll uncomment the `<meta name="google-site-verification">` line in `index.html` and paste it in
+5. Publish the project, then click **Verify** in Search Console
 
-Competitors like researchpeptides.co.za rank because they have unique titles, deep product descriptions, sitemaps, and SA-specific signals. We need to match and exceed all of that.
+**B. Submit the sitemap**
+1. In Search Console → **Sitemaps** (left nav)
+2. Enter `sitemap.xml` → **Submit**
+3. Status should turn to "Success" within minutes
 
-## Plan — 4 phases
+**C. Request indexing for key pages**
+- Use **URL Inspection** at the top, paste each URL, click **Request indexing**
+- Google rate-limits to ~10–12 manual requests per day. Prioritize:
+  1. `/` (home)
+  2. `/shop`
+  3. `/fat-loss-protocol`
+  4. `/quiz`
+  5. Top product pages (`/product/rt3-reta`, `/product/tz2-tirz`, `/product/tesamorelin`, `/product/bpc-tb500-blend`, `/product/ghk-cu-50mg`)
+- For the rest, the sitemap submission + internal linking will pick them up over 1–2 weeks
+- Repeat the same flow at https://www.bing.com/webmasters for Bing/ChatGPT search visibility
 
-### Phase 1 — Crawlability foundation
+I'll also add a `Sitemap:` directive line to `robots.txt` if it's missing, so crawlers auto-discover it.
 
-1. **Generate `public/sitemap.xml`** at build time covering: home, /shop, every `/product/:slug` from `src/data/products.ts`, /quiz, /fat-loss-protocol, /research, /about, /faq, /shipping, /refund, /terms, /privacy, /clinician, /track-order. Include `<lastmod>`, `<changefreq>`, `<priority>`. A small Vite plugin or prebuild script will write it automatically so it stays in sync with products.
-2. **Update `public/robots.txt`**: add `Sitemap: https://www.ridethetide.site/sitemap.xml`, disallow `/admin`, `/checkout`, `/cart`, `/auth`.
-3. **Add `public/llms.txt` and `public/llms-full.txt`** — the emerging standard for AI search engines (ChatGPT, Perplexity, Claude). Lists site purpose, key pages, products, and a short brand summary so LLMs cite Ride The Tide accurately.
-4. **Pre-rendering**: install `vite-plugin-prerender-spa` (or `react-snap`) to generate static HTML snapshots of every public route at build time. This is the single biggest win — Google sees fully rendered HTML with unique titles/descriptions/content per URL instead of an empty `<div id="root">`.
+## 2. BreadcrumbList JSON-LD — fix domain bug
 
-### Phase 2 — Per-page meta tags (React 19 native)
+`src/components/Breadcrumbs.tsx` already emits BreadcrumbList JSON-LD, but it hardcodes `https://tide-shop-clone.lovable.app` (the old preview URL) instead of the canonical `https://www.ridethetide.site`. Google will treat these breadcrumbs as pointing to a different site and ignore them.
 
-5. Use **React 19's built-in `<title>`, `<meta>`, `<link rel="canonical">`** support (no library needed; React hoists them to `<head>`). Create `src/components/SEO.tsx` — a single component each page renders with:
-   - `<title>` (≤60 chars, keyword-led, ends with "| Ride The Tide")
-   - `<meta name="description">` (≤160 chars, benefit + CTA)
-   - `<link rel="canonical">`
-   - Open Graph + Twitter card overrides
-   - Optional `<meta name="robots" content="noindex">` for /admin, /cart, /checkout, /auth
-6. **Apply SEO component to every page** with SA-targeted, keyword-rich copy:
-   - Home: "Buy Peptides Online South Africa | GP-Led Protocols"
-   - Shop: "Research Peptides South Africa — Retatrutide, BPC-157, Tesamorelin"
-   - Product pages: dynamic `${product.name} — Buy in South Africa | 99% Purity COA`
-   - Fat Loss: "Peptide Fat Loss Protocol South Africa | GLP-1 Therapy"
-   - Quiz: "Free Peptide Protocol Quiz — Personalized Recommendation"
-   - And matching descriptions for each.
+**Fix:** Replace the hardcoded URL with the canonical site URL constant (`https://www.ridethetide.site`).
 
-### Phase 3 — Schema & GEO signals
+This single fix activates breadcrumb rich results on every page that already uses `<Breadcrumbs>`: Shop, Product, FAQ, About, Clinician, Research Hub, Shipping, Refund, Terms, Privacy.
 
-7. **Expand `src/lib/seo.ts`**:
-   - Convert `organizationSchema` to **`MedicalBusiness` + `LocalBusiness`** with SA address, geo coordinates, opening hours, telephone, currency ZAR, areaServed=ZA.
-   - Add **`Product` schema with `offers.priceCurrency: ZAR`, `availability`, `aggregateRating`, `review`** for every product (already partial — extend to include real reviews from DB, GTIN/MPN where possible).
-   - Add **`BreadcrumbList`** (already present — verify on all pages).
-   - Add **`HowTo` / `MedicalWebPage`** schema on Fat Loss Protocol page.
-   - Add **`WebSite` with `SearchAction`** (sitelinks search box).
-8. **Geo meta tags** in head: `geo.region=ZA`, `geo.placename=South Africa`, `ICBM` coordinates, `<html lang="en-ZA">`, `<link rel="alternate" hreflang="en-za">`.
-9. **Google Search Console + Bing verification** meta tags (placeholders the user fills in once after first publish).
+**Pages missing breadcrumbs** that should have them (will add):
+- `/fat-loss-protocol` (Home › Fat Loss Protocol)
+- `/quiz` (Home › Free Quiz)
+- `/track-order` (Home › Track Order)
 
-### Phase 4 — Content & GEO depth (the part that beats competitors)
+## 3. Page JSX / duplicate-SEO audit
 
-10. **Expand product page copy** — researchpeptides.co.za ranks partly on long-form product descriptions. Add a "Research Background" section per product (300–500 words) pulling from existing `benefits`/`whatsIncluded` fields plus citation links to PubMed studies.
-11. **Add `/blog` foundation** (route + index page reading from a new `blog_posts` Supabase table) with 3 seed articles targeting high-intent SA queries: "Best peptides for fat loss in South Africa", "Retatrutide vs Tirzepatide — which is right for you?", "How to store peptides — South African climate guide". Each post: SEO component, JSON-LD `Article` schema, internal links to products. *(Table + seed content; admin UI can be a follow-up.)*
-12. **Internal linking audit** — ensure every page uses the existing `RelatedContent` cluster pattern (already built) so PageRank flows to product pages.
-13. **`<img alt>` audit** — pass through hero, product, testimonial images and add SA + peptide keywords to alt text where missing.
-14. **Performance pass** — add `loading="lazy"` to below-fold images, `width`/`height` attrs to prevent CLS (Core Web Vitals are a ranking signal).
+Findings from scanning Shop, Checkout, Cart, Quiz, FatLoss, Product:
 
-## Technical notes
+| Page | Issue | Fix |
+|---|---|---|
+| **CheckoutPage** | `<SEO />` rendered **twice** — once in the early-return "thank-you" branch (line 24) and once in the main return (line 116). React Helmet de-dupes by tag but the doubled component still risks unstable canonical/title flicker between submitted/unsubmitted state. Also line 115 opens `<>` but the inner `<div>` is the only child — fragment is unnecessary. | Hoist a single `<SEO />` to the top of the component (above the early-return branch) and remove the duplicate; drop the unnecessary `<>` wrappers where there is only one child. |
+| **CartPage** | `<>` wrapper around `<SEO />` + single `<div>` — fragment is fine but unnecessary. No duplicate SEO. | Leave fragment (harmless), confirm no duplicate. |
+| **ShopPage** | Single `<SEO />`, fragment wraps SEO + Breadcrumbs + content — **correct**. | No change. |
+| **QuizFunnelPage** | Single `<SEO />` inside fragment — **correct**. Will add a `<Breadcrumbs />` for the rich result. | Add breadcrumbs only. |
+| **FatLossProtocolPage** | Single `<SEO />` — **correct**. No breadcrumbs. | Add breadcrumbs only. |
+| **ProductPage** | Single `<SEO />` + Breadcrumbs — **correct**. | No change. |
 
-- Pre-rendering is done at build time with `vite-plugin-prerender` reading routes from a static list — no SSR server needed, output is static HTML per route uploaded with the bundle.
-- React 19 native `<title>`/`<meta>` hoisting avoids adding `react-helmet-async` (smaller bundle, no provider wrapping).
-- The sitemap generator runs as a Vite plugin in `vite.config.ts` `closeBundle` hook — no manual maintenance.
-- `llms.txt` is a plain markdown file; format follows llmstxt.org spec.
-- All copy stays in ZAR / South African English to match audience.
-- No backend logic changes — purely presentation, build config, and one optional `blog_posts` table.
+I'll also grep all other pages (`Home`, `About`, `FAQ`, `Auth`, `Clinician`, `ResearchHub`, policy pages, `TrackOrder`) for the same duplicate-SEO and broken-fragment patterns and clean any I find.
 
-## Files created / edited
+## Files to edit
 
-**Create**: `public/llms.txt`, `public/llms-full.txt`, `scripts/generate-sitemap.mjs` (or inline Vite plugin), `src/components/SEO.tsx`, `src/pages/BlogPage.tsx` + `src/pages/BlogPostPage.tsx`, migration for `blog_posts`.
-**Edit**: `index.html` (geo meta, hreflang, lang=en-ZA, GSC placeholder), `public/robots.txt`, `vite.config.ts` (prerender + sitemap plugins), `src/lib/seo.ts` (LocalBusiness/MedicalBusiness, SearchAction), every page in `src/pages/` (add SEO component), `src/App.tsx` (add /blog routes), `src/data/products.ts` (extended descriptions where thin).
+- `src/components/Breadcrumbs.tsx` — fix canonical domain in JSON-LD
+- `src/pages/CheckoutPage.tsx` — remove duplicate `<SEO />`, tidy fragments
+- `src/pages/QuizFunnelPage.tsx` — add `<Breadcrumbs />`
+- `src/pages/FatLossProtocolPage.tsx` — add `<Breadcrumbs />`
+- `src/pages/TrackOrderPage.tsx` — add `<Breadcrumbs />`
+- `public/robots.txt` — confirm `Sitemap:` directive
+- `index.html` — (later) paste your Google verification meta tag once you provide it
 
-## What this delivers
+## What I cannot do for you
 
-- Unique indexable HTML per URL (the #1 reason we're invisible today).
-- A discoverable sitemap and AI-friendly `llms.txt`.
-- SA-localized schema + geo signals so Google ranks us in `.co.za` results.
-- Long-form product + blog content to compete with researchpeptides.co.za on keyword breadth.
-- Verification hooks ready for Google Search Console submission.
+- Programmatic Search Console submission (requires your Google login + ownership verification). You must follow the manual steps in §1. I can prep the verification meta tag the moment you give me the value.
 
-After approval and deploy, expect first indexing in 3–7 days; ranking gains compound over 4–8 weeks.
+## Verification
+
+After implementation:
+1. Run a quick build to confirm no JSX errors.
+2. You publish, then test breadcrumb JSON-LD with https://search.google.com/test/rich-results on `/shop` and a product URL.
+3. Submit the sitemap per §1.B.
