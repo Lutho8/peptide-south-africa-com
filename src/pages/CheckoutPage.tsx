@@ -21,7 +21,6 @@ export default function CheckoutPage() {
   if (submitted) {
     return (
       <>
-        <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, same-day dispatch in South Africa." path="/checkout" noindex />
         <div className="container flex flex-col items-center justify-center py-32">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-trust/10">
           <CheckCircle className="h-10 w-10 text-trust" />
