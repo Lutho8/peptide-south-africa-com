@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Package, Search } from "lucide-react";
 import SEO from "@/components/SEO";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function TrackOrderPage() {
   const [orderId, setOrderId] = useState("");
@@ -15,6 +16,7 @@ export default function TrackOrderPage() {
   return (
     <>
       <SEO title="Track Your Order — Ride The Tide South Africa" description="Track your peptide order shipped from within South Africa. Same-day dispatch on orders before 14:00 SAST." path="/track-order" />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Track Order", href: "/track-order" }]} />
       <div className="container py-16">
       <div className="mx-auto max-w-md text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
