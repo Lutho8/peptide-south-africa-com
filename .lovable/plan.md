@@ -1,79 +1,47 @@
-# Sitemap submission, BreadcrumbList JSON-LD, and SEO/JSX audit
+## 1. Google Search Console verification
 
-## 1. Submit sitemap to Google Search Console (manual — you must do this)
+You have a Google Search Console connection already linked to your workspace (`Lutho's Google Search Console`), so I don't actually need you to paste a token — I can drive the whole flow through the connector gateway. I'll still support a manually-pasted token in case you prefer that path.
 
-I cannot programmatically submit to Google Search Console — it requires your authenticated Google account and ownership verification of `www.ridethetide.site`. Here is the exact procedure:
+**Option A — fully automated (recommended)**
+1. Link the existing GSC connector to this project (one-click).
+2. Call the Site Verification API to request a `META` token for `https://www.ridethetide.site/`.
+3. Insert the returned `<meta name="google-site-verification" content="…">` into `index.html` (replacing the commented placeholder).
+4. After you republish, I call the verify endpoint, then `PUT` the site into your Search Console property list. Done.
 
-**A. Verify the domain (once)**
-1. Open https://search.google.com/search-console
-2. Add property → "URL prefix" → `https://www.ridethetide.site`
-3. Choose **HTML tag** verification, copy the `content="…"` value
-4. Tell me the value — I'll uncomment the `<meta name="google-site-verification">` line in `index.html` and paste it in
-5. Publish the project, then click **Verify** in Search Console
+**Option B — you paste a token**
+1. You give me the `content="…"` value from Search Console's HTML-tag verification screen.
+2. I uncomment and fill in the `<meta name="google-site-verification">` line in `index.html`.
+3. You republish, then click **Verify** in Search Console, then submit `sitemap.xml`.
 
-**B. Submit the sitemap**
-1. In Search Console → **Sitemaps** (left nav)
-2. Enter `sitemap.xml` → **Submit**
-3. Status should turn to "Success" within minutes
+Either way, after verification I will:
+- Add a `<meta name="msvalidate.01">` placeholder for Bing (you paste that token when ready).
+- Confirm `Sitemap: https://www.ridethetide.site/sitemap.xml` is in `robots.txt` (already present).
+- Tell you which top URLs to manually request indexing for (`/`, `/shop`, `/fat-loss-protocol`, `/quiz`, top 5 products).
 
-**C. Request indexing for key pages**
-- Use **URL Inspection** at the top, paste each URL, click **Request indexing**
-- Google rate-limits to ~10–12 manual requests per day. Prioritize:
-  1. `/` (home)
-  2. `/shop`
-  3. `/fat-loss-protocol`
-  4. `/quiz`
-  5. Top product pages (`/product/rt3-reta`, `/product/tz2-tirz`, `/product/tesamorelin`, `/product/bpc-tb500-blend`, `/product/ghk-cu-50mg`)
-- For the rest, the sitemap submission + internal linking will pick them up over 1–2 weeks
-- Repeat the same flow at https://www.bing.com/webmasters for Bing/ChatGPT search visibility
+I cannot click "Request indexing" for you — that endpoint requires per-URL user action in the Search Console UI.
 
-I'll also add a `Sitemap:` directive line to `robots.txt` if it's missing, so crawlers auto-discover it.
+## 2. Homepage hero — LCP + contrast pass
 
-## 2. BreadcrumbList JSON-LD — fix domain bug
+The hero (`HeroShop.tsx` + `HeroBackdrop.tsx`) has no background image; the LCP candidate is either the H1 ("Premium peptides. Shipped in 48 hours.") or the RT3 product thumbnail in the right card. Current issues:
 
-`src/components/Breadcrumbs.tsx` already emits BreadcrumbList JSON-LD, but it hardcodes `https://tide-shop-clone.lovable.app` (the old preview URL) instead of the canonical `https://www.ridethetide.site`. Google will treat these breadcrumbs as pointing to a different site and ignore them.
+- The hero product `<img>` has no width/height, no `fetchpriority`, no decoding hint, and no preload — so the browser discovers it late after parsing the React bundle.
+- The Google Fonts stylesheet is imported via `@import url(...)` in `src/index.css`, which forces the CSS parser to block before the font request even starts. Moving it to `<link rel="preconnect">` + `<link rel="stylesheet">` in `index.html` shaves ~150–300ms off first paint.
+- `text-gradient` on the H1 word "Shipped in 48 hours" can fall below 4.5:1 on the light backdrop depending on the gradient stops. Will audit and darken the start stop or add a `text-shadow` token if needed.
+- The discount ribbon uses `text-primary-foreground` on `bg-hero-gradient` — likely fine but I'll verify.
+- The small "≥99% HPLC tested · COA…" eyebrow uses `text-primary` on `bg-card/80` over a busy backdrop; will check contrast and bump opacity if needed.
 
-**Fix:** Replace the hardcoded URL with the canonical site URL constant (`https://www.ridethetide.site`).
+**Changes I'll make**
+- `index.html`: add `<link rel="preconnect" href="https://fonts.googleapis.com">`, `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`, and the Google Fonts `<link rel="stylesheet">` for Inter + Space Grotesk with `display=swap`. Add `<link rel="preload" as="image" href="<RT3 image URL>" fetchpriority="high">`.
+- `src/index.css`: remove the blocking `@import url(...)` line (now loaded via `<link>`).
+- `src/components/HeroShop.tsx`: on the hero `<img>` add `width={800} height={600}`, `fetchPriority="high"`, `decoding="async"`, remove any implicit lazy behavior, and keep `loading="eager"`.
+- `src/components/HeroShop.tsx`: audit the H1 gradient and the eyebrow chip. If contrast fails, swap the gradient's lighter stop for a darker token (`hsl(var(--primary))` start) or add `text-foreground` fallback on the gradient span.
+- No JSX/structural changes elsewhere.
 
-This single fix activates breadcrumb rich results on every page that already uses `<Breadcrumbs>`: Shop, Product, FAQ, About, Clinician, Research Hub, Shipping, Refund, Terms, Privacy.
+**Verification**
+- Open the homepage in the preview, take a screenshot at desktop + mobile, and visually confirm hero text remains legible.
+- After you republish, the next Lighthouse scan picks up the gains; if it still flags performance, I'll iterate.
 
-**Pages missing breadcrumbs** that should have them (will add):
-- `/fat-loss-protocol` (Home › Fat Loss Protocol)
-- `/quiz` (Home › Free Quiz)
-- `/track-order` (Home › Track Order)
+## 3. What I need from you
 
-## 3. Page JSX / duplicate-SEO audit
-
-Findings from scanning Shop, Checkout, Cart, Quiz, FatLoss, Product:
-
-| Page | Issue | Fix |
-|---|---|---|
-| **CheckoutPage** | `<SEO />` rendered **twice** — once in the early-return "thank-you" branch (line 24) and once in the main return (line 116). React Helmet de-dupes by tag but the doubled component still risks unstable canonical/title flicker between submitted/unsubmitted state. Also line 115 opens `<>` but the inner `<div>` is the only child — fragment is unnecessary. | Hoist a single `<SEO />` to the top of the component (above the early-return branch) and remove the duplicate; drop the unnecessary `<>` wrappers where there is only one child. |
-| **CartPage** | `<>` wrapper around `<SEO />` + single `<div>` — fragment is fine but unnecessary. No duplicate SEO. | Leave fragment (harmless), confirm no duplicate. |
-| **ShopPage** | Single `<SEO />`, fragment wraps SEO + Breadcrumbs + content — **correct**. | No change. |
-| **QuizFunnelPage** | Single `<SEO />` inside fragment — **correct**. Will add a `<Breadcrumbs />` for the rich result. | Add breadcrumbs only. |
-| **FatLossProtocolPage** | Single `<SEO />` — **correct**. No breadcrumbs. | Add breadcrumbs only. |
-| **ProductPage** | Single `<SEO />` + Breadcrumbs — **correct**. | No change. |
-
-I'll also grep all other pages (`Home`, `About`, `FAQ`, `Auth`, `Clinician`, `ResearchHub`, policy pages, `TrackOrder`) for the same duplicate-SEO and broken-fragment patterns and clean any I find.
-
-## Files to edit
-
-- `src/components/Breadcrumbs.tsx` — fix canonical domain in JSON-LD
-- `src/pages/CheckoutPage.tsx` — remove duplicate `<SEO />`, tidy fragments
-- `src/pages/QuizFunnelPage.tsx` — add `<Breadcrumbs />`
-- `src/pages/FatLossProtocolPage.tsx` — add `<Breadcrumbs />`
-- `src/pages/TrackOrderPage.tsx` — add `<Breadcrumbs />`
-- `public/robots.txt` — confirm `Sitemap:` directive
-- `index.html` — (later) paste your Google verification meta tag once you provide it
-
-## What I cannot do for you
-
-- Programmatic Search Console submission (requires your Google login + ownership verification). You must follow the manual steps in §1. I can prep the verification meta tag the moment you give me the value.
-
-## Verification
-
-After implementation:
-1. Run a quick build to confirm no JSX errors.
-2. You publish, then test breadcrumb JSON-LD with https://search.google.com/test/rich-results on `/shop` and a product URL.
-3. Submit the sitemap per §1.B.
+- Pick **Option A** (let me link the GSC connector and run the verification API) or **Option B** (paste your token).
+- Approve the plan; I'll ship sections 1 and 2 in one pass.
