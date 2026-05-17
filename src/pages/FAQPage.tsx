@@ -26,7 +26,7 @@ export default function FAQPage() {
 
   return (
     <>
-      <SEO title="Peptide FAQ — Dosing, Storage, Legality in South Africa" description="Answers to common questions about peptides in South Africa: legality, storage, dosing, shipping, and how our GP-led protocols work." path="/faq" />
+      <SEO title="Peptide FAQ — South Africa" description="Answers to common questions about peptides in South Africa: legality, storage, dosing, shipping, and how our GP-led protocols work." path="/faq" />
       <div className="flex flex-col">
       <JsonLd data={faqSchema(faqsForSchema)} />
       <Breadcrumbs crumbs={[

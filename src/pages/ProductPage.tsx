@@ -80,7 +80,7 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={`${product.name} — Buy in South Africa | ≥99% Purity COA`}
+        title={`${product.name} — Buy in South Africa`}
         description={`${product.shortDescription || product.description.slice(0, 140)} Shipped same-day in South Africa with COA. ZAR pricing.`}
         path={`/product/${product.slug}`}
         image={typeof product.image === "string" ? product.image : undefined}
