@@ -101,7 +101,7 @@ export default function ShopPage() {
               Lab-tested · ≥99% HPLC purity · Shipped from South Africa &amp; an EU partner
             </span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
-              Buy Peptides — or Start a <span className="text-gradient">Guided Protocol</span>.
+              {shopCopy.h1}
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
               Every batch is third-party HPLC tested. Every protocol is built by a clinician.
