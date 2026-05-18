@@ -102,6 +102,7 @@ const App = () => (
             <LiveActivity />
           </CartProvider>
         </AuthProvider>
+        </CurrencyProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
