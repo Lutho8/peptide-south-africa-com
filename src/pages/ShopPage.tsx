@@ -44,6 +44,8 @@ export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
   const [activeCategory, setActiveCategory] = useState(initialCat);
+  const { market, lang } = useMarket();
+  const shopCopy = pageCopy("shop", market);
 
   const filtered = getProductsByCategory(activeCategory);
 
