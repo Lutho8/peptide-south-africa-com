@@ -32,7 +32,14 @@ export type CopyKey =
   | "back_to_cart"
   | "processing_payment"
   | "order_number"
-  | "continue_shopping";
+  | "continue_shopping"
+  | "shipping_country"
+  | "country_blocked"
+  | "contact_support_region"
+  | "standard_shipping_de"
+  | "local_courier_sa"
+  | "away_from_free"
+  | "unlocked_free_shipping";
 
 export const COPY: Record<CopyKey, Record<Locale, string>> = {
   shipping_free: {
@@ -109,6 +116,37 @@ export const COPY: Record<CopyKey, Record<Locale, string>> = {
   },
   order_number: { en: "Order", de: "Bestellung", af: "Bestelling" },
   continue_shopping: { en: "Continue Shopping", de: "Weiter einkaufen", af: "Hou aan koop" },
+  shipping_country: { en: "Shipping Country", de: "Versandland", af: "Versendingsland" },
+  country_blocked: {
+    en: "Sorry, we currently only ship to Germany and South Africa.",
+    de: "Wir versenden derzeit nur nach Deutschland und Südafrika.",
+    af: "Ons stuur tans slegs na Duitsland en Suid-Afrika.",
+  },
+  contact_support_region: {
+    en: "Contact support@ridethetide.site if you're interested in shipping to your region.",
+    de: "Kontaktieren Sie support@ridethetide.site bei Interesse an Versand in Ihre Region.",
+    af: "Kontak support@ridethetide.site as jy belangstel in versending na jou streek.",
+  },
+  standard_shipping_de: {
+    en: "Standard shipping to Germany — 4–7 business days",
+    de: "Standardversand nach Deutschland — 4–7 Werktage",
+    af: "Standaardversending na Duitsland — 4–7 werksdae",
+  },
+  local_courier_sa: {
+    en: "Local courier delivery — 1–3 business days",
+    de: "Lokaler Kurierversand — 1–3 Werktage",
+    af: "Plaaslike koerier — 1–3 werksdae",
+  },
+  away_from_free: {
+    en: "away from free shipping",
+    de: "bis zum kostenlosen Versand",
+    af: "tot gratis versending",
+  },
+  unlocked_free_shipping: {
+    en: "You've unlocked free shipping!",
+    de: "Gratis Versand freigeschaltet!",
+    af: "Gratis versending vrygestel!",
+  },
 };
 
 /** Render an EN / DE / AF trio joined by a separator — useful for trust strips. */
