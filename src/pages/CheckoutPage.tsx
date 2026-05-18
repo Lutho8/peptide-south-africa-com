@@ -12,6 +12,7 @@ import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
+import { COPY, trilingual } from "@/lib/copy";
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
@@ -86,8 +87,8 @@ export default function CheckoutPage() {
       const msg = err instanceof Error ? err.message : "Payment could not be started";
       toast({
         title: "Payment unavailable",
-        description: msg.includes("not configured")
-          ? "Payments come online once our NowPayments verification completes. Please try again shortly."
+        description: msg.includes("not configured") || msg.includes("503")
+          ? trilingual("payment_unavailable", " — ")
           : msg,
         variant: "destructive",
       });
@@ -124,7 +125,8 @@ export default function CheckoutPage() {
               <input required defaultValue={currency === "EUR" ? "Germany" : "South Africa"} placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Shipping: South Africa 1–3 days · Germany / EU 4–7 days. Free over R1,500 (SA) or €75 (DE/EU).
+              {trilingual("shipping_sa_window")} · {trilingual("shipping_eu_window")}<br />
+              {trilingual("shipping_free")}
             </p>
           </div>
 
@@ -179,12 +181,13 @@ export default function CheckoutPage() {
             type="submit"
             disabled={busy}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+            data-testid="pay-now-button"
           >
-            {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Preparing payment…</> : <>Pay Now — {format(totalPrice)}</>}
+            {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> {COPY.processing_payment.en} · {COPY.processing_payment.de}</> : <>{COPY.pay_now.en} · {COPY.pay_now.de} · {COPY.pay_now.af} — {format(totalPrice)}</>}
           </button>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> SSL Encrypted</span>
-            <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Secure Payment via NowPayments</span>
+            <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {trilingual("secure_checkout")}</span>
           </div>
         </form>
 
@@ -207,12 +210,12 @@ export default function CheckoutPage() {
               ))}
             </div>
             <div className="mt-4 border-t border-border pt-4">
-              <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>{format(subtotal)}</span></div>
+              <div className="flex justify-between text-sm text-muted-foreground"><span>{COPY.subtotal.en} / {COPY.subtotal.de}</span><span>{format(subtotal)}</span></div>
               {isDiscountEligible && (
                 <div className="mt-1 flex justify-between text-sm font-semibold text-trust"><span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span></div>
               )}
-              <div className="mt-1 flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
-              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{format(totalPrice)}</span></div>
+              <div className="mt-1 flex justify-between text-sm text-muted-foreground"><span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="text-trust font-semibold">{COPY.free.en} · {COPY.free.de}</span></div>
+              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="checkout-total">{format(totalPrice)}</span></div>
             </div>
           </div>
 

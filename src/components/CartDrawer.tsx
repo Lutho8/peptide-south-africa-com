@@ -2,6 +2,7 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { COPY } from "@/lib/copy";
 import CartCountdown from "@/components/CartCountdown";
 
 export default function CartDrawer() {
@@ -66,7 +67,7 @@ export default function CartDrawer() {
             <div className="border-t border-border p-4">
               <CartCountdown variant="banner" className="mb-3" />
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">
-                <span>Subtotal</span><span>{format(subtotal)}</span>
+                <span>{COPY.subtotal.en} / {COPY.subtotal.de}</span><span>{format(subtotal)}</span>
               </div>
               {isDiscountEligible && (
                 <div className="mb-1 flex justify-between text-sm font-semibold text-trust">
@@ -79,10 +80,10 @@ export default function CartDrawer() {
                 </Link>
               )}
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">
-                <span>Shipping</span><span className="font-semibold text-trust">Free!</span>
+                <span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
               </div>
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>Total</span><span>{format(totalPrice)}</span>
+                <span>{COPY.total.en} / {COPY.total.de}</span><span>{format(totalPrice)}</span>
               </div>
               <Link
                 to="/checkout"
