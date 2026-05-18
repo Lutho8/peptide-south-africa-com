@@ -21,7 +21,27 @@ const faqs = [
   { question: "Are research peptides legal to buy?", answer: "In South Africa, research peptides are legal to purchase for research and educational purposes. In Germany and the EU, peptides are sold strictly as research chemicals (not for human consumption) and are legal to purchase by adults 18+ for laboratory use. Our protocols are designed within these frameworks using pharmaceutical-grade compounds." },
 ];
 
-const faqsForSchema = faqs.map(f => ({ question: f.question, answer: f.answer }));
+// FAQ schema combines the visible FAQs with extra dual-market Q&A surfaced for search.
+const schemaFaqs: { question: string; answer: string }[] = [
+  ...faqs.map((f) => ({ question: f.question, answer: f.answer })),
+  {
+    question: "What purity are your peptides?",
+    answer: "All our peptides are ≥99% purity, verified by independent third-party HPLC testing. A Certificate of Analysis (COA) is provided with every batch.",
+  },
+  {
+    question: "Do you ship to Germany?",
+    answer: "Yes, we ship to Germany via Deutsche Post / DHL. Delivery takes 4–7 business days. Free shipping on orders over €120.",
+  },
+  {
+    question: "Do you ship within South Africa?",
+    answer: "Yes, we offer local courier delivery across South Africa. Delivery takes 1–3 business days. Free shipping on orders over R1,500.",
+  },
+  {
+    question: "Are your peptides for human consumption?",
+    answer: "No. All products are strictly for research purposes only and not for human consumption. Every product is clearly labeled 'Research Only — Not for Human Consumption'.",
+  },
+];
+const faqsForSchema = schemaFaqs;
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
