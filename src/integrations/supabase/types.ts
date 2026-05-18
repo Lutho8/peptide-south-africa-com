@@ -140,6 +140,36 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_reindex_log: {
+        Row: {
+          created_at: string
+          cycle_started_at: string
+          id: string
+          last_requested_at: string | null
+          notes: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          cycle_started_at?: string
+          id?: string
+          last_requested_at?: string | null
+          notes?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          cycle_started_at?: string
+          id?: string
+          last_requested_at?: string | null
+          notes?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           created_at: string
