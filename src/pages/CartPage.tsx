@@ -3,6 +3,7 @@ import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import CartCountdown from "@/components/CartCountdown";
+import FreeShippingBar from "@/components/FreeShippingBar";
 import SEO from "@/components/SEO";
 import { COPY, trilingual } from "@/lib/copy";
 
