@@ -53,11 +53,11 @@ export default function Header() {
       {mobileOpen && (
         <nav className="border-t border-border bg-card p-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <Link to="/" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Home</Link>
+            <Link to={mp("/")} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Home</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">About</Link>
             <Link to="/research" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Research</Link>
             <Link to="/faq" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">FAQ</Link>
-            <Link to="/shop" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Shop</Link>
+            <Link to={mp("/shop")} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Shop</Link>
           </div>
         </nav>
       )}
