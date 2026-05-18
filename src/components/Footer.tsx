@@ -79,10 +79,11 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Trust & Safety</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <span>✓ Lab Tested</span>
-              <span>✓ 99% Purity</span>
+              <span>✓ Lab Tested · 99% Purity</span>
               <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-3.5 w-3.5" /> Laborgeprüfte Reinheit</span>
-              <span className="inline-flex items-center gap-1.5"><Globe2 className="h-3.5 w-3.5" /> EU shipping available</span>
+              <span className="inline-flex items-center gap-1.5"><Globe2 className="h-3.5 w-3.5" /> Shipping to 🇿🇦 South Africa &amp; 🇩🇪 Germany</span>
+              <span className="pl-5 text-xs">🇿🇦 1–3 days · free over R1,500</span>
+              <span className="pl-5 text-xs">🇩🇪 4–7 Werktage · gratis ab €120</span>
               <span>✓ Secure Checkout</span>
               <span className="inline-flex items-center gap-1.5 pt-1 text-xs"><Languages className="h-3 w-3" /> English · Deutsch · Afrikaans</span>
             </div>

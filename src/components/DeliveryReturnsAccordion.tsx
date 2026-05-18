@@ -34,25 +34,21 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
             </span>
           </AccordionTrigger>
           <AccordionContent className="text-sm text-muted-foreground">
-            <p className="mb-2 font-semibold text-foreground/90">South Africa</p>
+            <p className="mb-2 font-semibold text-foreground/90">🇿🇦 South Africa</p>
             <ul className="ml-1 flex flex-col gap-1.5">
               <li>• Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri).</li>
-              <li>• Delivered nationwide via Aramex / PEP Paxi.</li>
-              <li>
-                • <span className="font-semibold text-foreground">1–3 business days</span> to major metros,{" "}
-                <span className="font-semibold text-foreground">2–5 business days</span> to regional addresses.
-              </li>
-              <li>• Free shipping on orders over <span className="font-semibold text-foreground">R1,500</span>.</li>
+              <li>• Local courier (The Courier Guy / Ramhis).</li>
+              <li>• <span className="font-semibold text-foreground">1–3 business days</span> nationwide.</li>
+              <li>• Flat <span className="font-semibold text-foreground">R89</span> · free shipping on orders over <span className="font-semibold text-foreground">R1,500</span>.</li>
             </ul>
-            <p className="mb-2 mt-4 font-semibold text-foreground/90">Germany &amp; EU · Deutschland &amp; EU</p>
+            <p className="mb-2 mt-4 font-semibold text-foreground/90">🇩🇪 Germany · Deutschland</p>
             <ul className="ml-1 flex flex-col gap-1.5">
-              <li>• Dispatched via DHL within 24 h of order confirmation (Mon–Fri).</li>
-              <li>
-                • <span className="font-semibold text-foreground">4–7 Werktage</span> across Germany &amp; the EU; 7–10 days to remote regions.
-              </li>
-              <li>• Free shipping on orders over <span className="font-semibold text-foreground">€75</span> · ab 75 €.</li>
-              <li>• Tracking link emailed as soon as the courier collects.</li>
+              <li>• Dispatched via Deutsche Post / DHL within 24 h (Mon–Fri).</li>
+              <li>• <span className="font-semibold text-foreground">4–7 Werktage</span> across Germany.</li>
+              <li>• Flat <span className="font-semibold text-foreground">€7.50</span> · gratis ab <span className="font-semibold text-foreground">€120</span>.</li>
+              <li>• Tracking link emailed once the courier collects.</li>
             </ul>
+            <p className="mt-4 text-xs italic text-muted-foreground">We currently ship only to 🇿🇦 South Africa and 🇩🇪 Germany.</p>
           </AccordionContent>
         </AccordionItem>
 

@@ -32,7 +32,9 @@ export default function CartPage() {
       <Link to="/shop" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Continue Shopping
       </Link>
-      <h1 className="mb-8 font-display text-3xl font-bold text-foreground">Shopping Cart</h1>
+      <h1 className="mb-6 font-display text-3xl font-bold text-foreground">Shopping Cart</h1>
+
+      <FreeShippingBar subtotalEur={subtotal} className="mb-6" />
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
