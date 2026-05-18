@@ -83,22 +83,37 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          currency: string
           discount_code: string | null
           id: string
+          nowpayments_payment_id: string | null
+          order_description: string | null
+          paid_at: string | null
+          status: string
           total: number
           user_id: string
         }
         Insert: {
           created_at?: string
+          currency?: string
           discount_code?: string | null
           id?: string
+          nowpayments_payment_id?: string | null
+          order_description?: string | null
+          paid_at?: string | null
+          status?: string
           total?: number
           user_id: string
         }
         Update: {
           created_at?: string
+          currency?: string
           discount_code?: string | null
           id?: string
+          nowpayments_payment_id?: string | null
+          order_description?: string | null
+          paid_at?: string | null
+          status?: string
           total?: number
           user_id?: string
         }

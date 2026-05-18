@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 import CartCountdown from "@/components/CartCountdown";
 import SEO from "@/components/SEO";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
+  const { format } = useCurrency();
 
   if (items.length === 0) {
     return (
@@ -56,7 +57,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-display font-bold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
+                      <span className="font-display font-bold text-foreground">{format(item.unitPrice * item.quantity)}</span>
                       <button onClick={() => removeFromCart(item.lineId)} className="text-destructive hover:text-destructive/80">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -74,18 +75,18 @@ export default function CartPage() {
           <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>{formatZAR(subtotal)}</span>
+              <span>Subtotal</span><span>{format(subtotal)}</span>
             </div>
             {isDiscountEligible && (
               <div className="flex justify-between font-semibold text-trust">
-                <span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span>
+                <span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span>
               </div>
             )}
             <div className="flex justify-between text-muted-foreground">
               <span>Shipping</span><span className="font-semibold text-trust">Free</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Tax</span><span>R0.00</span>
+              <span>Tax</span><span>{format(0)}</span>
             </div>
           </div>
           {!isDiscountEligible && (
@@ -94,7 +95,7 @@ export default function CartPage() {
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>Total</span><span>{formatZAR(totalPrice)}</span>
+            <span>Total</span><span>{format(totalPrice)}</span>
           </div>
           <Link
             to="/checkout"

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -14,12 +15,13 @@ export default function Header() {
           Ride The Tide
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           <Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Home</Link>
           <Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
           <Link to="/research" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
           <Link to="/faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</Link>
           <Link to="/shop" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Shop</Link>
+          <CurrencySwitcher />
           <Link
             to="/quiz"
             className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
@@ -28,12 +30,13 @@ export default function Header() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
+          <CurrencySwitcher />
           <Link
             to="/quiz"
-            className="inline-flex items-center rounded-lg bg-hero-gradient px-4 py-2 text-sm font-semibold text-primary-foreground"
+            className="inline-flex items-center rounded-lg bg-hero-gradient px-3.5 py-2 text-xs font-semibold text-primary-foreground"
           >
-            Get Started
+            Start
           </Link>
           <button onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

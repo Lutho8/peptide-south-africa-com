@@ -6,7 +6,7 @@ import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import { useEffect, useState } from "react";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 import JsonLd from "@/components/JsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
@@ -24,6 +24,7 @@ export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const product = getProductBySlug(slug || "");
   const { addToCart } = useCart();
+  const { format, display, currency, rate } = useCurrency();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
@@ -112,8 +113,20 @@ export default function ProductPage() {
               <span className="text-sm text-muted-foreground">(47 reviews)</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product.priceRange || formatZAR(currentPrice)}
+              {product?.priceRange
+                ? (currency === "EUR"
+                    ? product.priceRange
+                    : (() => {
+                        const nums = product.priceRange.match(/[\d.,]+/g)?.map((s) => parseFloat(s.replace(",", "."))) ?? [];
+                        if (nums.length !== 2) return product.priceRange;
+                        const fmt = (eur: number) => `R${(eur * rate).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+                        return `${fmt(nums[0])} – ${fmt(nums[1])}`;
+                      })())
+                : display(currentPrice).primary}
             </p>
+            {display(currentPrice).secondary && (
+              <p className="text-xs text-muted-foreground">{display(currentPrice).secondary}</p>
+            )}
 
             {/* Purity & Storage */}
             {product.purity && (
@@ -148,7 +161,7 @@ export default function ProductPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 font-display text-xl font-bold text-foreground">{formatZAR(currentPrice)}</p>
+                <p className="mt-2 font-display text-xl font-bold text-foreground">{format(currentPrice)}</p>
               </div>
             )}
 

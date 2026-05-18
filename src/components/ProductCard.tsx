@@ -2,13 +2,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/data/products";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { display, currency, rate } = useCurrency();
   const hasMultipleVariants = (product.variants?.length ?? 0) > 1;
+
+  // Convert EUR price range (e.g. "€23.20 – €148.45") to ZAR display when toggled.
+  const priceRangeDisplay = (() => {
+    if (!product.priceRange) return null;
+    if (currency === "EUR") return product.priceRange;
+    const nums = product.priceRange.match(/[\d.,]+/g)?.map((s) => parseFloat(s.replace(",", "."))) ?? [];
+    if (nums.length !== 2) return product.priceRange;
+    const fmt = (eur: number) => `R${(eur * rate).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+    return `${fmt(nums[0])} – ${fmt(nums[1])}`;
+  })();
+  const priceDisplay = display(product.price);
 
   const handleAdd = () => {
     if (!product.inStock) {
@@ -67,9 +79,14 @@ export default function ProductCard({ product }: { product: Product }) {
         </p>
 
         <div className="mt-3 flex items-baseline justify-between">
-          <p className="font-display text-base font-bold text-primary">
-            {product.priceRange || formatZAR(product.price)}
-          </p>
+          <div>
+            <p className="font-display text-base font-bold text-primary">
+              {priceRangeDisplay || priceDisplay.primary}
+            </p>
+            {priceDisplay.secondary && !priceRangeDisplay && (
+              <p className="text-[10px] text-muted-foreground">{priceDisplay.secondary}</p>
+            )}
+          </div>
           {hasMultipleVariants && (
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
               {product.variants!.length} sizes

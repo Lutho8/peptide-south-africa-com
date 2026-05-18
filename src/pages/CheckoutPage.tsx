@@ -1,43 +1,25 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, CheckCircle, Tag } from "lucide-react";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
+import { Shield, Lock, Tag, CreditCard, Bitcoin, Loader2 } from "lucide-react";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
+import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
   const { user, refreshOrders } = useAuth();
-  const [submitted, setSubmitted] = useState(false);
+  const { format, currency, convert } = useCurrency();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null);
-
-  if (submitted) {
-    return (
-      <>
-        <SEO title="Order Confirmed" description="Thank you for your order. Same-day dispatch in South Africa." path="/checkout" noindex />
-        <div className="container flex flex-col items-center justify-center py-32">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-trust/10">
-          <CheckCircle className="h-10 w-10 text-trust" />
-        </div>
-        <h1 className="mt-4 font-display text-2xl font-bold text-foreground">Order Confirmed!</h1>
-        <p className="mt-2 text-muted-foreground">Thank you for your purchase. You'll receive a confirmation email shortly.</p>
-        {orderId && (
-          <p className="mt-1 text-sm font-mono text-foreground">
-            Order #{orderId.slice(0, 8).toUpperCase()}
-          </p>
-        )}
-        <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">Continue Shopping</Link>
-        </div>
-      </>
-    );
-  }
 
   if (items.length === 0) {
     return (
@@ -48,79 +30,81 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({ title: "Please sign in", description: "Sign in to complete checkout.", variant: "destructive" });
+      navigate("/auth");
+      return;
+    }
     setBusy(true);
-    let newOrderId: string | null = null;
-    if (user) {
-      const { data: orderRow } = await supabase
+    try {
+      // 1. Create pending order in our DB (EUR canonical amount).
+      const description = items
+        .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
+        .join(", ")
+        .slice(0, 500);
+
+      const { data: orderRow, error: orderErr } = await supabase
         .from("orders")
         .insert({
           user_id: user.id,
           total: totalPrice,
           discount_code: discountCode,
+          status: "pending",
+          currency,
+          order_description: description,
         })
         .select("id")
         .single();
-      newOrderId = orderRow?.id ?? null;
-      await refreshOrders();
-      // Clear abandoned cart snapshot now that order is placed
-      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-      // Push order to Nocobase
-      const { syncToNocobase, captureLead } = await import("@/lib/nocobase");
-      const itemsPayload = items.map((i) => ({
-        product_id: i.product.id,
-        name: i.product.name,
-        variant_label: i.variantLabel ?? null,
-        quantity: i.quantity,
-        price: i.unitPrice,
-      }));
-      syncToNocobase("order.created", {
-        order_id: newOrderId,
-        user_id: user.id,
-        email: user.email,
-        items: itemsPayload,
-        subtotal,
-        discount_code: discountCode,
-        discount_amount: discountAmount,
-        total: totalPrice,
-        stage: "customer",
-        tags: ["purchase"],
-      });
-      // Final lead capture: lifecycle → customer, with full order context for CRM accuracy.
-      const extraTags = ["order_confirmed"];
-      if (discountCode === "RIDETHETIDE10") extraTags.push("first_order_discount_used");
-      captureLead({
-        source: "order",
-        email: user.email,
-        extraTags,
-        extra: {
-          order_id: newOrderId,
-          user_id: user.id,
-          items: itemsPayload,
-          subtotal,
-          discount_code: discountCode,
-          discount_amount: discountAmount,
-          total: totalPrice,
+      if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
+
+      // 2. Ask edge function for NowPayments payment_url. Amount goes in the
+      //    customer's chosen currency.
+      const amount = currency === "EUR" ? totalPrice : Math.round(convert(totalPrice) * 100) / 100;
+      const origin = window.location.origin;
+
+      const { data, error: fnErr } = await supabase.functions.invoke("nowpayments-create-payment", {
+        body: {
+          orderId: orderRow.id,
+          amount,
+          currency: currency.toLowerCase(),
+          description,
+          successUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
+          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
         },
       });
+      if (fnErr) throw new Error(fnErr.message);
+      if (data?.error) throw new Error(data.error);
+      if (!data?.payment_url) throw new Error("No payment URL returned");
+
+      await refreshOrders();
+      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      clearCart();
+      window.location.href = data.payment_url;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Payment could not be started";
+      toast({
+        title: "Payment unavailable",
+        description: msg.includes("not configured")
+          ? "Payments come online once our NowPayments verification completes. Please try again shortly."
+          : msg,
+        variant: "destructive",
+      });
+      setBusy(false);
     }
-    clearCart();
-    setOrderId(newOrderId);
-    setSubmitted(true);
-    setBusy(false);
   };
 
   return (
     <>
-    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, same-day dispatch in South Africa." path="/checkout" noindex />
+    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, SA & EU shipping." path="/checkout" noindex />
     <div className="container py-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
         <CartCountdown variant="compact" />
       </div>
       <div className="grid gap-8 lg:grid-cols-3">
-        <form onSubmit={handleSubmit} className="lg:col-span-2 flex flex-col gap-6">
+        <form onSubmit={handlePay} className="lg:col-span-2 flex flex-col gap-6">
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="font-display text-lg font-semibold text-foreground">Contact Information</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -135,10 +119,13 @@ export default function CheckoutPage() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <input required placeholder="Address" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:col-span-2" />
               <input required placeholder="City" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required placeholder="Province" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input required placeholder="Province / State" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required defaultValue="South Africa" placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+              <input required defaultValue={currency === "EUR" ? "Germany" : "South Africa"} placeholder="Country" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Shipping: South Africa 1–3 days · Germany / EU 4–7 days. Free over R1,500 (SA) or €75 (DE/EU).
+            </p>
           </div>
 
           <DeliveryReturnsAccordion defaultOpen="shipping" />
@@ -163,15 +150,27 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {/* Payment — NowPayments */}
           <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="font-display text-lg font-semibold text-foreground">Payment</h3>
-            <div className="mt-4 grid gap-4">
-              <input required placeholder="Card Number" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <div className="grid grid-cols-2 gap-4">
-                <input required placeholder="MM / YY" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-                <input required placeholder="CVC" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              </div>
-            </div>
+            <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
+              <CreditCard className="h-4 w-4 text-primary" /> Payment
+            </h3>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Pay securely via PayPal, credit/debit card, Apple Pay, Google Pay, SEPA bank transfer, or cryptocurrency.
+              All payments are processed securely through our payment partner{" "}
+              <a href="https://nowpayments.io" target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary">NowPayments</a>.
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {["PayPal","Visa","Mastercard","Apple Pay","Google Pay","SEPA","Revolut"].map((m) => (
+                <li key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</li>
+              ))}
+              <li className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Bitcoin className="h-3 w-3" /> Crypto
+              </li>
+            </ul>
+            <p className="mt-3 text-xs text-muted-foreground">
+              You'll be redirected to NowPayments' secure checkout. Your charged currency: <span className="font-semibold text-foreground">{currency}</span>.
+            </p>
           </div>
 
           <CheckoutTrustBar />
@@ -179,13 +178,13 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={busy}
-            className="rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
           >
-            {busy ? "Processing..." : `Place Order — ${formatZAR(totalPrice)}`}
+            {busy ? <><Loader2 className="h-4 w-4 animate-spin" /> Preparing payment…</> : <>Pay Now — {format(totalPrice)}</>}
           </button>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> SSL Encrypted</span>
-            <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Secure Payment</span>
+            <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Secure Payment via NowPayments</span>
           </div>
         </form>
 
@@ -203,22 +202,25 @@ export default function CheckoutPage() {
                     </p>
                     <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
+                  <span className="text-sm font-semibold text-foreground">{format(item.unitPrice * item.quantity)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 border-t border-border pt-4">
-              <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>{formatZAR(subtotal)}</span></div>
+              <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>{format(subtotal)}</span></div>
               {isDiscountEligible && (
-                <div className="mt-1 flex justify-between text-sm font-semibold text-trust"><span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span></div>
+                <div className="mt-1 flex justify-between text-sm font-semibold text-trust"><span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span></div>
               )}
               <div className="mt-1 flex justify-between text-sm text-muted-foreground"><span>Shipping</span><span className="text-trust font-semibold">Free</span></div>
-              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{formatZAR(totalPrice)}</span></div>
+              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground"><span>Total</span><span>{format(totalPrice)}</span></div>
             </div>
           </div>
 
           <SecurityChecklist />
         </div>
+      </div>
+      <div className="mt-10">
+        <PaymentMethodsBanner />
       </div>
     </div>
     </>

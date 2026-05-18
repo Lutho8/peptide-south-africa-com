@@ -16,19 +16,20 @@ import HeroBackdrop from "./HeroBackdrop";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
 
 export default function HeroShop() {
   const reduce = useReducedMotion();
   const { addToCart } = useCart();
   const { user, hasFirstOrder } = useAuth();
+  const { format } = useCurrency();
   const { toast } = useToast();
   const eligible = !!user && hasFirstOrder === false;
 
-  // Hero featured product = RT3 (best seller)
+  // Hero featured product = RT3 (best seller). Price is in EUR (base currency).
   const hero = products.find((p) => p.id === "1") ?? products[0];
-  const discounted = Math.round(hero.price * 0.9);
+  const discounted = Math.round(hero.price * 0.9 * 100) / 100;
 
   const handleAdd = () => {
     // Hero product may have variants; pick the first as a sensible default.
@@ -101,8 +102,8 @@ export default function HeroShop() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg"
             >
-              Independently HPLC-verified. Transparent ZAR pricing. Discreet
-              shipping from South Africa — order today, on its way tomorrow.
+              Independently HPLC-verified. Transparent EUR & ZAR pricing.
+              Discreet shipping to South Africa (1–3 days) and Germany / EU (4–7 days).
             </motion.p>
 
             {/* CTAs */}
@@ -140,7 +141,7 @@ export default function HeroShop() {
                 <Flame className="h-3.5 w-3.5 text-destructive" /> 23 orders in last 24h
               </span>
               <span className="inline-flex items-center gap-1">
-                <Truck className="h-3.5 w-3.5" /> Free shipping over R1,500
+                <Truck className="h-3.5 w-3.5" /> Free shipping: SA over R1,500 · DE/EU over €75
               </span>
               <span className="inline-flex items-center gap-1">
                 <ShieldCheck className="h-3.5 w-3.5 text-trust" /> 100% lab-tested
@@ -211,10 +212,10 @@ export default function HeroShop() {
 
                 <div className="mt-4 flex items-end gap-3">
                   <p className="font-display text-2xl font-bold text-foreground">
-                    {formatZAR(discounted)}
+                    {format(discounted)}
                   </p>
                   <p className="pb-1 text-sm text-muted-foreground line-through">
-                    {formatZAR(hero.price)}
+                    {format(hero.price)}
                   </p>
                   <span className="ml-auto rounded-full bg-trust/10 px-2 py-0.5 text-[10px] font-bold text-trust">
                     SAVE 10%

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail, Globe2, FlaskConical, Languages } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { captureLead } from "@/lib/nocobase";
+import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 
 export default function Footer() {
   const { user, isAdmin, signOut } = useAuth();
@@ -80,8 +81,10 @@ export default function Footer() {
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <span>✓ Lab Tested</span>
               <span>✓ 99% Purity</span>
-              <span>✓ Fast Shipping</span>
+              <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-3.5 w-3.5" /> Laborgeprüfte Reinheit</span>
+              <span className="inline-flex items-center gap-1.5"><Globe2 className="h-3.5 w-3.5" /> EU shipping available</span>
               <span>✓ Secure Checkout</span>
+              <span className="inline-flex items-center gap-1.5 pt-1 text-xs"><Languages className="h-3 w-3" /> English · Deutsch · Afrikaans</span>
             </div>
           </div>
         </div>
@@ -99,6 +102,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <PaymentMethodsBanner />
     </footer>
   );
 }
