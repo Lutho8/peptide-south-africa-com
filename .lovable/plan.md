@@ -1,36 +1,51 @@
-## Current state
+## Goal
 
-- `public/robots.txt` exists and correctly allows Googlebot/Bingbot/AI crawlers, disallows `/admin`, `/checkout`, `/cart`, `/auth`, and references `Sitemap: https://www.ridethetide.site/sitemap.xml`.
-- `public/sitemap.xml` exists as a static file with homepage, shop, all 8 product URLs, and supporting pages.
-- `ProductPage.tsx` already emits `Product` JSON-LD (via `productSchema`) plus `FAQPage`/`BreadcrumbList`.
-- `HomePage.tsx` already emits `Organization` + `WebSite` + `LocalBusiness` schemas.
-- `ShopPage.tsx` only emits an `ItemList` schema — missing `Organization`/`WebSite`.
-- Google Search Console META verification tag is already in `index.html` (token `3FxnDg7…`) and the site is published.
+An in-app SEO reindexing checklist for the admin/owner that:
+- Lists the key URLs to re-inspect in Google Search Console after sitemap changes (`/`, `/shop`, `/fat-loss-protocol`, `/quiz`, `/research`, all 8 product pages).
+- Tracks per-URL completion (checkbox + "last requested" timestamp).
+- Auto-resets the checklist on a recurring cadence (default: every 14 days) so it nags again.
+- Detects when `public/sitemap.xml` last changed and surfaces a "sitemap updated — re-run indexing" banner if any URL hasn't been re-inspected since that date.
 
-## Plan
+## UX
 
-### 1. robots.txt + sitemap (low-risk improvements)
-- robots.txt is already correct — no change needed beyond confirming `/shop`, `/product/*`, `/fat-loss-protocol`, `/quiz`, `/research` are all crawlable (they are, since only `/admin`, `/cart`, `/checkout`, `/auth` are disallowed).
-- Convert the hand-edited `public/sitemap.xml` to a generator script so new products auto-appear:
-  - Add `scripts/generate-sitemap.ts` that imports `products` from `src/data/products.ts` and writes `public/sitemap.xml` with static routes + one `<url>` per product slug.
-  - Wire `predev` + `prebuild` npm scripts to run it via `bunx tsx`.
-  - Keep `<lastmod>` set to build date so Google sees freshness.
+New page `src/pages/admin/AdminSEOReindexPage.tsx` at route `/admin/seo-reindex`, plus a card link from `AdminIndexPage`.
 
-### 2. Schema additions
-- `ShopPage.tsx`: also emit `organizationSchema` and `websiteSchema` JSON-LD alongside the existing `ItemList` so the shop page reinforces site-level entities for rich results.
-- `ProductPage.tsx`: confirm `Product` schema includes `brand`, `offers.priceCurrency=ZAR`, `availability`, `aggregateRating` (already present in `productSchema`) — no change needed.
+Layout:
+- Header: "SEO Re-indexing Checklist" + last sitemap-build date + days-until-next-cycle.
+- Banner (if stale): "Sitemap updated on {date}. Re-request indexing for X of Y pages."
+- Table rows per URL: checkbox · path · "Last requested: {relative time}" · "Open in Search Console" deep link (`https://search.google.com/search-console/inspect?resource_id=https://www.ridethetide.site/&id={url-encoded}`).
+- Bulk actions: "Mark all done" · "Reset checklist".
+- Footer note explaining the 14-day cycle is configurable.
 
-### 3. Google Search Console verify + site-add
-Run these via `code--exec` against the connector gateway:
-1. `POST /siteVerification/v1/webResource?verificationMethod=META` with `identifier=https://www.ridethetide.site/` to verify the deployed meta tag.
-2. `PUT /webmasters/v3/sites/https%3A%2F%2Fwww.ridethetide.site%2F` to add the property.
-3. `POST /webmasters/v3/sites/{site}/sitemaps/{sitemapUrl}` to submit `sitemap.xml`.
-4. Report back the verified property + sitemap submission status.
+## Data
 
-Note: per-URL "Request indexing" is not available via API — once the property is added and the sitemap is submitted, Google will crawl autonomously. I'll list the top URLs the user should manually click "Request Indexing" on in Search Console.
+Single table `seo_reindex_log`:
+- `id` uuid PK
+- `url` text not null
+- `last_requested_at` timestamptz
+- `cycle_started_at` timestamptz default now()
+- `notes` text
+- RLS: only authenticated users with `admin` role (via existing `has_role` pattern) can select/update.
 
-### Files to touch
-- `scripts/generate-sitemap.ts` (new)
-- `package.json` (add `predev`/`prebuild`)
-- `src/pages/ShopPage.tsx` (add 2 JsonLd blocks)
-- No changes to `robots.txt`, `ProductPage.tsx`, `HomePage.tsx`, or `index.html`.
+Sitemap build date: at build time, the `scripts/generate-sitemap.ts` script writes a sibling `public/sitemap-meta.json` with `{ "generatedAt": ISO }`. The page fetches `/sitemap-meta.json` to display freshness and compute the staleness banner.
+
+## Reminder mechanism (in-app)
+
+Two layers:
+1. **Visual badge in admin nav** — `AdminIndexPage` card shows a red dot when any URL is stale (sitemap newer than that URL's `last_requested_at`, OR no entry within current cycle window).
+2. **Cycle reset** — when the page loads, if `now - cycle_started_at >= 14 days`, all rows reset (`last_requested_at = null`, `cycle_started_at = now()`).
+
+No email/cron needed — the reminder appears whenever the user opens the admin area. (We can add an Inngest scheduled email later if you want; out of scope here.)
+
+## Files to add / change
+
+- `supabase/migrations/...` — new `seo_reindex_log` table + RLS + seed insert for the 13 known URLs.
+- `scripts/generate-sitemap.ts` — also write `public/sitemap-meta.json`.
+- `src/pages/admin/AdminSEOReindexPage.tsx` — new page.
+- `src/pages/admin/AdminIndexPage.tsx` — add link card + stale badge.
+- `src/App.tsx` — register `/admin/seo-reindex` route.
+
+## Out of scope (ask if you want them)
+
+- Email/Slack reminders on a schedule (would need Inngest + transactional email).
+- Auto-calling the GSC API to submit indexing requests — Google's URL Inspection "Request Indexing" action has no public API; it must be done manually in the Search Console UI. The checklist optimises that manual click loop.
