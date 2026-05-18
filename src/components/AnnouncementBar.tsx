@@ -5,8 +5,8 @@ const STORAGE_KEY = "rtt_announcement_dismissed_v1";
 
 const messages = [
   { icon: Tag, text: "🎁 Sign in to auto-apply 10% off your first order — code RIDETHETIDE10" },
-  { icon: Truck, text: "Free shipping: SA over R1,500 · DE/EU over €75 — SA 1–3 days · DE/EU 4–7 days" },
-  { icon: ShieldCheck, text: "Every batch ≥99% HPLC tested · COA on every product · Laborgeprüfte Reinheit" },
+  { icon: Truck, text: "Free shipping: SA over R1,500 · DE / EU over €75 — versending 1–3 dae · Versand 4–7 Tage" },
+  { icon: ShieldCheck, text: "Every batch ≥99% HPLC tested · COA on every product · Laborgeprüfte Reinheit · Onafhanklik getoets" },
 ];
 
 export default function AnnouncementBar() {

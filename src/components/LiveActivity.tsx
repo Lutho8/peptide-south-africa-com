@@ -3,12 +3,13 @@ import { CheckCircle2, X } from "lucide-react";
 
 const events = [
   { name: "Sarah", city: "Cape Town", item: "BPC-157 Recovery Kit", ago: "2 minutes ago" },
-  { name: "Michael", city: "Johannesburg", item: "Retatrutide Fat Loss Protocol", ago: "5 minutes ago" },
-  { name: "Thandi", city: "Durban", item: "GHK-Cu Skin Stack", ago: "8 minutes ago" },
-  { name: "James", city: "Pretoria", item: "Tirzepatide Starter Kit", ago: "12 minutes ago" },
-  { name: "Lerato", city: "Stellenbosch", item: "TB-500 + BPC-157 Bundle", ago: "14 minutes ago" },
-  { name: "David", city: "Sandton", item: "Tesamorelin Longevity Stack", ago: "18 minutes ago" },
-  { name: "Nadia", city: "Port Elizabeth", item: "Epitalon Anti-Aging Kit", ago: "22 minutes ago" },
+  { name: "Lukas", city: "Berlin", item: "Retatrutide Fat Loss Protocol", ago: "4 minutes ago" },
+  { name: "Michael", city: "Johannesburg", item: "Tirzepatide Starter Kit", ago: "6 minutes ago" },
+  { name: "Anja", city: "München", item: "GHK-Cu Skin Stack", ago: "9 minutes ago" },
+  { name: "Thandi", city: "Durban", item: "TB-500 + BPC-157 Bundle", ago: "12 minutes ago" },
+  { name: "Jonas", city: "Hamburg", item: "Tesamorelin Longevity Stack", ago: "15 minutes ago" },
+  { name: "Lerato", city: "Pretoria", item: "Epitalon Anti-Aging Kit", ago: "18 minutes ago" },
+  { name: "Sophie", city: "Köln", item: "BPC-157 Recovery Kit", ago: "22 minutes ago" },
 ];
 
 export default function LiveActivity() {

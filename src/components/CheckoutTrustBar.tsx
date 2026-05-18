@@ -1,4 +1,4 @@
-import { Lock, Truck, Clock, RefreshCcw, CreditCard } from "lucide-react";
+import { Lock, Truck, Clock, RefreshCcw, CreditCard, ShieldCheck } from "lucide-react";
 
 export default function CheckoutTrustBar() {
   return (
@@ -8,10 +8,13 @@ export default function CheckoutTrustBar() {
           <Lock className="h-3.5 w-3.5 text-trust" /> 256-bit SSL
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-          <CreditCard className="h-3.5 w-3.5 text-primary" /> PCI-DSS Compliant
+          <CreditCard className="h-3.5 w-3.5 text-primary" /> PCI-DSS · SEPA
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
+          <ShieldCheck className="h-3.5 w-3.5 text-trust" /> POPIA · GDPR
         </span>
         <div className="flex items-center gap-1.5">
-          {["VISA", "MC", "AMEX", "DISC"].map((brand) => (
+          {["VISA", "MC", "PAYPAL", "SEPA", "BTC"].map((brand) => (
             <span
               key={brand}
               className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-bold tracking-wider text-foreground"
@@ -26,21 +29,21 @@ export default function CheckoutTrustBar() {
           <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
             <p className="text-xs font-bold text-foreground">Free Shipping</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">On orders over R1,000</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">SA over R1,500 · DE / EU over €75</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
           <div>
-            <p className="text-xs font-bold text-foreground">Same-Day Dispatch</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">Orders before 14:00 SAST</p>
+            <p className="text-xs font-bold text-foreground">Fast Dispatch</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">SA same-day before 14:00 SAST · DE 24 h cut-off</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <RefreshCcw className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
             <p className="text-xs font-bold text-foreground">30-Day Guarantee</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">No-questions refund</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">EU: 14-day Widerrufsrecht on sealed vials</p>
           </div>
         </div>
       </div>
