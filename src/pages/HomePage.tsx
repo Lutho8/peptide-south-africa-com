@@ -69,7 +69,7 @@ const whyItWorks = [
 export default function HomePage() {
   return (
     <div className="flex flex-col">
-      <SEO title="Buy Peptides Online — South Africa &amp; Germany / EU" description="GP-led peptide service. ≥99% purity, German-certified, third-party lab tested. Fat loss, healing &amp; performance. Same-day dispatch in SA · 4–7 day DHL to Germany / EU." path="/" />
+      <SEO title="Premium Research Peptides Online | Germany & South Africa" description="Buy premium research peptides online in Germany & South Africa. 99%+ HPLC purity, COA on every batch, discreet shipping. Retatrutide, Tirzepatide, BPC-157, GHK-Cu & more." path="/" />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />
