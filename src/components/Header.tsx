@@ -3,24 +3,29 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
+import MarketSwitcher from "@/components/MarketSwitcher";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { market } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
+        <Link to={mp("/")} className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
           <img src={logo} alt="Ride The Tide logo" className="h-8 w-8" />
           Ride The Tide
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
-          <Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Home</Link>
+          <Link to={mp("/")} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Home</Link>
           <Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
           <Link to="/research" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
           <Link to="/faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</Link>
-          <Link to="/shop" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Shop</Link>
+          <Link to={mp("/shop")} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Shop</Link>
+          <MarketSwitcher />
           <CurrencySwitcher />
           <Link
             to="/quiz"
@@ -31,6 +36,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3 md:hidden">
+          <MarketSwitcher />
           <CurrencySwitcher />
           <Link
             to="/quiz"
