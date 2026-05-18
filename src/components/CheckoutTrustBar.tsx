@@ -1,4 +1,5 @@
 import { Lock, Truck, Clock, RefreshCcw, CreditCard, ShieldCheck } from "lucide-react";
+import { trilingual } from "@/lib/copy";
 
 export default function CheckoutTrustBar() {
   return (
@@ -28,22 +29,22 @@ export default function CheckoutTrustBar() {
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
-            <p className="text-xs font-bold text-foreground">Free Shipping</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">SA over R1,500 · DE / EU over €75</p>
+            <p className="text-xs font-bold text-foreground">Free Shipping · Gratis Versand · Gratis Versending</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">{trilingual("shipping_free")}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
           <div>
-            <p className="text-xs font-bold text-foreground">Fast Dispatch</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">SA same-day before 14:00 SAST · DE 24 h cut-off</p>
+            <p className="text-xs font-bold text-foreground">Fast Dispatch · Schneller Versand</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">{trilingual("shipping_sa_window")} · {trilingual("shipping_eu_window")}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <RefreshCcw className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
             <p className="text-xs font-bold text-foreground">30-Day Guarantee</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">EU: 14-day Widerrufsrecht on sealed vials</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">EU: 14-day Widerrufsrecht · SA: 30-day guarantee · 30-dag waarborg</p>
           </div>
         </div>
       </div>
