@@ -7,9 +7,14 @@ import productBpc from "@/assets/product-bpc.jpg";
 import productGlow from "@/assets/product-glow.jpg";
 import productKlow from "@/assets/product-klow.jpg";
 
+// NOTE: All prices are stored in EUR (canonical base currency).
+// ZAR is computed at display time via CurrencyContext using a live FX rate
+// (fallback 1 EUR = 19.40 ZAR). Source values were converted from the original
+// ZAR catalog by dividing by 19.40 and rounding to 2 decimals.
+
 export interface Variant {
   label: string;
-  price: number;
+  price: number; // EUR
 }
 
 export interface Product {
@@ -18,7 +23,9 @@ export interface Product {
   slug: string;
   shortDescription: string;
   description: string;
+  /** Price in EUR. */
   price: number;
+  /** Optional pre-formatted EUR range, e.g. "€23.20 – €148.45". */
   priceRange?: string;
   image: string;
   category: string;
@@ -44,8 +51,8 @@ export const products: Product[] = [
     slug: "rt3-reta",
     shortDescription: "Triple agonist targeting GLP-1, GIP, and glucagon receptors for metabolic research.",
     description: "RT3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
-    price: 450,
-    priceRange: "R450 – R2,880",
+    price: 23.20,
+    priceRange: "€23.20 – €148.45",
     image: productRt3,
     category: "GLP",
     tag: "Best Seller",
@@ -53,11 +60,11 @@ export const products: Product[] = [
     storage: "Refrigerate after reconstitution.",
     sku: "RT-10mg",
     variants: [
-      { label: "5mg", price: 450 },
-      { label: "10mg", price: 720 },
-      { label: "15mg", price: 1080 },
-      { label: "30mg", price: 1800 },
-      { label: "60mg", price: 2880 },
+      { label: "5mg", price: 23.20 },
+      { label: "10mg", price: 37.11 },
+      { label: "15mg", price: 55.67 },
+      { label: "30mg", price: 92.78 },
+      { label: "60mg", price: 148.45 },
     ],
     benefits: ["Targets GLP-1, GIP & glucagon receptors", "Metabolic pathway research", "Insulin resistance studies", "Obesity research applications"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
@@ -76,7 +83,7 @@ export const products: Product[] = [
     slug: "ghk-cu-50mg",
     shortDescription: "Copper peptide for skin rejuvenation, wound healing, and collagen synthesis research.",
     description: "GHK-Cu is a naturally occurring copper peptide with extensive research backing its role in tissue remodeling, collagen synthesis, and anti-inflammatory pathways. This 50mg vial provides ample material for comprehensive dermatological and regenerative research.",
-    price: 630,
+    price: 32.47,
     image: productGhk,
     category: "Skin & Hair",
     purity: "≥99%",
@@ -98,7 +105,7 @@ export const products: Product[] = [
     slug: "tesamorelin",
     shortDescription: "Growth hormone-releasing hormone analog for GH secretion and body composition research.",
     description: "Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for its ability to stimulate GH production. Widely researched for its effects on visceral adipose tissue reduction and lipodystrophy.",
-    price: 774,
+    price: 39.90,
     image: productTesa,
     category: "Growth Hormone",
     purity: "≥99%",
@@ -120,8 +127,8 @@ export const products: Product[] = [
     slug: "tz2-tirz",
     shortDescription: "Dual GIP/GLP-1 receptor agonist for advanced metabolic and weight loss research.",
     description: "TZ-2 is a dual GIP and GLP-1 receptor agonist representing the next generation of metabolic peptide research. Studied extensively for its role in glucose homeostasis, appetite regulation, and significant body weight reduction in preclinical models.",
-    price: 540,
-    priceRange: "R540 – R1,134",
+    price: 27.84,
+    priceRange: "€27.84 – €58.45",
     image: productTz2,
     category: "GLP",
     tag: "Pre-Order",
@@ -129,9 +136,9 @@ export const products: Product[] = [
     storage: "Refrigerate after reconstitution.",
     sku: "TZ2-10mg",
     variants: [
-      { label: "10mg", price: 540 },
-      { label: "30mg", price: 900 },
-      { label: "60mg", price: 1134 },
+      { label: "10mg", price: 27.84 },
+      { label: "30mg", price: 46.39 },
+      { label: "60mg", price: 58.45 },
     ],
     benefits: ["Dual GIP/GLP-1 agonism", "Glucose homeostasis research", "Appetite regulation studies", "Body weight reduction research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
@@ -148,8 +155,8 @@ export const products: Product[] = [
     slug: "mots-c",
     shortDescription: "Mitochondrial-derived peptide for metabolic homeostasis and longevity research.",
     description: "MOTS-C is a mitochondrial-derived peptide that plays a critical role in metabolic homeostasis. Research shows it regulates insulin sensitivity, promotes fatty acid oxidation, and may have significant implications for aging and exercise physiology.",
-    price: 486,
-    priceRange: "R486 – R990",
+    price: 25.05,
+    priceRange: "€25.05 – €51.03",
     image: productMots,
     category: "Longevity",
     tag: "Pre-Order",
@@ -157,9 +164,9 @@ export const products: Product[] = [
     storage: "Refrigerate after reconstitution.",
     sku: "MOTS-20mg",
     variants: [
-      { label: "10mg", price: 486 },
-      { label: "20mg", price: 720 },
-      { label: "50mg", price: 990 },
+      { label: "10mg", price: 25.05 },
+      { label: "20mg", price: 37.11 },
+      { label: "50mg", price: 51.03 },
     ],
     benefits: ["Metabolic homeostasis research", "Insulin sensitivity studies", "Fatty acid oxidation pathways", "Exercise physiology research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
@@ -176,7 +183,7 @@ export const products: Product[] = [
     slug: "bpc-tb500-blend",
     shortDescription: "Synergistic healing blend combining BPC-157 and TB-500 for tissue repair research.",
     description: "This premium blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — into a single vial. Designed for researchers studying tissue repair, angiogenesis, and accelerated recovery pathways.",
-    price: 954,
+    price: 49.18,
     image: productBpc,
     category: "Healing",
     tag: "Pre-Order",
@@ -198,7 +205,7 @@ export const products: Product[] = [
     slug: "glow70",
     shortDescription: "Advanced skin peptide complex for collagen production and skin rejuvenation research.",
     description: "GLOW70 is a specialized 70mg skin peptide formulation designed for advanced dermatological research. Targets multiple pathways involved in collagen production, skin cell turnover, and protective barrier function.",
-    price: 1080,
+    price: 55.67,
     image: productGlow,
     category: "Skin & Hair",
     purity: "≥99%",
@@ -220,7 +227,7 @@ export const products: Product[] = [
     slug: "klow80",
     shortDescription: "Premium 80mg longevity peptide for cellular renewal and anti-aging research.",
     description: "KLOW80 is an 80mg premium longevity peptide designed for advanced aging research. Targets telomerase activation, mitochondrial biogenesis, and cellular senescence pathways — key areas in the quest to understand and potentially slow biological aging.",
-    price: 1260,
+    price: 64.95,
     image: productKlow,
     category: "Longevity",
     tag: "Pre-Order",
