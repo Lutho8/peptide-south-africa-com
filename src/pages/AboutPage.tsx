@@ -84,7 +84,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <SEO title="About Ride The Tide — GP-Led Peptide Protocols (SA &amp; DE / EU)" description="Meet the team behind Ride The Tide: South African GPs and an EU fulfilment partner. German-certified sourcing, third-party lab testing, and physician-supervised peptide protocols for SA &amp; Europe." path="/about" />
+      <SEO title="About Ride The Tide | Premium Peptide Research Supplier" description="Ride The Tide supplies 99%+ purity research peptides with third-party HPLC testing & COAs. Serving researchers in Germany and South Africa since 2024." path="/about" />
       <div className="flex flex-col">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
 

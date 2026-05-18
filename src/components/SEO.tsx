@@ -3,6 +3,8 @@ import { Helmet } from "react-helmet-async";
 const SITE_URL = "https://www.ridethetide.site";
 const SITE_NAME = "Ride The Tide";
 const DEFAULT_OG = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8baac3f7-3ee8-4976-8c38-ac9d73046bbc/id-preview-8fd492ca--444b5a36-70e0-4613-a86e-bcb50367db3d.lovable.app-1774135344354.png";
+const DEFAULT_KEYWORDS =
+  "peptides Germany, peptides South Africa, Peptide kaufen Deutschland, buy peptides online, research peptides, retatrutide, tirzepatide, BPC-157, GHK-Cu, tesamorelin, fat loss peptides, healing peptides, Forschungspeptide, Peptide online kaufen, GLP-1 peptides";
 
 interface SEOProps {
   title: string;
@@ -12,6 +14,10 @@ interface SEOProps {
   type?: "website" | "article" | "product";
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Page-specific keywords. Falls back to a bilingual EN+DE default. */
+  keywords?: string;
+  /** Document language for <html lang>. Default "en". */
+  lang?: "en" | "de" | "af";
 }
 
 export default function SEO({
@@ -22,6 +28,8 @@ export default function SEO({
   type = "website",
   noindex = false,
   jsonLd,
+  keywords = DEFAULT_KEYWORDS,
+  lang = "en",
 }: SEOProps) {
   const url = `${SITE_URL}${path}`;
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
@@ -29,8 +37,13 @@ export default function SEO({
 
   return (
     <Helmet>
+      {/* Document language — flips per route */}
+      <html lang={lang} />
+
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <meta name="distribution" content="global" />
       <link rel="canonical" href={url} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}

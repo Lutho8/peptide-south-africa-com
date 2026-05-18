@@ -1,98 +1,104 @@
-
 ## Goal
 
-1. Validate the checkout contact + shipping address against rules specific to Germany and South Africa, showing inline errors before NowPayments is called.
-2. Add a live free-shipping progress bar on the checkout page that updates as the cart subtotal changes (mirrors the cart page bar, but pinned to the selected shipping country).
+Tighten the existing SEO foundation (already using `react-helmet-async` + per-page `<SEO>` + JSON-LD + sitemap generator) so the site sends clean dual-market signals for Germany and South Africa, without duplicating or breaking what already ships.
 
-Scope is frontend only — no DB or edge-function changes. Order persistence stays as-is.
-
----
-
-## 1. Address validation
-
-### Schema (`src/lib/checkoutSchema.ts`, new)
-
-Use `zod` (already in project). Build a discriminated schema keyed by `country`:
-
-- **Shared fields** (trimmed, with max lengths to prevent abuse):
-  - `firstName`: 1–60 chars, letters/spaces/hyphens/apostrophes only
-  - `lastName`: 1–60 chars, same charset
-  - `email`: valid email, ≤ 120 chars
-  - `address1`: 3–120 chars
-  - `city`: 2–80 chars
-  - `region`: 2–80 chars (label flips Province ↔ Bundesland)
-
-- **Germany (`country = "Germany"`)**:
-  - `postalCode`: exactly 5 digits (`/^\d{5}$/`)
-  - `region` must match one of the 16 Bundesländer (case-insensitive list constant in the same file)
-
-- **South Africa (`country = "South Africa"`)**:
-  - `postalCode`: exactly 4 digits (`/^\d{4}$/`)
-  - `region` must match one of the 9 SA provinces (case-insensitive)
-
-- **Unsupported country**: schema rejects with `country_blocked` message — `handlePay` already blocks, validation just reinforces.
-
-Export `validateCheckout(input, country)` returning `{ ok: true, data } | { ok: false, errors: Record<field,string> }` with localized messages keyed off `currency`/locale (EN + DE + AF strings via `COPY` keys added to `src/lib/copy.ts`).
-
-### Copy additions (`src/lib/copy.ts`)
-
-Add trilingual keys: `err_required`, `err_email`, `err_postal_de`, `err_postal_sa`, `err_region_de`, `err_region_sa`, `err_name_chars`, `err_address_short`.
-
-### Form refactor (`src/pages/CheckoutPage.tsx`)
-
-- Convert the currently uncontrolled `<input>`s for contact + address into controlled state (`form` object + `setField`), plus an `errors` state map.
-- On `handlePay` first run `validateCheckout(form, country)`:
-  - If invalid: set `errors`, scroll/focus the first invalid field, toast a generic "Please fix the highlighted fields" message, abort before calling Supabase / NowPayments.
-  - If valid: continue with current flow.
-- Render inline errors under each input (`<p className="mt-1 text-xs text-destructive" role="alert">`), and add `aria-invalid` + `aria-describedby` on inputs.
-- Show province/Bundesland helper text when the country changes (e.g. "z. B. Bayern" / "e.g. Gauteng").
-- Persist the form values in `sessionStorage` under `rtt_checkout_form` so a failed payment / reload keeps what the user typed (parallel to the existing `rtt_ship_country` persistence).
-
-### Tests (`tests/checkout.spec.ts`)
-
-Add Playwright cases:
-- DE: invalid postal `1234` → inline error, Pay Now does not navigate.
-- DE: invalid Bundesland "Foo" → inline error.
-- SA: invalid postal `12` → inline error.
-- Valid SA submit reaches the Supabase call (mock-friendly: assert no inline errors visible and button enters busy state).
+Most pieces requested are already in place — the work is **consolidation, copy fixes, and three missing additions**, not a from-scratch rebuild.
 
 ---
 
-## 2. Free-shipping progress bar on checkout
+## What already exists (no change needed)
 
-Reuse the existing `src/components/FreeShippingBar.tsx` (already trilingual, used on the cart page).
+- `react-helmet-async` wired in `src/main.tsx`; every page imports `@/components/SEO`.
+- `SEO.tsx` already emits dynamic `<title>`, description, canonical, hreflang (en-ZA / en-GB / de-DE / af-ZA / x-default), OG dual locale, Twitter card, geo tags, and JSON-LD.
+- `Breadcrumbs.tsx` already renders BreadcrumbList JSON-LD + visible nav, used on 9 pages.
+- `scripts/generate-sitemap.ts` already generates sitemap.xml on `predev`/`prebuild` including product slugs with priorities.
+- `robots.txt` already disallows admin/auth/checkout and lists the sitemap.
+- Google site verification meta already in `index.html`.
 
-### Integration in `src/pages/CheckoutPage.tsx`
-
-- Place it directly above the "Order Summary" totals block in the right column, so the bar updates as soon as quantity changes elsewhere (cart drawer / line edits) recompute `totalPrice`.
-- Feed it the destination-currency subtotal and country so the threshold matches checkout's shipping math:
-
-  ```tsx
-  {shippingMath.supported && (
-    <FreeShippingBar
-      country={country as ShippingCountry}
-      subtotalInDest={shippingMath.destSubtotal}
-    />
-  )}
-  ```
-
-- Update `FreeShippingBar` props if needed to accept `country` + `subtotalInDest` directly (today it likely derives from cart context). If the existing API already covers this, just import and use. Verify by reading the component before editing; only extend the API additively (new optional props) to keep cart-page usage intact.
-- Remove the ad-hoc `showFreeNudge` block in `CheckoutPage` (replaced by the bar).
-
-### Reactivity
-
-`totalPrice` comes from `useCart()` which already re-renders on quantity change, so the bar updates live with no extra wiring. The destination-currency conversion uses `rate` from `useCurrency()` — already a dependency of `shippingMath`'s `useMemo`.
+These will be **edited in place, not rewritten**.
 
 ---
 
-## Files
+## 1. `src/components/SEO.tsx` — tighten and add missing bits
 
-- **New**: `src/lib/checkoutSchema.ts`
-- **Edited**: `src/pages/CheckoutPage.tsx`, `src/lib/copy.ts`, `src/components/FreeShippingBar.tsx` (only if props need extending), `tests/checkout.spec.ts`
+- Add `<html lang={lang}>` driven by a new optional `lang` prop (default `"en"`) — Helmet supports `<html>` attributes. This is the only way to flip `<html lang>` per route in a Vite/CSR app.
+- Add per-route `<meta name="keywords">` accepting an optional `keywords` prop; default to bilingual fallback covering both markets.
+- Add `<meta name="distribution" content="global" />`.
+- Replace the R2 default OG image fallback with `${SITE_URL}/og-default.jpg` if present; otherwise drop `og:image` entirely (per head-meta guideline: better no image than a placeholder). Leave existing per-page overrides intact.
+- Keep current hreflang block (en-ZA / en-GB / de-DE / af-ZA / x-default) — this is broader and more correct than the brief's smaller set.
+
+## 2. `index.html` — sitewide head fixes
+
+- Update `<title>` and `<meta name="description">` to the brief's homepage strings (dual-market wording instead of SA-only).
+- Update `<meta name="keywords">` to the brief's bilingual EN+DE list.
+- Add `<meta name="distribution" content="global" />`.
+- Add `<link rel="preconnect" href="https://api.nowpayments.io" />` and `<link rel="dns-prefetch" href="https://api.nowpayments.io" />`.
+- Add sitewide JSON-LD `Organization` and `WebSite` (with `SearchAction`) blocks per the brief.
+- Add sitewide CSS guard: `<style>#lovable-badge{display:none !important;}</style>` (belt-and-braces; the real removal is via the badge-visibility tool).
+- Leave the existing canonical and og:* in place as fallbacks for non-JS crawlers (per head-meta guideline).
+
+## 3. Per-page copy + Helmet props (no new components)
+
+Update the `title` / `description` strings already passed into `<SEO>` so they match the brief's dual-market copy, on these pages only:
+
+- `HomePage.tsx` — homepage title/desc + H1 changes to "Premium Research Peptides for Germany & South Africa".
+- `ShopPage.tsx` — shop title/desc; H1 "Shop Research Peptides".
+- `AboutPage.tsx` — about title/desc.
+- `FAQPage.tsx` — FAQ title/desc; expand existing FAQPage JSON-LD `mainEntity` to include the six Q&A from the brief (ship, purity, human use, payments, storage, DE shipping).
+- `ResearchHubPage.tsx` — research title/desc.
+- `ProductPage.tsx` — extend existing Product JSON-LD with `shippingDetails` (EUR €7.50 / DE) and `priceValidUntil` (year-end). Confirm H1 = product name. Add `loading="lazy"` to gallery images below the fold.
+
+H1 audits are limited to the five pages above; no broad heading-restructure sweep.
+
+## 4. Breadcrumbs on cart + checkout
+
+Add `<Breadcrumbs>` to `CartPage.tsx` (Home > Cart) and `CheckoutPage.tsx` (Home > Cart > Checkout). These pages are noindex, so the JSON-LD won't be indexed but the visible nav improves UX consistency.
+
+## 5. `public/robots.txt`
+
+- Remove `Disallow: /cart` from each user-agent block (brief wants cart crawlable; current blocks it). Keep admin/auth/checkout blocked.
+- Add `Disallow: /api/` to each block.
+- Leave the AI-crawler allow-list as-is (already excellent, not in brief).
+
+## 6. `scripts/generate-sitemap.ts`
+
+- Adjust priorities to match the brief: `/shop` → 0.9, products → 0.8, `/research` → 0.6. Other entries stay.
+- No structural changes.
+
+## 7. `src/components/Footer.tsx` — internal-linking section
+
+Add a 4-column link grid above the existing footer body using the brief's Shop / Support / Legal / About structure. Categories ("Fat Loss Peptides", "Healing Peptides", etc.) link to `/shop?category=...` (existing shop accepts a query param — verify; if not, link to `/shop` and add a memory item to revisit). Keep the newsletter + bottom bar as-is.
+
+## 8. Lovable badge
+
+Call `publish_settings--set_badge_visibility` with `hide_badge: true` (requires Pro; if it errors with plan-required, surface that to the user and keep the CSS guard from §2 as the fallback). Do not write any tool-specific instructions into the prompt.
+
+## 9. Page-speed quick wins
+
+- Add `loading="lazy"` to product images on `ShopPage.tsx` and `ProductPage.tsx` gallery (where missing).
+- Resource hints already added in §2.
+
+## 10. Verification
+
+After edits, run the sitemap generator once via `bunx tsx scripts/generate-sitemap.ts` and confirm `public/sitemap.xml` regenerates cleanly. Read `index.html` and `SEO.tsx` to sanity-check tag dedup (no double canonicals, no double `og:title`).
+
+---
 
 ## Out of scope
 
-- Server-side re-validation (no edge-function changes requested).
-- Address autocomplete / Google Places.
-- Phone number field (not currently collected).
-- Other markets — schema stays restricted to DE + SA per existing shipping rules.
+- Per-route language switcher / `?lang=de` server rendering (CSR app — no per-locale URLs to advertise).
+- Replacing the existing hreflang block with the brief's narrower 3-entry set — current 5-entry set is strictly better.
+- Migrating to SSR for accurate social-preview crawlers — flagged as a known limitation, not a fix here.
+- Image format conversion to WebP (asset-pipeline change, large effort, not blocking indexability).
+- Adding `aggregateRating` invented numbers (`4.9 / 1200 reviews`) — only emit if real data exists, otherwise omit the field per Google's structured-data policy.
+
+## Files touched
+
+- `src/components/SEO.tsx`
+- `index.html`
+- `src/pages/HomePage.tsx`, `ShopPage.tsx`, `AboutPage.tsx`, `FAQPage.tsx`, `ResearchHubPage.tsx`, `ProductPage.tsx`, `CartPage.tsx`, `CheckoutPage.tsx`
+- `src/components/Footer.tsx`
+- `public/robots.txt`
+- `scripts/generate-sitemap.ts`
+
+Plus one tool call: `publish_settings--set_badge_visibility`.

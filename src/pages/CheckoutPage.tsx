@@ -12,6 +12,7 @@ import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 import FreeShippingBar from "@/components/FreeShippingBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
 import { COPY, trilingual, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
@@ -234,6 +235,7 @@ export default function CheckoutPage() {
   return (
     <>
     <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, SA & EU shipping." path="/checkout" noindex />
+    <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
     <div className="container py-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>

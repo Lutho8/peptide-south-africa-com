@@ -71,7 +71,7 @@ export default function ShopPage() {
 
   return (
     <>
-      <SEO title="Buy Research Peptides — South Africa &amp; Germany / EU" description="Shop ≥99% purity research peptides. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch in SA, DHL to Germany / EU." path="/shop" />
+      <SEO title="Shop Research Peptides | Retatrutide, Tirzepatide, BPC-157" description="Browse our full range of HPLC-verified research peptides. Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, Tesamorelin & blends. Fast shipping to Germany & South Africa." path="/shop" />
       <JsonLd data={itemListSchema} />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />

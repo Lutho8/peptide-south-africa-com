@@ -1,21 +1,21 @@
 # Ride The Tide — robots.txt
-# Personalized peptide protocols, GP-led, South Africa.
+# Premium research peptides for Germany & South Africa.
 
 User-agent: Googlebot
 Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /checkout
-Disallow: /cart
 Disallow: /auth
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /checkout
-Disallow: /cart
 Disallow: /auth
+Disallow: /api/
 
 User-agent: Twitterbot
 Allow: /
@@ -53,7 +53,7 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /checkout
-Disallow: /cart
 Disallow: /auth
+Disallow: /api/
 
 Sitemap: https://www.ridethetide.site/sitemap.xml

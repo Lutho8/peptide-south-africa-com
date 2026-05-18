@@ -128,12 +128,27 @@ export function productSchema(product: {
     ...(product.purity ? { additionalProperty: { "@type": "PropertyValue", name: "Purity", value: product.purity } } : {}),
     offers: {
       "@type": "Offer",
+      url: `${SITE_URL}/product/${product.slug}`,
       priceCurrency: "EUR",
       price: product.price,
+      priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
+      itemCondition: "https://schema.org/NewCondition",
       availability: product.inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/PreOrder",
       seller: { "@id": `${SITE_URL}/#organization` },
+      shippingDetails: [
+        {
+          "@type": "OfferShippingDetails",
+          shippingRate: { "@type": "MonetaryAmount", value: "7.50", currency: "EUR" },
+          shippingDestination: { "@type": "DefinedRegion", addressCountry: "DE" },
+        },
+        {
+          "@type": "OfferShippingDetails",
+          shippingRate: { "@type": "MonetaryAmount", value: "89", currency: "ZAR" },
+          shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
+        },
+      ],
     },
     aggregateRating: {
       "@type": "AggregateRating",

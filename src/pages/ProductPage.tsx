@@ -81,8 +81,8 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={`${product.name} — Buy in SA or Germany / EU`}
-        description={`${product.shortDescription || product.description.slice(0, 140)} Same-day dispatch in South Africa, DHL to Germany / EU. COA included. EUR &amp; ZAR pricing.`}
+        title={`${product.name} | Research Peptide | Ride The Tide`}
+        description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships to Germany & South Africa.`}
         path={`/product/${product.slug}`}
         image={typeof product.image === "string" ? product.image : undefined}
         type="product"
