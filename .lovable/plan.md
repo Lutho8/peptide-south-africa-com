@@ -1,36 +1,98 @@
-## Persist shipping country + expand checkout E2E coverage
 
-### 1. Persist shipping country selection
+## Goal
 
-- In `src/pages/CheckoutPage.tsx`, replace the bare `useState<ShippingCountry>(...)` with a localStorage-backed state under key `rtt_ship_country`.
-  - On mount: read the key; if it's `"South Africa"` or `"Germany"` use it, otherwise fall back to the currency-derived default (ZAR→SA, EUR→DE).
-  - On change: write the new value to localStorage so it survives reloads and a failed/cancelled NowPayments round-trip.
-  - Do NOT auto-overwrite when the user toggles currency later — manual selection always wins (matches the spec's "currency and country are independent" rule).
-- SSR-safe guard (`typeof window !== "undefined"`) so the initializer doesn't crash tests/build.
+1. Validate the checkout contact + shipping address against rules specific to Germany and South Africa, showing inline errors before NowPayments is called.
+2. Add a live free-shipping progress bar on the checkout page that updates as the cart subtotal changes (mirrors the cart page bar, but pinned to the selected shipping country).
 
-### 2. Playwright E2E coverage for shipping
+Scope is frontend only — no DB or edge-function changes. Order persistence stays as-is.
 
-Extend `tests/checkout.spec.ts` (plus tiny helpers in `tests/_utils.ts` if needed) with these cases. Each test starts from a clean cart and adds the first product:
+---
 
-1. **EUR + Germany, under threshold** — shipping line shows `€7.50`, total = subtotal + €7.50.
-2. **EUR + Germany, over threshold** — bump quantity until subtotal ≥ €120; shipping line shows "Free / Gratis"; nudge banner not shown.
-3. **ZAR + South Africa, under threshold** — switch currency to ZAR, shipping line shows `R89`.
-4. **ZAR + South Africa, over threshold** — increase quantity until ≥ R1,500; shipping line shows "Free / Gratis".
-5. **Pay Now disabled when blocked** — render the page, then `window.localStorage.setItem("rtt_ship_country", "France")` + reload; expect the red blocked banner, `pay-now-button` disabled, and the `country_blocked` copy visible. (This exercises the future-proofing branch even though the UI selector itself only exposes SA/DE.)
-6. **Country selection persists across reload** — click SA, reload `/checkout`, assert SA is still active.
+## 1. Address validation
 
-Helpers to add in `_utils.ts`:
-- `setShippingCountry(page, "South Africa" | "Germany" | string)` — writes localStorage then reloads.
-- `bumpFirstLineQuantity(page, times)` — clicks the `+` button on the cart page N times (used to push the cart above the free-shipping threshold). Cart page already exposes the buttons.
+### Schema (`src/lib/checkoutSchema.ts`, new)
 
-### Out of scope
+Use `zod` (already in project). Build a discriminated schema keyed by `country`:
 
-- Persisting other address fields (name, street, etc.).
-- Auth-gated tests for the actual NowPayments redirect.
-- Unit tests for `getShippingCost` (already covered indirectly by the E2E suite).
+- **Shared fields** (trimmed, with max lengths to prevent abuse):
+  - `firstName`: 1–60 chars, letters/spaces/hyphens/apostrophes only
+  - `lastName`: 1–60 chars, same charset
+  - `email`: valid email, ≤ 120 chars
+  - `address1`: 3–120 chars
+  - `city`: 2–80 chars
+  - `region`: 2–80 chars (label flips Province ↔ Bundesland)
 
-### Files touched
+- **Germany (`country = "Germany"`)**:
+  - `postalCode`: exactly 5 digits (`/^\d{5}$/`)
+  - `region` must match one of the 16 Bundesländer (case-insensitive list constant in the same file)
 
-- `src/pages/CheckoutPage.tsx` (state initializer + setter)
-- `tests/checkout.spec.ts` (new cases)
-- `tests/_utils.ts` (two small helpers)
+- **South Africa (`country = "South Africa"`)**:
+  - `postalCode`: exactly 4 digits (`/^\d{4}$/`)
+  - `region` must match one of the 9 SA provinces (case-insensitive)
+
+- **Unsupported country**: schema rejects with `country_blocked` message — `handlePay` already blocks, validation just reinforces.
+
+Export `validateCheckout(input, country)` returning `{ ok: true, data } | { ok: false, errors: Record<field,string> }` with localized messages keyed off `currency`/locale (EN + DE + AF strings via `COPY` keys added to `src/lib/copy.ts`).
+
+### Copy additions (`src/lib/copy.ts`)
+
+Add trilingual keys: `err_required`, `err_email`, `err_postal_de`, `err_postal_sa`, `err_region_de`, `err_region_sa`, `err_name_chars`, `err_address_short`.
+
+### Form refactor (`src/pages/CheckoutPage.tsx`)
+
+- Convert the currently uncontrolled `<input>`s for contact + address into controlled state (`form` object + `setField`), plus an `errors` state map.
+- On `handlePay` first run `validateCheckout(form, country)`:
+  - If invalid: set `errors`, scroll/focus the first invalid field, toast a generic "Please fix the highlighted fields" message, abort before calling Supabase / NowPayments.
+  - If valid: continue with current flow.
+- Render inline errors under each input (`<p className="mt-1 text-xs text-destructive" role="alert">`), and add `aria-invalid` + `aria-describedby` on inputs.
+- Show province/Bundesland helper text when the country changes (e.g. "z. B. Bayern" / "e.g. Gauteng").
+- Persist the form values in `sessionStorage` under `rtt_checkout_form` so a failed payment / reload keeps what the user typed (parallel to the existing `rtt_ship_country` persistence).
+
+### Tests (`tests/checkout.spec.ts`)
+
+Add Playwright cases:
+- DE: invalid postal `1234` → inline error, Pay Now does not navigate.
+- DE: invalid Bundesland "Foo" → inline error.
+- SA: invalid postal `12` → inline error.
+- Valid SA submit reaches the Supabase call (mock-friendly: assert no inline errors visible and button enters busy state).
+
+---
+
+## 2. Free-shipping progress bar on checkout
+
+Reuse the existing `src/components/FreeShippingBar.tsx` (already trilingual, used on the cart page).
+
+### Integration in `src/pages/CheckoutPage.tsx`
+
+- Place it directly above the "Order Summary" totals block in the right column, so the bar updates as soon as quantity changes elsewhere (cart drawer / line edits) recompute `totalPrice`.
+- Feed it the destination-currency subtotal and country so the threshold matches checkout's shipping math:
+
+  ```tsx
+  {shippingMath.supported && (
+    <FreeShippingBar
+      country={country as ShippingCountry}
+      subtotalInDest={shippingMath.destSubtotal}
+    />
+  )}
+  ```
+
+- Update `FreeShippingBar` props if needed to accept `country` + `subtotalInDest` directly (today it likely derives from cart context). If the existing API already covers this, just import and use. Verify by reading the component before editing; only extend the API additively (new optional props) to keep cart-page usage intact.
+- Remove the ad-hoc `showFreeNudge` block in `CheckoutPage` (replaced by the bar).
+
+### Reactivity
+
+`totalPrice` comes from `useCart()` which already re-renders on quantity change, so the bar updates live with no extra wiring. The destination-currency conversion uses `rate` from `useCurrency()` — already a dependency of `shippingMath`'s `useMemo`.
+
+---
+
+## Files
+
+- **New**: `src/lib/checkoutSchema.ts`
+- **Edited**: `src/pages/CheckoutPage.tsx`, `src/lib/copy.ts`, `src/components/FreeShippingBar.tsx` (only if props need extending), `tests/checkout.spec.ts`
+
+## Out of scope
+
+- Server-side re-validation (no edge-function changes requested).
+- Address autocomplete / Google Places.
+- Phone number field (not currently collected).
+- Other markets — schema stays restricted to DE + SA per existing shipping rules.
