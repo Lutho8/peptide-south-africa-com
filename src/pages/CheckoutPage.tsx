@@ -147,7 +147,7 @@ export default function CheckoutPage() {
     }
     // Validate address before anything else.
     const result = validateCheckout(form, country as ShippingCountry);
-    if (!result.ok) {
+    if (result.ok === false) {
       setErrors(result.errors);
       toast({ title: "Check your details", description: trilingual("fix_form"), variant: "destructive" });
       // Focus first invalid field for accessibility.
