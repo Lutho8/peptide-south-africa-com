@@ -67,9 +67,9 @@ const clientStories = [
   },
   {
     name: "Lisa R.",
-    location: "Pretoria",
+    location: "München, DE",
     result: "Cleared skin & improved energy",
-    text: "I initially came for fat loss but the improvements in my skin, energy, and sleep were incredible. It's a complete health transformation, not just weight loss.",
+    text: "Saubere Laborwerte, klare Dosierung, schneller DHL-Versand. Ich kam wegen Fettabbau — Haut, Energie und Schlaf haben sich gleich mitverbessert.",
     rating: 5,
   },
 ];
@@ -84,7 +84,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <SEO title="About Ride The Tide — GP-Led Peptide Protocols in South Africa" description="Meet the South African GPs and pharmacists behind Ride The Tide. German-certified sourcing, third-party lab testing, and physician-supervised peptide protocols." path="/about" />
+      <SEO title="About Ride The Tide — GP-Led Peptide Protocols (SA &amp; DE / EU)" description="Meet the team behind Ride The Tide: South African GPs and an EU fulfilment partner. German-certified sourcing, third-party lab testing, and physician-supervised peptide protocols for SA &amp; Europe." path="/about" />
       <div className="flex flex-col">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
 

@@ -12,7 +12,7 @@ const termsSchema = {
   name: "Terms and Conditions — Ride The Tide",
   url: `${SITE_URL}/terms`,
   description:
-    "Website Terms and Conditions of Use for Ride The Tide (Pty) Ltd. Educational content, South African jurisdiction, user obligations, and disclaimers.",
+    "Website Terms and Conditions of Use for Ride The Tide (Pty) Ltd. Educational content, dual-jurisdiction (South Africa + Germany / EU), user obligations, and disclaimers.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Terms of Service" },
@@ -21,7 +21,7 @@ const termsSchema = {
 export default function TermsPage() {
   return (
     <>
-      <SEO title="Terms & Conditions" description="Ride The Tide terms of service for South African customers. Research-use disclaimers and prescription pathway terms." path="/terms" />
+      <SEO title="Terms &amp; Conditions" description="Ride The Tide terms of service — South African customers and Germany / EU customers. Research-use disclaimers, EU 14-day Widerrufsrecht, and prescription pathway terms." path="/terms" />
       <JsonLd data={termsSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Terms", href: "/terms" }]} />
     <div className="container py-16">
@@ -121,7 +121,10 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">10. Payment and Billing</h2>
             <p className="mt-3">
-              All prices are displayed in South African Rands (ZAR). Registered members agree to submit payment through Ride The Tide's chosen payment processor. Members consent to storage of payment methods for processing purposes.
+              Prices are displayed in Euros (EUR) by default and can be switched to South African Rand (ZAR) using the currency
+              toggle in the site header. You are charged in your selected currency at checkout via our payment partner NowPayments
+              (PayPal, Visa, Mastercard, Apple Pay, Google Pay, SEPA, and major cryptocurrencies). Registered members consent to
+              storage of payment methods for processing purposes.
             </p>
           </section>
 
@@ -198,9 +201,17 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">20. Governing Law</h2>
+            <h2 className="font-display text-lg font-semibold text-foreground">20. Governing Law &amp; Jurisdiction</h2>
             <p className="mt-3">
-              These Terms shall be governed by and construed in accordance with the laws of the Republic of South Africa. Any disputes arising shall be subject to the exclusive jurisdiction of the courts of South Africa.
+              For South African customers, these Terms are governed by the laws of the Republic of South Africa, with disputes subject
+              to the exclusive jurisdiction of the South African courts.
+            </p>
+            <p className="mt-3">
+              For customers in Germany and the European Union, mandatory consumer-protection provisions of the customer's habitual
+              residence remain unaffected (Art. 6 Rome I Regulation). Statutory rights including the 14-day right of withdrawal
+              (§§ 355, 312g BGB) apply and are described in our <a href="/refund" className="text-primary hover:underline">Refund Policy</a>.
+              We are not obliged to participate in alternative dispute resolution proceedings before a consumer arbitration board
+              (Verbraucherschlichtungsstelle).
             </p>
           </section>
 

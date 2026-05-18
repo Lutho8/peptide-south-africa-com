@@ -35,6 +35,13 @@ export default function SEO({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
 
+      {/* hreflang — dual-market (ZA primary, DE/EU secondary) */}
+      <link rel="alternate" hrefLang="en-ZA" href={url} />
+      <link rel="alternate" hrefLang="en-GB" href={url} />
+      <link rel="alternate" hrefLang="de-DE" href={url} />
+      <link rel="alternate" hrefLang="af-ZA" href={url} />
+      <link rel="alternate" hrefLang="x-default" href={url} />
+
       {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={fullTitle} />
@@ -43,6 +50,8 @@ export default function SEO({
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:image" content={image} />
       <meta property="og:locale" content="en_ZA" />
+      <meta property="og:locale:alternate" content="de_DE" />
+      <meta property="og:locale:alternate" content="af_ZA" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -50,9 +59,10 @@ export default function SEO({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
 
-      {/* Geo */}
+      {/* Geo — dual market */}
       <meta name="geo.region" content="ZA" />
-      <meta name="geo.placename" content="South Africa" />
+      <meta name="geo.region" content="DE" />
+      <meta name="geo.placename" content="South Africa & Germany / EU" />
       <meta name="ICBM" content="-26.2041, 28.0473" />
 
       {ldArray.map((data, i) => (

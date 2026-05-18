@@ -15,7 +15,7 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <SEO title="Track Your Order — Ride The Tide South Africa" description="Track your peptide order shipped from within South Africa. Same-day dispatch on orders before 14:00 SAST." path="/track-order" />
+      <SEO title="Track Your Order — Ride The Tide" description="Track your peptide order. Same-day dispatch in South Africa (before 14:00 SAST) · DHL within 24 h to Germany / EU." path="/track-order" />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Track Order", href: "/track-order" }]} />
       <div className="container py-16">
       <div className="mx-auto max-w-md text-center">

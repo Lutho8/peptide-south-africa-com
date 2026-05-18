@@ -36,21 +36,21 @@ const results = [
 const testimonials = [
   {
     name: "Michael T.",
-    location: "Cape Town",
+    location: "Cape Town, ZA",
     text: "I lost 8 kg in 6 weeks. The protocol was so simple — no guessing, no confusion. Just followed the plan and the results came.",
     rating: 5,
     result: "Lost 8 kg in 6 weeks",
   },
   {
-    name: "Sarah M.",
-    location: "Johannesburg",
-    text: "After years of trying different approaches, this was the first time something actually worked. The guided support made all the difference.",
+    name: "Anja R.",
+    location: "Berlin, DE",
+    text: "Endlich ein Anbieter mit echten Laborberichten und schnellem DHL-Versand. Innerhalb von 5 Tagen geliefert, klare Dosierung im Protokoll.",
     rating: 5,
     result: "Down 2 dress sizes",
   },
   {
     name: "James K.",
-    location: "Durban",
+    location: "Durban, ZA",
     text: "My recovery time between training sessions dropped dramatically. I'm performing better at 38 than I did at 28.",
     rating: 5,
     result: "50% faster recovery",
@@ -69,7 +69,7 @@ const whyItWorks = [
 export default function HomePage() {
   return (
     <div className="flex flex-col">
-      <SEO title="Buy Peptides Online South Africa — GP-Led" description="South Africa's GP-led peptide service. ≥99% purity, German-certified, third-party lab tested. Fat loss, healing & performance. Same-day dispatch in ZA." path="/" />
+      <SEO title="Buy Peptides Online — South Africa &amp; Germany / EU" description="GP-led peptide service. ≥99% purity, German-certified, third-party lab tested. Fat loss, healing &amp; performance. Same-day dispatch in SA · 4–7 day DHL to Germany / EU." path="/" />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />
@@ -345,7 +345,7 @@ export default function HomePage() {
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
             Use code <span className="font-mono font-bold">RIDETHETIDE10</span> at checkout.
-            Free shipping over R1,500. Same-day dispatch from South Africa.
+            Free shipping over R1,500 (SA) or €75 (DE / EU). Same-day dispatch in SA · DHL within 24 h to Germany / EU.
           </p>
           <Link
             to="/shop"

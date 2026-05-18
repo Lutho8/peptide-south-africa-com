@@ -1,7 +1,7 @@
 const SITE_URL = "https://www.ridethetide.site";
 const SITE_NAME = "Ride The Tide";
 
-/** LocalBusiness + MedicalBusiness schema for South Africa GEO ranking. */
+/** LocalBusiness + MedicalBusiness schema for ZA + DE/EU GEO ranking. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["MedicalBusiness", "OnlineStore", "LocalBusiness"],
@@ -9,11 +9,11 @@ export const localBusinessSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   image: `${SITE_URL}/favicon.png`,
-  priceRange: "R450 – R5,000",
-  currenciesAccepted: "ZAR",
-  paymentAccepted: "Credit Card, EFT, Instant EFT",
+  priceRange: "€23 – €260 · R450 – R5,000",
+  currenciesAccepted: "EUR, ZAR",
+  paymentAccepted: "Credit Card, PayPal, Apple Pay, Google Pay, SEPA, EFT, Cryptocurrency",
   description:
-    "GP-led, German-certified peptide protocols for fat loss, healing, and performance. Same-day dispatch across South Africa.",
+    "GP-led, German-certified peptide protocols for fat loss, healing, and performance. Same-day dispatch across South Africa · DHL within 24 h to Germany / EU.",
   address: {
     "@type": "PostalAddress",
     addressCountry: "ZA",
@@ -25,7 +25,11 @@ export const localBusinessSchema = {
     latitude: -26.2041,
     longitude: 28.0473,
   },
-  areaServed: { "@type": "Country", name: "South Africa" },
+  areaServed: [
+    { "@type": "Country", name: "South Africa" },
+    { "@type": "Country", name: "Germany" },
+    { "@type": "Place", name: "European Union" },
+  ],
   medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
@@ -42,11 +46,12 @@ export const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   description:
-    "Ride The Tide provides GP-led, personalized peptide protocols with German-certified compounds for fat loss, healing, and performance — serving South Africa.",
-  areaServed: {
-    "@type": "Country",
-    name: "South Africa",
-  },
+    "Ride The Tide provides GP-led, personalized peptide protocols with German-certified compounds for fat loss, healing, and performance — serving South Africa and Germany / the EU.",
+  areaServed: [
+    { "@type": "Country", name: "South Africa" },
+    { "@type": "Country", name: "Germany" },
+    { "@type": "Place", name: "European Union" },
+  ],
   knowsAbout: [
     "Peptide therapy",
     "Fat loss protocols",
@@ -88,7 +93,7 @@ export const websiteSchema = {
   url: SITE_URL,
   inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
-  description: "GP-led, German-certified peptide protocols and research compounds for fat loss, healing and performance. South Africa.",
+  description: "GP-led, German-certified peptide protocols and research compounds for fat loss, healing and performance. Serving South Africa and Germany / the EU.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -123,7 +128,7 @@ export function productSchema(product: {
     ...(product.purity ? { additionalProperty: { "@type": "PropertyValue", name: "Purity", value: product.purity } } : {}),
     offers: {
       "@type": "Offer",
-      priceCurrency: "ZAR",
+      priceCurrency: "EUR",
       price: product.price,
       availability: product.inStock
         ? "https://schema.org/InStock"
@@ -186,7 +191,7 @@ export const entityClusters = {
       { label: "About Us", href: "/about", description: "Our mission, team, and German-certified quality standards." },
       { label: "FAQ", href: "/faq", description: "Common questions about peptides, shipping, and protocols." },
       { label: "Research Hub", href: "/research", description: "Evidence-based research tools and peptide database." },
-      { label: "Shipping Policy", href: "/shipping", description: "Fast delivery across South Africa with tracking." },
+      { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch in South Africa · DHL within 24 h to Germany / EU." },
     ],
   },
 };

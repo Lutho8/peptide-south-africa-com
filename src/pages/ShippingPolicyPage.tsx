@@ -11,7 +11,7 @@ const shippingSchema = {
   name: "Shipping Policy — Ride The Tide",
   url: `${SITE_URL}/shipping`,
   description:
-    "Ride The Tide shipping policy: same-day dispatch for orders before 2:00 PM ET, UPS and USPS carriers, tracking, pre-order timelines, and delivery responsibility.",
+    "Ride The Tide shipping policy: same-day dispatch in South Africa, 24-hour cut-off for Germany & the EU, DHL / Aramex / PEP Paxi carriers, tracking, and free-shipping thresholds.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -20,116 +20,134 @@ const shippingSchema = {
 export default function ShippingPolicyPage() {
   return (
     <>
-      <SEO title="Shipping Policy — Discreet, Same-Day Dispatch South Africa" description="1–3 business day delivery to major South African metros. Discreet, unbranded packaging. Same-day dispatch on orders before 14:00 SAST." path="/shipping" />
+      <SEO
+        title="Shipping Policy — South Africa & Germany / EU"
+        description="Dual-market shipping: South Africa 1–3 business days (free over R1,500) · Germany & EU 4–7 business days via DHL (free over €75). Discreet, unbranded packaging."
+        path="/shipping"
+      />
       <JsonLd data={shippingSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shipping Policy", href: "/shipping" }]} />
-    <div className="container py-16">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="font-display text-3xl font-bold text-foreground">Shipping Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Effective Date: 02/25/2026 · Company: Ride The Tide</p>
+      <div className="container py-16">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="font-display text-3xl font-bold text-foreground">Shipping Policy</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Effective: May 2026 · Markets served: South Africa, Germany &amp; the EU</p>
 
-        <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
-          <p>Ride The Tide is committed to processing and shipping orders efficiently. Please review the following shipping terms carefully before placing your order.</p>
+          <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
+            <p>
+              Ride The Tide dispatches orders from two regional hubs: Johannesburg (for South African customers) and an EU
+              fulfilment partner (for Germany &amp; the EU). Please review the shipping terms below before placing your order.
+            </p>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">1. Order Processing Times</h2>
-            <div className="mt-3 space-y-3">
-              <h3 className="font-semibold text-foreground/80">Standard Orders</h3>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Orders placed before 2:00 PM Eastern Time (ET) on a business day will be processed and shipped the same business day or the following morning.</li>
-                <li>Orders placed after 2:00 PM ET will be processed and shipped on the next business day.</li>
-              </ul>
-              <h3 className="font-semibold text-foreground/80">Business Days</h3>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Business days are Monday through Friday, excluding federal holidays.</li>
-                <li>No orders are shipped on Sundays.</li>
-                <li>Orders placed on Saturday after 2:00 PM ET will not be processed or shipped until Monday (or the next business day if Monday is a holiday).</li>
-              </ul>
-              <p>Processing times refer to the time required to prepare and hand off the package to the carrier. They do not include carrier transit times.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">1. Order Processing &amp; Dispatch</h2>
+              <div className="mt-3 space-y-3">
+                <h3 className="font-semibold text-foreground/80">South Africa</h3>
+                <ul className="list-disc space-y-1 pl-5">
+                  <li>Same-day dispatch on orders placed before <span className="font-semibold text-foreground">14:00 SAST</span>, Monday–Friday.</li>
+                  <li>Orders placed after the cut-off ship on the next business day.</li>
+                  <li>No dispatch on Sundays or South African public holidays.</li>
+                </ul>
+                <h3 className="font-semibold text-foreground/80">Germany &amp; EU · Deutschland &amp; EU</h3>
+                <ul className="list-disc space-y-1 pl-5">
+                  <li>Orders are picked, packed, and handed to DHL within <span className="font-semibold text-foreground">24 hours</span> of confirmation (Mon–Fri).</li>
+                  <li>Bestellungen werden innerhalb von 24 Stunden an DHL übergeben.</li>
+                  <li>No dispatch on Sundays or German federal holidays.</li>
+                </ul>
+                <p>Processing time refers to preparing and handing the package to the carrier; it does not include carrier transit time.</p>
+              </div>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">2. Pre-Order Shipments</h2>
-            <div className="mt-3 space-y-3">
-              <p>Pre-orders are classified separately from standard in-stock orders and are expected to ship within 2–3 weeks, unless otherwise stated on the product listing.</p>
-              <p>Some pre-orders may ship sooner, while others may take longer due to factors outside of Ride The Tide's control, including but not limited to:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Customs clearance</li>
-                <li>Supplier timelines</li>
-                <li>Quality control and testing procedures</li>
-                <li>Carrier delays</li>
-                <li>Inventory intake timing</li>
-              </ul>
-              <p>By placing a pre-order, the customer acknowledges and accepts that shipping timelines are estimates only and may vary. Ride The Tide is not responsible for delays outside of its direct operational control.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">2. Estimated Delivery Times</h2>
+              <div className="mt-3 overflow-x-auto rounded-lg border border-border">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-muted/60 text-foreground">
+                    <tr>
+                      <th className="px-4 py-2 font-semibold">Market</th>
+                      <th className="px-4 py-2 font-semibold">Carrier</th>
+                      <th className="px-4 py-2 font-semibold">Window</th>
+                      <th className="px-4 py-2 font-semibold">Free over</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-muted-foreground">
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2">South Africa — metro</td>
+                      <td className="px-4 py-2">Aramex / PEP Paxi</td>
+                      <td className="px-4 py-2">1–3 business days</td>
+                      <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2">South Africa — regional</td>
+                      <td className="px-4 py-2">Aramex / PEP Paxi</td>
+                      <td className="px-4 py-2">2–5 business days</td>
+                      <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2">Germany</td>
+                      <td className="px-4 py-2">DHL</td>
+                      <td className="px-4 py-2">4–7 Werktage</td>
+                      <td className="px-4 py-2 font-semibold text-foreground">€75</td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2">EU (rest)</td>
+                      <td className="px-4 py-2">DHL Parcel International</td>
+                      <td className="px-4 py-2">5–10 business days</td>
+                      <td className="px-4 py-2 font-semibold text-foreground">€75</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3">All windows are estimates from the carrier and are not guaranteed unless explicitly stated.</p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">3. Shipping Methods</h2>
-            <div className="mt-3 space-y-3">
-              <p>Ride The Tide primarily utilizes the following shipping services:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>UPS Ground</li>
-                <li>UPS Ground Select</li>
-                <li>UPS Ground Select 3 Day</li>
-                <li>UPS Ground Connect (in partnership with USPS)</li>
-              </ul>
-              <p>In certain circumstances, packages may be shipped via USPS or alternative methods depending on speed, logistics, or regional availability.</p>
-              <p>The selected carrier and method are determined at Ride The Tide's discretion based on operational efficiency and delivery optimization. Transit times provided by carriers are estimates only and are not guaranteed unless explicitly stated by the carrier.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">3. Pre-Order Shipments</h2>
+              <p className="mt-3">
+                Pre-orders are classified separately from standard in-stock orders and ship within 2–3 weeks unless otherwise stated.
+                Delays may arise from customs clearance, supplier timelines, QC testing, carrier disruption, or inventory intake.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">4. Tracking & Delivery Responsibility</h2>
-            <div className="mt-3 space-y-3">
-              <p>Once an order has been shipped, the customer will receive tracking information. Ride The Tide's responsibility ends once the package is transferred to the carrier.</p>
-              <p>If a package is delayed, marked delivered but not received, lost, or otherwise undelivered:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>The customer is responsible for initiating a claim directly with the shipping carrier.</li>
-                <li>Due to order volume, Ride The Tide does not open claims on behalf of customers.</li>
-                <li>Ride The Tide will provide shipment details upon request to assist with carrier claims.</li>
-              </ul>
-              <p>Failure to open a claim in a timely manner may limit recovery options through the carrier.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">4. Tracking &amp; Delivery Responsibility</h2>
+              <p className="mt-3">
+                Once shipped, you receive an email with a carrier tracking link. Ride The Tide's responsibility ends when the package is
+                handed to the carrier. For lost, delayed, or marked-as-delivered-but-not-received packages, please open a claim with the
+                carrier directly; we will supply shipment details on request.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">5. Address Accuracy</h2>
-            <div className="mt-3 space-y-3">
-              <p>Customers are responsible for ensuring that shipping information is accurate and complete at checkout. Ride The Tide is not responsible for:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Incorrect addresses</li>
-                <li>Undeliverable packages due to address errors</li>
-                <li>Packages returned due to failed delivery attempts</li>
-              </ul>
-              <p>Additional shipping fees may apply for re-shipment.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">5. Address Accuracy</h2>
+              <p className="mt-3">
+                Customers are responsible for ensuring the shipping address is correct and complete. We are not liable for undeliverable
+                packages caused by address errors; re-shipment may incur an additional fee.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">6. Delays Beyond Our Control</h2>
-            <div className="mt-3 space-y-3">
-              <p>Ride The Tide is not liable for delays caused by:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Carrier service disruptions</li>
-                <li>Weather conditions</li>
-                <li>Customs inspections</li>
-                <li>Force majeure events</li>
-                <li>High-volume shipping periods</li>
-                <li>Supply chain interruptions</li>
-              </ul>
-              <p>All shipping timelines are estimates and are not guaranteed.</p>
-            </div>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">6. Discreet Packaging</h2>
+              <p className="mt-3">
+                All orders ship in plain, unmarked outer boxes with a neutral sender name on the waybill. No Ride The Tide branding,
+                logos, or product references appear on the exterior — same standard for both South Africa and the EU.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">7. Policy Acceptance</h2>
-            <p className="mt-3">By placing an order with Ride The Tide, you acknowledge that you have read, understood, and agreed to this Shipping Policy.</p>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">7. Customs &amp; Import Duties (EU)</h2>
+              <p className="mt-3">
+                Shipments within the EU are dispatched from an EU fulfilment partner — no customs duties or import VAT apply for EU
+                destinations. South African orders are dispatched domestically and incur no import duty.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">8. Policy Acceptance</h2>
+              <p className="mt-3">By placing an order you acknowledge that you have read, understood, and agreed to this Shipping Policy.</p>
+            </section>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
