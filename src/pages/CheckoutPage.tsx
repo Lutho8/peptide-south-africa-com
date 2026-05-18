@@ -145,6 +145,19 @@ export default function CheckoutPage() {
       toast({ title: "Shipping unavailable", description: trilingual("country_blocked"), variant: "destructive" });
       return;
     }
+    // Validate address before anything else.
+    const result = validateCheckout(form, country as ShippingCountry);
+    if (!result.ok) {
+      setErrors(result.errors);
+      toast({ title: "Check your details", description: trilingual("fix_form"), variant: "destructive" });
+      // Focus first invalid field for accessibility.
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
+        el?.focus();
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      return;
+    }
     if (!user) {
       toast({ title: "Please sign in", description: "Sign in to complete checkout.", variant: "destructive" });
       navigate("/auth");
