@@ -39,7 +39,16 @@ export type CopyKey =
   | "standard_shipping_de"
   | "local_courier_sa"
   | "away_from_free"
-  | "unlocked_free_shipping";
+  | "unlocked_free_shipping"
+  | "err_required"
+  | "err_email"
+  | "err_postal_de"
+  | "err_postal_sa"
+  | "err_region_de"
+  | "err_region_sa"
+  | "err_name_chars"
+  | "err_address_short"
+  | "fix_form";
 
 export const COPY: Record<CopyKey, Record<Locale, string>> = {
   shipping_free: {
@@ -146,6 +155,51 @@ export const COPY: Record<CopyKey, Record<Locale, string>> = {
     en: "You've unlocked free shipping!",
     de: "Gratis Versand freigeschaltet!",
     af: "Gratis versending vrygestel!",
+  },
+  err_required: {
+    en: "This field is required",
+    de: "Dieses Feld ist erforderlich",
+    af: "Hierdie veld is verpligtend",
+  },
+  err_email: {
+    en: "Enter a valid email address",
+    de: "Bitte gültige E-Mail-Adresse eingeben",
+    af: "Voer 'n geldige e-posadres in",
+  },
+  err_postal_de: {
+    en: "German postal code must be 5 digits (e.g. 10115)",
+    de: "Postleitzahl muss 5 Ziffern haben (z. B. 10115)",
+    af: "Duitse poskode moet 5 syfers wees (bv. 10115)",
+  },
+  err_postal_sa: {
+    en: "South African postal code must be 4 digits (e.g. 8001)",
+    de: "Südafrikanische Postleitzahl muss 4 Ziffern haben (z. B. 8001)",
+    af: "Suid-Afrikaanse poskode moet 4 syfers wees (bv. 8001)",
+  },
+  err_region_de: {
+    en: "Enter a valid Bundesland (e.g. Bayern, Berlin)",
+    de: "Bitte gültiges Bundesland eingeben (z. B. Bayern, Berlin)",
+    af: "Voer 'n geldige Bundesland in (bv. Bayern, Berlin)",
+  },
+  err_region_sa: {
+    en: "Enter a valid province (e.g. Gauteng, Western Cape)",
+    de: "Bitte gültige Provinz eingeben (z. B. Gauteng, Western Cape)",
+    af: "Voer 'n geldige provinsie in (bv. Gauteng, Wes-Kaap)",
+  },
+  err_name_chars: {
+    en: "Use letters only (1–60 characters)",
+    de: "Nur Buchstaben verwenden (1–60 Zeichen)",
+    af: "Gebruik slegs letters (1–60 karakters)",
+  },
+  err_address_short: {
+    en: "Address must be 3–120 characters",
+    de: "Adresse muss 3–120 Zeichen lang sein",
+    af: "Adres moet 3–120 karakters wees",
+  },
+  fix_form: {
+    en: "Please fix the highlighted fields",
+    de: "Bitte korrigieren Sie die markierten Felder",
+    af: "Korrigeer asseblief die gemerkte velde",
   },
 };
 

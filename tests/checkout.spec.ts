@@ -56,16 +56,69 @@ test.describe("Checkout flow", () => {
   test("Pay Now without sign-in redirects to /auth", async ({ page }) => {
     await addFirstProductToCart(page);
     await page.goto("/checkout");
-    // Fill the required fields so the form would otherwise submit.
+    // Fill the required fields with VALID DE address so validation passes.
     await page.getByPlaceholder("First Name").fill("Test");
     await page.getByPlaceholder("Last Name").fill("User");
     await page.getByPlaceholder("Email").fill("test@example.com");
-    await page.getByPlaceholder("Address").fill("1 Test St");
+    await page.getByPlaceholder("Address").fill("Hauptstrasse 1");
     await page.getByPlaceholder("City").fill("Berlin");
-    await page.getByPlaceholder(/Bundesland|Province/).fill("BE");
-    await page.getByPlaceholder("Postal Code").fill("10115");
+    await page.getByPlaceholder(/Bundesland|Province/).fill("Berlin");
+    await page.getByPlaceholder(/Postal Code/).fill("10115");
     await page.getByTestId("pay-now-button").click();
     await expect(page).toHaveURL(/\/auth/);
+  });
+
+  test("DE address validation: invalid postal shows inline error", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-de").click();
+    await page.getByPlaceholder("First Name").fill("Anna");
+    await page.getByPlaceholder("Last Name").fill("Müller");
+    await page.getByPlaceholder("Email").fill("anna@example.com");
+    await page.getByPlaceholder("Address").fill("Hauptstrasse 1");
+    await page.getByPlaceholder("City").fill("Berlin");
+    await page.getByPlaceholder(/Bundesland|Province/).fill("Berlin");
+    await page.getByPlaceholder(/Postal Code/).fill("1234");
+    await page.getByTestId("pay-now-button").click();
+    await expect(page.locator("#err-postalCode")).toContainText(/5 digits|5 Ziffern/i);
+    await expect(page).not.toHaveURL(/\/auth/);
+  });
+
+  test("DE address validation: invalid Bundesland shows inline error", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-de").click();
+    await page.getByPlaceholder("First Name").fill("Anna");
+    await page.getByPlaceholder("Last Name").fill("Müller");
+    await page.getByPlaceholder("Email").fill("anna@example.com");
+    await page.getByPlaceholder("Address").fill("Hauptstrasse 1");
+    await page.getByPlaceholder("City").fill("Berlin");
+    await page.getByPlaceholder(/Bundesland|Province/).fill("Fooland");
+    await page.getByPlaceholder(/Postal Code/).fill("10115");
+    await page.getByTestId("pay-now-button").click();
+    await expect(page.locator("#err-region")).toContainText(/Bundesland/);
+  });
+
+  test("SA address validation: invalid postal shows inline error", async ({ page }) => {
+    await switchCurrency(page, "ZAR");
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-sa").click();
+    await page.getByPlaceholder("First Name").fill("Thabo");
+    await page.getByPlaceholder("Last Name").fill("Nkosi");
+    await page.getByPlaceholder("Email").fill("thabo@example.com");
+    await page.getByPlaceholder("Address").fill("12 Long St");
+    await page.getByPlaceholder("City").fill("Cape Town");
+    await page.getByPlaceholder(/Bundesland|Province/).fill("Western Cape");
+    await page.getByPlaceholder(/Postal Code/).fill("12");
+    await page.getByTestId("pay-now-button").click();
+    await expect(page.locator("#err-postalCode")).toContainText(/4 digits|4 Ziffern/i);
+  });
+
+  test("Free shipping progress bar visible on checkout", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await expect(page.getByTestId("free-shipping-bar")).toBeVisible();
   });
 
   test("Country selector defaults to Germany in EUR and South Africa in ZAR", async ({ page }) => {

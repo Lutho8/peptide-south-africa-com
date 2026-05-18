@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,10 +9,11 @@ import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
+import FreeShippingBar from "@/components/FreeShippingBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
-import { COPY, trilingual } from "@/lib/copy";
+import { COPY, trilingual, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
   SHIPPING_RULES,
   SUPPORTED_COUNTRIES,
@@ -21,7 +22,19 @@ import {
   isSupportedCountry,
   type ShippingCountry,
 } from "@/lib/shipping";
+import { validateCheckout, type CheckoutForm, type CheckoutErrors } from "@/lib/checkoutSchema";
 import { formatEUR, formatZAR } from "@/lib/price";
+
+const FORM_KEY = "rtt_checkout_form";
+const emptyForm: CheckoutForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  address1: "",
+  city: "",
+  region: "",
+  postalCode: "",
+};
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
@@ -46,6 +59,44 @@ export default function CheckoutPage() {
   const setCountry = (c: ShippingCountry) => {
     setCountryState(c);
     if (typeof window !== "undefined") window.localStorage.setItem(SHIP_KEY, c);
+    setErrors((prev) => ({ ...prev, region: undefined, postalCode: undefined }));
+  };
+
+  // Controlled form state, persisted in sessionStorage so a failed payment / reload keeps inputs.
+  const [form, setForm] = useState<CheckoutForm>(() => {
+    if (typeof window === "undefined") return emptyForm;
+    try {
+      const raw = window.sessionStorage.getItem(FORM_KEY);
+      if (!raw) return { ...emptyForm, email: user?.email ?? "" };
+      const parsed = JSON.parse(raw) as Partial<CheckoutForm>;
+      return { ...emptyForm, ...parsed, email: parsed.email || user?.email || "" };
+    } catch {
+      return emptyForm;
+    }
+  });
+  const [errors, setErrors] = useState<CheckoutErrors>({});
+  
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(FORM_KEY, JSON.stringify(form));
+    } catch {
+      /* ignore quota errors */
+    }
+  }, [form]);
+
+  const setField = <K extends keyof CheckoutForm>(key: K, value: string) => {
+    setForm((f) => ({ ...f, [key]: value }));
+    setErrors((e) => ({ ...e, [key]: undefined }));
+  };
+
+  const errText = (key?: string): string | undefined => {
+    if (!key) return undefined;
+    // Validation errors store COPY keys; render trilingual EN · DE.
+    const known = (COPY as Record<string, unknown>)[key];
+    if (known) return `${tCopy(key as CopyKey, "en")} · ${tCopy(key as CopyKey, "de")}`;
+    return key;
   };
 
   // --- Shipping math --------------------------------------------------------
@@ -92,6 +143,19 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!shippingMath.supported) {
       toast({ title: "Shipping unavailable", description: trilingual("country_blocked"), variant: "destructive" });
+      return;
+    }
+    // Validate address before anything else.
+    const result = validateCheckout(form, country as ShippingCountry);
+    if (result.ok === false) {
+      setErrors(result.errors);
+      toast({ title: "Check your details", description: trilingual("fix_form"), variant: "destructive" });
+      // Focus first invalid field for accessibility.
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
+        el?.focus();
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
       return;
     }
     if (!user) {
@@ -225,25 +289,114 @@ export default function CheckoutPage() {
             )}
           </div>
 
+          {shippingMath.supported && (
+            <FreeShippingBar
+              subtotalEur={totalPrice}
+              country={country as ShippingCountry}
+            />
+          )}
+
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="font-display text-lg font-semibold text-foreground">Contact Information</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <input required placeholder="First Name" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required placeholder="Last Name" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required type="email" defaultValue={user?.email ?? ""} placeholder="Email" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:col-span-2" />
+              <div>
+                <input
+                  required
+                  placeholder="First Name"
+                  value={form.firstName}
+                  onChange={(e) => setField("firstName", e.target.value)}
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? "err-firstName" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.firstName && <p id="err-firstName" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
+              </div>
+              <div>
+                <input
+                  required
+                  placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={(e) => setField("lastName", e.target.value)}
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? "err-lastName" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.lastName && <p id="err-lastName" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
+              </div>
+              <div className="sm:col-span-2">
+                <input
+                  required
+                  type="email"
+                  placeholder="Email"
+                  value={form.email}
+                  onChange={(e) => setField("email", e.target.value)}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "err-email" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.email && <p id="err-email" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
+              </div>
             </div>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="font-display text-lg font-semibold text-foreground">Shipping Address</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <input required placeholder="Address" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:col-span-2" />
-              <input required placeholder="City" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required placeholder={country === "Germany" ? "Bundesland" : "Province"} className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input required placeholder="Postal Code" className="rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              <input readOnly value={country} className="rounded-lg border border-input bg-muted px-4 py-3 text-sm text-muted-foreground" />
+              <div className="sm:col-span-2">
+                <input
+                  required
+                  placeholder="Address"
+                  value={form.address1}
+                  onChange={(e) => setField("address1", e.target.value)}
+                  aria-invalid={!!errors.address1}
+                  aria-describedby={errors.address1 ? "err-address1" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.address1 && <p id="err-address1" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
+              </div>
+              <div>
+                <input
+                  required
+                  placeholder="City"
+                  value={form.city}
+                  onChange={(e) => setField("city", e.target.value)}
+                  aria-invalid={!!errors.city}
+                  aria-describedby={errors.city ? "err-city" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.city && <p id="err-city" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
+              </div>
+              <div>
+                <input
+                  required
+                  placeholder={country === "Germany" ? "Bundesland (e.g. Bayern)" : "Province (e.g. Gauteng)"}
+                  value={form.region}
+                  onChange={(e) => setField("region", e.target.value)}
+                  aria-invalid={!!errors.region}
+                  aria-describedby={errors.region ? "err-region" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.region && <p id="err-region" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
+              </div>
+              <div>
+                <input
+                  required
+                  inputMode="numeric"
+                  placeholder={country === "Germany" ? "Postal Code (10115)" : "Postal Code (8001)"}
+                  value={form.postalCode}
+                  onChange={(e) => setField("postalCode", e.target.value)}
+                  aria-invalid={!!errors.postalCode}
+                  aria-describedby={errors.postalCode ? "err-postalCode" : undefined}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive"
+                />
+                {errors.postalCode && <p id="err-postalCode" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
+              </div>
+              <div className="sm:col-span-2">
+                <input readOnly value={country} className="w-full rounded-lg border border-input bg-muted px-4 py-3 text-sm text-muted-foreground" />
+              </div>
             </div>
           </div>
+
 
           <DeliveryReturnsAccordion defaultOpen="shipping" />
 
