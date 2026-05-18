@@ -102,8 +102,8 @@ export default function HeroShop() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg"
             >
-              Independently HPLC-verified. Transparent ZAR pricing. Discreet
-              shipping from South Africa — order today, on its way tomorrow.
+              Independently HPLC-verified. Transparent EUR & ZAR pricing.
+              Discreet shipping to South Africa (1–3 days) and Germany / EU (4–7 days).
             </motion.p>
 
             {/* CTAs */}
