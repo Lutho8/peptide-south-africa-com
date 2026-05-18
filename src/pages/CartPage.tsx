@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import CartCountdown from "@/components/CartCountdown";
 import SEO from "@/components/SEO";
+import { COPY, trilingual } from "@/lib/copy";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
@@ -72,10 +73,10 @@ export default function CartPage() {
         {/* Summary */}
         <div className="rounded-lg border border-border bg-card p-6 shadow-card h-fit">
           <CartCountdown variant="banner" className="mb-4" />
-          <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
+          <h3 className="font-display text-lg font-bold text-foreground">{COPY.order_summary.en} · {COPY.order_summary.de}</h3>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span><span>{format(subtotal)}</span>
+              <span>{COPY.subtotal.en} / {COPY.subtotal.de}</span><span data-testid="cart-subtotal">{format(subtotal)}</span>
             </div>
             {isDiscountEligible && (
               <div className="flex justify-between font-semibold text-trust">
@@ -83,10 +84,10 @@ export default function CartPage() {
               </div>
             )}
             <div className="flex justify-between text-muted-foreground">
-              <span>Shipping</span><span className="font-semibold text-trust">Free</span>
+              <span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Tax</span><span>{format(0)}</span>
+              <span>{COPY.tax.en} / {COPY.tax.de}</span><span>{format(0)}</span>
             </div>
           </div>
           {!isDiscountEligible && (
@@ -95,15 +96,15 @@ export default function CartPage() {
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>Total</span><span>{format(totalPrice)}</span>
+            <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(totalPrice)}</span>
           </div>
           <Link
             to="/checkout"
             className="mt-6 block w-full rounded-lg bg-hero-gradient py-3.5 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90"
           >
-            Proceed to Checkout
+            Proceed to Checkout · Zur Kasse
           </Link>
-          <p className="mt-4 text-center text-xs text-muted-foreground">🔒 Secure checkout · Free shipping</p>
+          <p className="mt-4 text-center text-xs text-muted-foreground">🔒 {trilingual("secure_checkout")}</p>
         </div>
       </div>
     </div>
