@@ -5,6 +5,7 @@ import { useCurrency } from "@/context/CurrencyContext";
 import CartCountdown from "@/components/CartCountdown";
 import FreeShippingBar from "@/components/FreeShippingBar";
 import SEO from "@/components/SEO";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { COPY, trilingual } from "@/lib/copy";
 
 export default function CartPage() {
@@ -28,6 +29,9 @@ export default function CartPage() {
   }
 
   return (
+    <>
+    <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
+    <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]} />
     <div className="container py-12">
       <Link to="/shop" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Continue Shopping
