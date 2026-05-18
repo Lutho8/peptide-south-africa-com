@@ -27,7 +27,7 @@ export default function AgeVerificationModal() {
         </div>
         <h2 className="font-display text-2xl font-bold text-foreground">Age Verification</h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          You must be 18 years or older to access this website. Our products are intended for research purposes only.
+          You must be 18 years or older to access this website. Our products are strictly for research purposes only — not for human consumption. By entering, you confirm you are of legal age in your jurisdiction (South Africa: 18+ | Germany: 18+).
         </p>
         <div className="mt-6 flex flex-col gap-3">
           <button
@@ -44,7 +44,7 @@ export default function AgeVerificationModal() {
           </a>
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          By entering, you confirm you are of legal age in your jurisdiction.
+          For research purposes only. Not for human use.
         </p>
       </div>
     </div>
