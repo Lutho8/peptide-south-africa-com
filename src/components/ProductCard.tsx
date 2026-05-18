@@ -4,11 +4,14 @@ import { useCart } from "@/context/CartContext";
 import type { Product } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { display, currency, rate } = useCurrency();
+  const { market } = useMarket();
+  const productUrl = marketPath(`/product/${product.slug}`, market);
   const hasMultipleVariants = (product.variants?.length ?? 0) > 1;
 
   // Convert EUR price range (e.g. "€23.20 – €148.45") to ZAR display when toggled.

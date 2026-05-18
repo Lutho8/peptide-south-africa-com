@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -25,9 +26,11 @@ export default function ProductPage() {
   const product = getProductBySlug(slug || "");
   const { addToCart } = useCart();
   const { format, display, currency, rate } = useCurrency();
+  const { market, lang } = useMarket();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
+
 
   useEffect(() => {
     supabase
@@ -83,9 +86,11 @@ export default function ProductPage() {
       <SEO
         title={`${product.name} | Research Peptide | Ride The Tide`}
         description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships to Germany & South Africa.`}
-        path={`/product/${product.slug}`}
+        path={marketPath(`/product/${product.slug}`, market)}
+        lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
         type="product"
+        alternates={buildAlternates(`/product/${product.slug}`)}
       />
       <Breadcrumbs crumbs={[
         { label: "Home", href: "/" },

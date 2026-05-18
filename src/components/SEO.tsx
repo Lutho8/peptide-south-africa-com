@@ -18,6 +18,8 @@ interface SEOProps {
   keywords?: string;
   /** Document language for <html lang>. Default "en". */
   lang?: "en" | "de" | "af";
+  /** When set, overrides the default hreflang block with these reciprocal alternates. */
+  alternates?: { hrefLang: string; href: string }[];
 }
 
 export default function SEO({
@@ -30,10 +32,18 @@ export default function SEO({
   jsonLd,
   keywords = DEFAULT_KEYWORDS,
   lang = "en",
+  alternates,
 }: SEOProps) {
   const url = `${SITE_URL}${path}`;
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  const altTags = alternates ?? [
+    { hrefLang: "en-ZA", href: url },
+    { hrefLang: "en-GB", href: url },
+    { hrefLang: "de-DE", href: url },
+    { hrefLang: "af-ZA", href: url },
+    { hrefLang: "x-default", href: url },
+  ];
 
   return (
     <Helmet>
@@ -48,12 +58,10 @@ export default function SEO({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
 
-      {/* hreflang — dual-market (ZA primary, DE/EU secondary) */}
-      <link rel="alternate" hrefLang="en-ZA" href={url} />
-      <link rel="alternate" hrefLang="en-GB" href={url} />
-      <link rel="alternate" hrefLang="de-DE" href={url} />
-      <link rel="alternate" hrefLang="af-ZA" href={url} />
-      <link rel="alternate" hrefLang="x-default" href={url} />
+      {/* hreflang — reciprocal alternates (defaults to self if no variants) */}
+      {altTags.map((a) => (
+        <link key={a.hrefLang} rel="alternate" hrefLang={a.hrefLang} href={a.href} />
+      ))}
 
       {/* Open Graph */}
       <meta property="og:type" content={type} />

@@ -23,6 +23,8 @@ import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
 import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { pageCopy } from "@/lib/marketCopy";
 
 const results = [
   { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
@@ -67,9 +69,17 @@ const whyItWorks = [
 ];
 
 export default function HomePage() {
+  const { market, lang } = useMarket();
+  const home = pageCopy("home", market);
   return (
     <div className="flex flex-col">
-      <SEO title="Premium Research Peptides Online | Germany & South Africa" description="Buy premium research peptides online in Germany & South Africa. 99%+ HPLC purity, COA on every batch, discreet shipping. Retatrutide, Tirzepatide, BPC-157, GHK-Cu & more." path="/" />
+      <SEO
+        title={home.title}
+        description={home.description}
+        path={marketPath("/", market) === "/" ? "/" : marketPath("/", market)}
+        lang={lang}
+        alternates={buildAlternates("/")}
+      />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />

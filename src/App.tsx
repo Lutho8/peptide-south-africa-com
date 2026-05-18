@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import AnnouncementBar from "@/components/AnnouncementBar";
@@ -48,6 +49,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <CurrencyProvider>
         <AuthProvider>
           <CartProvider>
             <Toaster />
@@ -60,8 +62,14 @@ const App = () => (
             <main className="min-h-screen">
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/de" element={<HomePage />} />
+                <Route path="/za" element={<HomePage />} />
                 <Route path="/shop" element={<ShopPage />} />
+                <Route path="/de/shop" element={<ShopPage />} />
+                <Route path="/za/shop" element={<ShopPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
+                <Route path="/de/product/:slug" element={<ProductPage />} />
+                <Route path="/za/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
@@ -94,6 +102,7 @@ const App = () => (
             <LiveActivity />
           </CartProvider>
         </AuthProvider>
+        </CurrencyProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

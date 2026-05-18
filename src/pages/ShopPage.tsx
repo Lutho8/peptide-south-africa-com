@@ -8,6 +8,8 @@ import { products, categories, getProductsByCategory } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { pageCopy } from "@/lib/marketCopy";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
@@ -42,6 +44,8 @@ export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
   const [activeCategory, setActiveCategory] = useState(initialCat);
+  const { market, lang } = useMarket();
+  const shopCopy = pageCopy("shop", market);
 
   const filtered = getProductsByCategory(activeCategory);
 
@@ -71,7 +75,13 @@ export default function ShopPage() {
 
   return (
     <>
-      <SEO title="Shop Research Peptides | Retatrutide, Tirzepatide, BPC-157" description="Browse our full range of HPLC-verified research peptides. Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, Tesamorelin & blends. Fast shipping to Germany & South Africa." path="/shop" />
+      <SEO
+        title={shopCopy.title}
+        description={shopCopy.description}
+        path={marketPath("/shop", market)}
+        lang={lang}
+        alternates={buildAlternates("/shop")}
+      />
       <JsonLd data={itemListSchema} />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
@@ -91,7 +101,7 @@ export default function ShopPage() {
               Lab-tested · ≥99% HPLC purity · Shipped from South Africa &amp; an EU partner
             </span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
-              Buy Peptides — or Start a <span className="text-gradient">Guided Protocol</span>.
+              {shopCopy.h1}
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
               Every batch is third-party HPLC tested. Every protocol is built by a clinician.
