@@ -8,6 +8,8 @@ import { products, categories, getProductsByCategory } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { pageCopy } from "@/lib/marketCopy";
 
 const SITE_URL = "https://tide-shop-clone.lovable.app";
 
