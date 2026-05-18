@@ -15,29 +15,29 @@ const reviewsData: Record<string, Review[]> = {
     { name: "Delinah W.", date: "March 20, 2026", rating: 5, text: "Always great customer service with speedy replies and lightning fast processing and shipping. I started RT-3 several weeks ago, it's amazing and definitely living up to all the hype!", verified: true },
     { name: "Jessie G.", date: "March 20, 2026", rating: 5, text: "Fast shipping and amazing customer service. Reached out and within minutes I had a response from them.", verified: true },
     { name: "Chris N.", date: "March 18, 2026", rating: 5, text: "Quality product, well packaged. COA included as promised. Will definitely be ordering again.", verified: true },
-    { name: "Michael R.", date: "March 15, 2026", rating: 5, text: "Excellent purity confirmed by our lab. The research results have been consistently reproducible.", verified: true },
+    { name: "Matthias K., Berlin", date: "March 15, 2026", rating: 5, text: "DHL-Lieferung in 5 Tagen. Sauberer CoA, klar dosiert. Sehr zufrieden mit der Qualität.", verified: true },
   ],
   "ghk-cu-50mg": [
     { name: "Dr. Patel", date: "March 19, 2026", rating: 5, text: "Exceptional purity for our dermatological research. COA matched our independent analysis perfectly.", verified: true },
-    { name: "Lisa M.", date: "March 17, 2026", rating: 5, text: "Fast delivery to Cape Town. Product was well-packaged and included all documentation.", verified: true },
-    { name: "Robert K.", date: "March 14, 2026", rating: 5, text: "Third time ordering. Consistent quality every time. Great value at 50mg.", verified: true },
+    { name: "Lisa M., Cape Town", date: "March 17, 2026", rating: 5, text: "Fast delivery. Product was well-packaged and included all documentation.", verified: true },
+    { name: "Hannah B., Hamburg", date: "March 14, 2026", rating: 5, text: "Sehr gute Qualität, schneller Versand nach Deutschland. Verpackung diskret und sicher.", verified: true },
   ],
   "tesamorelin": [
     { name: "Dr. Nkosi", date: "March 18, 2026", rating: 5, text: "Premium quality Tesamorelin. Lab results confirmed ≥99% purity. Excellent for our GH research.", verified: true },
-    { name: "Amanda S.", date: "March 16, 2026", rating: 5, text: "Smooth ordering process, fast domestic shipping. Arrived in 2 days to Johannesburg.", verified: true },
-    { name: "Johan V.", date: "March 12, 2026", rating: 5, text: "Reliable supplier. COA transparency gives confidence in the product quality.", verified: true },
-    { name: "Sarah B.", date: "March 10, 2026", rating: 5, text: "Best price I've found for research-grade Tesamorelin in SA. No customs hassle.", verified: true },
+    { name: "Amanda S., Johannesburg", date: "March 16, 2026", rating: 5, text: "Smooth ordering process, fast domestic shipping. Arrived in 2 days.", verified: true },
+    { name: "Lukas F., München", date: "March 12, 2026", rating: 5, text: "Reliabler Anbieter mit transparentem CoA. DHL-Lieferung problemlos.", verified: true },
+    { name: "Sarah B., Durban", date: "March 10, 2026", rating: 5, text: "Best price I've found for research-grade Tesamorelin. No customs hassle.", verified: true },
   ],
   "tz2-tirz": [
     { name: "Mark D.", date: "March 19, 2026", rating: 5, text: "Pre-ordered and received notification promptly when batch was ready. Quality is outstanding.", verified: true },
     { name: "Dr. Williams", date: "March 15, 2026", rating: 5, text: "Dual agonist research has been promising. Product purity is exactly as stated on the COA.", verified: true },
-    { name: "Thandi M.", date: "March 11, 2026", rating: 5, text: "Worth the pre-order wait. Domestic shipping was quick once available.", verified: true },
+    { name: "Anja R., Köln", date: "March 11, 2026", rating: 5, text: "Bestellung über das EU-Lager war einfach — kein Zoll, schnelle Lieferung.", verified: true },
   ],
 };
 
 const defaultReviews: Review[] = [
-  { name: "Alex T.", date: "March 18, 2026", rating: 5, text: "Excellent quality and fast SA shipping. COA included with every order. Highly recommend.", verified: true },
-  { name: "Dr. Moosa", date: "March 15, 2026", rating: 5, text: "Consistent purity across multiple orders. This is our go-to supplier for peptide research.", verified: true },
+  { name: "Alex T., Cape Town", date: "March 18, 2026", rating: 5, text: "Excellent quality and fast SA shipping. COA included with every order. Highly recommend.", verified: true },
+  { name: "Jonas P., Berlin", date: "March 15, 2026", rating: 5, text: "Schneller DHL-Versand, sauberer Laborbericht. Würde wieder bestellen.", verified: true },
   { name: "Karen L.", date: "March 12, 2026", rating: 5, text: "Great customer service and transparent pricing. No hidden fees or markup games.", verified: true },
 ];
 

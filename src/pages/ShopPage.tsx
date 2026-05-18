@@ -71,7 +71,7 @@ export default function ShopPage() {
 
   return (
     <>
-      <SEO title="Buy Research Peptides South Africa" description="Shop ≥99% purity research peptides in South Africa. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch." path="/shop" />
+      <SEO title="Buy Research Peptides — South Africa &amp; Germany / EU" description="Shop ≥99% purity research peptides. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch in SA, DHL to Germany / EU." path="/shop" />
       <JsonLd data={itemListSchema} />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
@@ -88,7 +88,7 @@ export default function ShopPage() {
         <div className="container px-4 py-10 md:py-14">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-block rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              Lab-tested · ≥99% HPLC purity · Shipped from South Africa
+              Lab-tested · ≥99% HPLC purity · Shipped from South Africa &amp; an EU partner
             </span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
               Buy Peptides — or Start a <span className="text-gradient">Guided Protocol</span>.
@@ -119,8 +119,8 @@ export default function ShopPage() {
             {[
               { icon: FlaskConical, label: "≥99% HPLC", sub: "Every batch" },
               { icon: ShieldCheck, label: "COA on every product", sub: "3rd-party verified" },
-              { icon: MapPin, label: "South Africa based", sub: "Local support" },
-              { icon: Truck, label: "Free shipping > R1,500", sub: "1–3 day dispatch" },
+              { icon: MapPin, label: "ZA &amp; DE / EU", sub: "Local + EU support" },
+              { icon: Truck, label: "Free shipping", sub: "R1,500 SA · €75 DE / EU" },
             ].map((t, i) => (
               <div
                 key={i}

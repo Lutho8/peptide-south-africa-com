@@ -83,7 +83,7 @@ export default function HeroShop() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              ≥99% HPLC tested · COA on every batch · South Africa
+              ≥99% HPLC tested · COA on every batch · South Africa &amp; Germany / EU
             </motion.div>
 
             <motion.h1
@@ -161,7 +161,7 @@ export default function HeroShop() {
                 ))}
               </div>
               <span className="font-semibold text-foreground">4.9 / 5</span>
-              <span className="text-muted-foreground">1,200+ SA researchers</span>
+              <span className="text-muted-foreground">1,200+ researchers · SA &amp; EU</span>
             </motion.div>
           </div>
 
