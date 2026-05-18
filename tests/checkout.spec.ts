@@ -1,5 +1,5 @@
 import { expect, test } from "../playwright-fixture";
-import { acceptAgeGate, addFirstProductToCart, dismissDiscountPopup, switchCurrency } from "./_utils";
+import { acceptAgeGate, addFirstProductToCart, bumpFirstLineQuantity, dismissDiscountPopup, setShippingCountry, switchCurrency } from "./_utils";
 
 test.describe("Checkout flow", () => {
   test.beforeEach(async ({ page }) => {
@@ -87,5 +87,53 @@ test.describe("Checkout flow", () => {
     await expect(page.getByTestId("country-sa")).toBeVisible();
     await expect(page.getByTestId("country-de")).toBeVisible();
     await expect(page.getByTestId("pay-now-button")).toBeEnabled();
+  });
+
+  test("EUR + Germany under threshold shows €7.50 flat shipping", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-de").click();
+    await expect(page.getByTestId("checkout-shipping")).toContainText(/€\s?7[.,]50/);
+  });
+
+  test("EUR + Germany over threshold unlocks free shipping", async ({ page }) => {
+    await addFirstProductToCart(page);
+    // Push the cart subtotal above €120.
+    await bumpFirstLineQuantity(page, 8);
+    await page.goto("/checkout");
+    await page.getByTestId("country-de").click();
+    await expect(page.getByTestId("checkout-shipping")).toContainText(/Free|Gratis/);
+  });
+
+  test("ZAR + South Africa under threshold shows R89 flat shipping", async ({ page }) => {
+    await switchCurrency(page, "ZAR");
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-sa").click();
+    await expect(page.getByTestId("checkout-shipping")).toContainText(/R\s?89/);
+  });
+
+  test("ZAR + South Africa over threshold unlocks free shipping", async ({ page }) => {
+    await switchCurrency(page, "ZAR");
+    await addFirstProductToCart(page);
+    await bumpFirstLineQuantity(page, 8);
+    await page.goto("/checkout");
+    await page.getByTestId("country-sa").click();
+    await expect(page.getByTestId("checkout-shipping")).toContainText(/Free|Gratis/);
+  });
+
+  test("Unsupported country shows blocked banner and disables Pay Now", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await setShippingCountry(page, "France");
+    await expect(page.getByRole("alert")).toContainText(/only ship to Germany and South Africa|nur nach Deutschland/i);
+    await expect(page.getByTestId("pay-now-button")).toBeDisabled();
+  });
+
+  test("Country selection persists across reload", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await page.getByTestId("country-sa").click();
+    await page.reload();
+    await expect(page.getByTestId("country-sa")).toHaveClass(/border-primary/);
   });
 });
