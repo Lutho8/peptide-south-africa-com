@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import { ShoppingCart, FlaskConical, ShieldCheck, ArrowRight } from "lucide-react";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const FEATURED_IDS = ["1", "6", "7", "2", "4", "3"];
 
 export default function FeaturedProductRail() {
   const { addToCart } = useCart();
+  const { format } = useCurrency();
   const featured = FEATURED_IDS
     .map((id) => products.find((p) => p.id === id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
@@ -80,7 +81,7 @@ export default function FeaturedProductRail() {
                     <div className="mt-auto flex items-end justify-between pt-4">
                       <div>
                         <p className="font-display text-lg font-bold text-foreground">
-                          {formatZAR(p.price)}
+                          {format(p.price)}
                         </p>
                         {p.priceRange && (
                           <p className="text-[10px] text-muted-foreground">{p.priceRange}</p>

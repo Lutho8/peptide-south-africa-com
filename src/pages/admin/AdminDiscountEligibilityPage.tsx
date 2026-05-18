@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { formatZAR } from "@/lib/currency";
+import { formatEUR } from "@/lib/price";
 
 interface RecentOrder {
   id: string;
@@ -116,7 +116,7 @@ export default function AdminDiscountEligibilityPage() {
                     <tr key={o.id} className="border-t border-border">
                       <td className="py-1.5">{new Date(o.created_at).toLocaleDateString()}</td>
                       <td>{o.discount_code ?? <span className="text-muted-foreground">—</span>}</td>
-                      <td className="text-right font-semibold">{formatZAR(o.total)}</td>
+                      <td className="text-right font-semibold">{formatEUR(o.total)}</td>
                     </tr>
                   ))}
                 </tbody>

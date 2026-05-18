@@ -1,11 +1,12 @@
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
-import { formatZAR } from "@/lib/currency";
+import { useCurrency } from "@/context/CurrencyContext";
 import CartCountdown from "@/components/CartCountdown";
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
+  const { format } = useCurrency();
 
   if (!isCartOpen) return null;
 
@@ -43,7 +44,7 @@ export default function CartDrawer() {
                       {item.variantLabel && (
                         <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{item.variantLabel}</span>
                       )}
-                      <span className="text-sm font-bold text-primary">{formatZAR(item.unitPrice)}</span>
+                      <span className="text-sm font-bold text-primary">{format(item.unitPrice)}</span>
                       <div className="mt-auto flex items-center gap-2">
                         <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
                           <Minus className="h-3 w-3" />
@@ -65,11 +66,11 @@ export default function CartDrawer() {
             <div className="border-t border-border p-4">
               <CartCountdown variant="banner" className="mb-3" />
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">
-                <span>Subtotal</span><span>{formatZAR(subtotal)}</span>
+                <span>Subtotal</span><span>{format(subtotal)}</span>
               </div>
               {isDiscountEligible && (
                 <div className="mb-1 flex justify-between text-sm font-semibold text-trust">
-                  <span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span>
+                  <span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span>
                 </div>
               )}
               {!isDiscountEligible && (
@@ -81,7 +82,7 @@ export default function CartDrawer() {
                 <span>Shipping</span><span className="font-semibold text-trust">Free!</span>
               </div>
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>Total</span><span>{formatZAR(totalPrice)}</span>
+                <span>Total</span><span>{format(totalPrice)}</span>
               </div>
               <Link
                 to="/checkout"
