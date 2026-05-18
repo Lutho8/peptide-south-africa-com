@@ -11,12 +11,14 @@ const faqs = [
   { question: "How does a personalized peptide protocol work?", answer: "After completing our 2-minute assessment quiz, our system analyzes your goals, body composition, and health history to recommend a tailored protocol. This includes specific peptides, dosages, timing schedules, and weekly guidance — all reviewed against clinical research data." },
   { question: "What makes Ride The Tide different from other peptide suppliers?", answer: "We don't just sell peptides — we provide GP-led, structured protocols with German-certified compounds (≥99% purity). Every client gets personalized dosing, weekly check-ins, and a complete transformation system rather than standalone products." },
   { question: "Are your peptides lab tested?", answer: "Yes, every batch is independently tested by third-party laboratories. Each order includes a Certificate of Analysis (COA) confirming ≥99% purity. Our compounds meet strict German pharmaceutical quality standards." },
-  { question: "How long does shipping take?", answer: "Most orders ship within 24 hours and arrive within 1–3 business days across South Africa. All shipments include tracking. We serve Cape Town, Johannesburg, Durban, Pretoria, and nationwide." },
+  { question: "How long does shipping take in South Africa?", answer: "Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri). Delivery is 1–3 business days to major metros (Cape Town, Johannesburg, Durban, Pretoria) and 2–5 business days to regional addresses, via Aramex / PEP Paxi. Free shipping on orders over R1,500." },
+  { question: "Do you ship to Germany and the EU? · Versand nach Deutschland & EU?", answer: "Yes. Orders for Germany and the EU are dispatched via DHL from an EU fulfilment partner within 24 hours of confirmation. Estimated delivery is 4–7 Werktage in Germany and 5–10 business days to the rest of the EU. Free shipping on orders over €75. No customs duties or import VAT for EU destinations." },
+  { question: "Which currency am I charged in?", answer: "Prices are displayed in EUR (€) by default and can be switched to ZAR (R) using the currency toggle in the header. You are charged in your chosen currency at checkout — the exchange rate is refreshed live from a public FX feed." },
   { question: "What results can I expect from a fat loss protocol?", answer: "Clients on our fat loss protocols typically see 8–12 kg reduction over 6–12 weeks when following the structured program. Results vary based on adherence, starting point, and individual metabolism. Our GLP-1 agonist protocols (RT3, TZ-2) target visceral fat specifically." },
   { question: "Can I book a consultation before starting?", answer: "Absolutely. After completing the quiz, you can book a free consultation via Zoom to discuss your results and protocol with our team. This helps ensure the recommended protocol aligns with your specific needs and health history." },
-  { question: "What payment methods do you accept?", answer: "We accept all major credit cards, debit cards, and EFT payments. All transactions are encrypted and secure. Prices are listed in South African Rand (ZAR)." },
+  { question: "What payment methods do you accept?", answer: "We accept PayPal, Visa, Mastercard, Apple Pay, Google Pay, SEPA bank transfers, and major cryptocurrencies (Bitcoin, USDT, etc.) — all processed securely through our payment partner NowPayments. PCI-DSS-compliant and GDPR-aligned." },
   { question: "How should peptides be stored?", answer: "Unreconstituted peptides should be stored in a cool, dry place. Once reconstituted, store refrigerated (2–8°C) and use within the recommended timeframe noted in the included protocol guide." },
-  { question: "Are peptides legal in South Africa?", answer: "Research peptides are legal to purchase in South Africa for research and educational purposes. Our protocols are designed within the framework of GP-led health guidance using pharmaceutical-grade compounds." },
+  { question: "Are research peptides legal to buy?", answer: "In South Africa, research peptides are legal to purchase for research and educational purposes. In Germany and the EU, peptides are sold strictly as research chemicals (not for human consumption) and are legal to purchase by adults 18+ for laboratory use. Our protocols are designed within these frameworks using pharmaceutical-grade compounds." },
 ];
 
 const faqsForSchema = faqs.map(f => ({ question: f.question, answer: f.answer }));
@@ -26,7 +28,7 @@ export default function FAQPage() {
 
   return (
     <>
-      <SEO title="Peptide FAQ — South Africa" description="Answers to common questions about peptides in South Africa: legality, storage, dosing, shipping, and how our GP-led protocols work." path="/faq" />
+      <SEO title="Peptide FAQ — South Africa &amp; Germany / EU" description="Answers to common questions: shipping to South Africa and the EU, payment methods, currency switching (EUR/ZAR), legality, storage, and how our GP-led protocols work." path="/faq" />
       <div className="flex flex-col">
       <JsonLd data={faqSchema(faqsForSchema)} />
       <Breadcrumbs crumbs={[
