@@ -17,6 +17,8 @@ import ShopPage from "@/pages/ShopPage";
 import ProductPage from "@/pages/ProductPage";
 import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
+import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
+import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
 import AboutPage from "@/pages/AboutPage";
 import FAQPage from "@/pages/FAQPage";
 import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
@@ -61,6 +63,8 @@ const App = () => (
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+                <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/track-order" element={<TrackOrderPage />} />
                 <Route path="/faq" element={<FAQPage />} />
