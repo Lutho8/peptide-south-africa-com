@@ -59,6 +59,44 @@ export default function CheckoutPage() {
   const setCountry = (c: ShippingCountry) => {
     setCountryState(c);
     if (typeof window !== "undefined") window.localStorage.setItem(SHIP_KEY, c);
+    setErrors((prev) => ({ ...prev, region: undefined, postalCode: undefined }));
+  };
+
+  // Controlled form state, persisted in sessionStorage so a failed payment / reload keeps inputs.
+  const [form, setForm] = useState<CheckoutForm>(() => {
+    if (typeof window === "undefined") return emptyForm;
+    try {
+      const raw = window.sessionStorage.getItem(FORM_KEY);
+      if (!raw) return { ...emptyForm, email: user?.email ?? "" };
+      const parsed = JSON.parse(raw) as Partial<CheckoutForm>;
+      return { ...emptyForm, ...parsed, email: parsed.email || user?.email || "" };
+    } catch {
+      return emptyForm;
+    }
+  });
+  const [errors, setErrors] = useState<CheckoutErrors>({});
+  const firstErrorRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(FORM_KEY, JSON.stringify(form));
+    } catch {
+      /* ignore quota errors */
+    }
+  }, [form]);
+
+  const setField = <K extends keyof CheckoutForm>(key: K, value: string) => {
+    setForm((f) => ({ ...f, [key]: value }));
+    setErrors((e) => ({ ...e, [key]: undefined }));
+  };
+
+  const errText = (key?: string): string | undefined => {
+    if (!key) return undefined;
+    // Validation errors store COPY keys; render trilingual EN · DE.
+    const known = (COPY as Record<string, unknown>)[key];
+    if (known) return `${tCopy(key as CopyKey, "en")} · ${tCopy(key as CopyKey, "de")}`;
+    return key;
   };
 
   // --- Shipping math --------------------------------------------------------
