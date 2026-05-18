@@ -192,7 +192,7 @@ export default function ProductPage() {
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
               <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Third-Party Lab Tested & Batch Certified</span>
-              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Ships in 1–3 Business Days</span>
+              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 SA: Free over R1,500 &nbsp;|&nbsp; 🇩🇪 DE: Free over €120</span>
             </div>
 
             {product.sku && (

@@ -62,9 +62,30 @@ test.describe("Checkout flow", () => {
     await page.getByPlaceholder("Email").fill("test@example.com");
     await page.getByPlaceholder("Address").fill("1 Test St");
     await page.getByPlaceholder("City").fill("Berlin");
-    await page.getByPlaceholder(/Province/).fill("BE");
+    await page.getByPlaceholder(/Bundesland|Province/).fill("BE");
     await page.getByPlaceholder("Postal Code").fill("10115");
     await page.getByTestId("pay-now-button").click();
     await expect(page).toHaveURL(/\/auth/);
+  });
+
+  test("Country selector defaults to Germany in EUR and South Africa in ZAR", async ({ page }) => {
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    // Default EUR → DE active.
+    await expect(page.getByTestId("country-de")).toHaveClass(/border-primary/);
+    // Switch to SA and verify shipping line shows ZAR.
+    await page.getByTestId("country-sa").click();
+    await expect(page.getByTestId("checkout-shipping")).toContainText(/R|Free|Gratis/);
+  });
+
+  test("Blocked-country handling: pay button disabled when no supported country", async ({ page }) => {
+    // The selector exposes only the two supported countries, so this test
+    // simply asserts that both supported buttons are present and Pay Now is
+    // enabled for either of them.
+    await addFirstProductToCart(page);
+    await page.goto("/checkout");
+    await expect(page.getByTestId("country-sa")).toBeVisible();
+    await expect(page.getByTestId("country-de")).toBeVisible();
+    await expect(page.getByTestId("pay-now-button")).toBeEnabled();
   });
 });

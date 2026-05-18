@@ -85,10 +85,15 @@ export type Database = {
           created_at: string
           currency: string
           discount_code: string | null
+          free_shipping_applied: boolean
           id: string
           nowpayments_payment_id: string | null
           order_description: string | null
           paid_at: string | null
+          shipping_cost: number
+          shipping_country: string | null
+          shipping_currency: string | null
+          shipping_method: string | null
           status: string
           total: number
           user_id: string
@@ -97,10 +102,15 @@ export type Database = {
           created_at?: string
           currency?: string
           discount_code?: string | null
+          free_shipping_applied?: boolean
           id?: string
           nowpayments_payment_id?: string | null
           order_description?: string | null
           paid_at?: string | null
+          shipping_cost?: number
+          shipping_country?: string | null
+          shipping_currency?: string | null
+          shipping_method?: string | null
           status?: string
           total?: number
           user_id: string
@@ -109,10 +119,15 @@ export type Database = {
           created_at?: string
           currency?: string
           discount_code?: string | null
+          free_shipping_applied?: boolean
           id?: string
           nowpayments_payment_id?: string | null
           order_description?: string | null
           paid_at?: string | null
+          shipping_cost?: number
+          shipping_country?: string | null
+          shipping_currency?: string | null
+          shipping_method?: string | null
           status?: string
           total?: number
           user_id?: string
