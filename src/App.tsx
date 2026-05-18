@@ -19,6 +19,7 @@ import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
+import OrderStatusPage from "@/pages/OrderStatusPage";
 import AboutPage from "@/pages/AboutPage";
 import FAQPage from "@/pages/FAQPage";
 import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
@@ -65,6 +66,7 @@ const App = () => (
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
                 <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
+                <Route path="/order/:id" element={<OrderStatusPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/track-order" element={<TrackOrderPage />} />
                 <Route path="/faq" element={<FAQPage />} />

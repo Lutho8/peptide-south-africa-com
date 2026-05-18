@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { XCircle } from "lucide-react";
 import SEO from "@/components/SEO";
+import { COPY } from "@/lib/copy";
 
 export default function CheckoutCancelPage() {
+  const [params] = useSearchParams();
+  const orderId = params.get("order_id");
+
   return (
     <>
       <SEO title="Payment Cancelled" description="Your payment was cancelled." path="/checkout/cancel" noindex />
@@ -10,17 +14,27 @@ export default function CheckoutCancelPage() {
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-10 w-10 text-destructive" />
         </div>
-        <h1 className="mt-4 font-display text-2xl font-bold text-foreground">Payment cancelled</h1>
-        <p className="mt-2 max-w-md text-muted-foreground">
+        <h1 className="mt-4 font-display text-2xl font-bold text-foreground" data-testid="cancel-headline">
+          {COPY.cancelled.en}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {COPY.cancelled.de} · {COPY.cancelled.af}
+        </p>
+        <p className="mt-3 max-w-md text-muted-foreground">
           No charge was made. Your cart is still saved — try again whenever you're ready.
         </p>
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Link to="/cart" className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground">
-            Back to Cart
+            {COPY.back_to_cart.en} · {COPY.back_to_cart.de}
           </Link>
           <Link to="/shop" className="rounded-lg border border-border px-6 py-3 font-semibold text-foreground">
-            Continue Shopping
+            {COPY.continue_shopping.en} · {COPY.continue_shopping.de}
           </Link>
+          {orderId && (
+            <Link to={`/order/${orderId}`} className="rounded-lg border border-border px-6 py-3 font-semibold text-foreground">
+              {COPY.view_order.en} · {COPY.view_order.de}
+            </Link>
+          )}
         </div>
       </div>
     </>
