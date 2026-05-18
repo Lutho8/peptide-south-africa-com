@@ -18,6 +18,8 @@ interface SEOProps {
   keywords?: string;
   /** Document language for <html lang>. Default "en". */
   lang?: "en" | "de" | "af";
+  /** When set, overrides the default hreflang block with these reciprocal alternates. */
+  alternates?: { hrefLang: string; href: string }[];
 }
 
 export default function SEO({
@@ -30,10 +32,18 @@ export default function SEO({
   jsonLd,
   keywords = DEFAULT_KEYWORDS,
   lang = "en",
+  alternates,
 }: SEOProps) {
   const url = `${SITE_URL}${path}`;
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  const altTags = alternates ?? [
+    { hrefLang: "en-ZA", href: url },
+    { hrefLang: "en-GB", href: url },
+    { hrefLang: "de-DE", href: url },
+    { hrefLang: "af-ZA", href: url },
+    { hrefLang: "x-default", href: url },
+  ];
 
   return (
     <Helmet>
