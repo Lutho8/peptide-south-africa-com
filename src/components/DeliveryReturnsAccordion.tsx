@@ -82,7 +82,10 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
           <AccordionContent className="text-sm text-muted-foreground">
             <ul className="ml-1 flex flex-col gap-1.5">
               <li>
-                • <span className="font-semibold text-foreground">30-day satisfaction guarantee</span> on unopened, sealed vials.
+                • <span className="font-semibold text-foreground">30-day satisfaction guarantee</span> on unopened, sealed vials (both markets).
+              </li>
+              <li>
+                • <span className="font-semibold text-foreground">EU 14-day Widerrufsrecht</span>: customers in Germany / the EU may withdraw within 14 days of receipt on sealed, unopened items (§§ 355, 312g BGB).
               </li>
               <li>• Damaged-in-transit or incorrect items: replaced free of charge when reported within 48 hours of delivery.</li>
               <li>• For health and safety reasons, opened or reconstituted vials are non-returnable (industry standard).</li>

@@ -20,7 +20,7 @@ const refundSchema = {
 export default function RefundPolicyPage() {
   return (
     <>
-      <SEO title="Refund Policy — 30-Day Satisfaction Guarantee" description="Our 30-day satisfaction guarantee on sealed vials. Read our full refund and returns policy for South African orders." path="/refund" />
+      <SEO title="Refund Policy — 30-Day Guarantee + EU 14-Day Widerrufsrecht" description="Our 30-day satisfaction guarantee on sealed vials, plus the statutory 14-day EU right of withdrawal for German and European customers." path="/refund" />
       <JsonLd data={refundSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Refund Policy", href: "/refund" }]} />
     <div className="container py-16">
@@ -44,6 +44,22 @@ export default function RefundPolicyPage() {
                 <li>Package was lost in transit (after carrier investigation)</li>
               </ul>
             </div>
+          </section>
+
+          <section>
+            <h2 className="font-display text-lg font-semibold text-foreground">EU 14-Day Right of Withdrawal · Widerrufsrecht</h2>
+            <p className="mt-3">
+              Customers in Germany and the European Union have a statutory 14-day right of withdrawal (§§ 355, 312g BGB) on sealed,
+              unopened vials, beginning the day the order is received. To exercise this right, email{" "}
+              <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a> with your
+              order number and an unambiguous statement of withdrawal. Return shipping costs for non-defective items are borne by the customer.
+              Once the goods are received in their original, sealed condition, we refund the purchase price (including standard shipping)
+              within 14 days using the original payment method.
+            </p>
+            <p className="mt-2 text-xs italic">
+              Kunden in Deutschland und der EU steht ein gesetzliches 14-tägiges Widerrufsrecht zu (§§ 355, 312g BGB) für versiegelte,
+              ungeöffnete Vials.
+            </p>
           </section>
 
           <section>
