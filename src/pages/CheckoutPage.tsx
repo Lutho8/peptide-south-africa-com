@@ -75,7 +75,7 @@ export default function CheckoutPage() {
     }
   });
   const [errors, setErrors] = useState<CheckoutErrors>({});
-  const firstErrorRef = useRef<HTMLInputElement | null>(null);
+  
 
   useEffect(() => {
     if (typeof window === "undefined") return;
