@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,10 +9,11 @@ import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
+import FreeShippingBar from "@/components/FreeShippingBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
-import { COPY, trilingual } from "@/lib/copy";
+import { COPY, trilingual, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
   SHIPPING_RULES,
   SUPPORTED_COUNTRIES,
@@ -21,7 +22,19 @@ import {
   isSupportedCountry,
   type ShippingCountry,
 } from "@/lib/shipping";
+import { validateCheckout, type CheckoutForm, type CheckoutErrors } from "@/lib/checkoutSchema";
 import { formatEUR, formatZAR } from "@/lib/price";
+
+const FORM_KEY = "rtt_checkout_form";
+const emptyForm: CheckoutForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  address1: "",
+  city: "",
+  region: "",
+  postalCode: "",
+};
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
