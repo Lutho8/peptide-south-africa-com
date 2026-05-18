@@ -58,12 +58,10 @@ export default function SEO({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />}
 
-      {/* hreflang — dual-market (ZA primary, DE/EU secondary) */}
-      <link rel="alternate" hrefLang="en-ZA" href={url} />
-      <link rel="alternate" hrefLang="en-GB" href={url} />
-      <link rel="alternate" hrefLang="de-DE" href={url} />
-      <link rel="alternate" hrefLang="af-ZA" href={url} />
-      <link rel="alternate" hrefLang="x-default" href={url} />
+      {/* hreflang — reciprocal alternates (defaults to self if no variants) */}
+      {altTags.map((a) => (
+        <link key={a.hrefLang} rel="alternate" hrefLang={a.hrefLang} href={a.href} />
+      ))}
 
       {/* Open Graph */}
       <meta property="og:type" content={type} />
