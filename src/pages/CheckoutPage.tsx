@@ -31,8 +31,22 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
-  // Default destination: ZAR → SA, EUR → DE. Customer can switch.
-  const [country, setCountry] = useState<ShippingCountry>(currency === "ZAR" ? "South Africa" : "Germany");
+  // Persist shipping country across reloads / cancelled payments. Manual
+  // selection always wins over the currency-derived default.
+  const SHIP_KEY = "rtt_ship_country";
+  const [country, setCountryState] = useState<ShippingCountry | string>(() => {
+    if (typeof window === "undefined") return currency === "ZAR" ? "South Africa" : "Germany";
+    const stored = window.localStorage.getItem(SHIP_KEY);
+    if (stored === "South Africa" || stored === "Germany") return stored;
+    // If a non-supported value was somehow stored, keep it so the blocked
+    // banner renders and the user can see the explanation.
+    if (stored && stored.length > 0) return stored;
+    return currency === "ZAR" ? "South Africa" : "Germany";
+  });
+  const setCountry = (c: ShippingCountry) => {
+    setCountryState(c);
+    if (typeof window !== "undefined") window.localStorage.setItem(SHIP_KEY, c);
+  };
 
   // --- Shipping math --------------------------------------------------------
   // Cart subtotal (after discount) is stored in EUR. Convert into destination
