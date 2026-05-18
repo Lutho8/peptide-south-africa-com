@@ -70,4 +70,8 @@ const xml = [
 ].join("\n");
 
 writeFileSync(resolve("public/sitemap.xml"), xml);
+writeFileSync(
+  resolve("public/sitemap-meta.json"),
+  JSON.stringify({ generatedAt: new Date().toISOString(), urlCount: all.length }, null, 2) + "\n",
+);
 console.log(`sitemap.xml written (${all.length} entries, ${productEntries.length} products)`);
