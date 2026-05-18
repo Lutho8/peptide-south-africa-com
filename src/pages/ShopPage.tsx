@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import { products, categories, getProductsByCategory } from "@/data/products";
+import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
 
@@ -72,6 +73,8 @@ export default function ShopPage() {
     <>
       <SEO title="Buy Research Peptides South Africa" description="Shop ≥99% purity research peptides in South Africa. RT3 (Retatrutide), TZ-2 (Tirzepatide), BPC-157, Tesamorelin, GHK-Cu. COA + same-day dispatch." path="/shop" />
       <JsonLd data={itemListSchema} />
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
       <Breadcrumbs
         crumbs={[
           { label: "Home", href: "/" },
