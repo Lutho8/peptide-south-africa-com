@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+import { detectMarket, marketInfo } from "@/hooks/useMarket";
 
 export type Currency = "EUR" | "ZAR";
 
@@ -75,8 +77,22 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
   const setCurrency = (c: Currency) => {
     setCurrencyState(c);
+    manualOverride.current = true;
     localStorage.setItem(STORAGE_KEY, c);
   };
+
+  // Sync currency to URL market unless the user has manually toggled in this session.
+  const manualOverride = useRef(false);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (manualOverride.current) return;
+    const expected = marketInfo(detectMarket(pathname)).currency;
+    if (detectMarket(pathname) !== "default" && expected !== currency) {
+      setCurrencyState(expected);
+      localStorage.setItem(STORAGE_KEY, expected);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const value = useMemo<CurrencyContextType>(() => {
     const convert = (eur: number) => (currency === "EUR" ? eur : eur * rate);

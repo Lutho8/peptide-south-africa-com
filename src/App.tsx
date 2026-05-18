@@ -60,8 +60,14 @@ const App = () => (
             <main className="min-h-screen">
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/de" element={<HomePage />} />
+                <Route path="/za" element={<HomePage />} />
                 <Route path="/shop" element={<ShopPage />} />
+                <Route path="/de/shop" element={<ShopPage />} />
+                <Route path="/za/shop" element={<ShopPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
+                <Route path="/de/product/:slug" element={<ProductPage />} />
+                <Route path="/za/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
