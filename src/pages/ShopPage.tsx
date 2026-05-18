@@ -71,7 +71,13 @@ export default function ShopPage() {
 
   return (
     <>
-      <SEO title="Shop Research Peptides | Retatrutide, Tirzepatide, BPC-157" description="Browse our full range of HPLC-verified research peptides. Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, Tesamorelin & blends. Fast shipping to Germany & South Africa." path="/shop" />
+      <SEO
+        title={shopCopy.title}
+        description={shopCopy.description}
+        path={marketPath("/shop", market)}
+        lang={lang}
+        alternates={buildAlternates("/shop")}
+      />
       <JsonLd data={itemListSchema} />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
