@@ -23,6 +23,8 @@ import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
 import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { pageCopy } from "@/lib/marketCopy";
 
 const results = [
   { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
