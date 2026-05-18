@@ -38,3 +38,20 @@ export async function addFirstProductToCart(page: Page) {
   const addBtn = page.getByRole("button", { name: /add to cart|in den warenkorb/i }).first();
   await addBtn.click();
 }
+
+/** Force a specific shipping country (supports unsupported values for blocked-state tests). */
+export async function setShippingCountry(page: Page, value: string) {
+  await page.goto("/checkout");
+  await page.evaluate((v) => window.localStorage.setItem("rtt_ship_country", v), value);
+  await page.reload();
+}
+
+/** Click the cart-page `+` button on the first line N times to bump quantity. */
+export async function bumpFirstLineQuantity(page: Page, times: number) {
+  await page.goto("/cart");
+  const plus = page.locator('button:has(svg.lucide-plus)').first();
+  for (let i = 0; i < times; i++) {
+    await plus.click();
+    await page.waitForTimeout(60);
+  }
+}
