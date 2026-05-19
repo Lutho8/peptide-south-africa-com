@@ -2,14 +2,24 @@ import { Link, useSearchParams } from "react-router-dom";
 import { XCircle } from "lucide-react";
 import SEO from "@/components/SEO";
 import { COPY } from "@/lib/copy";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 export default function CheckoutCancelPage() {
   const [params] = useSearchParams();
   const orderId = params.get("order_id");
+  const { market, lang } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
 
   return (
     <>
-      <SEO title="Payment Cancelled" description="Your payment was cancelled." path="/checkout/cancel" noindex />
+      <SEO
+        title="Payment Cancelled"
+        description="Your payment was cancelled."
+        path={mp("/checkout/cancel")}
+        lang={lang}
+        alternates={buildAlternates("/checkout/cancel")}
+        noindex
+      />
       <div className="container flex flex-col items-center justify-center py-32 text-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-10 w-10 text-destructive" />
@@ -24,10 +34,10 @@ export default function CheckoutCancelPage() {
           No charge was made. Your cart is still saved — try again whenever you're ready.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <Link to="/cart" className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground">
+          <Link to={mp("/cart")} className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground">
             {COPY.back_to_cart.en} · {COPY.back_to_cart.de}
           </Link>
-          <Link to="/shop" className="rounded-lg border border-border px-6 py-3 font-semibold text-foreground">
+          <Link to={mp("/shop")} className="rounded-lg border border-border px-6 py-3 font-semibold text-foreground">
             {COPY.continue_shopping.en} · {COPY.continue_shopping.de}
           </Link>
           {orderId && (
