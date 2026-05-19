@@ -21,8 +21,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/fat-loss-protocol", changefreq: "weekly", priority: "0.85" },
   { path: "/quiz", changefreq: "weekly", priority: "0.8" },
   { path: "/research", changefreq: "weekly", priority: "0.6" },
-  { path: "/clinician", changefreq: "monthly", priority: "0.7" },
-  { path: "/about", changefreq: "monthly", priority: "0.7" },
+  { path: "/impressum", changefreq: "yearly", priority: "0.4" },
   { path: "/faq", changefreq: "monthly", priority: "0.7" },
   { path: "/track-order", changefreq: "monthly", priority: "0.5" },
   { path: "/shipping", changefreq: "yearly", priority: "0.4" },
@@ -41,7 +40,7 @@ function extractProductSlugs(): string[] {
 }
 
 /** Paths that have /de and /za market variants. */
-const MARKETABLE = new Set<string>(["/", "/shop"]);
+const MARKETABLE = new Set<string>(["/", "/shop", "/impressum"]);
 
 function altLinks(genericPath: string): string[] {
   const suffix = genericPath === "/" ? "" : genericPath;

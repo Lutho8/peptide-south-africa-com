@@ -21,7 +21,7 @@ import CheckoutPage from "@/pages/CheckoutPage";
 import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
 import OrderStatusPage from "@/pages/OrderStatusPage";
-import AboutPage from "@/pages/AboutPage";
+import ImpressumPage from "@/pages/ImpressumPage";
 import FAQPage from "@/pages/FAQPage";
 import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
 import RefundPolicyPage from "@/pages/RefundPolicyPage";
@@ -31,7 +31,7 @@ import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
-import ClinicianPage from "@/pages/ClinicianPage";
+
 import AuthPage from "@/pages/AuthPage";
 import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
 import AdminIndexPage from "@/pages/admin/AdminIndexPage";
@@ -83,7 +83,9 @@ const App = () => (
                 <Route path="/de/checkout/cancel" element={<CheckoutCancelPage />} />
                 <Route path="/za/checkout/cancel" element={<CheckoutCancelPage />} />
                 <Route path="/order/:id" element={<OrderStatusPage />} />
-                <Route path="/about" element={<AboutPage />} />
+                <Route path="/impressum" element={<ImpressumPage />} />
+                <Route path="/de/impressum" element={<ImpressumPage />} />
+                <Route path="/za/impressum" element={<ImpressumPage />} />
                 <Route path="/track-order" element={<TrackOrderPage />} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
@@ -93,7 +95,7 @@ const App = () => (
                 <Route path="/quiz" element={<QuizFunnelPage />} />
                 <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
                 <Route path="/research" element={<ResearchHubPage />} />
-                <Route path="/clinician" element={<ClinicianPage />} />
+                
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/admin" element={<AdminIndexPage />} />
                 <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
