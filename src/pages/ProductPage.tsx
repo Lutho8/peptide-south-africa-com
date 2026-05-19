@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
+import StickyProductCTA from "@/components/StickyProductCTA";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 interface CmsFaq { question: string; answer: string }
@@ -46,7 +47,7 @@ export default function ProductPage() {
     return (
       <div className="container py-20 text-center">
         <h1 className="font-display text-2xl font-bold text-foreground">Product Not Found</h1>
-        <Link to="/shop" className="mt-4 inline-flex items-center gap-2 text-primary hover:underline">
+        <Link to={marketPath("/shop", market)} className="mt-4 inline-flex items-center gap-2 text-primary hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Shop
         </Link>
       </div>
@@ -93,9 +94,9 @@ export default function ProductPage() {
         alternates={buildAlternates(`/product/${product.slug}`)}
       />
       <Breadcrumbs crumbs={[
-        { label: "Home", href: "/" },
-        { label: "Shop", href: "/shop" },
-        { label: product.category, href: `/shop?category=${encodeURIComponent(product.category)}` },
+        { label: "Home", href: marketPath("/", market) },
+        { label: "Shop", href: marketPath("/shop", market) },
+        { label: product.category, href: `${marketPath("/shop", market)}?category=${encodeURIComponent(product.category)}` },
         { label: product.name },
       ]} />
 
@@ -301,6 +302,14 @@ export default function ProductPage() {
           </div>
         </section>
       )}
+
+      <StickyProductCTA
+        product={product}
+        variantLabel={product.variants?.[selectedVariant]?.label}
+        price={currentPrice}
+        added={added}
+        onAdd={handleAdd}
+      />
     </div>
   );
 }

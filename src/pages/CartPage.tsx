@@ -7,20 +7,23 @@ import FreeShippingBar from "@/components/FreeShippingBar";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { COPY, trilingual } from "@/lib/copy";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
   const { format } = useCurrency();
+  const { market, lang } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
 
   if (items.length === 0) {
     return (
       <>
-        <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
+        <SEO title="Your Cart" description="Review your selected peptides before checkout." path={mp("/cart")} lang={lang} alternates={buildAlternates("/cart")} noindex />
         <div className="container flex flex-col items-center justify-center py-32">
         <ShoppingBag className="mb-4 h-20 w-20 text-muted-foreground/20" />
         <h1 className="font-display text-2xl font-bold text-foreground">Your cart is empty</h1>
         <p className="mt-2 text-muted-foreground">Add some products to get started.</p>
-        <Link to="/shop" className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">
+        <Link to={mp("/shop")} className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">
           Browse Products
         </Link>
         </div>
@@ -30,10 +33,10 @@ export default function CartPage() {
 
   return (
     <>
-    <SEO title="Your Cart" description="Review your selected peptides before checkout." path="/cart" noindex />
-    <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]} />
+    <SEO title="Your Cart" description="Review your selected peptides before checkout." path={mp("/cart")} lang={lang} alternates={buildAlternates("/cart")} noindex />
+    <Breadcrumbs crumbs={[{ label: "Home", href: mp("/") }, { label: "Cart" }]} />
     <div className="container py-12">
-      <Link to="/shop" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+      <Link to={mp("/shop")} className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Continue Shopping
       </Link>
       <h1 className="mb-6 font-display text-3xl font-bold text-foreground">Shopping Cart</h1>
@@ -47,7 +50,7 @@ export default function CartPage() {
               <div key={item.lineId} className="flex gap-4 rounded-lg border border-border bg-card p-4 shadow-card">
                 <img src={item.product.image} alt={item.product.name} className="h-24 w-24 rounded-md object-cover" />
                 <div className="flex flex-1 flex-col">
-                  <Link to={`/product/${item.product.slug}`} className="font-display font-semibold text-foreground hover:text-primary">
+                  <Link to={mp(`/product/${item.product.slug}`)} className="font-display font-semibold text-foreground hover:text-primary">
                     {item.product.name}
                   </Link>
                   <span className="text-sm text-muted-foreground">
@@ -106,7 +109,7 @@ export default function CartPage() {
             <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(totalPrice)}</span>
           </div>
           <Link
-            to="/checkout"
+            to={mp("/checkout")}
             className="mt-6 block w-full rounded-lg bg-hero-gradient py-3.5 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90"
           >
             Proceed to Checkout · Zur Kasse
