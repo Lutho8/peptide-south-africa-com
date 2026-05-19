@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-border bg-card">
       <div className="container py-12">
-        <div className="grid gap-8 md:grid-cols-5">
+        <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
             <Link to={mp("/")} className="font-display text-lg font-bold text-foreground">Ride The Tide</Link>
             <p className="mt-3 text-sm text-muted-foreground">
@@ -65,17 +65,7 @@ export default function Footer() {
               <Link to={`${mp("/shop")}?category=Weight+Loss`} className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
               <Link to={`${mp("/shop")}?category=Growth+Hormone`} className="text-sm text-muted-foreground hover:text-foreground">Growth Hormone</Link>
               <Link to={`${mp("/shop")}?category=Healing`} className="text-sm text-muted-foreground hover:text-foreground">Healing</Link>
-            </div>
-          </div>
-          <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Legal</h4>
-            <div className="flex flex-col gap-2">
-              <Link to={mp("/impressum")} className="text-sm text-muted-foreground hover:text-foreground">Impressum</Link>
               <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground">FAQ</Link>
-              <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms & Conditions</Link>
-              <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
-              <Link to="/shipping" className="text-sm text-muted-foreground hover:text-foreground">Shipping Policy</Link>
-              <Link to="/refund" className="text-sm text-muted-foreground hover:text-foreground">Refund Policy</Link>
             </div>
           </div>
           <div>
@@ -91,8 +81,19 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
+        <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 text-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+            <Link to={mp("/impressum")} className="hover:text-foreground">Impressum</Link>
+            <span aria-hidden className="text-border">·</span>
+            <Link to="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link>
+            <span aria-hidden className="text-border">·</span>
+            <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+            <span aria-hidden className="text-border">·</span>
+            <Link to="/shipping" className="hover:text-foreground">Shipping Policy</Link>
+            <span aria-hidden className="text-border">·</span>
+            <Link to="/refund" className="hover:text-foreground">Refund Policy</Link>
+          </nav>
           <div className="flex items-center gap-3 text-xs">
             {!user ? (
               <Link to="/auth" className="hover:text-foreground">Sign in</Link>
