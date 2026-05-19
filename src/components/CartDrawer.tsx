@@ -4,10 +4,13 @@ import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { COPY } from "@/lib/copy";
 import CartCountdown from "@/components/CartCountdown";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
   const { format } = useCurrency();
+  const { market } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
 
   if (!isCartOpen) return null;
 
@@ -86,14 +89,14 @@ export default function CartDrawer() {
                 <span>{COPY.total.en} / {COPY.total.de}</span><span>{format(totalPrice)}</span>
               </div>
               <Link
-                to="/checkout"
+                to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
                 className="block w-full rounded-lg bg-primary py-3 text-center text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
               >
                 Checkout
               </Link>
               <Link
-                to="/cart"
+                to={mp("/cart")}
                 onClick={() => setIsCartOpen(false)}
                 className="mt-2 block w-full rounded-lg border border-border py-3 text-center text-sm font-semibold text-foreground transition-all hover:bg-muted"
               >

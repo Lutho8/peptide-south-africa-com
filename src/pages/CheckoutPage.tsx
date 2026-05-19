@@ -25,6 +25,7 @@ import {
 } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors } from "@/lib/checkoutSchema";
 import { formatEUR, formatZAR } from "@/lib/price";
+import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 const FORM_KEY = "rtt_checkout_form";
 const emptyForm: CheckoutForm = {
@@ -41,6 +42,8 @@ export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
   const { user, refreshOrders } = useAuth();
   const { format, currency, convert, rate } = useCurrency();
+  const { market, lang } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
@@ -48,14 +51,16 @@ export default function CheckoutPage() {
   // Persist shipping country across reloads / cancelled payments. Manual
   // selection always wins over the currency-derived default.
   const SHIP_KEY = "rtt_ship_country";
+  const marketDefaultCountry: ShippingCountry =
+    market === "de" ? "Germany" : market === "za" ? "South Africa" : (currency === "ZAR" ? "South Africa" : "Germany");
   const [country, setCountryState] = useState<ShippingCountry | string>(() => {
-    if (typeof window === "undefined") return currency === "ZAR" ? "South Africa" : "Germany";
+    if (typeof window === "undefined") return marketDefaultCountry;
     const stored = window.localStorage.getItem(SHIP_KEY);
     if (stored === "South Africa" || stored === "Germany") return stored;
     // If a non-supported value was somehow stored, keep it so the blocked
     // banner renders and the user can see the explanation.
     if (stored && stored.length > 0) return stored;
-    return currency === "ZAR" ? "South Africa" : "Germany";
+    return marketDefaultCountry;
   });
   const setCountry = (c: ShippingCountry) => {
     setCountryState(c);
@@ -135,7 +140,7 @@ export default function CheckoutPage() {
     return (
       <div className="container py-32 text-center">
         <h1 className="font-display text-2xl font-bold text-foreground">Your cart is empty</h1>
-        <Link to="/shop" className="mt-4 inline-block text-primary hover:underline">Browse Products</Link>
+        <Link to={mp("/shop")} className="mt-4 inline-block text-primary hover:underline">Browse Products</Link>
       </div>
     );
   }
@@ -201,8 +206,8 @@ export default function CheckoutPage() {
           amount,
           currency: rule.currency.toLowerCase(),
           description,
-          successUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
+          successUrl: `${origin}${mp("/checkout/success")}?order_id=${orderRow.id}`,
+          cancelUrl: `${origin}${mp("/checkout/cancel")}?order_id=${orderRow.id}`,
         },
       });
       if (fnErr) throw new Error(fnErr.message);
@@ -234,8 +239,8 @@ export default function CheckoutPage() {
 
   return (
     <>
-    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, SA & EU shipping." path="/checkout" noindex />
-    <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
+    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, SA & EU shipping." path={mp("/checkout")} lang={lang} alternates={buildAlternates("/checkout")} noindex />
+    <Breadcrumbs crumbs={[{ label: "Home", href: mp("/") }, { label: "Cart", href: mp("/cart") }, { label: "Checkout" }]} />
     <div className="container py-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>

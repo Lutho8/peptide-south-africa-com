@@ -27,12 +27,12 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const handleAdd = () => {
     if (!product.inStock) {
-      navigate(`/product/${product.slug}`);
+      navigate(productUrl);
       return;
     }
     if (hasMultipleVariants) {
       // Force the user to pick a size on the PDP rather than silently choose.
-      navigate(`/product/${product.slug}#variants`);
+      navigate(`${productUrl}#variants`);
       return;
     }
     const onlyVariant = product.variants?.[0];
@@ -41,7 +41,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
-      <Link to={`/product/${product.slug}`} className="relative aspect-square overflow-hidden bg-muted">
+      <Link to={productUrl} className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={product.image}
           alt={product.name}
@@ -71,7 +71,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
 
-        <Link to={`/product/${product.slug}`}>
+        <Link to={productUrl}>
           <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
             {product.name}
           </h3>
@@ -99,7 +99,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-3 flex gap-2">
           <Link
-            to={`/product/${product.slug}`}
+            to={productUrl}
             className="flex-1 rounded-lg border border-border px-3 py-2.5 text-center text-xs font-semibold text-foreground transition-all hover:bg-muted"
           >
             View

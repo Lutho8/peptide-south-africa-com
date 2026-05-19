@@ -4,9 +4,12 @@ import { Mail, Globe2, FlaskConical, Languages } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { captureLead } from "@/lib/nocobase";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function Footer() {
   const { user, isAdmin, signOut } = useAuth();
+  const { market } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -24,7 +27,7 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-5">
           <div className="md:col-span-2">
-            <Link to="/" className="font-display text-lg font-bold text-foreground">Ride The Tide</Link>
+            <Link to={mp("/")} className="font-display text-lg font-bold text-foreground">Ride The Tide</Link>
             <p className="mt-3 text-sm text-muted-foreground">
               Research-grade peptides. Lab-tested. 99% purity. Trusted by researchers worldwide.
             </p>
@@ -58,10 +61,10 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Shop</h4>
             <div className="flex flex-col gap-2">
-              <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
-              <Link to="/shop?category=Weight+Loss" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
-              <Link to="/shop?category=Growth+Hormone" className="text-sm text-muted-foreground hover:text-foreground">Growth Hormone</Link>
-              <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Healing</Link>
+              <Link to={mp("/shop")} className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
+              <Link to={`${mp("/shop")}?category=Weight+Loss`} className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
+              <Link to={`${mp("/shop")}?category=Growth+Hormone`} className="text-sm text-muted-foreground hover:text-foreground">Growth Hormone</Link>
+              <Link to={`${mp("/shop")}?category=Healing`} className="text-sm text-muted-foreground hover:text-foreground">Healing</Link>
             </div>
           </div>
           <div>

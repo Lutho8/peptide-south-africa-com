@@ -3,12 +3,14 @@ import { ShoppingCart, FlaskConical, ShieldCheck, ArrowRight } from "lucide-reac
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 
 const FEATURED_IDS = ["1", "6", "7", "2", "4", "3"];
 
 export default function FeaturedProductRail() {
   const { addToCart } = useCart();
   const { format } = useCurrency();
+  const { market } = useMarket();
   const featured = FEATURED_IDS
     .map((id) => products.find((p) => p.id === id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
@@ -26,7 +28,7 @@ export default function FeaturedProductRail() {
             </h2>
           </div>
           <Link
-            to="/shop"
+            to={marketPath("/shop", market)}
             className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:inline-flex"
           >
             View all <ArrowRight className="h-4 w-4" />
@@ -42,7 +44,7 @@ export default function FeaturedProductRail() {
                   key={p.id}
                   className="group relative flex w-[260px] flex-shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-card transition-all hover:-translate-y-1 hover:shadow-card-hover"
                 >
-                  <Link to={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-muted">
+                  <Link to={marketPath(`/product/${p.slug}`, market)} className="relative block aspect-square overflow-hidden bg-muted">
                     <img
                       src={p.image}
                       alt={p.name}
@@ -62,7 +64,7 @@ export default function FeaturedProductRail() {
                   </Link>
 
                   <div className="flex flex-1 flex-col p-4">
-                    <Link to={`/product/${p.slug}`} className="hover:underline">
+                    <Link to={marketPath(`/product/${p.slug}`, market)} className="hover:underline">
                       <h3 className="font-display text-base font-semibold text-foreground">{p.name}</h3>
                     </Link>
                     <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
