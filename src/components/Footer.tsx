@@ -70,8 +70,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Legal</h4>
             <div className="flex flex-col gap-2">
-              <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About Us</Link>
-              <Link to="/clinician" className="text-sm text-muted-foreground hover:text-foreground">Meet Lutho (Clinician)</Link>
+              <Link to={mp("/impressum")} className="text-sm text-muted-foreground hover:text-foreground">Impressum</Link>
               <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground">FAQ</Link>
               <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms & Conditions</Link>
               <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
