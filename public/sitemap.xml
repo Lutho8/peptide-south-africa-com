@@ -79,16 +79,34 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.ridethetide.site/clinician</loc>
+    <loc>https://www.ridethetide.site/impressum</loc>
     <lastmod>2026-05-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ridethetide.site/impressum" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.ridethetide.site/za/impressum" />
+    <xhtml:link rel="alternate" hreflang="de-DE" href="https://www.ridethetide.site/de/impressum" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/impressum" />
   </url>
   <url>
-    <loc>https://www.ridethetide.site/about</loc>
+    <loc>https://www.ridethetide.site/de/impressum</loc>
     <lastmod>2026-05-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ridethetide.site/impressum" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.ridethetide.site/za/impressum" />
+    <xhtml:link rel="alternate" hreflang="de-DE" href="https://www.ridethetide.site/de/impressum" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/impressum" />
+  </url>
+  <url>
+    <loc>https://www.ridethetide.site/za/impressum</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ridethetide.site/impressum" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.ridethetide.site/za/impressum" />
+    <xhtml:link rel="alternate" hreflang="de-DE" href="https://www.ridethetide.site/de/impressum" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/impressum" />
   </url>
   <url>
     <loc>https://www.ridethetide.site/faq</loc>
