@@ -1,116 +1,77 @@
+## Plan: Legal-page copy sweep + footer hardening
 
-# Targeted updates — keep store standalone, link out to ecosystem, drop Germany
+### 1. Copy sweep — remove remaining Germany/EU/DE text
 
-Scope is additive bridges + a full Germany rip-out. No changes to checkout, Shopify, product catalogue, auth, or existing design tokens.
+Goal: clean SA-only English copy in every legal page and supporting component.
 
-## 1. Tracker bridge on every product page
+- **`src/pages/ShippingPolicyPage.tsx`** — Rewrite as SA-only. Drop "Dual-market", "Germany & EU", DHL/EU table rows, German sentences, EU customs section, "€75 free". New copy: same-day dispatch before 14:00 SAST, Aramex/PEP Paxi 1–5 business days, free over R1,500, discreet packaging. Update title/description/`shippingSchema` and `SITE_URL` to `https://www.ridethetide.site`.
+- **`src/pages/RefundPolicyPage.tsx`** — Remove section 3 "EU 14-Day Right of Withdrawal · Widerrufsrecht" entirely. Update SEO title/description (drop "EU 14-Day Widerrufsrecht"). Update `SITE_URL`.
+- **`src/pages/TermsPage.tsx`** — Section 10 (Payment): drop EUR-default copy, state "Prices in ZAR. Payment via NowPayments (cards, Apple/Google Pay, EFT, crypto)." Section 20 (Governing Law): keep SA paragraph only; remove EU/BGB/Rome I paragraph. Update SEO title/description and `SITE_URL`.
+- **`src/pages/PrivacyPolicyPage.tsx`** — Remove GDPR/BDSG references; keep POPIA. Trim section 8 to POPIA rights; section 9 to POPIA cross-border only. Update SEO + `SITE_URL`.
+- **`src/pages/ImpressumPage.tsx`** — Already hard-codes `isDe = false`. Keep page (legal-notice content is still useful) but remove the bilingual scaffolding: drop the §5 TMG/§18 MStV wording, leave clean English "Legal Notice" with CIPC company details. Title becomes "Legal Notice".
+- **`src/pages/AboutPage.tsx`** — Remove German testimonial (Lisa R. / München), tweak "German Certified Compounds" credential to "Pharmaceutical-Grade Compounds", drop "across South Africa — at prices…" Germany framing in SEO description ("Serving researchers in Germany and South Africa" → "Serving researchers across South Africa").
+- **`src/pages/CheckoutPage.tsx`** — Default `marketDefaultCountry` becomes `"South Africa"`; drop Germany branches; remove `Germany` from SHIP_KEY accepted values.
+- **`public/sitemap.xml`** — Static file is already SA-only after previous sweep; verify no stale DE entries (none present).
 
-In `src/pages/ProductPage.tsx`, directly below the Add to Cart button (above the trust line), add a small surface card:
+### 2. SEO validation for legal pages
 
-- Heading "Track this protocol free"
-- Body "Load into your RTD Tracker and monitor your results from day one."
-- CTA "Open Tracker →" linking to `https://ridethetide.info?utm_source=store&utm_medium=product_page&utm_campaign={product.slug}`
-- Styled with `bg-card border border-border` + `border-l-[3px]` using an inline `borderLeftColor: "#06b6d4"`, small text, opens in new tab.
+Standardize every legal page's `<SEO>` call so it emits the canonical `en-ZA` + `en` + `x-default` alternates from `buildAlternates(path)` and a Cape Town-correct meta set.
 
-Extracted as `src/components/TrackerBridgeCard.tsx` so the product page stays readable.
+- Pass `alternates={buildAlternates("/impressum" | "/terms" | "/privacy" | "/shipping" | "/refund")}` explicitly.
+- Pass `lang="en"`.
+- Confirm SEO.tsx already injects geo (ZA-WC, -33.9249/18.4241) and `og:locale=en_ZA` — no change needed.
+- Replace stale `SITE_URL = "https://tide-shop-clone.lovable.app"` constants in the JSON-LD with `https://www.ridethetide.site`.
 
-## 2. Ecosystem section on homepage
+### 3. Footer bottom legal bar — responsive wrapping
 
-New component `src/components/EcosystemSection.tsx`, inserted in `src/pages/HomePage.tsx` between the Research Hub section and the Bottom CTA (this is the slot just above the footer-adjacent CTAs; "between product grid and footer" — placing it as the last content block before the bottom CTA keeps the conversion flow intact).
+Current bar uses `flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs` with `·` separators that are siblings of links — separators can land at line starts and links can break mid-text on narrow screens.
 
-Layout: full-width section, container, heading "One Ecosystem. Three Properties.", three cards in a `md:grid-cols-3` grid (stacked on mobile).
+Fix in `src/components/Footer.tsx`:
+- Wrap each `Link` + following separator in a single inline-flex group so the dot never wraps to a new line alone.
+- Use `whitespace-nowrap` on each link.
+- Hide the trailing separator after the last link via `last:hidden` pattern.
+- Bump container to `gap-x-3 gap-y-2 px-4` and ensure `max-w` allows wrap on 320px viewports.
 
-- **Card 1 — The Club**: title "Cape Town Peptide Club", body as specified, CTA "Join the Club →" → `https://capetownpeptideclub.co.za`. `border-t-[3px]` with `#0ea5e9`.
-- **Card 2 — The Tracker (highlighted)**: title "RTD Protocol Tracker", body as specified, CTA "Track Free →" → `https://ridethetide.info`. `border-t-[3px]` with `#06b6d4`. Slightly lighter background (`bg-background` while siblings use `bg-card`, or vice versa depending on which reads lighter — will pick the visibly lighter one against the section background).
-- **Card 3 — The Store (muted)**: title "RTD Research Peptides", body as specified, no button, "You're here" in `text-muted-foreground`. `border-t-[3px]` with `#475569`.
+### 4. Market-aware routing on legal links
 
-All external CTAs `target="_blank" rel="noopener noreferrer"`.
+Site is locked to a single market via `useMarket` (always `{market: "default", basePath: ""}`) and `marketPath` is identity. To match the request shape and future-proof, route the footer's Terms/Privacy/Shipping/Refund/Impressum links through `marketPath`:
 
-## 3. Floating WhatsApp button
+- Import `useMarket`, `marketPath` in `Footer.tsx`.
+- Compute `const mp = (p: string) => marketPath(p, market)` and apply to all 5 legal `<Link to=...>`s.
+- Behavior is unchanged today (identity), but the indirection is in place so the contract is honored.
 
-`src/components/WhatsAppButton.tsx` already exists and is already mounted in `App.tsx`. Fix the broken number and update the message:
+### 5. Regression tests
 
-- Number → `491624747159` (strip the `+`, strip the zero-width space currently in the file).
-- Message → `Hi, I'd like to know about RTD Peptides`.
-- Keep existing 56px / `#25D366` styling.
+Add `src/test/footer.test.tsx` (vitest + @testing-library/react). Renders `<Footer />` inside `MemoryRouter` + required providers (Auth + Cart context shims or a minimal wrapper).
 
-## 4. Navigation additions
+Assertions:
+- Bottom legal `<nav aria-label="Legal">` exists.
+- It contains links in order: Impressum, Terms & Conditions, Privacy Policy, Shipping Policy, Refund Policy.
+- Each link points at the expected canonical path (`/impressum`, `/terms`, `/privacy`, `/shipping`, `/refund`).
+- The Impressum link is the first child of the legal nav (guards against regression where it gets moved out of the bottom bar).
 
-In `src/components/Header.tsx`, add two external links to the desktop nav and the mobile menu, alongside the existing items (do not remove any):
+Also extend `src/test/market-routing.test.tsx` with:
+- A case asserting `marketPath("/impressum")`, `/terms`, `/privacy`, `/shipping`, `/refund` all remain identity.
+- A case asserting `buildAlternates("/impressum")` includes `en-ZA`, `en`, `x-default` and excludes `de-DE`.
 
-- "Tracker" → `https://ridethetide.info`
-- "Club" → `https://capetownpeptideclub.co.za`
+### Files touched
 
-Rendered as `<a>` (not `<Link>`), `target="_blank" rel="noopener noreferrer"`, same text styling as existing nav items. Also mirror them in the footer's main nav columns for parity (small addition under an "Ecosystem" mini-list in the footer; non-disruptive).
+Edited:
+- `src/pages/ShippingPolicyPage.tsx`
+- `src/pages/RefundPolicyPage.tsx`
+- `src/pages/TermsPage.tsx`
+- `src/pages/PrivacyPolicyPage.tsx`
+- `src/pages/ImpressumPage.tsx`
+- `src/pages/AboutPage.tsx`
+- `src/pages/CheckoutPage.tsx`
+- `src/components/Footer.tsx`
+- `src/test/market-routing.test.tsx`
 
-## 5. Waitlist section on homepage
+New:
+- `src/test/footer.test.tsx`
 
-New `src/components/WaitlistSection.tsx`, inserted in `HomePage.tsx` just above the Bottom CTA (so it's the last block before the footer-adjacent CTA — true "above the footer" position).
+### Out of scope
 
-- Heading "Launching Cape Town — October 2025"
-- Subheading "Founding members receive 15% off their first order, permanently."
-- Form: email (required), WhatsApp number (optional), submit button "Join the Waitlist".
-- On submit: `POST` JSON to `MAKE_WEBHOOK_URL_PLACEHOLDER` constant defined at top of file. On success: show success toast, increment counter, clear form.
-- Counter: read `rtd_waitlist_count` from `localStorage` (default `1`), show "{X} researchers already waiting" below the form. Increment + persist on each successful submission.
-- All client-side; no backend, no Supabase table. Uses shadcn `Input` + `Button` + existing toast.
-
-## 6. Full Germany / EUR / DE rip-out
-
-This is the biggest change. Site becomes single-market: South Africa, English, ZAR.
-
-**Routing (`src/App.tsx`)**: delete all `/de/...` and `/za/...` duplicate routes. Keep only the canonical single set. The market switcher and prefix scheme go away.
-
-**Market system (`src/hooks/useMarket.ts`)**: simplify to a stub that always returns `{ market: "default", lang: "en", currency: "ZAR", basePath: "" }`, `marketPath` becomes identity, `stripMarket` becomes identity, `buildAlternates` returns just the canonical en-ZA. This keeps existing imports working without touching every consumer.
-
-**Components removed from render tree**:
-- `MarketSwitcher` — removed from `Header.tsx` (desktop + mobile).
-- `CurrencySwitcher` — removed from `Header.tsx`.
-- The `CurrencyProvider` wrapper in `App.tsx` stays for now (cart code reads from it); the provider will hard-default to ZAR with no toggle UI. `src/context/CurrencyContext.tsx` updated so `currency` is always `"ZAR"`, `rate` always `1`, no setter UI but the existing `format` / `display` API still works so product pages don't break.
-
-**Copy sweep** — files containing user-visible Germany/EUR/DE strings to update:
-- `src/pages/HomePage.tsx`: remove the German "Anja R." testimonial; change `Free shipping over R1,500 (SA) or €75 (DE / EU)…` to `Free shipping over R1,500 across South Africa. Same-day dispatch from Cape Town.`; remove "German Certified Quality" → "Pharmaceutical-Grade Quality".
-- `src/pages/ProductPage.tsx`: shipping/trust line "🇿🇦 SA: Free over R1,500 | 🇩🇪 DE: Free over €120" → "🇿🇦 Free shipping over R1,500 across South Africa".
-- `src/lib/marketCopy.ts`, `src/lib/copy.ts`, `src/lib/shipping.ts`, `src/lib/currency.ts`, `src/lib/price.ts`: strip DE/EUR branches, keep ZA logic only.
-- `src/components/AnnouncementBar.tsx`, `src/components/FreeShippingBar.tsx`, `src/components/PaymentMethodsBanner.tsx`, `src/components/DeliveryReturnsAccordion.tsx`, `src/components/CheckoutTrustBar.tsx`: remove DE / EUR / "Germany" phrasing; rewrite to Cape Town / SA only.
-- `src/pages/ShippingPolicyPage.tsx`, `src/pages/RefundPolicyPage.tsx`, `src/pages/ImpressumPage.tsx`, `src/pages/TermsPage.tsx`, `src/pages/PrivacyPolicyPage.tsx`, `src/pages/FAQPage.tsx`, `src/pages/AboutPage.tsx`, `src/pages/CheckoutSuccessPage.tsx`, `src/pages/CheckoutCancelPage.tsx`: remove Germany/EUR/DHL-to-Germany phrasing. Keep Impressum page (it doesn't hurt) but rewrite as a South African legal/imprint page.
-- `src/lib/seo.ts` (`localBusinessSchema`, entity clusters): replace any German address/coords with Cape Town `-33.9249, 18.4241`, currency `ZAR`, country `ZA`.
-
-**SEO & meta**:
-- `index.html`: replace any geo meta (`geo.region`, `geo.position`, `ICBM`) with Cape Town coords. Remove `hreflang` alternates for `de-DE`. Strip German `og:locale:alternate`.
-- `src/components/SEO.tsx` + every `buildAlternates(...)` call site: `buildAlternates` now returns one entry (en-ZA + x-default) so consumers don't need refactoring.
-- `public/sitemap.xml` + `public/sitemap-meta.json` + `scripts/generate-sitemap.ts`: drop all `/de/...` URLs, drop hreflang alternates referencing `de`. Single-market sitemap only.
-- `public/robots.txt` + `public/llms.txt`: scrub Germany copy.
-
-**Tests**: `src/test/market-routing.test.tsx` currently asserts `/de` behaviour — rewrite to assert single-market routing (root only, no prefix), and confirm `marketPath("/shop")` returns `/shop`.
-
-## Technical notes
-
-- All new copy and components stick to existing semantic tokens (`bg-card`, `text-foreground`, `text-muted-foreground`, etc.); the only hardcoded colors are the three hexes the brief mandates for borders (`#06b6d4`, `#0ea5e9`, `#475569`) and `#25D366` for WhatsApp.
-- No new dependencies, no migrations, no edge functions.
-- `MAKE_WEBHOOK_URL_PLACEHOLDER` lives as a top-level const in `WaitlistSection.tsx` — clearly marked TODO so swapping it is a one-line edit later.
-- The two memory files about markets/currency and DE shipping will need an update after build to reflect the ZAR-only posture, but no memory writes happen during plan mode.
-
-## Files touched (summary)
-
-```text
-new:    src/components/TrackerBridgeCard.tsx
-new:    src/components/EcosystemSection.tsx
-new:    src/components/WaitlistSection.tsx
-edit:   src/components/WhatsAppButton.tsx
-edit:   src/components/Header.tsx
-edit:   src/components/Footer.tsx
-edit:   src/pages/ProductPage.tsx
-edit:   src/pages/HomePage.tsx
-edit:   src/App.tsx
-edit:   src/hooks/useMarket.ts
-edit:   src/context/CurrencyContext.tsx
-edit:   src/lib/{marketCopy,copy,shipping,currency,price,seo}.ts
-edit:   src/components/{AnnouncementBar,FreeShippingBar,PaymentMethodsBanner,
-        DeliveryReturnsAccordion,CheckoutTrustBar,SEO}.tsx
-edit:   src/pages/{ShippingPolicy,RefundPolicy,Impressum,Terms,PrivacyPolicy,
-        FAQ,About,CheckoutSuccess,CheckoutCancel}Page.tsx
-edit:   index.html
-edit:   public/{sitemap.xml,sitemap-meta.json,robots.txt,llms.txt}
-edit:   scripts/generate-sitemap.ts
-edit:   src/test/market-routing.test.tsx
-```
+- No change to `useMarket`/`CurrencyContext` semantics (still single-market).
+- No change to Shopify/checkout business logic.
+- No new auth, RLS, or DB work.
