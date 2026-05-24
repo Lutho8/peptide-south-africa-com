@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-// TODO: replace with the live Make webhook URL once configured.
-const MAKE_WEBHOOK_URL = "MAKE_WEBHOOK_URL_PLACEHOLDER";
+const MAKE_WEBHOOK_URL =
+  "https://hook.eu1.make.com/ypm5hnevcxlmc7j9tl68fhxiigl5yb8a";
+const WHATSAPP_URL = "https://wa.me/491624747159";
 const COUNT_KEY = "rtd_waitlist_count";
 
 export default function WaitlistSection() {
   const { toast } = useToast();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [count, setCount] = useState(1);
@@ -20,38 +23,58 @@ export default function WaitlistSection() {
     setCount(Number.isFinite(parsed) && parsed > 0 ? parsed : 1);
   }, []);
 
+  const showError = () => {
+    toast({
+      variant: "destructive",
+      title: "Something went wrong.",
+      description: "WhatsApp us directly instead.",
+      action: (
+        <ToastAction
+          altText="WhatsApp us"
+          asChild
+        >
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+        </ToastAction>
+      ),
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!name || !email) return;
     setSubmitting(true);
     try {
-      // Best-effort webhook post; even if it fails (placeholder URL), we still
-      // increment the local counter so the UI works in development.
-      try {
-        await fetch(MAKE_WEBHOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            whatsapp: whatsapp || null,
-            source: "waitlist_homepage",
-            submittedAt: new Date().toISOString(),
-          }),
-        });
-      } catch {
-        /* swallow — placeholder URL */
+      const response = await fetch(MAKE_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          whatsapp,
+          source: "store_waitlist",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        showError();
+        return;
       }
 
       const next = count + 1;
       localStorage.setItem(COUNT_KEY, String(next));
       setCount(next);
+      setName("");
       setEmail("");
       setWhatsapp("");
       toast({
-        title: "You're on the list",
-        description: "Founding members get 15% off — permanently.",
+        title: "You're on the list.",
+        description: "We'll be in touch before October.",
       });
+    } catch {
+      showError();
     } finally {
       setSubmitting(false);
     }
@@ -72,6 +95,14 @@ export default function WaitlistSection() {
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3">
+            <Input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Full name"
+              aria-label="Full name"
+            />
             <Input
               type="email"
               required
