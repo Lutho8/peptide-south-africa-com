@@ -1,8 +1,9 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
+import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.ridethetide.site";
 
 const shippingSchema = {
   "@context": "https://schema.org",
@@ -11,7 +12,7 @@ const shippingSchema = {
   name: "Shipping Policy — Ride The Tide",
   url: `${SITE_URL}/shipping`,
   description:
-    "Ride The Tide shipping policy: same-day dispatch in South Africa, 24-hour cut-off for Germany & the EU, DHL / Aramex / PEP Paxi carriers, tracking, and free-shipping thresholds.",
+    "Ride The Tide shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping over R1,500.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -21,40 +22,33 @@ export default function ShippingPolicyPage() {
   return (
     <>
       <SEO
-        title="Shipping Policy — South Africa & Germany / EU"
-        description="Dual-market shipping: South Africa 1–3 business days (free over R1,500) · Germany & EU 4–7 business days via DHL (free over €75). Discreet, unbranded packaging."
+        title="Shipping Policy — South Africa"
+        description="Same-day dispatch from Cape Town before 14:00 SAST. Aramex / PEP Paxi 1–5 business days. Free shipping over R1,500. Discreet, unbranded packaging."
         path="/shipping"
+        lang="en"
+        alternates={buildAlternates("/shipping")}
       />
       <JsonLd data={shippingSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Shipping Policy", href: "/shipping" }]} />
       <div className="container py-16">
         <div className="mx-auto max-w-3xl">
           <h1 className="font-display text-3xl font-bold text-foreground">Shipping Policy</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Effective: May 2026 · Markets served: South Africa, Germany &amp; the EU</p>
+          <p className="mt-2 text-sm text-muted-foreground">Effective: May 2026 · Cape Town, South Africa</p>
 
           <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
             <p>
-              Ride The Tide dispatches orders from two regional hubs: Johannesburg (for South African customers) and an EU
-              fulfilment partner (for Germany &amp; the EU). Please review the shipping terms below before placing your order.
+              Ride The Tide dispatches all orders from our Cape Town fulfilment hub. Please review the shipping terms below
+              before placing your order.
             </p>
 
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">1. Order Processing &amp; Dispatch</h2>
-              <div className="mt-3 space-y-3">
-                <h3 className="font-semibold text-foreground/80">South Africa</h3>
-                <ul className="list-disc space-y-1 pl-5">
-                  <li>Same-day dispatch on orders placed before <span className="font-semibold text-foreground">14:00 SAST</span>, Monday–Friday.</li>
-                  <li>Orders placed after the cut-off ship on the next business day.</li>
-                  <li>No dispatch on Sundays or South African public holidays.</li>
-                </ul>
-                <h3 className="font-semibold text-foreground/80">Germany &amp; EU · Deutschland &amp; EU</h3>
-                <ul className="list-disc space-y-1 pl-5">
-                  <li>Orders are picked, packed, and handed to DHL within <span className="font-semibold text-foreground">24 hours</span> of confirmation (Mon–Fri).</li>
-                  <li>Bestellungen werden innerhalb von 24 Stunden an DHL übergeben.</li>
-                  <li>No dispatch on Sundays or German federal holidays.</li>
-                </ul>
-                <p>Processing time refers to preparing and handing the package to the carrier; it does not include carrier transit time.</p>
-              </div>
+              <ul className="mt-3 list-disc space-y-1 pl-5">
+                <li>Same-day dispatch on orders placed before <span className="font-semibold text-foreground">14:00 SAST</span>, Monday–Friday.</li>
+                <li>Orders placed after the cut-off ship on the next business day.</li>
+                <li>No dispatch on Sundays or South African public holidays.</li>
+              </ul>
+              <p className="mt-3">Processing time refers to preparing and handing the package to the carrier; it does not include carrier transit time.</p>
             </section>
 
             <section>
@@ -63,7 +57,7 @@ export default function ShippingPolicyPage() {
                 <table className="w-full text-left text-sm">
                   <thead className="bg-muted/60 text-foreground">
                     <tr>
-                      <th className="px-4 py-2 font-semibold">Market</th>
+                      <th className="px-4 py-2 font-semibold">Region</th>
                       <th className="px-4 py-2 font-semibold">Carrier</th>
                       <th className="px-4 py-2 font-semibold">Window</th>
                       <th className="px-4 py-2 font-semibold">Free over</th>
@@ -71,40 +65,28 @@ export default function ShippingPolicyPage() {
                   </thead>
                   <tbody className="text-muted-foreground">
                     <tr className="border-t border-border">
-                      <td className="px-4 py-2">South Africa — metro</td>
+                      <td className="px-4 py-2">Metro (Cape Town, JHB, DBN, PTA)</td>
                       <td className="px-4 py-2">Aramex / PEP Paxi</td>
                       <td className="px-4 py-2">1–3 business days</td>
                       <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
                     </tr>
                     <tr className="border-t border-border">
-                      <td className="px-4 py-2">South Africa — regional</td>
+                      <td className="px-4 py-2">Regional &amp; outlying</td>
                       <td className="px-4 py-2">Aramex / PEP Paxi</td>
                       <td className="px-4 py-2">2–5 business days</td>
                       <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
                     </tr>
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2">Germany</td>
-                      <td className="px-4 py-2">DHL</td>
-                      <td className="px-4 py-2">4–7 Werktage</td>
-                      <td className="px-4 py-2 font-semibold text-foreground">€75</td>
-                    </tr>
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2">EU (rest)</td>
-                      <td className="px-4 py-2">DHL Parcel International</td>
-                      <td className="px-4 py-2">5–10 business days</td>
-                      <td className="px-4 py-2 font-semibold text-foreground">€75</td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
-              <p className="mt-3">All windows are estimates from the carrier and are not guaranteed unless explicitly stated.</p>
+              <p className="mt-3">All windows are carrier estimates and are not guaranteed unless explicitly stated.</p>
             </section>
 
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">3. Pre-Order Shipments</h2>
               <p className="mt-3">
                 Pre-orders are classified separately from standard in-stock orders and ship within 2–3 weeks unless otherwise stated.
-                Delays may arise from customs clearance, supplier timelines, QC testing, carrier disruption, or inventory intake.
+                Delays may arise from supplier timelines, QC testing, carrier disruption, or inventory intake.
               </p>
             </section>
 
@@ -129,20 +111,12 @@ export default function ShippingPolicyPage() {
               <h2 className="font-display text-lg font-semibold text-foreground">6. Discreet Packaging</h2>
               <p className="mt-3">
                 All orders ship in plain, unmarked outer boxes with a neutral sender name on the waybill. No Ride The Tide branding,
-                logos, or product references appear on the exterior — same standard for both South Africa and the EU.
+                logos, or product references appear on the exterior.
               </p>
             </section>
 
             <section>
-              <h2 className="font-display text-lg font-semibold text-foreground">7. Customs &amp; Import Duties (EU)</h2>
-              <p className="mt-3">
-                Shipments within the EU are dispatched from an EU fulfilment partner — no customs duties or import VAT apply for EU
-                destinations. South African orders are dispatched domestically and incur no import duty.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="font-display text-lg font-semibold text-foreground">8. Policy Acceptance</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground">7. Policy Acceptance</h2>
               <p className="mt-3">By placing an order you acknowledge that you have read, understood, and agreed to this Shipping Policy.</p>
             </section>
           </div>
