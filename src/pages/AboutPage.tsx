@@ -19,7 +19,7 @@ import { entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
 
 const credentials = [
-  { icon: Award, title: "German Certified Compounds", desc: "All protocols use compounds that meet strict German pharmaceutical quality standards." },
+  { icon: Award, title: "Pharmaceutical-Grade Compounds", desc: "All protocols use compounds that meet strict pharmaceutical quality standards." },
   { icon: Microscope, title: "Lab-Tested & Verified", desc: "Every batch independently tested with ≥99% purity. Certificates of Analysis available." },
   { icon: BookOpen, title: "Evidence-Based Protocols", desc: "Programs built on peer-reviewed research and clinical data — not trends or guesswork." },
   { icon: Globe, title: "International Standards", desc: "Sourcing, testing, and quality control aligned with global pharmaceutical benchmarks." },
@@ -66,10 +66,10 @@ const clientStories = [
     rating: 5,
   },
   {
-    name: "Lisa R.",
-    location: "München, DE",
+    name: "Thandi N.",
+    location: "Pretoria",
     result: "Cleared skin & improved energy",
-    text: "Saubere Laborwerte, klare Dosierung, schneller DHL-Versand. Ich kam wegen Fettabbau — Haut, Energie und Schlaf haben sich gleich mitverbessert.",
+    text: "Clean lab results, clear dosing, fast delivery. I came in for fat loss — skin, energy, and sleep all improved alongside.",
     rating: 5,
   },
 ];
@@ -84,7 +84,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <SEO title="About Ride The Tide | Premium Peptide Research Supplier" description="Ride The Tide supplies 99%+ purity research peptides with third-party HPLC testing & COAs. Serving researchers in Germany and South Africa since 2024." path="/about" />
+      <SEO title="About Ride The Tide | Premium Peptide Research Supplier" description="Ride The Tide supplies 99%+ purity research peptides with third-party HPLC testing & COAs. Serving researchers across South Africa since 2024." path="/about" />
       <div className="flex flex-col">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
 
@@ -119,7 +119,7 @@ export default function AboutPage() {
               </h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
                 We believe that transformative health solutions shouldn't be
-                reserved for the elite. By combining German-certified quality
+                reserved for the elite. By combining pharmaceutical-grade
                 compounds with personalized, guided protocols, we're making
                 premium health transformation available to people across South
                 Africa — at prices that make sense.

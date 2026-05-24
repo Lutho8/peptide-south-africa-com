@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
+import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.ridethetide.site";
 
 const privacySchema = {
   "@context": "https://schema.org",
@@ -12,7 +13,7 @@ const privacySchema = {
   name: "Privacy Policy — Ride The Tide",
   url: `${SITE_URL}/privacy`,
   description:
-    "POPIA + GDPR-compliant Privacy Policy explaining how Ride The Tide collects, uses, stores, and safeguards personal information of South African and EU users.",
+    "POPIA-compliant Privacy Policy explaining how Ride The Tide collects, uses, stores, and safeguards personal information.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Privacy & Data Protection" },
@@ -21,7 +22,13 @@ const privacySchema = {
 export default function PrivacyPolicyPage() {
   return (
     <>
-      <SEO title="Privacy Policy — POPIA + GDPR Compliant" description="How Ride The Tide handles your personal information. Compliant with South Africa's POPIA and the EU's GDPR data-protection regulations." path="/privacy" />
+      <SEO
+        title="Privacy Policy — POPIA Compliant"
+        description="How Ride The Tide handles your personal information, compliant with South Africa's Protection of Personal Information Act (POPIA)."
+        path="/privacy"
+        lang="en"
+        alternates={buildAlternates("/privacy")}
+      />
       <JsonLd data={privacySchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Privacy Policy", href: "/privacy" }]} />
     <div className="container py-16">
@@ -36,9 +43,7 @@ export default function PrivacyPolicyPage() {
               Ride The Tide (Pty) Ltd ("Ride The Tide", "we", "us", or "our") respects your privacy and is committed to protecting the personal information you share with us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our Website, use our services, or interact with us.
             </p>
             <p className="mt-3">
-              This policy complies with the Protection of Personal Information Act (POPIA) of South Africa, the EU General Data
-              Protection Regulation (GDPR / Regulation 2016/679), and the German Federal Data Protection Act (BDSG) for visitors
-              and customers based in Germany and the European Union.
+              This policy complies with the Protection of Personal Information Act (POPIA) of South Africa.
             </p>
           </section>
 
@@ -76,7 +81,7 @@ export default function PrivacyPolicyPage() {
               <li>Improve our Website, services, and user experience</li>
               <li>Send promotional communications (you may opt out at any time)</li>
               <li>Analyse trends and usage to develop new features and services</li>
-              <li>Comply with legal obligations under South African, German, and EU law</li>
+              <li>Comply with legal obligations under South African law</li>
               <li>Prevent fraud and enhance security</li>
             </ul>
           </section>
@@ -126,18 +131,15 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-lg font-semibold text-foreground">8. Your Rights — POPIA &amp; GDPR</h2>
-            <p className="mt-3">
-              Under POPIA (South Africa) and the GDPR (EU / Germany), you have the right to:
-            </p>
+            <h2 className="font-display text-lg font-semibold text-foreground">8. Your Rights — POPIA</h2>
+            <p className="mt-3">Under POPIA you have the right to:</p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Request access to your personal information (Auskunftsrecht · Art. 15 GDPR)</li>
-              <li>Request correction of inaccurate or incomplete information (Art. 16 GDPR)</li>
-              <li>Request deletion / "right to be forgotten" (Art. 17 GDPR)</li>
-              <li>Restrict or object to processing (Art. 18, 21 GDPR)</li>
-              <li>Data portability — receive your data in a structured, machine-readable format (Art. 20 GDPR)</li>
+              <li>Request access to your personal information</li>
+              <li>Request correction of inaccurate or incomplete information</li>
+              <li>Request deletion of your personal information</li>
+              <li>Object to processing for direct marketing</li>
               <li>Withdraw consent for marketing communications at any time</li>
-              <li>Lodge a complaint with the Information Regulator of South Africa or your local EU supervisory authority (in Germany: BfDI / state DPA)</li>
+              <li>Lodge a complaint with the Information Regulator of South Africa</li>
             </ul>
             <p className="mt-3">
               To exercise any of these rights, contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>. We respond within 30 days.
@@ -147,10 +149,8 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">9. International Data Transfers</h2>
             <p className="mt-3">
-              Your information may be transferred between South Africa, the European Union, and other countries where our service
-              providers operate. For transfers out of the EU, we rely on the European Commission's Standard Contractual Clauses
-              (SCCs) or other adequacy mechanisms recognised under Art. 46 GDPR. For transfers out of South Africa, we ensure
-              POPIA's cross-border-transfer requirements (s. 72) are met.
+              Your information may be transferred to countries where our service providers operate. For cross-border transfers
+              out of South Africa, we ensure POPIA's cross-border-transfer requirements (s. 72) are met.
             </p>
           </section>
 
