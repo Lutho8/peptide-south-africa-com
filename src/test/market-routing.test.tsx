@@ -1,5 +1,4 @@
-// Single-market site (South Africa). No /de or /za URL prefix anymore;
-// the test asserts that marketPath stays identity and routing is unprefixed.
+// Single-market site (South Africa). marketPath is identity and routing is unprefixed.
 import { describe, it, expect } from "vitest";
 import { marketPath, buildAlternates, detectMarket } from "@/hooks/useMarket";
 
@@ -10,6 +9,14 @@ describe("marketPath helper", () => {
     expect(marketPath("/shop", "za")).toBe("/shop");
     expect(marketPath("/")).toBe("/");
     expect(marketPath("/product/rt3-reta")).toBe("/product/rt3-reta");
+  });
+
+  it("is identity for legal-page paths", () => {
+    for (const p of ["/impressum", "/terms", "/privacy", "/shipping", "/refund"]) {
+      expect(marketPath(p)).toBe(p);
+      expect(marketPath(p, "de")).toBe(p);
+      expect(marketPath(p, "za")).toBe(p);
+    }
   });
 });
 
@@ -28,6 +35,10 @@ describe("buildAlternates", () => {
     "/cart",
     "/checkout",
     "/impressum",
+    "/terms",
+    "/privacy",
+    "/shipping",
+    "/refund",
     "/product/rt3-reta",
   ])("emits canonical en-ZA + en + x-default for %s", (path) => {
     const alts = buildAlternates(path);

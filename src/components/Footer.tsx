@@ -2,11 +2,22 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Mail, Globe2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useMarket, marketPath } from "@/hooks/useMarket";
 import { captureLead } from "@/lib/nocobase";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 
+const LEGAL_LINKS: { to: string; label: string }[] = [
+  { to: "/impressum", label: "Impressum" },
+  { to: "/terms", label: "Terms & Conditions" },
+  { to: "/privacy", label: "Privacy Policy" },
+  { to: "/shipping", label: "Shipping Policy" },
+  { to: "/refund", label: "Refund Policy" },
+];
+
 export default function Footer() {
   const { user, isAdmin, signOut } = useAuth();
+  const { market } = useMarket();
+  const mp = (p: string) => marketPath(p, market);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -77,18 +88,22 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 text-center text-sm text-muted-foreground">
+        <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 px-4 text-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
-          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
-            <Link to="/impressum" className="hover:text-foreground">Impressum</Link>
-            <span aria-hidden className="text-border">·</span>
-            <Link to="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link>
-            <span aria-hidden className="text-border">·</span>
-            <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
-            <span aria-hidden className="text-border">·</span>
-            <Link to="/shipping" className="hover:text-foreground">Shipping Policy</Link>
-            <span aria-hidden className="text-border">·</span>
-            <Link to="/refund" className="hover:text-foreground">Refund Policy</Link>
+          <nav
+            aria-label="Legal"
+            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs"
+          >
+            {LEGAL_LINKS.map((link, i) => (
+              <span key={link.to} className="inline-flex items-center gap-x-3 whitespace-nowrap">
+                <Link to={mp(link.to)} className="whitespace-nowrap hover:text-foreground">
+                  {link.label}
+                </Link>
+                {i < LEGAL_LINKS.length - 1 && (
+                  <span aria-hidden className="text-border">·</span>
+                )}
+              </span>
+            ))}
           </nav>
           <div className="flex items-center gap-3 text-xs">
             {!user ? (
