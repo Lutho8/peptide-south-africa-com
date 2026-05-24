@@ -1,42 +1,35 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { useLocation } from "react-router-dom";
-import { detectMarket, marketInfo } from "@/hooks/useMarket";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type Currency = "EUR" | "ZAR";
+// Single-currency site: ZAR. EUR is no longer offered. The provider keeps the
+// existing API so product/cart code that calls `format` / `display` / `convert`
+// keeps working without changes.
+
+export type Currency = "ZAR";
 
 interface CurrencyContextType {
   currency: Currency;
   setCurrency: (c: Currency) => void;
-  /** Live EUR -> ZAR rate. Falls back to 19.40 if fetch fails. */
+  /** Live EUR -> ZAR rate; product prices are still stored EUR-base internally. */
   rate: number;
-  /** Convert an EUR amount into the current display currency (number, no formatting). */
+  /** Convert an EUR base amount into ZAR (number, no formatting). */
   convert: (eur: number) => number;
-  /** Format an EUR base amount for display. */
+  /** Format an EUR base amount as ZAR. */
   format: (eur: number) => string;
-  /** Returns { primary, secondary } — secondary is only set in ZAR mode (shows EUR ref). */
+  /** Returns { primary } — secondary is intentionally unused now. */
   display: (eur: number) => { primary: string; secondary?: string };
 }
 
 const FALLBACK_RATE = 19.40;
-const STORAGE_KEY = "rtt_currency";
 const RATE_CACHE_KEY = "rtt_fx_rate";
-const RATE_TTL_MS = 60 * 60 * 1000; // 1h
+const RATE_TTL_MS = 60 * 60 * 1000;
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-function formatEUR(n: number): string {
-  return `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
 function formatZAR(n: number): string {
   return `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-  const [currency, setCurrencyState] = useState<Currency>(() => {
-    if (typeof window === "undefined") return "EUR";
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored === "ZAR" ? "ZAR" : "EUR";
-  });
   const [rate, setRate] = useState<number>(() => {
     if (typeof window === "undefined") return FALLBACK_RATE;
     try {
@@ -50,7 +43,6 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  // Fetch live rate (cached 1h).
   useEffect(() => {
     try {
       const raw = localStorage.getItem(RATE_CACHE_KEY);
@@ -75,35 +67,19 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
-  const setCurrency = (c: Currency) => {
-    setCurrencyState(c);
-    manualOverride.current = true;
-    localStorage.setItem(STORAGE_KEY, c);
-  };
-
-  // Sync currency to URL market unless the user has manually toggled in this session.
-  const manualOverride = useRef(false);
-  const { pathname } = useLocation();
-  useEffect(() => {
-    if (manualOverride.current) return;
-    const expected = marketInfo(detectMarket(pathname)).currency;
-    if (detectMarket(pathname) !== "default" && expected !== currency) {
-      setCurrencyState(expected);
-      localStorage.setItem(STORAGE_KEY, expected);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
-
   const value = useMemo<CurrencyContextType>(() => {
-    const convert = (eur: number) => (currency === "EUR" ? eur : eur * rate);
-    const format = (eur: number) =>
-      currency === "EUR" ? formatEUR(eur) : formatZAR(eur * rate);
-    const display = (eur: number) => {
-      if (currency === "EUR") return { primary: formatEUR(eur) };
-      return { primary: formatZAR(eur * rate), secondary: `≈ ${formatEUR(eur)}` };
+    const convert = (eur: number) => eur * rate;
+    const format = (eur: number) => formatZAR(eur * rate);
+    const display = (eur: number) => ({ primary: formatZAR(eur * rate) });
+    return {
+      currency: "ZAR" as const,
+      setCurrency: () => {},
+      rate,
+      convert,
+      format,
+      display,
     };
-    return { currency, setCurrency, rate, convert, format, display };
-  }, [currency, rate]);
+  }, [rate]);
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;
 }

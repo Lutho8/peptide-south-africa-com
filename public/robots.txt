@@ -1,5 +1,5 @@
 # Ride The Tide — robots.txt
-# Premium research peptides for Germany & South Africa.
+# Premium research peptides for Cape Town, South Africa.
 
 User-agent: Googlebot
 Allow: /

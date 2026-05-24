@@ -1,7 +1,8 @@
-// Display helpers for the EUR-base / ZAR-toggle pricing system.
-// Canonical product prices are stored in EUR. ZAR is computed at display time.
+// Display helpers. Product base prices are stored in EUR and converted to ZAR
+// at display time (single-market site — ZAR only).
 export function formatEUR(n: number): string {
-  return `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  // Kept for legacy callers; renders as ZAR for consistency.
+  return formatZAR(n);
 }
 
 export function formatZAR(n: number): string {

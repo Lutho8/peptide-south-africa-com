@@ -1,10 +1,8 @@
-/**
- * Trilingual micro-copy for dual-market (ZA + DE/EU) surfaces.
- * EN is canonical; DE shown alongside EN on EU-facing strips,
- * AF shown alongside EN on SA-facing strips. No language switcher
- * (yet) — these are rendered as side-by-side bilingual labels.
- */
-export type Locale = "en" | "de" | "af";
+// Single-locale (English, South Africa) microcopy.
+// Kept as a key/value map so existing `t()` / `trilingual()` callers continue
+// to compile; all locales now return the same English string.
+
+export type Locale = "en";
 
 export type CopyKey =
   | "shipping_free"
@@ -50,176 +48,70 @@ export type CopyKey =
   | "err_address_short"
   | "fix_form";
 
-export const COPY: Record<CopyKey, Record<Locale, string>> = {
-  shipping_free: {
-    en: "Free shipping: South Africa over R1,500 · Germany / EU over €75",
-    de: "Kostenloser Versand: Südafrika ab R1.500 · Deutschland / EU ab 75 €",
-    af: "Gratis versending: Suid-Afrika oor R1 500 · Duitsland / EU oor €75",
-  },
-  shipping_sa_window: {
-    en: "1–3 business days across South Africa",
-    de: "1–3 Werktage innerhalb Südafrikas",
-    af: "1–3 werksdae binne Suid-Afrika",
-  },
-  shipping_eu_window: {
-    en: "4–7 business days to Germany & the EU",
-    de: "4–7 Werktage nach Deutschland & in die EU",
-    af: "4–7 werksdae na Duitsland en die EU",
-  },
-  lab_tested: {
-    en: "Independently lab tested",
-    de: "Unabhängig laborgeprüft",
-    af: "Onafhanklik laboratorium-getoets",
-  },
-  purity_99: {
-    en: "≥99% HPLC purity · COA on every batch",
-    de: "≥99 % HPLC-Reinheit · CoA bei jeder Charge",
-    af: "≥99% HPLC-suiwerheid · COA by elke bondel",
-  },
-  discreet_packaging: {
-    en: "Discreet, unbranded packaging",
-    de: "Diskrete, neutrale Verpackung",
-    af: "Diskrete, ongemerkte verpakking",
-  },
-  secure_checkout: {
-    en: "Secure checkout via NowPayments",
-    de: "Sicherer Checkout über NowPayments",
-    af: "Veilige betaling via NowPayments",
-  },
-  age_gate_body: {
-    en: "You must be 18+ to enter. Research use only — not for human consumption. South Africa: 18+ · Deutschland: 18+.",
-    de: "Sie müssen 18 Jahre oder älter sein. Nur für Forschungszwecke — nicht zum menschlichen Gebrauch. Südafrika: 18+ · Deutschland: 18+.",
-    af: "Jy moet 18+ wees. Slegs vir navorsingsdoeleindes — nie vir menslike gebruik nie. Suid-Afrika: 18+ · Duitsland: 18+.",
-  },
-  pay_now: { en: "Pay Now", de: "Jetzt bezahlen", af: "Betaal nou" },
-  payment_unavailable: {
-    en: "Payments come online once our NowPayments verification completes. Please try again shortly.",
-    de: "Zahlungen sind verfügbar, sobald die NowPayments-Verifizierung abgeschlossen ist. Bitte versuchen Sie es in Kürze erneut.",
-    af: "Betalings gaan beskikbaar wees sodra ons NowPayments-verifikasie voltooi is. Probeer asseblief binnekort weer.",
-  },
-  thank_you: {
-    en: "Thank you — your order is being prepared.",
-    de: "Vielen Dank — Ihre Bestellung wird vorbereitet.",
-    af: "Dankie — jou bestelling word voorberei.",
-  },
-  cancelled: { en: "Payment cancelled", de: "Zahlung abgebrochen", af: "Betaling gekanselleer" },
-  paid: { en: "Payment received", de: "Zahlung erhalten", af: "Betaling ontvang" },
-  pending: {
-    en: "Waiting for payment confirmation",
-    de: "Warten auf Zahlungsbestätigung",
-    af: "Wag vir betalingsbevestiging",
-  },
-  order_summary: { en: "Order Summary", de: "Bestellübersicht", af: "Bestelopsomming" },
-  subtotal: { en: "Subtotal", de: "Zwischensumme", af: "Subtotaal" },
-  shipping: { en: "Shipping", de: "Versand", af: "Versending" },
-  total: { en: "Total", de: "Gesamt", af: "Totaal" },
-  free: { en: "Free", de: "Gratis", af: "Gratis" },
-  tax: { en: "Tax", de: "Steuer", af: "Belasting" },
-  view_order: { en: "View Order", de: "Bestellung ansehen", af: "Bekyk bestelling" },
-  back_to_shop: { en: "Continue Shopping", de: "Weiter einkaufen", af: "Hou aan koop" },
-  back_to_cart: { en: "Back to Cart", de: "Zurück zum Warenkorb", af: "Terug na mandjie" },
-  processing_payment: {
-    en: "Preparing payment…",
-    de: "Zahlung wird vorbereitet…",
-    af: "Betaling word voorberei…",
-  },
-  order_number: { en: "Order", de: "Bestellung", af: "Bestelling" },
-  continue_shopping: { en: "Continue Shopping", de: "Weiter einkaufen", af: "Hou aan koop" },
-  shipping_country: { en: "Shipping Country", de: "Versandland", af: "Versendingsland" },
-  country_blocked: {
-    en: "Sorry, we currently only ship to Germany and South Africa.",
-    de: "Wir versenden derzeit nur nach Deutschland und Südafrika.",
-    af: "Ons stuur tans slegs na Duitsland en Suid-Afrika.",
-  },
-  contact_support_region: {
-    en: "Contact support@ridethetide.site if you're interested in shipping to your region.",
-    de: "Kontaktieren Sie support@ridethetide.site bei Interesse an Versand in Ihre Region.",
-    af: "Kontak support@ridethetide.site as jy belangstel in versending na jou streek.",
-  },
-  standard_shipping_de: {
-    en: "Standard shipping to Germany — 4–7 business days",
-    de: "Standardversand nach Deutschland — 4–7 Werktage",
-    af: "Standaardversending na Duitsland — 4–7 werksdae",
-  },
-  local_courier_sa: {
-    en: "Local courier delivery — 1–3 business days",
-    de: "Lokaler Kurierversand — 1–3 Werktage",
-    af: "Plaaslike koerier — 1–3 werksdae",
-  },
-  away_from_free: {
-    en: "away from free shipping",
-    de: "bis zum kostenlosen Versand",
-    af: "tot gratis versending",
-  },
-  unlocked_free_shipping: {
-    en: "You've unlocked free shipping!",
-    de: "Gratis Versand freigeschaltet!",
-    af: "Gratis versending vrygestel!",
-  },
-  err_required: {
-    en: "This field is required",
-    de: "Dieses Feld ist erforderlich",
-    af: "Hierdie veld is verpligtend",
-  },
-  err_email: {
-    en: "Enter a valid email address",
-    de: "Bitte gültige E-Mail-Adresse eingeben",
-    af: "Voer 'n geldige e-posadres in",
-  },
-  err_postal_de: {
-    en: "German postal code must be 5 digits (e.g. 10115)",
-    de: "Postleitzahl muss 5 Ziffern haben (z. B. 10115)",
-    af: "Duitse poskode moet 5 syfers wees (bv. 10115)",
-  },
-  err_postal_sa: {
-    en: "South African postal code must be 4 digits (e.g. 8001)",
-    de: "Südafrikanische Postleitzahl muss 4 Ziffern haben (z. B. 8001)",
-    af: "Suid-Afrikaanse poskode moet 4 syfers wees (bv. 8001)",
-  },
-  err_region_de: {
-    en: "Enter a valid Bundesland (e.g. Bayern, Berlin)",
-    de: "Bitte gültiges Bundesland eingeben (z. B. Bayern, Berlin)",
-    af: "Voer 'n geldige Bundesland in (bv. Bayern, Berlin)",
-  },
-  err_region_sa: {
-    en: "Enter a valid province (e.g. Gauteng, Western Cape)",
-    de: "Bitte gültige Provinz eingeben (z. B. Gauteng, Western Cape)",
-    af: "Voer 'n geldige provinsie in (bv. Gauteng, Wes-Kaap)",
-  },
-  err_name_chars: {
-    en: "Use letters only (1–60 characters)",
-    de: "Nur Buchstaben verwenden (1–60 Zeichen)",
-    af: "Gebruik slegs letters (1–60 karakters)",
-  },
-  err_address_short: {
-    en: "Address must be 3–120 characters",
-    de: "Adresse muss 3–120 Zeichen lang sein",
-    af: "Adres moet 3–120 karakters wees",
-  },
-  fix_form: {
-    en: "Please fix the highlighted fields",
-    de: "Bitte korrigieren Sie die markierten Felder",
-    af: "Korrigeer asseblief die gemerkte velde",
-  },
+const COPY_EN: Record<CopyKey, string> = {
+  shipping_free: "Free shipping across South Africa on orders over R1,500",
+  shipping_sa_window: "1–3 business days across South Africa",
+  shipping_eu_window: "1–3 business days across South Africa",
+  lab_tested: "Independently lab tested",
+  purity_99: "≥99% HPLC purity · COA on every batch",
+  discreet_packaging: "Discreet, unbranded packaging",
+  secure_checkout: "Secure checkout via NowPayments",
+  age_gate_body:
+    "You must be 18+ to enter. Research use only — not for human consumption.",
+  pay_now: "Pay Now",
+  payment_unavailable:
+    "Payments come online once our NowPayments verification completes. Please try again shortly.",
+  thank_you: "Thank you — your order is being prepared.",
+  cancelled: "Payment cancelled",
+  paid: "Payment received",
+  pending: "Waiting for payment confirmation",
+  order_summary: "Order Summary",
+  subtotal: "Subtotal",
+  shipping: "Shipping",
+  total: "Total",
+  free: "Free",
+  tax: "Tax",
+  view_order: "View Order",
+  back_to_shop: "Continue Shopping",
+  back_to_cart: "Back to Cart",
+  processing_payment: "Preparing payment…",
+  order_number: "Order",
+  continue_shopping: "Continue Shopping",
+  shipping_country: "Shipping Country",
+  country_blocked: "Sorry, we currently only ship within South Africa.",
+  contact_support_region:
+    "Contact support@ridethetide.site if you're interested in shipping to your region.",
+  standard_shipping_de: "Local courier delivery — 1–3 business days",
+  local_courier_sa: "Local courier delivery — 1–3 business days",
+  away_from_free: "away from free shipping",
+  unlocked_free_shipping: "You've unlocked free shipping!",
+  err_required: "This field is required",
+  err_email: "Enter a valid email address",
+  err_postal_de: "Postal code must be 4 digits (e.g. 8001)",
+  err_postal_sa: "South African postal code must be 4 digits (e.g. 8001)",
+  err_region_de: "Enter a valid province (e.g. Gauteng, Western Cape)",
+  err_region_sa: "Enter a valid province (e.g. Gauteng, Western Cape)",
+  err_name_chars: "Use letters only (1–60 characters)",
+  err_address_short: "Address must be 3–120 characters",
+  fix_form: "Please fix the highlighted fields",
 };
 
-/** Render an EN / DE / AF trio joined by a separator — useful for trust strips. */
-export function trilingual(key: CopyKey, sep = " · "): string {
-  const { en, de, af } = COPY[key];
-  return [en, de, af].join(sep);
+export const COPY: Record<CopyKey, Record<Locale, string>> = Object.fromEntries(
+  (Object.keys(COPY_EN) as CopyKey[]).map((k) => [k, { en: COPY_EN[k] }]),
+) as Record<CopyKey, Record<Locale, string>>;
+
+export function trilingual(key: CopyKey): string {
+  return COPY_EN[key];
 }
 
-/** Render an EN / DE pair (EU-facing). */
-export function bilingualDE(key: CopyKey, sep = " · "): string {
-  return `${COPY[key].en}${sep}${COPY[key].de}`;
+export function bilingualDE(key: CopyKey): string {
+  return COPY_EN[key];
 }
 
-/** Render an EN / AF pair (SA-facing). */
-export function bilingualAF(key: CopyKey, sep = " · "): string {
-  return `${COPY[key].en}${sep}${COPY[key].af}`;
+export function bilingualAF(key: CopyKey): string {
+  return COPY_EN[key];
 }
 
-/** Get a single locale string. */
-export function t(key: CopyKey, locale: Locale = "en"): string {
-  return COPY[key][locale];
+export function t(key: CopyKey, _locale: Locale = "en"): string {
+  return COPY_EN[key];
 }

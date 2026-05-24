@@ -1,7 +1,7 @@
 const SITE_URL = "https://www.ridethetide.site";
 const SITE_NAME = "Ride The Tide";
 
-/** LocalBusiness + MedicalBusiness schema for ZA + DE/EU GEO ranking. */
+/** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["MedicalBusiness", "OnlineStore", "LocalBusiness"],
@@ -9,27 +9,23 @@ export const localBusinessSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   image: `${SITE_URL}/favicon.png`,
-  priceRange: "€23 – €260 · R450 – R5,000",
-  currenciesAccepted: "EUR, ZAR",
-  paymentAccepted: "Credit Card, PayPal, Apple Pay, Google Pay, SEPA, EFT, Cryptocurrency",
+  priceRange: "R450 – R5,000",
+  currenciesAccepted: "ZAR",
+  paymentAccepted: "Credit Card, PayPal, Apple Pay, Google Pay, EFT, Cryptocurrency",
   description:
-    "GP-led, German-certified peptide protocols for fat loss, healing, and performance. Same-day dispatch across South Africa · DHL within 24 h to Germany / EU.",
+    "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
   address: {
     "@type": "PostalAddress",
     addressCountry: "ZA",
-    addressRegion: "Gauteng",
-    addressLocality: "Johannesburg",
+    addressRegion: "Western Cape",
+    addressLocality: "Cape Town",
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: -26.2041,
-    longitude: 28.0473,
+    latitude: -33.9249,
+    longitude: 18.4241,
   },
-  areaServed: [
-    { "@type": "Country", name: "South Africa" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Place", name: "European Union" },
-  ],
+  areaServed: [{ "@type": "Country", name: "South Africa" }],
   medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
@@ -46,12 +42,8 @@ export const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   description:
-    "Ride The Tide provides GP-led, personalized peptide protocols with German-certified compounds for fat loss, healing, and performance — serving South Africa and Germany / the EU.",
-  areaServed: [
-    { "@type": "Country", name: "South Africa" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Place", name: "European Union" },
-  ],
+    "Ride The Tide provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
+  areaServed: [{ "@type": "Country", name: "South Africa" }],
   knowsAbout: [
     "Peptide therapy",
     "Fat loss protocols",
@@ -93,7 +85,8 @@ export const websiteSchema = {
   url: SITE_URL,
   inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
-  description: "GP-led, German-certified peptide protocols and research compounds for fat loss, healing and performance. Serving South Africa and Germany / the EU.",
+  description:
+    "GP-led, lab-tested peptide protocols and research compounds for fat loss, healing and performance — Cape Town, South Africa.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -115,6 +108,9 @@ export function productSchema(product: {
   inStock: boolean;
   sku?: string;
 }) {
+  // Base price is stored in EUR-equivalent units; ZAR display uses live rate.
+  // For schema, we approximate ZAR at the fallback rate so it's machine-readable.
+  const RATE = 19.4;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -129,8 +125,8 @@ export function productSchema(product: {
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/product/${product.slug}`,
-      priceCurrency: "EUR",
-      price: product.price,
+      priceCurrency: "ZAR",
+      price: Math.round(product.price * RATE),
       priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
       itemCondition: "https://schema.org/NewCondition",
       availability: product.inStock
@@ -138,11 +134,6 @@ export function productSchema(product: {
         : "https://schema.org/PreOrder",
       seller: { "@id": `${SITE_URL}/#organization` },
       shippingDetails: [
-        {
-          "@type": "OfferShippingDetails",
-          shippingRate: { "@type": "MonetaryAmount", value: "7.50", currency: "EUR" },
-          shippingDestination: { "@type": "DefinedRegion", addressCountry: "DE" },
-        },
         {
           "@type": "OfferShippingDetails",
           shippingRate: { "@type": "MonetaryAmount", value: "89", currency: "ZAR" },
@@ -203,10 +194,10 @@ export const entityClusters = {
   trust: {
     title: "Trust & Transparency",
     links: [
-      { label: "About Us", href: "/about", description: "Our mission, team, and German-certified quality standards." },
+      { label: "About Us", href: "/about", description: "Our mission, team, and pharmaceutical-grade sourcing standards." },
       { label: "FAQ", href: "/faq", description: "Common questions about peptides, shipping, and protocols." },
       { label: "Research Hub", href: "/research", description: "Evidence-based research tools and peptide database." },
-      { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch in South Africa · DHL within 24 h to Germany / EU." },
+      { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch from Cape Town across South Africa." },
     ],
   },
 };
