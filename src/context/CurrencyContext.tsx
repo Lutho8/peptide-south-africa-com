@@ -4,7 +4,9 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 // existing API so product/cart code that calls `format` / `display` / `convert`
 // keeps working without changes.
 
-export type Currency = "ZAR";
+// Union kept wide so legacy `currency === "EUR"` comparisons keep compiling;
+// runtime value is always "ZAR".
+export type Currency = "ZAR" | "EUR";
 
 interface CurrencyContextType {
   currency: Currency;

@@ -1,6 +1,7 @@
-// Single-market shipping (South Africa). Germany has been removed.
+// Single-market shipping (South Africa). Germany kept as a legal type only
+// so legacy call sites continue to compile; runtime only supports South Africa.
 
-export type ShippingCountry = "South Africa";
+export type ShippingCountry = "South Africa" | "Germany";
 
 export interface ShippingRule {
   method: string;
@@ -10,7 +11,7 @@ export interface ShippingRule {
   days: string;
 }
 
-export const SHIPPING_RULES: Record<ShippingCountry, ShippingRule> = {
+export const SHIPPING_RULES: Record<"South Africa", ShippingRule> = {
   "South Africa": {
     method: "Local courier (The Courier Guy / Ramhis)",
     flat: 89,
@@ -30,15 +31,15 @@ export function getShippingCost(
   cartTotalInDestCurrency: number,
   country: string,
 ): number | null {
-  if (!isSupportedCountry(country)) return null;
-  const rule = SHIPPING_RULES[country];
+  if (country !== "South Africa") return null;
+  const rule = SHIPPING_RULES["South Africa"];
   return cartTotalInDestCurrency >= rule.freeOver ? 0 : rule.flat;
 }
 
 export function amountToFreeShipping(
   cartTotalInDestCurrency: number,
-  country: ShippingCountry = "South Africa",
+  _country: ShippingCountry = "South Africa",
 ): number {
-  const rule = SHIPPING_RULES[country];
+  const rule = SHIPPING_RULES["South Africa"];
   return Math.max(0, rule.freeOver - cartTotalInDestCurrency);
 }

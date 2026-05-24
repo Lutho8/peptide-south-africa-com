@@ -1,8 +1,8 @@
 // Single-locale (English, South Africa) microcopy.
-// Kept as a key/value map so existing `t()` / `trilingual()` callers continue
-// to compile; all locales now return the same English string.
+// Locale union kept as "en" | "de" | "af" so legacy callers compile —
+// all three resolve to the same English string at runtime.
 
-export type Locale = "en";
+export type Locale = "en" | "de" | "af";
 
 export type CopyKey =
   | "shipping_free"
@@ -48,7 +48,7 @@ export type CopyKey =
   | "err_address_short"
   | "fix_form";
 
-const COPY_EN: Record<CopyKey, string> = {
+const EN: Record<CopyKey, string> = {
   shipping_free: "Free shipping across South Africa on orders over R1,500",
   shipping_sa_window: "1–3 business days across South Africa",
   shipping_eu_window: "1–3 business days across South Africa",
@@ -97,21 +97,21 @@ const COPY_EN: Record<CopyKey, string> = {
 };
 
 export const COPY: Record<CopyKey, Record<Locale, string>> = Object.fromEntries(
-  (Object.keys(COPY_EN) as CopyKey[]).map((k) => [k, { en: COPY_EN[k] }]),
+  (Object.keys(EN) as CopyKey[]).map((k) => [k, { en: EN[k], de: EN[k], af: EN[k] }]),
 ) as Record<CopyKey, Record<Locale, string>>;
 
 export function trilingual(key: CopyKey): string {
-  return COPY_EN[key];
+  return EN[key];
 }
 
 export function bilingualDE(key: CopyKey): string {
-  return COPY_EN[key];
+  return EN[key];
 }
 
 export function bilingualAF(key: CopyKey): string {
-  return COPY_EN[key];
+  return EN[key];
 }
 
 export function t(key: CopyKey, _locale: Locale = "en"): string {
-  return COPY_EN[key];
+  return EN[key];
 }

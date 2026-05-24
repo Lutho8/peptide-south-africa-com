@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 interface Props {
   /** Cart subtotal in EUR (canonical, internal base). */
   subtotalEur: number;
+  /** Legacy prop — ignored; site is single-market (South Africa). */
+  country?: string;
   className?: string;
 }
 
