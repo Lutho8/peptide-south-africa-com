@@ -223,7 +223,7 @@ export default function CheckoutPage() {
       toast({
         title: "Payment unavailable",
         description: msg.includes("not configured") || msg.includes("503")
-          ? trilingual("payment_unavailable", " — ")
+          ? trilingual("payment_unavailable")
           : msg,
         variant: "destructive",
       });
