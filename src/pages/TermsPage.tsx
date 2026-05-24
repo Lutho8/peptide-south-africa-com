@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
+import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.ridethetide.site";
 
 const termsSchema = {
   "@context": "https://schema.org",
@@ -12,7 +13,7 @@ const termsSchema = {
   name: "Terms and Conditions — Ride The Tide",
   url: `${SITE_URL}/terms`,
   description:
-    "Website Terms and Conditions of Use for Ride The Tide (Pty) Ltd. Educational content, dual-jurisdiction (South Africa + Germany / EU), user obligations, and disclaimers.",
+    "Website Terms and Conditions of Use for Ride The Tide (Jenluko Investments (Pty) Ltd). South African jurisdiction, research-use disclaimers, user obligations.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Terms of Service" },
@@ -21,7 +22,13 @@ const termsSchema = {
 export default function TermsPage() {
   return (
     <>
-      <SEO title="Terms &amp; Conditions" description="Ride The Tide terms of service — South African customers and Germany / EU customers. Research-use disclaimers, EU 14-day Widerrufsrecht, and prescription pathway terms." path="/terms" />
+      <SEO
+        title="Terms &amp; Conditions"
+        description="Ride The Tide terms of service for South African customers. Research-use disclaimers, account and subscription terms."
+        path="/terms"
+        lang="en"
+        alternates={buildAlternates("/terms")}
+      />
       <JsonLd data={termsSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Terms", href: "/terms" }]} />
     <div className="container py-16">
@@ -121,9 +128,8 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">10. Payment and Billing</h2>
             <p className="mt-3">
-              Prices are displayed in Euros (EUR) by default and can be switched to South African Rand (ZAR) using the currency
-              toggle in the site header. You are charged in your selected currency at checkout via our payment partner NowPayments
-              (PayPal, Visa, Mastercard, Apple Pay, Google Pay, SEPA, and major cryptocurrencies). Registered members consent to
+              Prices are displayed in South African Rand (ZAR). You are charged at checkout via our payment partner NowPayments
+              (Visa, Mastercard, Apple Pay, Google Pay, EFT, and major cryptocurrencies). Registered members consent to
               storage of payment methods for processing purposes.
             </p>
           </section>
@@ -203,15 +209,8 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">20. Governing Law &amp; Jurisdiction</h2>
             <p className="mt-3">
-              For South African customers, these Terms are governed by the laws of the Republic of South Africa, with disputes subject
-              to the exclusive jurisdiction of the South African courts.
-            </p>
-            <p className="mt-3">
-              For customers in Germany and the European Union, mandatory consumer-protection provisions of the customer's habitual
-              residence remain unaffected (Art. 6 Rome I Regulation). Statutory rights including the 14-day right of withdrawal
-              (§§ 355, 312g BGB) apply and are described in our <a href="/refund" className="text-primary hover:underline">Refund Policy</a>.
-              We are not obliged to participate in alternative dispute resolution proceedings before a consumer arbitration board
-              (Verbraucherschlichtungsstelle).
+              These Terms are governed by the laws of the Republic of South Africa, with disputes subject to the exclusive
+              jurisdiction of the South African courts.
             </p>
           </section>
 
