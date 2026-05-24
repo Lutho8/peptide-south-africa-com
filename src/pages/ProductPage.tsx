@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
+import TrackerBridgeCard from "@/components/TrackerBridgeCard";
 import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
@@ -194,11 +195,13 @@ export default function ProductPage() {
               {!product.inStock ? "Pre-Order" : added ? "✓ Added to Cart!" : "Add to Cart"}
             </button>
 
+            <TrackerBridgeCard productName={product.name} productSlug={product.slug} />
+
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
               <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Third-Party Lab Tested & Batch Certified</span>
-              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 SA: Free over R1,500 &nbsp;|&nbsp; 🇩🇪 DE: Free over €120</span>
+              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
             </div>
 
             {product.sku && (

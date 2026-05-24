@@ -14,10 +14,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * Centralized Delivery & Returns microcopy.
- * Edit copy here only — used on Checkout and Product pages.
- */
 export default function DeliveryReturnsAccordion({ defaultOpen = null, className }: Props) {
   return (
     <div className={cn("rounded-lg border border-border bg-card px-5", className)}>
@@ -34,21 +30,15 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
             </span>
           </AccordionTrigger>
           <AccordionContent className="text-sm text-muted-foreground">
-            <p className="mb-2 font-semibold text-foreground/90">🇿🇦 South Africa</p>
+            <p className="mb-2 font-semibold text-foreground/90">🇿🇦 Cape Town, South Africa</p>
             <ul className="ml-1 flex flex-col gap-1.5">
               <li>• Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri).</li>
               <li>• Local courier (The Courier Guy / Ramhis).</li>
               <li>• <span className="font-semibold text-foreground">1–3 business days</span> nationwide.</li>
               <li>• Flat <span className="font-semibold text-foreground">R89</span> · free shipping on orders over <span className="font-semibold text-foreground">R1,500</span>.</li>
-            </ul>
-            <p className="mb-2 mt-4 font-semibold text-foreground/90">🇩🇪 Germany · Deutschland</p>
-            <ul className="ml-1 flex flex-col gap-1.5">
-              <li>• Dispatched via Deutsche Post / DHL within 24 h (Mon–Fri).</li>
-              <li>• <span className="font-semibold text-foreground">4–7 Werktage</span> across Germany.</li>
-              <li>• Flat <span className="font-semibold text-foreground">€7.50</span> · gratis ab <span className="font-semibold text-foreground">€120</span>.</li>
               <li>• Tracking link emailed once the courier collects.</li>
             </ul>
-            <p className="mt-4 text-xs italic text-muted-foreground">We currently ship only to 🇿🇦 South Africa and 🇩🇪 Germany.</p>
+            <p className="mt-4 text-xs italic text-muted-foreground">We currently ship within South Africa only.</p>
           </AccordionContent>
         </AccordionItem>
 
@@ -78,10 +68,7 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
           <AccordionContent className="text-sm text-muted-foreground">
             <ul className="ml-1 flex flex-col gap-1.5">
               <li>
-                • <span className="font-semibold text-foreground">30-day satisfaction guarantee</span> on unopened, sealed vials (both markets).
-              </li>
-              <li>
-                • <span className="font-semibold text-foreground">EU 14-day Widerrufsrecht</span>: customers in Germany / the EU may withdraw within 14 days of receipt on sealed, unopened items (§§ 355, 312g BGB).
+                • <span className="font-semibold text-foreground">30-day satisfaction guarantee</span> on unopened, sealed vials.
               </li>
               <li>• Damaged-in-transit or incorrect items: replaced free of charge when reported within 48 hours of delivery.</li>
               <li>• For health and safety reasons, opened or reconstituted vials are non-returnable (industry standard).</li>

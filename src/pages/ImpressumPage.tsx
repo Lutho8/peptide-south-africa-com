@@ -5,7 +5,7 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 export default function ImpressumPage() {
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
-  const isDe = lang === "de";
+  const isDe = false;
 
   return (
     <>

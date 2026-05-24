@@ -1,58 +1,49 @@
-import { useLocation } from "react-router-dom";
-
-export type Market = "de" | "za" | "default";
+export type Market = "default" | "de" | "za";
 
 export interface MarketInfo {
   market: Market;
-  lang: "de" | "en";
-  currency: "EUR" | "ZAR";
-  basePath: "" | "/de" | "/za";
+  lang: "en";
+  currency: "ZAR";
+  basePath: "";
 }
 
 export const SITE_URL = "https://www.ridethetide.site";
 
-export function detectMarket(pathname: string): Market {
-  const seg = pathname.split("/")[1];
-  if (seg === "de") return "de";
-  if (seg === "za") return "za";
+const INFO: MarketInfo = {
+  market: "default",
+  lang: "en",
+  currency: "ZAR",
+  basePath: "",
+};
+
+export function detectMarket(_pathname: string): Market {
   return "default";
 }
 
-export function marketInfo(market: Market): MarketInfo {
-  if (market === "de") return { market, lang: "de", currency: "EUR", basePath: "/de" };
-  if (market === "za") return { market, lang: "en", currency: "ZAR", basePath: "/za" };
-  return { market: "default", lang: "en", currency: "EUR", basePath: "" };
+export function marketInfo(_market: Market): MarketInfo {
+  return INFO;
 }
 
-/** Prefix a generic path (e.g. "/shop") with the active market base. */
-export function marketPath(path: string, market: Market): string {
-  const base = marketInfo(market).basePath;
-  if (path === "/") return base || "/";
-  return `${base}${path}`;
+/** Identity — no market prefix is ever added. */
+export function marketPath(path: string, _market?: Market): string {
+  return path;
 }
 
-/** Strip the leading /de or /za from a pathname so it can be re-prefixed. */
+/** Identity — no market prefix to strip. */
 export function stripMarket(pathname: string): string {
-  if (pathname.startsWith("/de/")) return pathname.slice(3);
-  if (pathname.startsWith("/za/")) return pathname.slice(3);
-  if (pathname === "/de" || pathname === "/za") return "/";
   return pathname;
 }
 
 export function useMarket(): MarketInfo {
-  const { pathname } = useLocation();
-  return marketInfo(detectMarket(pathname));
+  return INFO;
 }
 
-/** Build the three reciprocal hreflang alternates for a generic path. */
+/** Single canonical entry per page; no localized alternates. */
 export function buildAlternates(genericPath: string) {
-  const def = `${SITE_URL}${genericPath === "/" ? "" : genericPath}` || `${SITE_URL}/`;
-  const de = `${SITE_URL}/de${genericPath === "/" ? "" : genericPath}`;
-  const za = `${SITE_URL}/za${genericPath === "/" ? "" : genericPath}`;
+  const href = `${SITE_URL}${genericPath === "/" ? "" : genericPath}` || `${SITE_URL}/`;
   return [
-    { hrefLang: "en", href: def },
-    { hrefLang: "en-ZA", href: za },
-    { hrefLang: "de-DE", href: de },
-    { hrefLang: "x-default", href: def },
+    { hrefLang: "en-ZA", href },
+    { hrefLang: "en", href },
+    { hrefLang: "x-default", href },
   ];
 }

@@ -9,13 +9,13 @@ export default function CheckoutTrustBar() {
           <Lock className="h-3.5 w-3.5 text-trust" /> 256-bit SSL
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-          <CreditCard className="h-3.5 w-3.5 text-primary" /> PCI-DSS · SEPA
+          <CreditCard className="h-3.5 w-3.5 text-primary" /> PCI-DSS · EFT
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-trust" /> POPIA · GDPR
+          <ShieldCheck className="h-3.5 w-3.5 text-trust" /> POPIA compliant
         </span>
         <div className="flex items-center gap-1.5">
-          {["VISA", "MC", "PAYPAL", "SEPA", "BTC"].map((brand) => (
+          {["VISA", "MC", "PAYPAL", "EFT", "BTC"].map((brand) => (
             <span
               key={brand}
               className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-bold tracking-wider text-foreground"
@@ -29,22 +29,22 @@ export default function CheckoutTrustBar() {
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
-            <p className="text-xs font-bold text-foreground">Free Shipping · Gratis Versand · Gratis Versending</p>
+            <p className="text-xs font-bold text-foreground">Free Shipping</p>
             <p className="text-[11px] leading-tight text-muted-foreground">{trilingual("shipping_free")}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
           <div>
-            <p className="text-xs font-bold text-foreground">Fast Dispatch · Schneller Versand</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">{trilingual("shipping_sa_window")} · {trilingual("shipping_eu_window")}</p>
+            <p className="text-xs font-bold text-foreground">Fast Dispatch</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">{trilingual("shipping_sa_window")}</p>
           </div>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-muted/40 p-2.5">
           <RefreshCcw className="mt-0.5 h-4 w-4 flex-shrink-0 text-trust" />
           <div>
             <p className="text-xs font-bold text-foreground">30-Day Guarantee</p>
-            <p className="text-[11px] leading-tight text-muted-foreground">EU: 14-day Widerrufsrecht · SA: 30-day guarantee · 30-dag waarborg</p>
+            <p className="text-[11px] leading-tight text-muted-foreground">On sealed, unopened vials</p>
           </div>
         </div>
       </div>
