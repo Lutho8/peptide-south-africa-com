@@ -39,16 +39,12 @@ function extractProductSlugs(): string[] {
   return [...slugs];
 }
 
-/** Paths that have /de and /za market variants. */
-const MARKETABLE = new Set<string>(["/", "/shop", "/impressum"]);
-
 function altLinks(genericPath: string): string[] {
-  const suffix = genericPath === "/" ? "" : genericPath;
+  const href = `${BASE_URL}${genericPath === "/" ? "/" : genericPath}`;
   return [
-    `    <xhtml:link rel="alternate" hreflang="en" href="${BASE_URL}${suffix || "/"}" />`,
-    `    <xhtml:link rel="alternate" hreflang="en-ZA" href="${BASE_URL}/za${suffix}" />`,
-    `    <xhtml:link rel="alternate" hreflang="de-DE" href="${BASE_URL}/de${suffix}" />`,
-    `    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}${suffix || "/"}" />`,
+    `    <xhtml:link rel="alternate" hreflang="en-ZA" href="${href}" />`,
+    `    <xhtml:link rel="alternate" hreflang="en" href="${href}" />`,
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${href}" />`,
   ];
 }
 
@@ -66,31 +62,13 @@ function urlBlock(e: SitemapEntry & { lastmod?: string; genericPath?: string }) 
 }
 
 const productSlugs = extractProductSlugs();
-const productGenericPaths = productSlugs.map((s) => `/product/${s}`);
-productGenericPaths.forEach((p) => MARKETABLE.add(p));
 
-const productEntries: (SitemapEntry & { genericPath?: string })[] = productSlugs.flatMap((slug) => {
+const productEntries: (SitemapEntry & { genericPath?: string })[] = productSlugs.map((slug) => {
   const generic = `/product/${slug}`;
-  return [
-    { path: generic, changefreq: "weekly", priority: "0.8", genericPath: generic },
-    { path: `/de${generic}`, changefreq: "weekly", priority: "0.8", genericPath: generic },
-    { path: `/za${generic}`, changefreq: "weekly", priority: "0.8", genericPath: generic },
-  ];
+  return { path: generic, changefreq: "weekly", priority: "0.8", genericPath: generic };
 });
 
-// Expand marketable static entries (/, /shop) into 3 variants each.
-const expandedStatic: (SitemapEntry & { genericPath?: string })[] = staticEntries.flatMap((e) => {
-  if (!MARKETABLE.has(e.path)) return [e];
-  const generic = e.path;
-  const suffix = generic === "/" ? "" : generic;
-  return [
-    { ...e, genericPath: generic },
-    { ...e, path: `/de${suffix || "/"}`.replace(/\/$/, suffix ? "" : "/"), genericPath: generic },
-    { ...e, path: `/za${suffix || "/"}`.replace(/\/$/, suffix ? "" : "/"), genericPath: generic },
-  ];
-});
-
-const all = [...expandedStatic, ...productEntries];
+const all = [...staticEntries.map((e) => ({ ...e, genericPath: e.path })), ...productEntries];
 
 const xml = [
   `<?xml version="1.0" encoding="UTF-8"?>`,

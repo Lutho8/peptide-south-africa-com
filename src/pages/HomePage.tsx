@@ -21,6 +21,8 @@ import HeroShop from "@/components/HeroShop";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
+import EcosystemSection from "@/components/EcosystemSection";
+import WaitlistSection from "@/components/WaitlistSection";
 import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
@@ -44,9 +46,9 @@ const testimonials = [
     result: "Lost 8 kg in 6 weeks",
   },
   {
-    name: "Anja R.",
-    location: "Berlin, DE",
-    text: "Endlich ein Anbieter mit echten Laborberichten und schnellem DHL-Versand. Innerhalb von 5 Tagen geliefert, klare Dosierung im Protokoll.",
+    name: "Lerato P.",
+    location: "Cape Town, ZA",
+    text: "The protocol was clear from day one. Lab results to back it up. Down two dress sizes in 10 weeks with no guesswork.",
     rating: 5,
     result: "Down 2 dress sizes",
   },
@@ -60,7 +62,7 @@ const testimonials = [
 ];
 
 const whyItWorks = [
-  { title: "German Certified Quality", desc: "Every compound meets the highest international pharmaceutical standards." },
+  { title: "Pharmaceutical-Grade Quality", desc: "Every compound meets the highest international pharmaceutical standards." },
   { title: "No Random Products", desc: "You get a structured protocol, not a shopping cart of guesses." },
   { title: "No Guessing Doses", desc: "Exact dosing schedules tailored to your body and goals." },
   { title: "No Trial and Error", desc: "Proven protocols based on clinical research and real results." },
@@ -347,6 +349,12 @@ export default function HomePage() {
         ]}
       />
 
+      {/* ===================== ECOSYSTEM ===================== */}
+      <EcosystemSection />
+
+      {/* ===================== WAITLIST ===================== */}
+      <WaitlistSection />
+
       {/* ===================== BOTTOM CTA ===================== */}
       <section className="bg-hero-gradient py-14 md:py-20">
         <div className="container px-4 text-center">
@@ -355,7 +363,7 @@ export default function HomePage() {
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
             Use code <span className="font-mono font-bold">RIDETHETIDE10</span> at checkout.
-            Free shipping over R1,500 (SA) or €75 (DE / EU). Same-day dispatch in SA · DHL within 24 h to Germany / EU.
+            Free shipping over R1,500 across South Africa. Same-day dispatch from Cape Town.
           </p>
           <Link
             to="/shop"
