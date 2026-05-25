@@ -1,1 +1,10 @@
 project_id = "cveapedneuhgbxqydpjc"
+
+[functions.generate-protocol]
+verify_jwt = true
+
+[functions.nocobase-sync]
+verify_jwt = true
+
+[functions.nocobase-abandoned-cart]
+verify_jwt = false
