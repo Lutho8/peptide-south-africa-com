@@ -31,6 +31,9 @@ import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
+import ShopifyStorePage from "@/pages/ShopifyStorePage";
+import ShopifyProductPage from "@/pages/ShopifyProductPage";
+import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
 import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
@@ -44,6 +47,11 @@ import LiveActivity from "@/components/LiveActivity";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const ShopifyCartSyncMount = () => {
+  useShopifyCartSync();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -79,6 +87,8 @@ const App = () => (
                 <Route path="/quiz" element={<QuizFunnelPage />} />
                 <Route path="/fat-loss-protocol" element={<FatLossProtocolPage />} />
                 <Route path="/research" element={<ResearchHubPage />} />
+                <Route path="/store" element={<ShopifyStorePage />} />
+                <Route path="/store/:handle" element={<ShopifyProductPage />} />
                 
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/admin" element={<AdminIndexPage />} />
