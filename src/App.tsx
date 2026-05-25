@@ -60,6 +60,7 @@ const App = () => (
         <CurrencyProvider>
         <AuthProvider>
           <CartProvider>
+            <ShopifyCartSyncMount />
             <Toaster />
             <Sonner />
             <AgeVerificationModal />
