@@ -18,6 +18,7 @@ export default function Header() {
           <Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Home</Link>
           <Link to="/shop" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Shop</Link>
           <Link to="/research" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
+          <Link to="/blog" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Blog</Link>
           <Link to="/faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">FAQ</Link>
           <a
             href="https://ridethetide.info"
