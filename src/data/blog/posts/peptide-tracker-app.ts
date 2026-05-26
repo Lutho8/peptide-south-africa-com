@@ -1,0 +1,87 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "peptide-tracker-app",
+  title: "Peptide Tracker App: What to Look For (and Why Most Apps Get It Wrong)",
+  metaTitle: "Peptide Tracker App — Features, Privacy & Comparison",
+  metaDescription: "What a peptide tracker app should actually do, the features to demand, privacy considerations, and a feature comparison.",
+  keyword: "peptide tracker app",
+  publishedAt: "2026-05-26",
+  updatedAt: "2026-05-26",
+  readingMinutes: 6,
+  category: "Tools",
+  hero: {
+    eyebrow: "Tools",
+    summary: "Most peptide tracker apps are repurposed pill reminders. Here's what a real one needs to do — and why it matters.",
+  },
+  body: [
+    { type: "p", text: "Search 'peptide tracker app' and you'll find a dozen options. Most are general medication-reminder apps with a peptide skin. They don't capture batch numbers, don't model cycles, don't import bloodwork, and don't export in a format any clinician can use. Here's what to look for in a real <strong>peptide tracker app</strong>." },
+    { type: "h2", text: "Core features (non-negotiable)" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Cycle modelling</strong> — a cycle has a start, end, hypothesis, and washout, not just a daily reminder",
+        "<strong>Batch / lot number capture</strong> — the only way to spot a bad vial after the fact",
+        "<strong>Dose math support</strong> — automatic mg→mcg→units conversion based on vial concentration",
+        "<strong>Bloodwork import</strong> — track IGF-1, lipids, CRP etc. alongside dosing",
+        "<strong>Subjective scoring</strong> — primary outcome, sleep, side effects 1–10 daily",
+        "<strong>Side-effect log</strong> — searchable, free-text, time-stamped",
+        "<strong>Clinical export</strong> — a clean PDF or CSV a GP can actually read",
+      ],
+    },
+    { type: "h2", text: "Useful but not essential" },
+    {
+      type: "ul",
+      items: [
+        "Photo capture for injection sites (rotation tracking)",
+        "Reminder notifications with snooze + acknowledgement",
+        "Cycle templates from established protocols",
+        "Wearable / CGM integration",
+        "Cohort comparison (privacy-respecting)",
+      ],
+    },
+    { type: "h2", text: "Red flags" },
+    {
+      type: "ul",
+      items: [
+        "<strong>No batch tracking</strong> — disqualifying",
+        "<strong>No cycle concept</strong> — disqualifying",
+        "<strong>Ads</strong> — your protocol data shouldn't be a revenue stream",
+        "<strong>Health-claim marketing</strong> — apps that promise outcomes are signalling they don't know how to think about peptides",
+        "<strong>No export</strong> — your data being locked in the app means it isn't yours",
+        "<strong>Unclear privacy policy</strong> — peptide protocol data is sensitive and shouldn't be sold or used to train models without explicit consent",
+      ],
+    },
+    { type: "callout", title: "Privacy matters more than you'd think", text: "Protocol data describes your hormonal interventions and bloodwork. That's exactly the kind of data you don't want surfacing in an insurance underwriting decision or a data-broker dossier. Read the privacy policy before you log anything." },
+    { type: "h2", text: "Web vs native" },
+    { type: "p", text: "Honestly, web wins for most peptide tracking workflows. You enter data once or twice a day; you review it weekly on a real screen; you export it monthly to your GP. A well-designed responsive web tracker is more useful than a native app cluttered with notification features. Native makes more sense for medication-style reminders, less so for protocol research." },
+    { type: "h2", text: "Ride The Tide tracker" },
+    { type: "p", text: "We built the Ride The Tide tracker because the existing options didn't meet the bar above. It's:" },
+    {
+      type: "ul",
+      items: [
+        "Free at the core feature set",
+        "Web-based, mobile-responsive (no app store friction)",
+        "Built around cycles, not daily pills",
+        "Integrated batch + COA tracking",
+        "Bloodwork-aware with import support",
+        "Clean PDF export for clinician review",
+        "Privacy-first — your data is yours, not sold, not used for ad targeting, not used for model training",
+      ],
+    },
+    { type: "h2", text: "What we don't do" },
+    { type: "p", text: "We don't prescribe. We don't make medical claims. We don't tell you what to dose. The tracker is a tool — what matters is the discipline of using it consistently. The Cape Town Peptide Club workshops cover the protocol-design layer." },
+  ],
+  citations: [
+    { id: "1", label: "Sikiric P et al. Pentadecapeptide BPC 157 and human medicine. Curr Pharm Des. 2014.", url: "https://pubmed.ncbi.nlm.nih.gov/24345255/" },
+    { id: "2", label: "Clemmons DR. Standardization of IGF-I assays consensus. Clin Chem. 2011.", url: "https://pubmed.ncbi.nlm.nih.gov/21474639/" },
+  ],
+  faqs: [
+    { q: "Is the Ride The Tide tracker free?", a: "Yes. The core log, bloodwork import, batch tracking and clinical export are all free." },
+    { q: "Do I need to install anything?", a: "No. It runs in the browser on mobile and desktop." },
+    { q: "Can I export to my GP?", a: "Yes — clean PDF and CSV export with the structure GPs actually want to see." },
+    { q: "What happens to my data?", a: "It's yours. We don't sell, share, or train models on protocol data." },
+  ],
+  cta: "tracker",
+  related: ["peptide-protocol-tracker", "how-to-track-peptide-cycles", "peptide-dosage-calculator"],
+};

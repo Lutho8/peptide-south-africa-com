@@ -1,0 +1,77 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "research-peptides-cape-town",
+  title: "Research Peptides in Cape Town: Standards, Sourcing and Legal Reality",
+  metaTitle: "Research Peptides Cape Town — Sourcing, COAs & Legal Status",
+  metaDescription: "What 'research peptide' actually means in Cape Town: SA legal status, the COA standard to demand, and how to vet a supplier.",
+  keyword: "research peptides Cape Town",
+  publishedAt: "2026-05-26",
+  updatedAt: "2026-05-26",
+  readingMinutes: 6,
+  category: "Sourcing",
+  hero: {
+    eyebrow: "Sourcing",
+    summary: "If a Cape Town supplier can't show you a third-party COA matched to the vial lot, walk away. Here's the full standard.",
+  },
+  body: [
+    { type: "p", text: "\"Research peptide\" is a category that hides a lot of variance. In Cape Town the market has matured significantly — but variance between suppliers is still wide enough that knowing the standard matters. Here's what to demand when sourcing <strong>research peptides in Cape Town</strong>." },
+    { type: "h2", text: "What 'research use' actually means" },
+    { type: "p", text: "Research peptides are sold for laboratory and research applications, not for human use. In South Africa this means they sit outside SAHPRA's medicines registration framework — which is why the prescription / compounding pharmacy route is the cleaner option for anyone actually planning to administer the peptide.<sup>1</sup> When the label says 'for research use only', take it at face value." },
+    { type: "h2", text: "The minimum sourcing standard" },
+    { type: "p", text: "These are not nice-to-haves. They're the floor:" },
+    {
+      type: "ol",
+      items: [
+        "<strong>Third-party COA</strong> — Certificate of Analysis from an independent lab (Janoshik, Lighthouse, or equivalent), not from the supplier's own bench",
+        "<strong>Lot number on the COA matches the lot on the vial</strong> — generic COAs covering 'product type' are a red flag",
+        "<strong>HPLC purity ≥99%</strong>",
+        "<strong>Mass-spec confirmation of identity</strong>",
+        "<strong>Endotoxin and bacterial test results</strong> if the peptide is intended for injection",
+        "<strong>Cold-chain shipping</strong> for lyophilised vials, with insulated packaging and ice packs",
+      ],
+    },
+    { type: "callout", title: "The COA test", text: "Email a prospective supplier and ask for the COA for a specific lot you'd be receiving. The speed and quality of the response tells you everything. Reputable suppliers send it within hours; opaque ones never do." },
+    { type: "h2", text: "Why purity matters more than price" },
+    { type: "p", text: "Independent testing of grey-market peptides has repeatedly shown contamination, underdosing, and outright misidentification — sometimes finding entirely different compounds in the vial.<sup>2</sup> The price difference between a vetted supplier and a discount source is rarely more than 20–30%; the quality difference is potentially everything." },
+    { type: "h2", text: "The compounding pharmacy alternative" },
+    { type: "p", text: "Cape Town has a working network of compounding pharmacies that prepare peptides on prescription. Pros: traceable, COA-backed, legal under Act 101 of 1965 when properly prescribed, and you get clinical oversight as part of the transaction. Cons: slightly more expensive, requires a script, slightly less flexibility on dose forms." },
+    { type: "p", text: "For anyone actually running a protocol — as opposed to actual laboratory research — the compounding pharmacy route is what the Cape Town Peptide Club and Ride The Tide network recommend." },
+    { type: "h2", text: "Storage" },
+    { type: "p", text: "Even the best peptide degrades fast if you store it wrong:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Lyophilised (powder)</strong>: refrigerated, stable for months to years depending on the peptide",
+        "<strong>Reconstituted</strong>: refrigerated, typically stable 2–4 weeks for most peptides, less for some",
+        "<strong>Never freeze reconstituted peptide</strong> — repeated freeze-thaw cycles destroy structure",
+        "<strong>Use bacteriostatic water</strong> (0.9% benzyl alcohol) for reconstitution; saline is acceptable but reduces in-solution shelf life",
+      ],
+    },
+    { type: "h2", text: "Red flags when sourcing" },
+    {
+      type: "ul",
+      items: [
+        "Prices significantly below the local market median",
+        "No COA, or COA that doesn't match the vial lot",
+        "Generic 'mass-produced' vials with no batch markings",
+        "Supplier won't disclose the manufacturing source",
+        "Shipping at ambient temperature for lyophilised product (acceptable short-term) or any temperature for reconstituted product",
+        "Marketing language that makes medical claims",
+      ],
+    },
+  ],
+  citations: [
+    { id: "1", label: "South African Medicines and Related Substances Act 101 of 1965, compounding provisions.", url: "https://www.sahpra.org.za/" },
+    { id: "2", label: "Janoshik Analytical. Independent peptide purity reports archive.", url: "https://www.janoshik.com/" },
+    { id: "3", label: "USADA. Peptide hormone contamination review. 2023.", url: "https://www.usada.org/" },
+  ],
+  faqs: [
+    { q: "Is it legal to buy research peptides in Cape Town?", a: "Research-use sales are legal for laboratory and research purposes. Administering to humans falls outside that framing and is best done via the compounding pharmacy / prescription route." },
+    { q: "Where do I get a COA?", a: "Reputable suppliers publish COAs per lot. If yours doesn't, request the specific lot's COA before buying. No COA = no purchase." },
+    { q: "Are local suppliers as good as imports?", a: "The best local suppliers in 2026 match the best international ones on purity, with the added benefit of cold-chain that doesn't cross customs. Several Cape Town pharmacies now source from compliant European manufacturers." },
+    { q: "What about customs and import?", a: "Importing peptides as a private individual is legally fraught and customs-uncertain. The local supply chain is mature enough that direct import is rarely worth the friction." },
+  ],
+  cta: "club",
+  related: ["buy-peptides-cape-town", "bpc-157-south-africa", "peptide-community-south-africa"],
+};

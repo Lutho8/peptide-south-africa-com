@@ -47,3 +47,20 @@ South Africa only. Pricing in ZAR. Major metro delivery in 1–3 business days.
 ## Disclaimer
 
 All compounds are supplied for research purposes. Therapeutic use is permitted only under prescription from a registered South African physician via our partner pharmacies and GP-led protocol pathway.
+
+## Blog
+
+- [Peptide Protocol Tracker](/blog/peptide-protocol-tracker): What to log and why structured tracking matters.
+- [BPC-157 Protocol Cape Town](/blog/bpc-157-protocol-cape-town): Practical GP-led BPC-157 protocol guide.
+- [How to Track Peptide Cycles](/blog/how-to-track-peptide-cycles): Cycle framework with hypothesis and exit criteria.
+- [Peptide Bloodwork Markers SA](/blog/peptide-bloodwork-markers-sa): Panels for Lancet/Ampath/PathCare.
+- [Peptide Workshop Cape Town](/blog/peptide-workshop-cape-town): What to expect at a Club workshop.
+- [Longevity Biohacker Cape Town](/blog/longevity-biohacker-cape-town): Local longevity scene in 2026.
+- [BPC-157 + TB-500 Stack Guide](/blog/bpc-157-tb-500-stack-guide): Recovery stack dosing and evidence.
+- [CJC-1295 + Ipamorelin Protocol](/blog/cjc-1295-ipamorelin-protocol): GH-axis stack and IGF-1 monitoring.
+- [Peptide Community South Africa](/blog/peptide-community-south-africa): SA community nodes and how to plug in.
+- [Research Peptides Cape Town](/blog/research-peptides-cape-town): Sourcing standards and COA requirements.
+- [BPC-157 South Africa](/blog/bpc-157-south-africa): Legal status, sourcing, prescriptions.
+- [Buy Peptides Cape Town](/blog/buy-peptides-cape-town): Vetted suppliers, pricing, scam avoidance.
+- [Peptide Tracker App](/blog/peptide-tracker-app): Features comparison and privacy considerations.
+- [Peptide Dosage Calculator](/blog/peptide-dosage-calculator): Reconstitution math with worked examples.

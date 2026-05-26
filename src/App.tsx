@@ -33,6 +33,8 @@ import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
 import ShopifyStorePage from "@/pages/ShopifyStorePage";
 import ShopifyProductPage from "@/pages/ShopifyProductPage";
+import BlogIndexPage from "@/pages/BlogIndexPage";
+import BlogPostPage from "@/pages/BlogPostPage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
@@ -90,6 +92,9 @@ const App = () => (
                 <Route path="/research" element={<ResearchHubPage />} />
                 <Route path="/store" element={<ShopifyStorePage />} />
                 <Route path="/store/:handle" element={<ShopifyProductPage />} />
+                <Route path="/blog" element={<BlogIndexPage />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                
                 
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/admin" element={<AdminIndexPage />} />

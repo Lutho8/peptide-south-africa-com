@@ -1,0 +1,75 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "bpc-157-tb-500-stack-guide",
+  title: "BPC-157 + TB-500 Stack Guide: The Recovery Combination, Honestly Reviewed",
+  metaTitle: "BPC-157 TB-500 Stack Guide — Dosing, Timing & Synergy",
+  metaDescription: "Honest, research-cited guide to the BPC-157 + TB-500 recovery stack: dosing, timing, expected outcomes and what the evidence actually says.",
+  keyword: "BPC-157 TB-500 stack guide",
+  publishedAt: "2026-05-26",
+  updatedAt: "2026-05-26",
+  readingMinutes: 7,
+  category: "Protocols",
+  hero: {
+    eyebrow: "Stack guide",
+    summary: "BPC-157 and TB-500 are the recovery community's favourite combination. Here's what the evidence supports, what it doesn't, and how to run the stack.",
+  },
+  body: [
+    { type: "p", text: "The <strong>BPC-157 + TB-500 stack</strong> is the single most-asked-about combination in our Cape Town Q&As. The rationale is mechanistic — the two peptides act on partially distinct healing pathways — so the theoretical case for additive effect is reasonable. The empirical case is less complete than the internet would have you believe." },
+    { type: "h2", text: "Mechanisms (briefly)" },
+    { type: "p", text: "<strong>BPC-157</strong> is a 15-amino-acid fragment originally isolated from human gastric juice. In animal models it promotes tendon, ligament, gut and vascular healing, with strong evidence for VEGFR2-mediated angiogenesis.<sup>1</sup> <strong>TB-500</strong> is a synthetic analogue of the active region of thymosin β4, an actin-binding peptide that promotes cell migration and tissue repair, with documented effects on cardiac, muscular and dermal wound healing in animal models.<sup>2</sup>" },
+    { type: "p", text: "The mechanistic distinction matters: BPC-157's primary contribution is angiogenic (new blood vessels into the injury site); TB-500's is migratory (cells moving in to do the repair). Theoretically complementary." },
+    { type: "h2", text: "What the human evidence actually supports" },
+    { type: "p", text: "Honestly? Limited. Both peptides have extensive rodent data and a substantial body of self-reported human experience. Neither has the large randomised human trials you'd want before making strong clinical claims.<sup>3</sup> The Cape Town Peptide Club's working position is: the stack appears to help with musculoskeletal injuries and post-surgical recovery in practice, but the published RCT evidence is thin and you should track outcomes carefully." },
+    { type: "h2", text: "Common dosing protocol" },
+    { type: "p", text: "Self-reported protocols converge on roughly:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>BPC-157</strong>: 250–500 mcg SC once or twice daily",
+        "<strong>TB-500</strong>: 2–5 mg SC once or twice weekly (loading), then 2 mg weekly (maintenance)",
+        "<strong>Cycle length</strong>: 4–6 weeks for the loading combination, then BPC-157 alone for 4 more weeks",
+        "<strong>Washout</strong>: 4 weeks fully off before considering another cycle",
+      ],
+    },
+    { type: "callout", title: "These are ranges, not prescriptions", text: "Doses cited are typical self-experiment ranges from the published self-report literature and clinical experience reports — not approved doses. Start at the low end. Run by a GP." },
+    { type: "h2", text: "Timing and administration" },
+    {
+      type: "ul",
+      items: [
+        "BPC-157 — daily, ideally same time each day; many users report best results dosing AM and PM",
+        "TB-500 — typically once or twice weekly during loading; less critical to time precisely",
+        "Inject SC into rotated sites; for localised injuries, BPC-157 is sometimes injected near (not into) the affected tendon",
+        "Both peptides are stable in solution refrigerated for 2–4 weeks after reconstitution",
+      ],
+    },
+    { type: "h2", text: "What to track" },
+    {
+      type: "ul",
+      items: [
+        "Daily pain/function VAS for the target tissue (1–10)",
+        "Range of motion or strength benchmark at week 0, 2, 4, 6",
+        "hs-CRP and full blood count at baseline and end of cycle",
+        "Subjective sleep, recovery and GI score 1–10 daily",
+      ],
+    },
+    { type: "h2", text: "Side-effect profile" },
+    { type: "p", text: "Both peptides have a benign acute side-effect profile in self-reports. The honest unknown is long-term safety — TB-500's pro-angiogenic and pro-migratory mechanism is precisely the reason it appears on the WADA prohibited list, and there's a theoretical concern about effects on undiagnosed neoplasia.<sup>4</sup> For people with a family or personal history of cancer, this stack is not the place to start." },
+    { type: "h2", text: "Realistic expectations" },
+    { type: "p", text: "If you have a defined musculoskeletal injury — chronic tendinopathy, post-surgical, persistent joint inflammation — most users running this stack with proper rehabilitation report meaningful improvement by week 3–4. If you're running it 'for general recovery' without a defined target tissue, the signal is much harder to see, and you should ask whether a non-peptide protocol (training, sleep, nutrition) is what you actually need." },
+  ],
+  citations: [
+    { id: "1", label: "Chang CH et al. The promoting effect of pentadecapeptide BPC 157 on tendon healing. J Appl Physiol. 2011.", url: "https://pubmed.ncbi.nlm.nih.gov/21030672/" },
+    { id: "2", label: "Goldstein AL et al. Thymosin beta 4: actin-sequestering protein moonlights to repair injured tissues. Trends Mol Med. 2005.", url: "https://pubmed.ncbi.nlm.nih.gov/16213188/" },
+    { id: "3", label: "Karlsson J et al. Therapeutic potential of BPC 157. Med Hypotheses. 2020.", url: "https://pubmed.ncbi.nlm.nih.gov/31881477/" },
+    { id: "4", label: "WADA Prohibited List 2024 — peptide hormones and growth factors.", url: "https://www.wada-ama.org/en/prohibited-list" },
+  ],
+  faqs: [
+    { q: "Can I run them in the same syringe?", a: "Yes — many users reconstitute both and draw a combined dose. The peptides are compatible in solution. Most clinicians still prefer separate injections for traceability." },
+    { q: "Subcutaneous or intramuscular?", a: "SC is standard for both. IM is occasionally used for localised musculoskeletal injuries with BPC-157." },
+    { q: "How long until I notice something?", a: "For a defined injury, most users report directional improvement by week 2–3. If you see nothing by week 4, the protocol is not working for you." },
+    { q: "Is this WADA-legal?", a: "No. TB-500 is on the WADA prohibited list. Competitive athletes subject to testing should not run this stack." },
+  ],
+  cta: "tracker",
+  related: ["bpc-157-protocol-cape-town", "bpc-157-south-africa", "peptide-bloodwork-markers-sa"],
+};

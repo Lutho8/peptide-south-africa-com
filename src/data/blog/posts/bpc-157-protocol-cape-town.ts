@@ -1,0 +1,77 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "bpc-157-protocol-cape-town",
+  title: "BPC-157 Protocol in Cape Town: A Practical, GP-Led Guide",
+  metaTitle: "BPC-157 Protocol Cape Town — Dosing, Sourcing & Oversight",
+  metaDescription: "How to run a BPC-157 protocol in Cape Town: dosing ranges from the literature, local sourcing standards and GP oversight.",
+  keyword: "BPC-157 protocol Cape Town",
+  publishedAt: "2026-05-26",
+  updatedAt: "2026-05-26",
+  readingMinutes: 7,
+  category: "Protocols",
+  hero: {
+    eyebrow: "Protocol guide",
+    summary: "BPC-157 is the most-asked-about peptide in our Cape Town clinics. Here's an honest, research-cited walk-through of how a sensible protocol looks locally.",
+  },
+  body: [
+    { type: "p", text: "BPC-157 — body protection compound, a 15-amino-acid fragment originally isolated from human gastric juice — is the peptide that brought most South African biohackers into the field. The animal data on healing is striking; the human data is sparse but growing.<sup>1</sup> If you're going to run a <strong>BPC-157 protocol in Cape Town</strong>, this is the framework we use." },
+    { type: "h2", text: "Legal status in South Africa" },
+    { type: "p", text: "BPC-157 is not registered with SAHPRA as a medicine. It is legally accessible through compounding pharmacies on prescription from a registered medical practitioner, and through clearly-labelled research-use channels. We strongly recommend the prescription route — it gives you traceability, a clinician who can intervene if something goes sideways, and certificates of analysis that match the vial." },
+    { type: "h2", text: "Typical research dosing" },
+    { type: "p", text: "The published clinical literature is thin; most dosing in human use is extrapolated from rodent studies and clinical experience reports.<sup>2</sup> Common ranges seen in protocols:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Systemic (subcutaneous):</strong> 250–500 mcg once or twice daily",
+        "<strong>Localised injury:</strong> 250 mcg injected near (not into) the injured tendon or joint, once daily",
+        "<strong>Oral (gut-focused):</strong> 500 mcg once daily, taken in the morning",
+        "<strong>Cycle length:</strong> 4–6 weeks on, 2–4 weeks off",
+      ],
+    },
+    { type: "callout", title: "Important", text: "These are ranges seen in self-reported protocols, not approved doses. Individual response varies. Lower is a perfectly reasonable starting point — many people see benefit at 200 mcg/day." },
+    { type: "h2", text: "What to track" },
+    { type: "p", text: "BPC-157 protocols live or die on objective measurement. We use:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Baseline pain/function score</strong> for the target tissue (VAS 0–10, daily)",
+        "<strong>Range-of-motion or strength benchmark</strong> at week 0, 2, 4, 6",
+        "<strong>CRP and full blood count</strong> at baseline and end of cycle",
+        "<strong>Lipid panel</strong> — there's a theoretical concern about vasoactive effects worth monitoring<sup>3</sup>",
+        "<strong>Subjective sleep & GI score</strong> 1–10 daily",
+      ],
+    },
+    { type: "h2", text: "Sourcing locally" },
+    { type: "p", text: "Cape Town's compounding pharmacy network has matured fast over the last three years. The standards to insist on are non-negotiable:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Third-party HPLC + mass-spec COA</strong> matched to the vial lot number",
+        "<strong>≥99% purity</strong> threshold",
+        "<strong>Cold-chain shipping</strong> for lyophilised vials",
+        "<strong>Bacteriostatic water</strong> supplied separately, with documented provenance",
+      ],
+    },
+    { type: "p", text: "If a supplier can't produce a COA on request, walk away. The peptide industry's biggest quality problem is mislabelled or underdosed product, and a COA is your only line of defence.<sup>4</sup>" },
+    { type: "h2", text: "GP oversight" },
+    { type: "p", text: "Find a doctor who will work with you. The Ride The Tide medical network includes Cape Town GPs experienced with peptide research protocols who'll run baseline bloodwork, check in mid-cycle, and adjust if markers move. This isn't optional in our model — it's the difference between a protocol and an experiment on yourself." },
+    { type: "h2", text: "Reasonable expectations" },
+    { type: "p", text: "Most people who run BPC-157 for a tendinopathy or post-surgical recovery report meaningful improvement by week 3–4. People running it 'for general health' report less consistent benefit, which matches the mechanistic literature — BPC-157 appears to act primarily where there's tissue damage to repair.<sup>5</sup>" },
+  ],
+  citations: [
+    { id: "1", label: "Sikiric P et al. Brain-gut axis and pentadecapeptide BPC 157. Curr Neuropharmacol. 2016.", url: "https://pubmed.ncbi.nlm.nih.gov/27226072/" },
+    { id: "2", label: "Chang CH et al. The promoting effect of pentadecapeptide BPC 157 on tendon healing. J Appl Physiol. 2011.", url: "https://pubmed.ncbi.nlm.nih.gov/21030672/" },
+    { id: "3", label: "Hsieh MJ et al. Therapeutic potential of pro-angiogenic BPC157 is associated with VEGFR2 activation. Mol Med. 2017.", url: "https://pubmed.ncbi.nlm.nih.gov/28792550/" },
+    { id: "4", label: "USADA. Peptide hormones and the contamination problem. 2023 review.", url: "https://www.usada.org/" },
+    { id: "5", label: "Seiwerth S et al. BPC 157 and standard angiogenic growth factors. Curr Pharm Des. 2018.", url: "https://pubmed.ncbi.nlm.nih.gov/29879882/" },
+  ],
+  faqs: [
+    { q: "Can I get a BPC-157 prescription in Cape Town?", a: "Yes — through compounding pharmacies on script from a registered GP. The Ride The Tide network can refer you to clinicians familiar with the protocol." },
+    { q: "Subcutaneous vs intramuscular?", a: "Subcutaneous is standard for systemic effect and what most published self-experiment protocols use. IM is occasionally used for localised musculoskeletal injuries." },
+    { q: "Do I need to cycle off?", a: "Most experienced users do — typically 4–6 weeks on, 2–4 weeks off — though there's no definitive evidence on optimal cycling. Conservative cycling is reasonable while the data matures." },
+    { q: "Can I stack it with TB-500?", a: "Yes — see our BPC-157 + TB-500 stack guide for dosing and timing." },
+  ],
+  cta: "both",
+  related: ["bpc-157-tb-500-stack-guide", "bpc-157-south-africa", "peptide-bloodwork-markers-sa"],
+};
