@@ -33,6 +33,8 @@ import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
 import ShopifyStorePage from "@/pages/ShopifyStorePage";
 import ShopifyProductPage from "@/pages/ShopifyProductPage";
+import BlogIndexPage from "@/pages/BlogIndexPage";
+import BlogPostPage from "@/pages/BlogPostPage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
