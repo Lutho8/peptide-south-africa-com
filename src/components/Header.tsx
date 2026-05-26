@@ -63,6 +63,7 @@ export default function Header() {
             <Link to="/" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Home</Link>
             <Link to="/shop" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Shop</Link>
             <Link to="/research" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Research</Link>
+            <Link to="/blog" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Blog</Link>
             <Link to="/faq" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">FAQ</Link>
             <a
               href="https://ridethetide.info"
