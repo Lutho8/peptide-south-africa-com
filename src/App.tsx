@@ -92,6 +92,9 @@ const App = () => (
                 <Route path="/research" element={<ResearchHubPage />} />
                 <Route path="/store" element={<ShopifyStorePage />} />
                 <Route path="/store/:handle" element={<ShopifyProductPage />} />
+                <Route path="/blog" element={<BlogIndexPage />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                
                 
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/admin" element={<AdminIndexPage />} />
