@@ -35,6 +35,7 @@ const DROPDOWNS: Dropdown[] = [
   {
     label: "Explore",
     items: [
+      { label: "Lab Testing & COAs", to: "/testing", desc: "Janoshik-verified · per-batch reports" },
       { label: "Research Hub", to: "/research", desc: "Protocols & studies" },
       { label: "Blog", to: "/blog", desc: "Guides & deep dives" },
       { label: "FAQ", to: "/faq", desc: "Common questions" },
