@@ -8,3 +8,7 @@ verify_jwt = true
 
 [functions.nocobase-abandoned-cart]
 verify_jwt = false
+
+[functions.community-join]
+verify_jwt = false
+
