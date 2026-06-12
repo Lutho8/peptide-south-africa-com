@@ -92,23 +92,37 @@ export default function ProductCard({ product }: { product: Product }) {
               <FlaskConical className="h-3 w-3" /> {product.purity} HPLC
             </span>
           )}
-          <span className="inline-flex items-center gap-1 rounded bg-trust/5 px-1.5 py-0.5 text-trust ring-1 ring-trust/15">
-            <ShieldCheck className="h-3 w-3" /> COA Verified
-          </span>
+          <Link to="/testing" className="inline-flex items-center gap-1 rounded bg-trust/5 px-1.5 py-0.5 text-trust ring-1 ring-trust/15 hover:bg-trust/10">
+            <ShieldCheck className="h-3 w-3" /> Janoshik COA
+          </Link>
+          <TrackBadge track={product.track} />
         </div>
 
-        <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
-          {product.category}
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
+            {product.category}
+          </p>
+          {product.sku && (
+            <p className="font-mono text-[10px] font-medium text-muted-foreground" title="Internal SKU">
+              {product.sku}
+            </p>
+          )}
+        </div>
         <Link to={productUrl}>
           <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
             {product.name}
           </h3>
         </Link>
+        {product.casNumber && (
+          <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+            CAS {product.casNumber}
+          </p>
+        )}
 
         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
           {product.shortDescription}
         </p>
+
 
         {/* Headline price row */}
         <div className="mt-3 flex items-baseline justify-between">
