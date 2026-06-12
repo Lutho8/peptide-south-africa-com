@@ -28,7 +28,10 @@ const staticEntries: SitemapEntry[] = [
   { path: "/refund", changefreq: "yearly", priority: "0.4" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+  { path: "/cart", changefreq: "monthly", priority: "0.2" },
+  { path: "/checkout", changefreq: "monthly", priority: "0.2" },
 ];
+
 
 function extractProductSlugs(): string[] {
   const src = readFileSync(resolve("src/data/products.ts"), "utf8");
