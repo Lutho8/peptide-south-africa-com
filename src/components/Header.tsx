@@ -115,8 +115,14 @@ export default function Header() {
           </Link>
 
           <Link
+            to="/quiz?intent=consult"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 px-4 py-2.5 text-sm font-semibold text-primary transition-all hover:bg-primary/5 active:scale-95"
+          >
+            Book Consult
+          </Link>
+          <Link
             to="/quiz"
-            className="ml-2 inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+            className="ml-1 inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
             Get Started
           </Link>

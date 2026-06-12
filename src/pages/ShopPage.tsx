@@ -119,12 +119,18 @@ export default function ShopPage() {
               Pick a single compound or commit to a full transformation.
             </p>
 
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 to="/quiz"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
               >
                 Find My Protocol <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/quiz?intent=consult"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/40 bg-background px-6 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/5 active:scale-95 sm:w-auto"
+              >
+                Book a 15-min Consult
               </Link>
               <a
                 href="#products"
@@ -166,7 +172,7 @@ export default function ShopPage() {
         <div className="container px-4">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+              <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
                 Guided Programs
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
@@ -207,7 +213,7 @@ export default function ShopPage() {
         <div className="container px-4">
           <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+              <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
                 Compound Catalog
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">

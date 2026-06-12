@@ -22,6 +22,7 @@ import StickyProductCTA from "@/components/StickyProductCTA";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -35,6 +36,7 @@ export default function ProductPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { setLastViewed } = useLastViewedProduct();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
@@ -52,6 +54,18 @@ export default function ProductPage() {
       .order("display_order")
       .then(({ data }) => setGlobalFaqs(data ?? []));
   }, []);
+
+  // Register this product as the "last viewed" for the site-wide follower.
+  useEffect(() => {
+    if (!product) return;
+    setLastViewed({
+      slug: product.slug,
+      name: product.name,
+      image: typeof product.image === "string" ? product.image : "",
+      price: product.variants?.[0]?.price ?? product.price,
+      track: product.track,
+    });
+  }, [product, setLastViewed]);
 
   if (!product) {
     return (
@@ -152,13 +166,13 @@ export default function ProductPage() {
 
       {/* Product Detail */}
       <section className="container pb-16">
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 md:items-start">
           {/* Image */}
           <ProductImageZoom src={product.image} alt={product.name} />
 
-          {/* Info */}
-          <div className="flex flex-col">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">{product.category}</span>
+          {/* Info — sticks on desktop so price + CTA follow the user. */}
+          <div className="flex flex-col md:sticky md:top-24 md:self-start">
+            <span className="font-mono text-sm font-medium uppercase tracking-wider text-primary">{product.category}</span>
             <h1 className="mt-1 font-display text-3xl font-bold text-foreground">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2">
               <div className="flex gap-0.5">
