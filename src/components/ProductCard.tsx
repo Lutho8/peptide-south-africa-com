@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, FlaskConical, CheckCircle2, Stethoscope } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
+import TrackBadge from "@/components/TrackBadge";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function ProductCard({ product }: { product: Product }) {
