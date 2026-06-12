@@ -32,8 +32,14 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const { format, display, currency, rate } = useCurrency();
   const { market, lang } = useMarket();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
+  const [intervalWeeks, setIntervalWeeks] = useState<4 | 8 | 12>(8);
+  const [subBusy, setSubBusy] = useState(false);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
 
 
