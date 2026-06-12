@@ -4,7 +4,7 @@ import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPi
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
-import { products, categories, getProductsByCategory } from "@/data/products";
+import { products, categories, tracks, getProductsByCategory, type ProductTrack } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
