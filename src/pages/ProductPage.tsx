@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap, Stethoscope } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
 import TrackerBridgeCard from "@/components/TrackerBridgeCard";
 import { getProductBySlug, products } from "@/data/products";
@@ -15,10 +15,13 @@ import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
+import TrackBadge from "@/components/TrackBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface CmsFaq { question: string; answer: string }
 
