@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageSquareQuote, HelpCircle, Tag, Database, ExternalLink, Search } from "lucide-react";
+import { MessageSquareQuote, HelpCircle, Tag, Database, ExternalLink, Search, FlaskConical } from "lucide-react";
 
 interface LogRow {
   id: string;
