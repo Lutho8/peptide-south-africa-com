@@ -19,6 +19,7 @@ import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
 import HeroShop from "@/components/HeroShop";
 import SupportVideosSection from "@/components/SupportVideosSection";
+import CategoryShowcase from "@/components/CategoryShowcase";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
@@ -91,6 +92,33 @@ export default function HomePage() {
 
       {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
       <SupportVideosSection />
+
+      {/* ===================== CATEGORY SHOWCASES (Whoosh-style) ===================== */}
+      <CategoryShowcase
+        eyebrow="Weight Loss"
+        title="GLP-1 protocols that actually work."
+        blurb="Triple- and dual-agonist peptides for metabolic research — RT3, Tirzepatide and more."
+        productIds={["1", "4"]}
+        shopHref="/shop?category=GLP"
+        accent="weight-loss"
+      />
+      <CategoryShowcase
+        eyebrow="Wellness & Longevity"
+        title="Live longer. Recover smarter."
+        blurb="Mitochondrial peptides and longevity blends researched by the world's top biohackers."
+        productIds={["5", "8", "2"]}
+        shopHref="/shop?category=Longevity"
+        accent="longevity"
+      />
+      <CategoryShowcase
+        eyebrow="Recovery"
+        title="Heal faster. Train harder."
+        blurb="Healing-stack peptides used in clinical recovery and tissue-repair research."
+        productIds={["6", "3"]}
+        shopHref="/shop?category=Healing"
+        accent="recovery"
+      />
+
 
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />

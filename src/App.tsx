@@ -36,6 +36,7 @@ import ShopifyStorePage from "@/pages/ShopifyStorePage";
 import ShopifyProductPage from "@/pages/ShopifyProductPage";
 import BlogIndexPage from "@/pages/BlogIndexPage";
 import BlogPostPage from "@/pages/BlogPostPage";
+import AffiliatePage from "@/pages/AffiliatePage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
@@ -95,6 +96,8 @@ const App = () => (
                 <Route path="/store/:handle" element={<ShopifyProductPage />} />
                 <Route path="/blog" element={<BlogIndexPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
+                <Route path="/affiliate" element={<AffiliatePage />} />
+
                 
                 
                 <Route path="/auth" element={<AuthPage />} />
