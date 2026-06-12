@@ -50,7 +50,7 @@ export default function HeroShop() {
 
   return (
     <section className="relative isolate overflow-hidden">
-      {/* Hero background video */}
+      {/* Hero background video — full bleed, dark scrim for legibility on mobile */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a2540]">
         <video
           src={HERO_VIDEO_SRC}
@@ -60,83 +60,104 @@ export default function HeroShop() {
           loop
           playsInline
           preload="metadata"
-          className="h-full w-full object-cover opacity-70 motion-reduce:hidden"
+          className="h-full w-full object-cover opacity-60 motion-reduce:hidden"
         />
         <img
           src={HERO_VIDEO_POSTER}
           alt=""
           aria-hidden
-          className="absolute inset-0 hidden h-full w-full object-cover opacity-70 motion-reduce:block"
+          className="absolute inset-0 hidden h-full w-full object-cover opacity-60 motion-reduce:block"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2540]/55 via-[#0a2540]/35 to-background" />
+        {/* Strong dark scrim on mobile for text contrast, softer on desktop */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2540]/85 via-[#0a2540]/70 to-background md:from-[#0a2540]/60 md:via-[#0a2540]/40" />
       </div>
 
-      <div className="container relative z-10 px-4 pb-12 pt-8 md:pb-16 md:pt-12">
-        {/* OFFER RIBBON — top, full width, impossible to miss */}
+      <div className="container relative z-10 px-4 pb-10 pt-6 md:pb-16 md:pt-12">
+        {/* OFFER RIBBON — compact on mobile */}
         <motion.div
           initial={reduce ? false : { opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto mb-6 flex max-w-3xl items-center justify-center gap-2 rounded-full bg-hero-gradient px-4 py-2 text-center text-xs font-semibold text-primary-foreground shadow-glow sm:text-sm"
+          className="mx-auto mb-5 flex max-w-3xl items-center justify-center gap-1.5 rounded-full bg-hero-gradient px-3 py-1.5 text-center text-[11px] font-semibold text-primary-foreground shadow-glow sm:px-4 sm:py-2 sm:text-sm"
         >
-          <Tag className="h-4 w-4" />
-          <span>
+          <Tag className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate sm:whitespace-normal">
             {eligible
-              ? <>Your <span className="font-bold">10% off</span> is auto-applied · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>
+              ? <>10% off auto-applied · <span className="font-mono">RIDETHETIDE10</span></>
               : user
-                ? <>Welcome back · use code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span> on select items</>
-                : <><Link to="/auth" className="underline underline-offset-2 hover:opacity-90">Sign in</Link> to auto-apply <span className="font-bold">10% off your first order</span> · code <span className="rounded bg-white/20 px-1.5 py-0.5 font-mono">RIDETHETIDE10</span></>}
+                ? <>Welcome back · <span className="font-mono">RIDETHETIDE10</span></>
+                : <><Link to="/auth" className="underline underline-offset-2">Sign in</Link> for <span className="font-bold">10% off</span> · <span className="font-mono">RIDETHETIDE10</span></>}
           </span>
         </motion.div>
 
-        {/* Headline */}
+        {/* Headline — white text over video for contrast */}
         <div className="mx-auto max-w-4xl text-center">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 px-3 py-1.5 text-xs font-medium text-primary backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-md sm:text-xs"
           >
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00d4aa] opacity-70" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00d4aa]" />
             </span>
-            ≥99% HPLC tested · COA on every batch · South Africa &amp; Germany / EU
+            ≥99% HPLC tested · COA on every batch
           </motion.div>
 
           <motion.h1
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="mt-4 font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+            className="mt-4 font-display text-[2.25rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl"
           >
             Premium peptides.{" "}
-            <span className="text-gradient">Shipped in 48 hours.</span>
+            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Shipped in 48 hours.</span>
           </motion.h1>
 
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg"
+            className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:mt-4 sm:text-lg"
           >
-            Independently HPLC-verified. Transparent EUR &amp; ZAR pricing. Discreet shipping to
-            South Africa (1–3 days) and Germany / EU (4–7 days).
+            HPLC-verified · ZAR &amp; EUR pricing · Discreet shipping to South Africa (1–3 days) &amp; EU (4–7 days).
           </motion.p>
+
+          {/* Primary CTAs — mobile-first, big tap targets */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="mx-auto mt-5 flex w-full max-w-md flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center"
+          >
+            <Link
+              to="/shop"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow active:scale-[0.98]"
+            >
+              <ShoppingCart className="h-5 w-5" /> Shop peptides
+            </Link>
+            <Link
+              to="/quiz"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-base font-semibold text-white backdrop-blur-md hover:bg-white/20"
+            >
+              <Sparkles className="h-5 w-5" /> Find my protocol
+            </Link>
+          </motion.div>
 
           <motion.div
             initial={reduce ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground"
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] text-white/85 sm:text-xs"
           >
-            <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
-              <Flame className="h-3.5 w-3.5 text-destructive" /> 23 orders in last 24h
+            <span className="inline-flex items-center gap-1 font-semibold text-white">
+              <Flame className="h-3.5 w-3.5 text-orange-400" /> 23 orders today
             </span>
-            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free SA over R1,500 · EU over €75</span>
-            <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-trust" /> 100% lab-tested</span>
+            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free SA R1,500+</span>
+            <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#00d4aa]" /> Lab-tested</span>
             <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-badge text-badge" /> 4.9 / 5 · 1,200+ researchers
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" /> 4.9 · 1,200+
             </span>
           </motion.div>
         </div>
