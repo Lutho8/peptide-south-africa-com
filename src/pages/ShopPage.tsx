@@ -68,13 +68,20 @@ export default function ShopPage() {
     })),
   };
 
+  const syncParams = (cat: string, trk: "All" | ProductTrack) => {
+    const next: Record<string, string> = {};
+    if (cat !== "All") next.category = cat;
+    if (trk !== "All") next.track = trk;
+    setSearchParams(next);
+  };
+
   const handleCategory = (cat: string) => {
     setActiveCategory(cat);
-    if (cat === "All") {
-      setSearchParams({});
-    } else {
-      setSearchParams({ category: cat });
-    }
+    syncParams(cat, activeTrack);
+  };
+  const handleTrack = (trk: "All" | ProductTrack) => {
+    setActiveTrack(trk);
+    syncParams(activeCategory, trk);
   };
 
   return (
