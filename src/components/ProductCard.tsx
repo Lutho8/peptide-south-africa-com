@@ -167,15 +167,15 @@ export default function ProductCard({ product }: { product: Product }) {
                       : "border-border bg-background hover:border-primary/50"
                   }`}
                 >
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                     {v.label}
                   </span>
-                  <span className="font-display text-sm font-bold text-foreground">
+                  <span className="font-mono text-sm font-bold text-foreground">
                     {format(v.price)}
                   </span>
-                  <span className="text-[10px] font-medium text-primary">{perMgLabel}</span>
+                  <span className="font-mono text-[10px] font-medium text-primary">{perMgLabel}</span>
                   {typeof v.stock === "number" && (
-                    <span className={`text-[10px] font-semibold ${v.stock <= 2 ? "text-destructive" : "text-trust"}`}>
+                    <span className={`font-mono text-[10px] font-semibold ${v.stock <= 2 ? "text-destructive" : "text-trust"}`}>
                       {v.stock} Avail
                     </span>
                   )}
