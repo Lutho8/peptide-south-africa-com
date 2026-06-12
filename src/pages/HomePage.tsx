@@ -89,6 +89,9 @@ export default function HomePage() {
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
 
+      {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
+      <SupportVideosSection />
+
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />
 
