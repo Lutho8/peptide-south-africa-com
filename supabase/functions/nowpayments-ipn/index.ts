@@ -45,9 +45,13 @@ Deno.serve(async (req) => {
 
   let nextStatus: string | null = null;
   let paidAt: string | null = null;
-  if (status === 'finished' || status === 'confirmed' || status === 'partially_paid') {
+  // Only mark fully paid on confirmed/finished. Partial payments are flagged
+  // for manual review to avoid underpayment exploitation.
+  if (status === 'finished' || status === 'confirmed') {
     nextStatus = 'paid';
     paidAt = new Date().toISOString();
+  } else if (status === 'partially_paid') {
+    nextStatus = 'underpaid';
   } else if (status === 'failed' || status === 'expired' || status === 'refunded') {
     nextStatus = status === 'refunded' ? 'refunded' : 'failed';
   }
