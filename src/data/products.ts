@@ -15,6 +15,30 @@ import productKlow from "@/assets/product-klow.jpg";
 export interface Variant {
   label: string;
   price: number; // EUR
+  /** Vials per pack (3, 5, 10). When set, the card renders pack-pricing UI. */
+  pack?: number;
+  /** mg per vial — used to compute per-mg pricing for pack variants. */
+  mgPerVial?: number;
+  /** Per-variant stock count, e.g. "2 Avail" chip. */
+  stock?: number;
+}
+
+/**
+ * Build standard 3/5/10-pack variants for a given peptide vial.
+ * basePrice = EUR price of a single vial.
+ * Volume discount tiers: 3-pack -8%, 5-pack -15%, 10-pack -28%.
+ */
+function buildPackVariants(
+  basePrice: number,
+  mgPerVial: number,
+  stocks: { p3?: number; p5?: number; p10?: number } = {},
+): Variant[] {
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+  return [
+    { label: "3-Pack", price: round2(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "5-Pack", price: round2(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
+    { label: "10-Pack", price: round2(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
+  ];
 }
 
 export interface Product {
