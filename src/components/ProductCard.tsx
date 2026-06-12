@@ -38,9 +38,16 @@ export default function ProductCard({ product }: { product: Product }) {
   })();
   const priceDisplay = display(selected?.price ?? product.price);
 
+  const isGPTrack = product.track === "GP";
+
   const handleAdd = () => {
     if (!product.inStock) {
       navigate(productUrl);
+      return;
+    }
+    // GP-track (Reta/Tirz/Sema) goes through clinician pathway, never raw add-to-cart.
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
       return;
     }
     if (hasPackVariants && selected) {
