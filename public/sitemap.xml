@@ -109,6 +109,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/privacy" />
   </url>
   <url>
+    <loc>https://www.ridethetide.site/cart</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.ridethetide.site/cart" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ridethetide.site/cart" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/cart" />
+  </url>
+  <url>
+    <loc>https://www.ridethetide.site/checkout</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.ridethetide.site/checkout" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.ridethetide.site/checkout" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.ridethetide.site/checkout" />
+  </url>
+  <url>
     <loc>https://www.ridethetide.site/product/rt3-reta</loc>
     <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
