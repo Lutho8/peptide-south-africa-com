@@ -22,6 +22,7 @@ import StickyProductCTA from "@/components/StickyProductCTA";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -35,6 +36,7 @@ export default function ProductPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { setLastViewed } = useLastViewedProduct();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
@@ -52,6 +54,18 @@ export default function ProductPage() {
       .order("display_order")
       .then(({ data }) => setGlobalFaqs(data ?? []));
   }, []);
+
+  // Register this product as the "last viewed" for the site-wide follower.
+  useEffect(() => {
+    if (!product) return;
+    setLastViewed({
+      slug: product.slug,
+      name: product.name,
+      image: typeof product.image === "string" ? product.image : "",
+      price: product.variants?.[0]?.price ?? product.price,
+      track: product.track,
+    });
+  }, [product, setLastViewed]);
 
   if (!product) {
     return (
