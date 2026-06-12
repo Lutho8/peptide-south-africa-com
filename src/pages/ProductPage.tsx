@@ -166,13 +166,13 @@ export default function ProductPage() {
 
       {/* Product Detail */}
       <section className="container pb-16">
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2 md:items-start">
           {/* Image */}
           <ProductImageZoom src={product.image} alt={product.name} />
 
-          {/* Info */}
-          <div className="flex flex-col">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">{product.category}</span>
+          {/* Info — sticks on desktop so price + CTA follow the user. */}
+          <div className="flex flex-col md:sticky md:top-24 md:self-start">
+            <span className="font-mono text-sm font-medium uppercase tracking-wider text-primary">{product.category}</span>
             <h1 className="mt-1 font-display text-3xl font-bold text-foreground">{product.name}</h1>
             <div className="mt-2 flex items-center gap-2">
               <div className="flex gap-0.5">
