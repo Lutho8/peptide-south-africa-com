@@ -43,11 +43,15 @@ const protocols = [
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
+  const initialTrack = (searchParams.get("track") as "All" | ProductTrack) || "All";
   const [activeCategory, setActiveCategory] = useState(initialCat);
+  const [activeTrack, setActiveTrack] = useState<"All" | ProductTrack>(initialTrack);
   const { market, lang } = useMarket();
   const shopCopy = pageCopy("shop", market);
 
-  const filtered = getProductsByCategory(activeCategory);
+  const filtered = getProductsByCategory(activeCategory).filter(
+    (p) => activeTrack === "All" || (p.track ?? "RUO") === activeTrack,
+  );
 
   const itemListSchema = {
     "@context": "https://schema.org",
