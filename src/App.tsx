@@ -100,6 +100,7 @@ const App = () => (
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
                 <Route path="/testing" element={<TestingPage />} />
+                <Route path="/account" element={<AccountPage />} />
 
                 
                 
