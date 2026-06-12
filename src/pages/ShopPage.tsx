@@ -119,12 +119,18 @@ export default function ShopPage() {
               Pick a single compound or commit to a full transformation.
             </p>
 
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 to="/quiz"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
               >
                 Find My Protocol <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/quiz?intent=consult"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/40 bg-background px-6 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/5 active:scale-95 sm:w-auto"
+              >
+                Book a 15-min Consult
               </Link>
               <a
                 href="#products"
