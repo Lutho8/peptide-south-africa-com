@@ -41,6 +41,8 @@ function buildPackVariants(
   ];
 }
 
+export type ProductTrack = "RUO" | "GP";
+
 export interface Product {
   id: string;
   name: string;
@@ -65,8 +67,20 @@ export interface Product {
   variants?: Variant[];
   purity?: string;
   storage?: string;
+  /** Internal SKU code (e.g. RTT-RT3-10). Real compound name is always shown. */
   sku?: string;
+  /** CAS Registry Number for the compound. */
+  casNumber?: string;
+  /** Short compound class label (e.g. "GLP-1/GIP/Glucagon triple agonist"). */
+  compoundClass?: string;
+  /**
+   * Distribution pathway:
+   *  - "RUO" — research compound, standard checkout with researcher attestation.
+   *  - "GP"  — prescription-only: routes through quiz → GP review → partner pharmacy.
+   */
+  track?: ProductTrack;
 }
+
 
 export const products: Product[] = [
   {
