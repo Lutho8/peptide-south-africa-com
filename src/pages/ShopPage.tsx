@@ -172,7 +172,7 @@ export default function ShopPage() {
         <div className="container px-4">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+              <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
                 Guided Programs
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
@@ -213,7 +213,7 @@ export default function ShopPage() {
         <div className="container px-4">
           <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <span className="text-xs font-medium uppercase tracking-wider text-primary">
+              <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
                 Compound Catalog
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
