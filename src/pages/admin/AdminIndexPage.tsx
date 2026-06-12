@@ -36,6 +36,7 @@ export default function AdminIndexPage() {
   }, [user, isAdmin, loading]);
 
   const cards = [
+    { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },
     { to: "/admin/testimonials", icon: MessageSquareQuote, title: "Testimonials", desc: "Manage social proof shown across the site." },
     { to: "/admin/faqs", icon: HelpCircle, title: "Product FAQs", desc: "Edit the global FAQ accordion on every product page." },
     { to: "/admin/discounts", icon: Tag, title: "Discount Eligibility", desc: "Check why RIDETHETIDE10 is or isn't applied for a user." },
