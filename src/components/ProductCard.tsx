@@ -132,11 +132,11 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Headline price row */}
         <div className="mt-3 flex items-baseline justify-between">
           <div>
-            <p className="font-display text-base font-bold text-primary">
+            <p className="font-mono text-base font-bold text-primary">
               {hasPackVariants ? priceDisplay.primary : priceRangeDisplay || priceDisplay.primary}
             </p>
             {hasPackVariants ? (
-              <p className="text-[10px] uppercase tracking-wide text-trust font-semibold">
+              <p className="font-mono text-[10px] uppercase tracking-wide text-trust font-semibold">
                 {product.inStock ? "Available" : "Pre-Order"}
               </p>
             ) : null}
