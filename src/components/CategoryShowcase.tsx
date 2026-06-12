@@ -64,8 +64,9 @@ export default function CategoryShowcase({ eyebrow, title, blurb, productIds, sh
                   {p.priceRange ?? format(p.price)}
                 </span>
                 <span className="inline-flex items-center gap-1 text-sm font-semibold text-white/90 group-hover:underline">
-                  Learn more <ArrowRight className="h-4 w-4" />
+                  View {p.name} <ArrowRight className="h-4 w-4" />
                 </span>
+
               </div>
             </Link>
           ))}
