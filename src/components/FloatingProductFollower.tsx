@@ -68,7 +68,7 @@ export default function FloatingProductFollower() {
     <aside
       role="complementary"
       aria-label="Continue with last-viewed product"
-      className="pointer-events-none fixed bottom-6 right-6 z-[45] hidden md:block"
+      className="pointer-events-none fixed bottom-24 right-6 z-[45] hidden md:block"
       style={{
         transform: visible ? "translateY(0)" : "translateY(160%)",
         opacity: visible ? 1 : 0,
