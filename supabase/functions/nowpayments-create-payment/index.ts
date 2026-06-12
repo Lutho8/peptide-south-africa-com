@@ -39,14 +39,29 @@ Deno.serve(async (req) => {
     if (typeof amount !== 'number' || amount <= 0) return json({ error: 'invalid amount' }, 400);
     if (currency !== 'eur' && currency !== 'zar') return json({ error: 'invalid currency' }, 400);
 
-    // Confirm the order belongs to the caller.
+    // Confirm the order belongs to the caller and the requested amount matches
+    // the stored order total. Prevents client-side price manipulation.
     const { data: order, error: orderErr } = await supabase
       .from('orders')
-      .select('id, user_id, status')
+      .select('id, user_id, status, total, currency')
       .eq('id', orderId)
       .maybeSingle();
     if (orderErr || !order) return json({ error: 'order not found' }, 404);
     if (order.user_id !== userId) return json({ error: 'forbidden' }, 403);
+
+    const storedTotal = Number(order.total);
+    const storedCurrency = String(order.currency ?? '').toLowerCase();
+    if (!Number.isFinite(storedTotal) || storedTotal <= 0) {
+      return json({ error: 'order has no payable total' }, 400);
+    }
+    if (storedCurrency !== currency) {
+      return json({ error: 'currency mismatch' }, 400);
+    }
+    // Allow only sub-cent rounding drift between client and stored total.
+    if (Math.abs(storedTotal - amount) > 0.01) {
+      return json({ error: 'amount mismatch' }, 400);
+    }
+
 
     const ipnUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/nowpayments-ipn`;
 
