@@ -539,6 +539,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      lookup_referral_code: {
+        Args: { _code: string }
+        Returns: {
+          id: string
+          reward_zar: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
