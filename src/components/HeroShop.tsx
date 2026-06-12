@@ -11,9 +11,12 @@ import {
   ShoppingCart,
   Tag,
 } from "lucide-react";
-import CursorOrb from "./CursorOrb";
-import HeroBackdrop from "./HeroBackdrop";
 import { products } from "@/data/products";
+
+const HERO_VIDEO_SRC =
+  "https://player.vimeo.com/progressive_redirect/playback/1197576794/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&signature=17601266ee7e2cb1ad78cd417676683352bfc62cb32be03b087f5ee446fd2484";
+const HERO_VIDEO_POSTER =
+  "https://cdn.prod.website-files.com/69d7cec371c939d9bb8e2ad0/6a1f2d8a58036074a045f8dc_Rectangle%2022682%20(1).png";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/context/CurrencyContext";
