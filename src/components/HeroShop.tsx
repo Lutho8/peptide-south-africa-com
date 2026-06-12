@@ -30,14 +30,13 @@ export default function HeroShop() {
   const { toast } = useToast();
   const eligible = !!user && hasFirstOrder === false;
 
-  // Hero featured product = RT3 (best seller). Price is in EUR (base currency).
+  // Hero featured products: RT3 (Weight Loss) + BPC/TB-500 (Recovery).
   const hero = products.find((p) => p.id === "1") ?? products[0];
-  const discounted = Math.round(hero.price * 0.9 * 100) / 100;
+  const secondary = products.find((p) => p.id === "6") ?? products.find((p) => p.id === "3") ?? products[1];
 
-  const handleAdd = () => {
-    // Hero product may have variants; pick the first as a sensible default.
-    const v = hero.variants?.[0];
-    addToCart(hero, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+  const handleAdd = (p: typeof hero) => {
+    const v = p.variants?.[0];
+    addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     toast({
       title: "✓ Added to cart",
       description: eligible
@@ -47,6 +46,7 @@ export default function HeroShop() {
           : "Sign in to auto-apply 10% off your first order.",
     });
   };
+
 
   return (
     <section className="relative isolate overflow-hidden">
