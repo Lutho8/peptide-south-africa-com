@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_applications: {
+        Row: {
+          audience_size: string | null
+          channel: string
+          created_at: string
+          email: string
+          id: string
+          link: string | null
+          message: string | null
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          audience_size?: string | null
+          channel: string
+          created_at?: string
+          email: string
+          id?: string
+          link?: string | null
+          message?: string | null
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          audience_size?: string | null
+          channel?: string
+          created_at?: string
+          email?: string
+          id?: string
+          link?: string | null
+          message?: string | null
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_snapshots: {
         Row: {
           cart_signature: string | null
