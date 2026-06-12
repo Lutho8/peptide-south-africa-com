@@ -5,6 +5,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
+import { LastViewedProductProvider } from "@/context/LastViewedProductContext";
+import FloatingProductFollower from "@/components/FloatingProductFollower";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -67,6 +69,7 @@ const App = () => (
         <CurrencyProvider>
         <AuthProvider>
           <CartProvider>
+            <LastViewedProductProvider>
             <ShopifyCartSyncMount />
             <Toaster />
             <Sonner />
@@ -117,10 +120,12 @@ const App = () => (
             </main>
             <Footer />
             <StickyMobileCTA />
+            <FloatingProductFollower />
             <CookieConsent />
             <WhatsAppButton />
             <LiveActivity />
             <Analytics />
+            </LastViewedProductProvider>
           </CartProvider>
         </AuthProvider>
         </CurrencyProvider>
