@@ -158,9 +158,11 @@ Deno.serve(async (req) => {
     .eq("id", upserted.id);
 
   await supabase.from("integration_logs").insert({
-    source: "community-join",
-    event: `bsp.${sendResult.status}`,
-    payload: { member_id: upserted.id, phone_country: phoneCountry, error: sendResult.error ?? null },
+    integration: "whatsapp-bsp",
+    action: "community-join.welcome",
+    status: sendResult.status,
+    payload: { member_id: upserted.id, phone_country: phoneCountry },
+    error: sendResult.error ?? null,
   });
 
   const groupUrl = Deno.env.get("WHATSAPP_GROUP_INVITE_URL") ?? null;
