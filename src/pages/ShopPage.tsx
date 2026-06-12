@@ -214,12 +214,34 @@ export default function ShopPage() {
                 {activeCategory === "All" ? "All Research Peptides" : activeCategory}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested ·{" "}
+                <Link to="/testing" className="font-semibold text-primary hover:underline">View testing methodology</Link>
               </p>
             </div>
           </div>
 
-          {/* Filters */}
+          {/* Track filter — Research vs Clinical pathway */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Pathway
+            </span>
+            {tracks.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => handleTrack(t.value)}
+                title={t.desc}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                  activeTrack === t.value
+                    ? "bg-foreground text-background"
+                    : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Category filters */}
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
