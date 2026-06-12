@@ -31,8 +31,9 @@ export default function RelatedContent({ title = "Related Resources", links }: R
               </h3>
               <p className="mt-1 flex-1 text-xs text-muted-foreground">{link.description}</p>
               <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
-                Learn more <ArrowRight className="h-3 w-3" />
+                Read {link.label} <ArrowRight className="h-3 w-3" />
               </span>
+
             </Link>
           ))}
         </div>

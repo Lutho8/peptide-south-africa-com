@@ -209,7 +209,7 @@ export default function HeroShop() {
                       to={`/product/${p.slug}`}
                       className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted"
                     >
-                      Learn more
+                      View {p.name} details
                     </Link>
                     <button
                       onClick={() => handleAdd(p)}
