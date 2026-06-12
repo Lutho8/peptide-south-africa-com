@@ -98,6 +98,7 @@ const App = () => (
                 <Route path="/blog" element={<BlogIndexPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
+                <Route path="/testing" element={<TestingPage />} />
 
                 
                 
