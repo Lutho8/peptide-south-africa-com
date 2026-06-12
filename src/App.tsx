@@ -47,6 +47,7 @@ import AdminIndexPage from "@/pages/admin/AdminIndexPage";
 import AdminFAQsPage from "@/pages/admin/AdminFAQsPage";
 import AdminDiscountEligibilityPage from "@/pages/admin/AdminDiscountEligibilityPage";
 import AdminSEOReindexPage from "@/pages/admin/AdminSEOReindexPage";
+import AdminBatchesPage from "@/pages/admin/AdminBatchesPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
