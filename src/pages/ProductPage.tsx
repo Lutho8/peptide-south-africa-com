@@ -64,10 +64,50 @@ export default function ProductPage() {
     );
   }
 
-  const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const isGPTrack = product.track === "GP";
+  const subDiscountPct = 12;
+  const basePrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const currentPrice =
+    purchaseMode === "subscribe" && !isGPTrack
+      ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
+      : basePrice;
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
+    // GP-track: route to clinician quiz instead of cart
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
+      return;
+    }
+    if (purchaseMode === "subscribe") {
+      if (!user) {
+        navigate(`/auth?redirect=/product/${product.slug}`);
+        return;
+      }
+      setSubBusy(true);
+      const next = new Date();
+      next.setDate(next.getDate() + intervalWeeks * 7);
+      const { error } = await supabase.from("subscriptions").insert({
+        user_id: user.id,
+        product_slug: product.slug,
+        variant_label: variantLabel ?? null,
+        interval_weeks: intervalWeeks,
+        unit_price_eur: currentPrice,
+        discount_pct: subDiscountPct,
+        next_charge_at: next.toISOString(),
+      });
+      setSubBusy(false);
+      if (error) {
+        toast({ title: "Couldn't create subscription", description: error.message, variant: "destructive" });
+        return;
+      }
+      toast({
+        title: "Subscription saved",
+        description: "Manage it anytime in your account. Billing activation is in final review.",
+      });
+      navigate("/account");
+      return;
+    }
     addToCart(product, { variantLabel, unitPrice: currentPrice });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
