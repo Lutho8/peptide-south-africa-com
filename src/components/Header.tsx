@@ -110,6 +110,9 @@ export default function Header() {
           <Link to="/affiliate" className="px-3 py-2 text-sm font-semibold text-primary hover:underline">
             Affiliate
           </Link>
+          <Link to="/account" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            Account
+          </Link>
 
           <Link
             to="/quiz"
