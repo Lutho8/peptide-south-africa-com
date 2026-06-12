@@ -107,7 +107,14 @@ export default function AffiliatePage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("affiliate_applications").insert(parsed.data);
+    const { error } = await supabase.from("affiliate_applications").insert({
+      name: parsed.data.name,
+      email: parsed.data.email,
+      channel: parsed.data.channel,
+      audience_size: parsed.data.audience_size || null,
+      link: parsed.data.link || null,
+      message: parsed.data.message || null,
+    });
     setSubmitting(false);
     if (error) {
       toast({ title: "Something went wrong", description: error.message, variant: "destructive" });
