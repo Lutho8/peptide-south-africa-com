@@ -37,6 +37,8 @@ import ShopifyProductPage from "@/pages/ShopifyProductPage";
 import BlogIndexPage from "@/pages/BlogIndexPage";
 import BlogPostPage from "@/pages/BlogPostPage";
 import AffiliatePage from "@/pages/AffiliatePage";
+import TestingPage from "@/pages/TestingPage";
+import AccountPage from "@/pages/AccountPage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
@@ -45,6 +47,7 @@ import AdminIndexPage from "@/pages/admin/AdminIndexPage";
 import AdminFAQsPage from "@/pages/admin/AdminFAQsPage";
 import AdminDiscountEligibilityPage from "@/pages/admin/AdminDiscountEligibilityPage";
 import AdminSEOReindexPage from "@/pages/admin/AdminSEOReindexPage";
+import AdminBatchesPage from "@/pages/admin/AdminBatchesPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
@@ -97,6 +100,8 @@ const App = () => (
                 <Route path="/blog" element={<BlogIndexPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
+                <Route path="/testing" element={<TestingPage />} />
+                <Route path="/account" element={<AccountPage />} />
 
                 
                 
@@ -106,6 +111,7 @@ const App = () => (
                 <Route path="/admin/faqs" element={<AdminFAQsPage />} />
                 <Route path="/admin/discounts" element={<AdminDiscountEligibilityPage />} />
                 <Route path="/admin/seo-reindex" element={<AdminSEOReindexPage />} />
+                <Route path="/admin/batches" element={<AdminBatchesPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

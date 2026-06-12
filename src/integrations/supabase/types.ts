@@ -119,6 +119,33 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_credits: {
+        Row: {
+          created_at: string
+          delta_zar: number
+          id: string
+          reason: string
+          related_order_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delta_zar: number
+          id?: string
+          reason: string
+          related_order_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delta_zar?: number
+          id?: string
+          reason?: string
+          related_order_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -173,6 +200,63 @@ export type Database = {
         }
         Relationships: []
       }
+      product_batches: {
+        Row: {
+          coa_pdf_url: string | null
+          created_at: string
+          endotoxin_eu_mg: number | null
+          expires_at: string | null
+          hplc_purity: number | null
+          id: string
+          is_published: boolean
+          lab_name: string
+          lot_number: string
+          manufactured_at: string | null
+          mass_spec_passed: boolean | null
+          notes: string | null
+          product_slug: string
+          test_date: string
+          updated_at: string
+          variant_label: string | null
+        }
+        Insert: {
+          coa_pdf_url?: string | null
+          created_at?: string
+          endotoxin_eu_mg?: number | null
+          expires_at?: string | null
+          hplc_purity?: number | null
+          id?: string
+          is_published?: boolean
+          lab_name?: string
+          lot_number: string
+          manufactured_at?: string | null
+          mass_spec_passed?: boolean | null
+          notes?: string | null
+          product_slug: string
+          test_date: string
+          updated_at?: string
+          variant_label?: string | null
+        }
+        Update: {
+          coa_pdf_url?: string | null
+          created_at?: string
+          endotoxin_eu_mg?: number | null
+          expires_at?: string | null
+          hplc_purity?: number | null
+          id?: string
+          is_published?: boolean
+          lab_name?: string
+          lot_number?: string
+          manufactured_at?: string | null
+          mass_spec_passed?: boolean | null
+          notes?: string | null
+          product_slug?: string
+          test_date?: string
+          updated_at?: string
+          variant_label?: string | null
+        }
+        Relationships: []
+      }
       product_faqs: {
         Row: {
           answer: string
@@ -209,6 +293,101 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          owner_user_id: string
+          redemptions: number
+          reward_zar: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          owner_user_id: string
+          redemptions?: number
+          reward_zar?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          owner_user_id?: string
+          redemptions?: number
+          reward_zar?: number
+        }
+        Relationships: []
+      }
+      referral_redemptions: {
+        Row: {
+          code_id: string
+          created_at: string
+          id: string
+          order_id: string | null
+          redeemer_user_id: string
+          reward_zar: number
+        }
+        Insert: {
+          code_id: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          redeemer_user_id: string
+          reward_zar: number
+        }
+        Update: {
+          code_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          redeemer_user_id?: string
+          reward_zar?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reorder_reminders: {
+        Row: {
+          created_at: string
+          due_at: string
+          id: string
+          product_slug: string
+          sent_at: string | null
+          source_order_id: string | null
+          user_id: string
+          variant_label: string | null
+        }
+        Insert: {
+          created_at?: string
+          due_at: string
+          id?: string
+          product_slug: string
+          sent_at?: string | null
+          source_order_id?: string | null
+          user_id: string
+          variant_label?: string | null
+        }
+        Update: {
+          created_at?: string
+          due_at?: string
+          id?: string
+          product_slug?: string
+          sent_at?: string | null
+          source_order_id?: string | null
+          user_id?: string
+          variant_label?: string | null
+        }
+        Relationships: []
+      }
       seo_reindex_log: {
         Row: {
           created_at: string
@@ -236,6 +415,54 @@ export type Database = {
           notes?: string | null
           updated_at?: string
           url?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          discount_pct: number
+          id: string
+          interval_weeks: number
+          next_charge_at: string | null
+          product_slug: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          unit_price_eur: number | null
+          updated_at: string
+          user_id: string
+          variant_label: string | null
+        }
+        Insert: {
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          interval_weeks?: number
+          next_charge_at?: string | null
+          product_slug: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          unit_price_eur?: number | null
+          updated_at?: string
+          user_id: string
+          variant_label?: string | null
+        }
+        Update: {
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          interval_weeks?: number
+          next_charge_at?: string | null
+          product_slug?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          unit_price_eur?: number | null
+          updated_at?: string
+          user_id?: string
+          variant_label?: string | null
         }
         Relationships: []
       }
@@ -304,12 +531,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_loyalty_balance: { Args: { _user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      lookup_referral_code: {
+        Args: { _code: string }
+        Returns: {
+          id: string
+          reward_zar: number
+        }[]
       }
     }
     Enums: {

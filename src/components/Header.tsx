@@ -35,6 +35,7 @@ const DROPDOWNS: Dropdown[] = [
   {
     label: "Explore",
     items: [
+      { label: "Lab Testing & COAs", to: "/testing", desc: "Janoshik-verified · per-batch reports" },
       { label: "Research Hub", to: "/research", desc: "Protocols & studies" },
       { label: "Blog", to: "/blog", desc: "Guides & deep dives" },
       { label: "FAQ", to: "/faq", desc: "Common questions" },
@@ -109,6 +110,9 @@ export default function Header() {
           <Link to="/affiliate" className="px-3 py-2 text-sm font-semibold text-primary hover:underline">
             Affiliate
           </Link>
+          <Link to="/account" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            Account
+          </Link>
 
           <Link
             to="/quiz"
@@ -158,6 +162,9 @@ export default function Header() {
             ))}
             <Link to="/affiliate" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">
               Affiliate Program
+            </Link>
+            <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
+              My Account
             </Link>
           </div>
         </nav>

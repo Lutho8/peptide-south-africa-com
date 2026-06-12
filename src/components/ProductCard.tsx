@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, FlaskConical, CheckCircle2, Stethoscope } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
+import TrackBadge from "@/components/TrackBadge";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -37,9 +38,16 @@ export default function ProductCard({ product }: { product: Product }) {
   })();
   const priceDisplay = display(selected?.price ?? product.price);
 
+  const isGPTrack = product.track === "GP";
+
   const handleAdd = () => {
     if (!product.inStock) {
       navigate(productUrl);
+      return;
+    }
+    // GP-track (Reta/Tirz/Sema) goes through clinician pathway, never raw add-to-cart.
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
       return;
     }
     if (hasPackVariants && selected) {
@@ -84,23 +92,37 @@ export default function ProductCard({ product }: { product: Product }) {
               <FlaskConical className="h-3 w-3" /> {product.purity} HPLC
             </span>
           )}
-          <span className="inline-flex items-center gap-1 rounded bg-trust/5 px-1.5 py-0.5 text-trust ring-1 ring-trust/15">
-            <ShieldCheck className="h-3 w-3" /> COA Verified
-          </span>
+          <Link to="/testing" className="inline-flex items-center gap-1 rounded bg-trust/5 px-1.5 py-0.5 text-trust ring-1 ring-trust/15 hover:bg-trust/10">
+            <ShieldCheck className="h-3 w-3" /> Janoshik COA
+          </Link>
+          <TrackBadge track={product.track} />
         </div>
 
-        <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
-          {product.category}
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
+            {product.category}
+          </p>
+          {product.sku && (
+            <p className="font-mono text-[10px] font-medium text-muted-foreground" title="Internal SKU">
+              {product.sku}
+            </p>
+          )}
+        </div>
         <Link to={productUrl}>
           <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
             {product.name}
           </h3>
         </Link>
+        {product.casNumber && (
+          <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+            CAS {product.casNumber}
+          </p>
+        )}
 
         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
           {product.shortDescription}
         </p>
+
 
         {/* Headline price row */}
         <div className="mt-3 flex items-baseline justify-between">
@@ -169,14 +191,16 @@ export default function ProductCard({ product }: { product: Product }) {
             onClick={handleAdd}
             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
-            <CheckCircle2 className="h-3.5 w-3.5" />
+            {isGPTrack ? <Stethoscope className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
             {!product.inStock
               ? "Notify Me"
-              : hasPackVariants
-                ? "Add To Cart"
-                : hasMultipleVariants
-                  ? "Select Size"
-                  : "Add To Cart"}
+              : isGPTrack
+                ? "Start Consultation"
+                : hasPackVariants
+                  ? "Add To Cart"
+                  : hasMultipleVariants
+                    ? "Select Size"
+                    : "Add To Cart"}
           </button>
         </div>
       </div>

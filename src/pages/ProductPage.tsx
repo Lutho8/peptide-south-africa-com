@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Shield, Truck, Star } from "lucide-react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap, Stethoscope } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
 import TrackerBridgeCard from "@/components/TrackerBridgeCard";
 import { getProductBySlug, products } from "@/data/products";
@@ -15,10 +15,13 @@ import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
+import TrackBadge from "@/components/TrackBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -29,8 +32,14 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const { format, display, currency, rate } = useCurrency();
   const { market, lang } = useMarket();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
+  const [intervalWeeks, setIntervalWeeks] = useState<4 | 8 | 12>(8);
+  const [subBusy, setSubBusy] = useState(false);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
 
 
@@ -55,10 +64,50 @@ export default function ProductPage() {
     );
   }
 
-  const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const isGPTrack = product.track === "GP";
+  const subDiscountPct = 12;
+  const basePrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const currentPrice =
+    purchaseMode === "subscribe" && !isGPTrack
+      ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
+      : basePrice;
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
+    // GP-track: route to clinician quiz instead of cart
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
+      return;
+    }
+    if (purchaseMode === "subscribe") {
+      if (!user) {
+        navigate(`/auth?redirect=/product/${product.slug}`);
+        return;
+      }
+      setSubBusy(true);
+      const next = new Date();
+      next.setDate(next.getDate() + intervalWeeks * 7);
+      const { error } = await supabase.from("subscriptions").insert({
+        user_id: user.id,
+        product_slug: product.slug,
+        variant_label: variantLabel ?? null,
+        interval_weeks: intervalWeeks,
+        unit_price_eur: currentPrice,
+        discount_pct: subDiscountPct,
+        next_charge_at: next.toISOString(),
+      });
+      setSubBusy(false);
+      if (error) {
+        toast({ title: "Couldn't create subscription", description: error.message, variant: "destructive" });
+        return;
+      }
+      toast({
+        title: "Subscription saved",
+        description: "Manage it anytime in your account. Billing activation is in final review.",
+      });
+      navigate("/account");
+      return;
+    }
     addToCart(product, { variantLabel, unitPrice: currentPrice });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -186,13 +235,80 @@ export default function ProductPage() {
               <StockBadge product={product} size="md" />
             </div>
 
+            {/* Purchase mode — Subscribe & save (hidden for GP-track) */}
+            {!isGPTrack && product.inStock && (
+              <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="grid grid-cols-2">
+                  <button
+                    onClick={() => setPurchaseMode("one-time")}
+                    className={`flex flex-col items-start gap-1 p-4 text-left transition-all ${
+                      purchaseMode === "one-time" ? "bg-background" : "opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 text-sm font-bold text-foreground">
+                      <Zap className="h-4 w-4" /> One-time
+                    </span>
+                    <span className="font-display text-base font-bold text-foreground">{format(basePrice)}</span>
+                  </button>
+                  <button
+                    onClick={() => setPurchaseMode("subscribe")}
+                    className={`flex flex-col items-start gap-1 border-l border-border p-4 text-left transition-all ${
+                      purchaseMode === "subscribe" ? "bg-primary/5 ring-2 ring-primary" : "opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 text-sm font-bold text-primary">
+                      <Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%
+                    </span>
+                    <span className="font-display text-base font-bold text-foreground">
+                      {format(Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100)}
+                    </span>
+                  </button>
+                </div>
+                {purchaseMode === "subscribe" && (
+                  <div className="border-t border-border bg-background/50 px-4 py-3">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Reorder every
+                    </label>
+                    <div className="mt-2 flex gap-2">
+                      {[4, 8, 12].map((w) => (
+                        <button
+                          key={w}
+                          onClick={() => setIntervalWeeks(w as 4 | 8 | 12)}
+                          className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition-all ${
+                            intervalWeeks === w
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {w} weeks
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Pause, skip, or cancel anytime from your account.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* CTA */}
             <button
               onClick={handleAdd}
-              disabled={!product.inStock}
-              className="mt-4 w-full rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
+              disabled={(!product.inStock && !isGPTrack) || subBusy}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
             >
-              {!product.inStock ? "Pre-Order" : added ? "✓ Added to Cart!" : "Add to Cart"}
+              {isGPTrack ? (
+                <><Stethoscope className="h-4 w-4" /> Start Clinician Consultation</>
+              ) : !product.inStock ? (
+                "Pre-Order"
+              ) : purchaseMode === "subscribe" ? (
+                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%</>
+              ) : added ? (
+                "✓ Added to Cart!"
+              ) : (
+                "Add to Cart"
+              )}
             </button>
 
             <TrackerBridgeCard productName={product.name} productSlug={product.slug} />
@@ -200,13 +316,19 @@ export default function ProductPage() {
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
-              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Third-Party Lab Tested & Batch Certified</span>
+              <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
+                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
+              </Link>
               <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
             </div>
 
-            {product.sku && (
-              <p className="mt-4 text-xs text-muted-foreground">SKU: {product.sku} &nbsp;|&nbsp; Category: {product.category}</p>
-            )}
+            {/* SKU / CAS / Class footer */}
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              {product.sku && <span>SKU: <span className="font-mono text-foreground">{product.sku}</span></span>}
+              {product.casNumber && <span>· CAS: <span className="font-mono text-foreground">{product.casNumber}</span></span>}
+              {product.compoundClass && <span>· {product.compoundClass}</span>}
+              <span>· <TrackBadge track={product.track} /></span>
+            </div>
           </div>
         </div>
       </section>

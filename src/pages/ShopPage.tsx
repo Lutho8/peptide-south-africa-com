@@ -4,7 +4,7 @@ import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPi
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
-import { products, categories, getProductsByCategory } from "@/data/products";
+import { products, categories, tracks, getProductsByCategory, type ProductTrack } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
@@ -43,11 +43,15 @@ const protocols = [
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
+  const initialTrack = (searchParams.get("track") as "All" | ProductTrack) || "All";
   const [activeCategory, setActiveCategory] = useState(initialCat);
+  const [activeTrack, setActiveTrack] = useState<"All" | ProductTrack>(initialTrack);
   const { market, lang } = useMarket();
   const shopCopy = pageCopy("shop", market);
 
-  const filtered = getProductsByCategory(activeCategory);
+  const filtered = getProductsByCategory(activeCategory).filter(
+    (p) => activeTrack === "All" || (p.track ?? "RUO") === activeTrack,
+  );
 
   const itemListSchema = {
     "@context": "https://schema.org",
@@ -64,13 +68,20 @@ export default function ShopPage() {
     })),
   };
 
+  const syncParams = (cat: string, trk: "All" | ProductTrack) => {
+    const next: Record<string, string> = {};
+    if (cat !== "All") next.category = cat;
+    if (trk !== "All") next.track = trk;
+    setSearchParams(next);
+  };
+
   const handleCategory = (cat: string) => {
     setActiveCategory(cat);
-    if (cat === "All") {
-      setSearchParams({});
-    } else {
-      setSearchParams({ category: cat });
-    }
+    syncParams(cat, activeTrack);
+  };
+  const handleTrack = (trk: "All" | ProductTrack) => {
+    setActiveTrack(trk);
+    syncParams(activeCategory, trk);
   };
 
   return (
@@ -203,12 +214,34 @@ export default function ShopPage() {
                 {activeCategory === "All" ? "All Research Peptides" : activeCategory}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested ·{" "}
+                <Link to="/testing" className="font-semibold text-primary hover:underline">View testing methodology</Link>
               </p>
             </div>
           </div>
 
-          {/* Filters */}
+          {/* Track filter — Research vs Clinical pathway */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Pathway
+            </span>
+            {tracks.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => handleTrack(t.value)}
+                title={t.desc}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                  activeTrack === t.value
+                    ? "bg-foreground text-background"
+                    : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Category filters */}
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button

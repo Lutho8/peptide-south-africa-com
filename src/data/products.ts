@@ -41,6 +41,8 @@ function buildPackVariants(
   ];
 }
 
+export type ProductTrack = "RUO" | "GP";
+
 export interface Product {
   id: string;
   name: string;
@@ -65,8 +67,20 @@ export interface Product {
   variants?: Variant[];
   purity?: string;
   storage?: string;
+  /** Internal SKU code (e.g. RTT-RT3-10). Real compound name is always shown. */
   sku?: string;
+  /** CAS Registry Number for the compound. */
+  casNumber?: string;
+  /** Short compound class label (e.g. "GLP-1/GIP/Glucagon triple agonist"). */
+  compoundClass?: string;
+  /**
+   * Distribution pathway:
+   *  - "RUO" — research compound, standard checkout with researcher attestation.
+   *  - "GP"  — prescription-only: routes through quiz → GP review → partner pharmacy.
+   */
+  track?: ProductTrack;
 }
+
 
 export const products: Product[] = [
   {
@@ -82,14 +96,18 @@ export const products: Product[] = [
     tag: "Best Seller",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "RT-10mg",
-    variants: buildPackVariants(37.11, 10, { p3: 3, p5: 4, p10: 2 }),
+    sku: "RTT-RT3-10",
+    casNumber: "2381089-83-2",
+    compoundClass: "GLP-1 / GIP / Glucagon triple agonist",
+    track: "GP",
+    // Premium-tier pricing — 10-pack anchored to clinical positioning.
+    variants: buildPackVariants(64.43, 10, { p3: 3, p5: 4, p10: 2 }),
     benefits: ["Targets GLP-1, GIP & glucagon receptors", "Metabolic pathway research", "Insulin resistance studies", "Obesity research applications"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic disorder researchers", "Obesity research labs", "GLP-1 pathway studies"],
     howItWorks: ["Select your desired MG variant", "Store as directed", "Follow research protocol", "Document findings"],
     faqs: [
-      { question: "What purity level is guaranteed?", answer: "≥99% purity — every batch is third-party lab tested with COA available." },
+      { question: "What purity level is guaranteed?", answer: "≥99% purity — every batch is third-party HPLC tested at Janoshik Analytical. COA is downloadable on every product page." },
       { question: "How should I store this?", answer: "Refrigerate after reconstitution. Store lyophilized powder at -20°C." },
     ],
     inStock: true,
@@ -107,7 +125,10 @@ export const products: Product[] = [
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "GHK-50mg",
+    sku: "RTT-GHK-50",
+    casNumber: "89030-95-5",
+    compoundClass: "Tripeptide copper complex",
+    track: "RUO",
     variants: buildPackVariants(32.47, 50, { p3: 2, p5: 3, p10: 2 }),
     benefits: ["Collagen synthesis stimulation", "Wound healing pathway research", "Anti-inflammatory studies", "Skin elasticity research"],
     whatsIncluded: ["1x 50mg Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
@@ -131,7 +152,10 @@ export const products: Product[] = [
     category: "Growth Hormone",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "TESA-10mg",
+    sku: "RTT-TES-10",
+    casNumber: "106612-94-6",
+    compoundClass: "GHRH analog",
+    track: "RUO",
     variants: buildPackVariants(39.90, 10, { p3: 2, p5: 2, p10: 1 }),
     benefits: ["GH secretion stimulation", "Visceral fat reduction research", "Lipodystrophy studies", "Body composition optimization"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Dosing reference"],
@@ -149,15 +173,18 @@ export const products: Product[] = [
     slug: "tz2-tirz",
     shortDescription: "Dual GIP/GLP-1 receptor agonist for advanced metabolic and weight loss research.",
     description: "TZ-2 is a dual GIP and GLP-1 receptor agonist representing the next generation of metabolic peptide research. Studied extensively for its role in glucose homeostasis, appetite regulation, and significant body weight reduction in preclinical models.",
-    price: 27.84,
-    priceRange: "€76.84 – €200.45",
+    price: 45.99,
+    priceRange: "€127.00 – €331.00",
     image: productTz2,
     category: "GLP",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "TZ2-10mg",
-    variants: buildPackVariants(27.84, 10, { p3: 2, p5: 2, p10: 4 }),
+    sku: "RTT-TZ2-10",
+    casNumber: "2023788-19-2",
+    compoundClass: "GLP-1 / GIP dual agonist",
+    track: "GP",
+    variants: buildPackVariants(45.99, 10, { p3: 2, p5: 2, p10: 4 }),
     benefits: ["Dual GIP/GLP-1 agonism", "Glucose homeostasis research", "Appetite regulation studies", "Body weight reduction research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic researchers", "Diabetes research labs", "Weight management studies"],
@@ -180,7 +207,10 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "MOTS-20mg",
+    sku: "RTT-MTC-10",
+    casNumber: "1627580-64-6",
+    compoundClass: "Mitochondrial-derived peptide",
+    track: "RUO",
     variants: buildPackVariants(25.05, 10, { p3: 2, p5: 2, p10: 3 }),
     benefits: ["Metabolic homeostasis research", "Insulin sensitivity studies", "Fatty acid oxidation pathways", "Exercise physiology research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
@@ -204,7 +234,10 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "BPC-TB-20mg",
+    sku: "RTT-BTB-20",
+    casNumber: "137525-51-0 / 77591-33-4",
+    compoundClass: "BPC-157 + TB-500 healing blend",
+    track: "RUO",
     variants: buildPackVariants(49.18, 20, { p3: 2, p5: 2, p10: 2 }),
     benefits: ["Synergistic tissue repair", "Angiogenesis promotion", "Anti-inflammatory research", "Accelerated recovery studies"],
     whatsIncluded: ["1x 20mg Blend vial", "Certificate of Analysis", "Batch certification", "Protocol guide"],
@@ -227,7 +260,9 @@ export const products: Product[] = [
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "GLOW-70mg",
+    sku: "RTT-GLW-70",
+    compoundClass: "Multi-peptide skin complex",
+    track: "RUO",
     variants: buildPackVariants(55.67, 70, { p3: 3, p5: 4, p10: 4 }),
     benefits: ["Collagen production research", "Skin cell turnover studies", "Barrier function research", "Anti-aging pathway analysis"],
     whatsIncluded: ["1x 70mg Research vial", "Certificate of Analysis", "Batch certification", "Application protocol"],
@@ -252,7 +287,9 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "KLOW-80mg",
+    sku: "RTT-KLW-80",
+    compoundClass: "Longevity peptide complex",
+    track: "RUO",
     variants: buildPackVariants(64.95, 80, { p3: 2, p5: 2, p10: 2 }),
     benefits: ["Telomerase activation studies", "Mitochondrial biogenesis research", "Cellular senescence pathways", "Biological aging research"],
     whatsIncluded: ["1x 80mg Research vial", "Certificate of Analysis", "Batch certification", "Research protocol"],
@@ -273,6 +310,18 @@ export const categories = [
   "Skin & Hair",
   "Longevity",
 ];
+
+export const tracks: { value: "All" | ProductTrack; label: string; desc: string }[] = [
+  { value: "All", label: "All", desc: "Show every product" },
+  { value: "RUO", label: "Research (RUO)", desc: "Standard research-use checkout" },
+  { value: "GP",  label: "Clinical (GP-led)", desc: "Prescription — quiz → GP → partner pharmacy" },
+];
+
+export function getProductsByTrack(track: "All" | ProductTrack): Product[] {
+  if (track === "All") return products;
+  return products.filter((p) => (p.track ?? "RUO") === track);
+}
+
 
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
