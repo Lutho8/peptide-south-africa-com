@@ -11,9 +11,12 @@ import {
   ShoppingCart,
   Tag,
 } from "lucide-react";
-import CursorOrb from "./CursorOrb";
-import HeroBackdrop from "./HeroBackdrop";
 import { products } from "@/data/products";
+
+const HERO_VIDEO_SRC =
+  "https://player.vimeo.com/progressive_redirect/playback/1197576794/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&signature=17601266ee7e2cb1ad78cd417676683352bfc62cb32be03b087f5ee446fd2484";
+const HERO_VIDEO_POSTER =
+  "https://cdn.prod.website-files.com/69d7cec371c939d9bb8e2ad0/6a1f2d8a58036074a045f8dc_Rectangle%2022682%20(1).png";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -47,9 +50,25 @@ export default function HeroShop() {
 
   return (
     <section className="relative isolate overflow-hidden">
-      <HeroBackdrop />
-      <div className="hidden md:block">
-        <CursorOrb />
+      {/* Hero background video */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a2540]">
+        <video
+          src={HERO_VIDEO_SRC}
+          poster={HERO_VIDEO_POSTER}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover opacity-70 motion-reduce:hidden"
+        />
+        <img
+          src={HERO_VIDEO_POSTER}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 hidden h-full w-full object-cover opacity-70 motion-reduce:block"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2540]/55 via-[#0a2540]/35 to-background" />
       </div>
 
       <div className="container relative z-10 px-4 pb-12 pt-8 md:pb-16 md:pt-12">

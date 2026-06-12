@@ -18,6 +18,7 @@ import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
 import HeroShop from "@/components/HeroShop";
+import SupportVideosSection from "@/components/SupportVideosSection";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
 import SectionReveal from "@/components/SectionReveal";
@@ -87,6 +88,9 @@ export default function HomePage() {
       <JsonLd data={localBusinessSchema} />
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
+
+      {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
+      <SupportVideosSection />
 
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />
