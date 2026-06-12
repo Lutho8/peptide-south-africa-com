@@ -13,8 +13,10 @@ import { post as p11 } from "./posts/bpc-157-south-africa";
 import { post as p12 } from "./posts/buy-peptides-cape-town";
 import { post as p13 } from "./posts/peptide-tracker-app";
 import { post as p14 } from "./posts/peptide-dosage-calculator";
+import { post as p15 } from "./posts/tirzepatide-vs-semaglutide-comparison";
 
-export const posts: BlogPost[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14];
+export const posts: BlogPost[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15];
+
 
 export function getPost(slug: string): BlogPost | undefined {
   return posts.find((p) => p.slug === slug);
