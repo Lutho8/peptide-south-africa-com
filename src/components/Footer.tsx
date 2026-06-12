@@ -70,23 +70,27 @@ export default function Footer() {
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Shop</h4>
             <div className="flex flex-col gap-2">
               <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
-              <Link to="/shop?category=Weight+Loss" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
-              <Link to="/shop?category=Growth+Hormone" className="text-sm text-muted-foreground hover:text-foreground">Growth Hormone</Link>
-              <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Healing</Link>
-              <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground">FAQ</Link>
+              <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
+              <Link to="/shop?category=Longevity" className="text-sm text-muted-foreground hover:text-foreground">Longevity</Link>
+              <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Recovery</Link>
+              <Link to="/shop?category=Skin+%26+Hair" className="text-sm text-muted-foreground hover:text-foreground">Skin &amp; Hair</Link>
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Ecosystem &amp; Trust</h4>
+            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Learn</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <a href="https://ridethetide.info" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">RTD Tracker ↗</a>
+              <Link to="/research" className="hover:text-foreground">Research Hub</Link>
+              <Link to="/blog" className="hover:text-foreground">Blog</Link>
+              <Link to="/faq" className="hover:text-foreground">FAQ</Link>
+              <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
+              <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
+              <a href="https://ridethetide.info" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Tracker ↗</a>
               <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
-              <span>✓ Lab Tested · 99% Purity</span>
-              <span className="inline-flex items-center gap-1.5"><Globe2 className="h-3.5 w-3.5" /> Cape Town, South Africa</span>
-              <span className="pl-5 text-xs">🇿🇦 1–3 days · free over R1,500</span>
-              <span>✓ Secure Checkout</span>
+              <span className="mt-2 inline-flex items-center gap-1.5 text-xs"><Globe2 className="h-3.5 w-3.5" /> Cape Town, South Africa</span>
+              <span className="text-xs">✓ Lab Tested · 99% Purity · Secure Checkout</span>
             </div>
           </div>
+
         </div>
         <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 px-4 text-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
