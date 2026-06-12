@@ -50,9 +50,25 @@ export default function HeroShop() {
 
   return (
     <section className="relative isolate overflow-hidden">
-      <HeroBackdrop />
-      <div className="hidden md:block">
-        <CursorOrb />
+      {/* Hero background video */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a2540]">
+        <video
+          src={HERO_VIDEO_SRC}
+          poster={HERO_VIDEO_POSTER}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover opacity-70 motion-reduce:hidden"
+        />
+        <img
+          src={HERO_VIDEO_POSTER}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 hidden h-full w-full object-cover opacity-70 motion-reduce:block"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2540]/55 via-[#0a2540]/35 to-background" />
       </div>
 
       <div className="container relative z-10 px-4 pb-12 pt-8 md:pb-16 md:pt-12">
