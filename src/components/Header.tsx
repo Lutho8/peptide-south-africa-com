@@ -40,6 +40,7 @@ const DROPDOWNS: Dropdown[] = [
       { label: "Blog", to: "/blog", desc: "Guides & deep dives" },
       { label: "FAQ", to: "/faq", desc: "Common questions" },
       { label: "Find My Protocol (Quiz)", to: "/quiz", desc: "60-second match" },
+      { label: "Join WhatsApp Community", to: "/community", desc: "Free · 2,000-member cap" },
       { label: "Tracker", to: "https://ridethetide.info", external: true },
       { label: "Cape Town Peptide Club", to: "https://capetownpeptideclub.co.za", external: true },
     ],

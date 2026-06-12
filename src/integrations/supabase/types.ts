@@ -89,6 +89,72 @@ export type Database = {
         }
         Relationships: []
       }
+      community_join_rate: {
+        Row: {
+          count: number
+          ip_hash: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          ip_hash: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          ip_hash?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      community_members: {
+        Row: {
+          bsp_last_error: string | null
+          bsp_status: string
+          consent_marketing: boolean
+          created_at: string
+          id: string
+          interest: string
+          ip_hash: string | null
+          joined_group_at: string | null
+          name: string
+          phone_country: string | null
+          phone_e164: string
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          bsp_last_error?: string | null
+          bsp_status?: string
+          consent_marketing?: boolean
+          created_at?: string
+          id?: string
+          interest: string
+          ip_hash?: string | null
+          joined_group_at?: string | null
+          name: string
+          phone_country?: string | null
+          phone_e164: string
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          bsp_last_error?: string | null
+          bsp_status?: string
+          consent_marketing?: boolean
+          created_at?: string
+          id?: string
+          interest?: string
+          ip_hash?: string | null
+          joined_group_at?: string | null
+          name?: string
+          phone_country?: string | null
+          phone_e164?: string
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_logs: {
         Row: {
           action: string
@@ -531,6 +597,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bump_community_rate: {
+        Args: { _ip_hash: string; _limit?: number; _window_minutes?: number }
+        Returns: boolean
+      }
       get_loyalty_balance: { Args: { _user_id: string }; Returns: number }
       has_role: {
         Args: {

@@ -41,6 +41,7 @@ import BlogPostPage from "@/pages/BlogPostPage";
 import AffiliatePage from "@/pages/AffiliatePage";
 import TestingPage from "@/pages/TestingPage";
 import AccountPage from "@/pages/AccountPage";
+import CommunityJoinPage from "@/pages/CommunityJoinPage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
@@ -105,6 +106,7 @@ const App = () => (
                 <Route path="/affiliate" element={<AffiliatePage />} />
                 <Route path="/testing" element={<TestingPage />} />
                 <Route path="/account" element={<AccountPage />} />
+                <Route path="/community" element={<CommunityJoinPage />} />
 
                 
                 
