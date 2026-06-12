@@ -15,12 +15,17 @@ export default function ProductCard({ product }: { product: Product }) {
   const { market } = useMarket();
   const productUrl = marketPath(`/product/${product.slug}`, market);
 
+  // Only surface 3-pack and 5-pack on the card — keeps decision simple.
+  // 10-pack (and any other tiers) remain available on the PDP.
   const packVariants = useMemo(
-    () => (product.variants ?? []).filter((v) => typeof v.pack === "number"),
+    () =>
+      (product.variants ?? []).filter(
+        (v) => typeof v.pack === "number" && (v.pack === 3 || v.pack === 5),
+      ),
     [product.variants],
   );
   const hasPackVariants = packVariants.length > 0;
-  // Default to middle (5-pack) for best perceived value.
+  // Default to 5-pack (best perceived value); fall back to first available.
   const defaultIdx = packVariants.findIndex((v) => v.pack === 5);
   const [selectedIdx, setSelectedIdx] = useState(defaultIdx >= 0 ? defaultIdx : 0);
   const selected: Variant | undefined = packVariants[selectedIdx];
@@ -140,7 +145,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {/* Pack picker */}
         {hasPackVariants && (
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             {packVariants.map((v, i) => {
               const isSelected = i === selectedIdx;
               const totalMg = (v.pack ?? 1) * (v.mgPerVial ?? 1);
