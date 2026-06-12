@@ -37,6 +37,7 @@ import ShopifyProductPage from "@/pages/ShopifyProductPage";
 import BlogIndexPage from "@/pages/BlogIndexPage";
 import BlogPostPage from "@/pages/BlogPostPage";
 import AffiliatePage from "@/pages/AffiliatePage";
+import TestingPage from "@/pages/TestingPage";
 import { useShopifyCartSync } from "@/hooks/useShopifyCartSync";
 
 import AuthPage from "@/pages/AuthPage";
