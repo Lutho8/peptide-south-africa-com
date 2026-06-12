@@ -66,8 +66,13 @@ export default function HeroShop() {
           src={HERO_VIDEO_POSTER}
           alt=""
           aria-hidden
+          width={1920}
+          height={1080}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 hidden h-full w-full object-cover opacity-60 motion-reduce:block"
         />
+
         {/* Strong dark scrim on mobile for text contrast, softer on desktop */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a2540]/85 via-[#0a2540]/70 to-background md:from-[#0a2540]/60 md:via-[#0a2540]/40" />
       </div>
