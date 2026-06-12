@@ -163,6 +163,9 @@ export default function Header() {
             <Link to="/affiliate" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">
               Affiliate Program
             </Link>
+            <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
+              My Account
+            </Link>
           </div>
         </nav>
       )}
