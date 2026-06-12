@@ -311,6 +311,18 @@ export const categories = [
   "Longevity",
 ];
 
+export const tracks: { value: "All" | ProductTrack; label: string; desc: string }[] = [
+  { value: "All", label: "All", desc: "Show every product" },
+  { value: "RUO", label: "Research (RUO)", desc: "Standard research-use checkout" },
+  { value: "GP",  label: "Clinical (GP-led)", desc: "Prescription — quiz → GP → partner pharmacy" },
+];
+
+export function getProductsByTrack(track: "All" | ProductTrack): Product[] {
+  if (track === "All") return products;
+  return products.filter((p) => (p.track ?? "RUO") === track);
+}
+
+
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }
