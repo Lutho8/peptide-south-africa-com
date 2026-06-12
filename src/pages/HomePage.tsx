@@ -19,6 +19,7 @@ import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
 import HeroShop from "@/components/HeroShop";
 import SupportVideosSection from "@/components/SupportVideosSection";
+import TextUsSection from "@/components/TextUsSection";
 import CategoryShowcase from "@/components/CategoryShowcase";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
@@ -122,6 +123,9 @@ export default function HomePage() {
 
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />
+
+      {/* ===================== TEXT US (WhatsApp) ===================== */}
+      <TextUsSection />
 
       {/* ===================== REAL CUSTOMERS ===================== */}
       <CustomerProofStrip />

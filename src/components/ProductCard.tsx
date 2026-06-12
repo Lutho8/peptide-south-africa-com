@@ -1,7 +1,8 @@
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import type { Product } from "@/data/products";
+import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
 import { useMarket, marketPath } from "@/hooks/useMarket";
@@ -9,12 +10,23 @@ import { useMarket, marketPath } from "@/hooks/useMarket";
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const { display, currency, rate } = useCurrency();
+  const { display, currency, rate, format } = useCurrency();
   const { market } = useMarket();
   const productUrl = marketPath(`/product/${product.slug}`, market);
-  const hasMultipleVariants = (product.variants?.length ?? 0) > 1;
 
-  // Convert EUR price range (e.g. "€23.20 – €148.45") to ZAR display when toggled.
+  const packVariants = useMemo(
+    () => (product.variants ?? []).filter((v) => typeof v.pack === "number"),
+    [product.variants],
+  );
+  const hasPackVariants = packVariants.length > 0;
+  // Default to middle (5-pack) for best perceived value.
+  const defaultIdx = packVariants.findIndex((v) => v.pack === 5);
+  const [selectedIdx, setSelectedIdx] = useState(defaultIdx >= 0 ? defaultIdx : 0);
+  const selected: Variant | undefined = packVariants[selectedIdx];
+
+  const hasMultipleVariants = !hasPackVariants && (product.variants?.length ?? 0) > 1;
+
+  // Convert EUR price range to ZAR display when ZAR is active.
   const priceRangeDisplay = (() => {
     if (!product.priceRange) return null;
     if (currency === "EUR") return product.priceRange;
@@ -23,20 +35,26 @@ export default function ProductCard({ product }: { product: Product }) {
     const fmt = (eur: number) => `R${(eur * rate).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
     return `${fmt(nums[0])} – ${fmt(nums[1])}`;
   })();
-  const priceDisplay = display(product.price);
+  const priceDisplay = display(selected?.price ?? product.price);
 
   const handleAdd = () => {
     if (!product.inStock) {
       navigate(productUrl);
       return;
     }
+    if (hasPackVariants && selected) {
+      addToCart(product, { variantLabel: selected.label, unitPrice: selected.price });
+      return;
+    }
     if (hasMultipleVariants) {
-      // Force the user to pick a size on the PDP rather than silently choose.
       navigate(`${productUrl}#variants`);
       return;
     }
     const onlyVariant = product.variants?.[0];
-    addToCart(product, onlyVariant ? { variantLabel: onlyVariant.label, unitPrice: onlyVariant.price } : undefined);
+    addToCart(
+      product,
+      onlyVariant ? { variantLabel: onlyVariant.label, unitPrice: onlyVariant.price } : undefined,
+    );
   };
 
   return (
@@ -59,7 +77,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
-        {/* Trust micro-row (purity + COA) */}
+        {/* Trust micro-row */}
         <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
           {product.purity && (
             <span className="inline-flex items-center gap-1 rounded bg-primary/5 px-1.5 py-0.5 text-primary ring-1 ring-primary/15">
@@ -71,6 +89,9 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
 
+        <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
+          {product.category}
+        </p>
         <Link to={productUrl}>
           <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
             {product.name}
@@ -81,21 +102,61 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.shortDescription}
         </p>
 
+        {/* Headline price row */}
         <div className="mt-3 flex items-baseline justify-between">
           <div>
             <p className="font-display text-base font-bold text-primary">
-              {priceRangeDisplay || priceDisplay.primary}
+              {hasPackVariants ? priceDisplay.primary : priceRangeDisplay || priceDisplay.primary}
             </p>
-            {priceDisplay.secondary && !priceRangeDisplay && (
-              <p className="text-[10px] text-muted-foreground">{priceDisplay.secondary}</p>
-            )}
+            {hasPackVariants ? (
+              <p className="text-[10px] uppercase tracking-wide text-trust font-semibold">
+                {product.inStock ? "Available" : "Pre-Order"}
+              </p>
+            ) : null}
           </div>
-          {hasMultipleVariants && (
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              {product.variants!.length} sizes
-            </span>
-          )}
         </div>
+
+        {/* Pack picker */}
+        {hasPackVariants && (
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {packVariants.map((v, i) => {
+              const isSelected = i === selectedIdx;
+              const totalMg = (v.pack ?? 1) * (v.mgPerVial ?? 1);
+              const perMgEur = v.price / totalMg;
+              const perMgZar = perMgEur * rate;
+              const perMgLabel =
+                currency === "EUR"
+                  ? `€${perMgEur.toFixed(2)}/mg`
+                  : `R${perMgZar.toLocaleString("en-ZA", { maximumFractionDigits: 2 })}/mg`;
+              return (
+                <button
+                  type="button"
+                  key={v.label}
+                  onClick={() => setSelectedIdx(i)}
+                  aria-pressed={isSelected}
+                  className={`flex flex-col items-center gap-0.5 rounded-lg border px-2 py-2 text-center transition-all ${
+                    isSelected
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "border-border bg-background hover:border-primary/50"
+                  }`}
+                >
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    {v.label}
+                  </span>
+                  <span className="font-display text-sm font-bold text-foreground">
+                    {format(v.price)}
+                  </span>
+                  <span className="text-[10px] font-medium text-primary">{perMgLabel}</span>
+                  {typeof v.stock === "number" && (
+                    <span className={`text-[10px] font-semibold ${v.stock <= 2 ? "text-destructive" : "text-trust"}`}>
+                      {v.stock} Avail
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-3 flex gap-2">
           <Link
@@ -109,7 +170,13 @@ export default function ProductCard({ product }: { product: Product }) {
             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            {!product.inStock ? "Notify Me" : hasMultipleVariants ? "Select Size" : "Add To Cart"}
+            {!product.inStock
+              ? "Notify Me"
+              : hasPackVariants
+                ? "Add To Cart"
+                : hasMultipleVariants
+                  ? "Select Size"
+                  : "Add To Cart"}
           </button>
         </div>
       </div>

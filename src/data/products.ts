@@ -15,6 +15,30 @@ import productKlow from "@/assets/product-klow.jpg";
 export interface Variant {
   label: string;
   price: number; // EUR
+  /** Vials per pack (3, 5, 10). When set, the card renders pack-pricing UI. */
+  pack?: number;
+  /** mg per vial — used to compute per-mg pricing for pack variants. */
+  mgPerVial?: number;
+  /** Per-variant stock count, e.g. "2 Avail" chip. */
+  stock?: number;
+}
+
+/**
+ * Build standard 3/5/10-pack variants for a given peptide vial.
+ * basePrice = EUR price of a single vial.
+ * Volume discount tiers: 3-pack -8%, 5-pack -15%, 10-pack -28%.
+ */
+function buildPackVariants(
+  basePrice: number,
+  mgPerVial: number,
+  stocks: { p3?: number; p5?: number; p10?: number } = {},
+): Variant[] {
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+  return [
+    { label: "3-Pack", price: round2(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "5-Pack", price: round2(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
+    { label: "10-Pack", price: round2(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
+  ];
 }
 
 export interface Product {
@@ -52,20 +76,14 @@ export const products: Product[] = [
     shortDescription: "Triple agonist targeting GLP-1, GIP, and glucagon receptors for metabolic research.",
     description: "RT3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
     price: 23.20,
-    priceRange: "€23.20 – €148.45",
+    priceRange: "€102.42 – €267.19",
     image: productRt3,
     category: "GLP",
     tag: "Best Seller",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "RT-10mg",
-    variants: [
-      { label: "5mg", price: 23.20 },
-      { label: "10mg", price: 37.11 },
-      { label: "15mg", price: 55.67 },
-      { label: "30mg", price: 92.78 },
-      { label: "60mg", price: 148.45 },
-    ],
+    variants: buildPackVariants(37.11, 10, { p3: 3, p5: 4, p10: 2 }),
     benefits: ["Targets GLP-1, GIP & glucagon receptors", "Metabolic pathway research", "Insulin resistance studies", "Obesity research applications"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic disorder researchers", "Obesity research labs", "GLP-1 pathway studies"],
@@ -84,11 +102,13 @@ export const products: Product[] = [
     shortDescription: "Copper peptide for skin rejuvenation, wound healing, and collagen synthesis research.",
     description: "GHK-Cu is a naturally occurring copper peptide with extensive research backing its role in tissue remodeling, collagen synthesis, and anti-inflammatory pathways. This 50mg vial provides ample material for comprehensive dermatological and regenerative research.",
     price: 32.47,
+    priceRange: "€89.62 – €233.78",
     image: productGhk,
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "GHK-50mg",
+    variants: buildPackVariants(32.47, 50, { p3: 2, p5: 3, p10: 2 }),
     benefits: ["Collagen synthesis stimulation", "Wound healing pathway research", "Anti-inflammatory studies", "Skin elasticity research"],
     whatsIncluded: ["1x 50mg Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Dermatological researchers", "Wound healing studies", "Anti-aging research"],
@@ -106,11 +126,13 @@ export const products: Product[] = [
     shortDescription: "Growth hormone-releasing hormone analog for GH secretion and body composition research.",
     description: "Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for its ability to stimulate GH production. Widely researched for its effects on visceral adipose tissue reduction and lipodystrophy.",
     price: 39.90,
+    priceRange: "€110.12 – €287.28",
     image: productTesa,
     category: "Growth Hormone",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "TESA-10mg",
+    variants: buildPackVariants(39.90, 10, { p3: 2, p5: 2, p10: 1 }),
     benefits: ["GH secretion stimulation", "Visceral fat reduction research", "Lipodystrophy studies", "Body composition optimization"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Dosing reference"],
     whoItsFor: ["Growth hormone researchers", "Body composition labs", "Endocrinology studies"],
@@ -128,18 +150,14 @@ export const products: Product[] = [
     shortDescription: "Dual GIP/GLP-1 receptor agonist for advanced metabolic and weight loss research.",
     description: "TZ-2 is a dual GIP and GLP-1 receptor agonist representing the next generation of metabolic peptide research. Studied extensively for its role in glucose homeostasis, appetite regulation, and significant body weight reduction in preclinical models.",
     price: 27.84,
-    priceRange: "€27.84 – €58.45",
+    priceRange: "€76.84 – €200.45",
     image: productTz2,
     category: "GLP",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "TZ2-10mg",
-    variants: [
-      { label: "10mg", price: 27.84 },
-      { label: "30mg", price: 46.39 },
-      { label: "60mg", price: 58.45 },
-    ],
+    variants: buildPackVariants(27.84, 10, { p3: 2, p5: 2, p10: 4 }),
     benefits: ["Dual GIP/GLP-1 agonism", "Glucose homeostasis research", "Appetite regulation studies", "Body weight reduction research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic researchers", "Diabetes research labs", "Weight management studies"],
@@ -156,18 +174,14 @@ export const products: Product[] = [
     shortDescription: "Mitochondrial-derived peptide for metabolic homeostasis and longevity research.",
     description: "MOTS-C is a mitochondrial-derived peptide that plays a critical role in metabolic homeostasis. Research shows it regulates insulin sensitivity, promotes fatty acid oxidation, and may have significant implications for aging and exercise physiology.",
     price: 25.05,
-    priceRange: "€25.05 – €51.03",
+    priceRange: "€69.14 – €180.36",
     image: productMots,
     category: "Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "MOTS-20mg",
-    variants: [
-      { label: "10mg", price: 25.05 },
-      { label: "20mg", price: 37.11 },
-      { label: "50mg", price: 51.03 },
-    ],
+    variants: buildPackVariants(25.05, 10, { p3: 2, p5: 2, p10: 3 }),
     benefits: ["Metabolic homeostasis research", "Insulin sensitivity studies", "Fatty acid oxidation pathways", "Exercise physiology research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Longevity researchers", "Metabolic labs", "Exercise science studies"],
@@ -184,12 +198,14 @@ export const products: Product[] = [
     shortDescription: "Synergistic healing blend combining BPC-157 and TB-500 for tissue repair research.",
     description: "This premium blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — into a single vial. Designed for researchers studying tissue repair, angiogenesis, and accelerated recovery pathways.",
     price: 49.18,
+    priceRange: "€135.74 – €354.10",
     image: productBpc,
     category: "Healing",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "BPC-TB-20mg",
+    variants: buildPackVariants(49.18, 20, { p3: 2, p5: 2, p10: 2 }),
     benefits: ["Synergistic tissue repair", "Angiogenesis promotion", "Anti-inflammatory research", "Accelerated recovery studies"],
     whatsIncluded: ["1x 20mg Blend vial", "Certificate of Analysis", "Batch certification", "Protocol guide"],
     whoItsFor: ["Tissue repair researchers", "Sports medicine labs", "Regenerative medicine studies"],
@@ -206,11 +222,13 @@ export const products: Product[] = [
     shortDescription: "Advanced skin peptide complex for collagen production and skin rejuvenation research.",
     description: "GLOW70 is a specialized 70mg skin peptide formulation designed for advanced dermatological research. Targets multiple pathways involved in collagen production, skin cell turnover, and protective barrier function.",
     price: 55.67,
+    priceRange: "€153.65 – €400.82",
     image: productGlow,
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "GLOW-70mg",
+    variants: buildPackVariants(55.67, 70, { p3: 3, p5: 4, p10: 4 }),
     benefits: ["Collagen production research", "Skin cell turnover studies", "Barrier function research", "Anti-aging pathway analysis"],
     whatsIncluded: ["1x 70mg Research vial", "Certificate of Analysis", "Batch certification", "Application protocol"],
     whoItsFor: ["Skin biology researchers", "Cosmetic peptide labs", "Dermatology studies"],
@@ -228,12 +246,14 @@ export const products: Product[] = [
     shortDescription: "Premium 80mg longevity peptide for cellular renewal and anti-aging research.",
     description: "KLOW80 is an 80mg premium longevity peptide designed for advanced aging research. Targets telomerase activation, mitochondrial biogenesis, and cellular senescence pathways — key areas in the quest to understand and potentially slow biological aging.",
     price: 64.95,
+    priceRange: "€179.26 – €467.64",
     image: productKlow,
     category: "Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
     sku: "KLOW-80mg",
+    variants: buildPackVariants(64.95, 80, { p3: 2, p5: 2, p10: 2 }),
     benefits: ["Telomerase activation studies", "Mitochondrial biogenesis research", "Cellular senescence pathways", "Biological aging research"],
     whatsIncluded: ["1x 80mg Research vial", "Certificate of Analysis", "Batch certification", "Research protocol"],
     whoItsFor: ["Longevity researchers", "Aging biology labs", "Cellular biology studies"],
