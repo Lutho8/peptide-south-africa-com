@@ -111,6 +111,7 @@ const App = () => (
                 <Route path="/admin/faqs" element={<AdminFAQsPage />} />
                 <Route path="/admin/discounts" element={<AdminDiscountEligibilityPage />} />
                 <Route path="/admin/seo-reindex" element={<AdminSEOReindexPage />} />
+                <Route path="/admin/batches" element={<AdminBatchesPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
