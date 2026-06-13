@@ -21,19 +21,19 @@ export interface Variant {
 }
 
 /**
- * Build standard 3/5/10-pack variants for a given peptide vial.
+ * Build standard 1/3/10-pack variants for a given peptide vial.
  * basePrice = ZAR price of a single vial.
- * Volume discount tiers: 3-pack -8%, 5-pack -15%, 10-pack -28%.
+ * Volume discount tiers: 3-pack -8%, 10-pack -28%.
  */
 function buildPackVariants(
   basePrice: number,
   mgPerVial: number,
-  stocks: { p3?: number; p5?: number; p10?: number } = {},
+  stocks: { p1?: number; p3?: number; p10?: number } = {},
 ): Variant[] {
   const round0 = (n: number) => Math.round(n);
   return [
+    { label: "Single Vial", price: round0(basePrice), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
     { label: "3-Pack", price: round0(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
-    { label: "5-Pack", price: round0(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
     { label: "10-Pack", price: round0(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
   ];
 }
@@ -81,14 +81,14 @@ export interface Product {
 }
 
 // Build all variants first so we can derive priceRange consistently.
-const rt3Variants  = buildPackVariants(1250, 10, { p3: 3, p5: 4, p10: 2 });
-const ghkVariants  = buildPackVariants(630,  50, { p3: 2, p5: 3, p10: 2 });
-const tesVariants  = buildPackVariants(775,  10, { p3: 2, p5: 2, p10: 1 });
-const tz2Variants  = buildPackVariants(895,  10, { p3: 2, p5: 2, p10: 4 });
-const motsVariants = buildPackVariants(485,  10, { p3: 2, p5: 2, p10: 3 });
-const bpcVariants  = buildPackVariants(955,  20, { p3: 2, p5: 2, p10: 2 });
-const glowVariants = buildPackVariants(1080, 70, { p3: 3, p5: 4, p10: 4 });
-const klowVariants = buildPackVariants(1260, 80, { p3: 2, p5: 2, p10: 2 });
+const rt3Variants  = buildPackVariants(1250, 10, { p3: 3, p10: 2 });
+const ghkVariants  = buildPackVariants(630,  50, { p3: 2, p10: 2 });
+const tesVariants  = buildPackVariants(775,  10, { p3: 2, p10: 1 });
+const tz2Variants  = buildPackVariants(895,  10, { p3: 2, p10: 4 });
+const motsVariants = buildPackVariants(485,  10, { p3: 2, p10: 3 });
+const bpcVariants  = buildPackVariants(955,  20, { p3: 2, p10: 2 });
+const glowVariants = buildPackVariants(1080, 70, { p3: 3, p10: 4 });
+const klowVariants = buildPackVariants(1260, 80, { p3: 2, p10: 2 });
 
 export const products: Product[] = [
   {

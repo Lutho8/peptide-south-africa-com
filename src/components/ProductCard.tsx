@@ -13,17 +13,17 @@ export default function ProductCard({ product }: { product: Product }) {
   const { format } = useCurrency();
   const productUrl = `/product/${product.slug}`;
 
-  // Only surface 3-pack and 5-pack on the card — keeps decision simple.
-  // 10-pack (and any other tiers) remain available on the PDP.
+  // Only surface single vial and 3-pack on the card — keeps decision simple.
+  // 10-pack remains available on the PDP.
   const packVariants = useMemo(
     () =>
       (product.variants ?? []).filter(
-        (v) => typeof v.pack === "number" && (v.pack === 3 || v.pack === 5),
+        (v) => typeof v.pack === "number" && (v.pack === 1 || v.pack === 3),
       ),
     [product.variants],
   );
   const hasPackVariants = packVariants.length > 0;
-  const defaultIdx = packVariants.findIndex((v) => v.pack === 5);
+  const defaultIdx = packVariants.findIndex((v) => v.pack === 3);
   const [selectedIdx, setSelectedIdx] = useState(defaultIdx >= 0 ? defaultIdx : 0);
   const selected: Variant | undefined = packVariants[selectedIdx];
 

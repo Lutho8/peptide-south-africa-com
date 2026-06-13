@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 import logo from "@/assets/logo.png";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
@@ -50,6 +51,24 @@ const DROPDOWNS: Dropdown[] = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const { totalItems, setIsCartOpen } = useCart();
+
+  const CartButton = ({ className = "" }: { className?: string }) => (
+    <button
+      type="button"
+      onClick={() => setIsCartOpen(true)}
+      aria-label={`Open cart (${totalItems} item${totalItems === 1 ? "" : "s"})`}
+      className={`relative inline-flex items-center justify-center rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-muted ${className}`}
+    >
+      <ShoppingCart className="h-5 w-5" />
+      {totalItems > 0 && (
+        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
+          {totalItems}
+        </span>
+      )}
+    </button>
+  );
+
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
@@ -117,30 +136,25 @@ export default function Header() {
 
           <Link
             to="/quiz?intent=consult"
-            className="ml-2 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 px-4 py-2.5 text-sm font-semibold text-primary transition-all hover:bg-primary/5 active:scale-95"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
             Book Consult
           </Link>
-          <Link
-            to="/quiz"
-            className="ml-1 inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-          >
-            Get Started
-          </Link>
+          <CartButton className="ml-2" />
         </nav>
 
-        <div className="flex items-center gap-3 lg:hidden">
-          <Link
-            to="/quiz"
-            className="inline-flex items-center rounded-lg bg-hero-gradient px-3.5 py-2 text-xs font-semibold text-primary-foreground"
+        <div className="flex items-center gap-2 lg:hidden">
+          <CartButton />
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+            className="inline-flex items-center justify-center rounded-lg p-2 text-foreground hover:bg-muted"
           >
-            Start
-          </Link>
-          <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
+
 
       {mobileOpen && (
         <nav className="border-t border-border bg-card p-4 lg:hidden">
