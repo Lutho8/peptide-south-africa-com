@@ -525,10 +525,10 @@ export default function FatLossProtocolPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              to="/quiz"
+              to="/quiz?intent=consult"
               className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-semibold text-primary shadow-lg transition-all hover:bg-white/90 active:scale-95"
             >
-              Get Started <ArrowRight className="h-4 w-4" />
+              Book a Consultation <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/60">
