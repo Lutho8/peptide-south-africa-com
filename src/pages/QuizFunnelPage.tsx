@@ -552,7 +552,7 @@ export default function QuizFunnelPage() {
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
               >
-                Get Started
+                Start Monthly
               </a>
             </div>
             <div className="relative rounded-2xl border-2 border-primary bg-background p-6 text-center shadow-glow">
