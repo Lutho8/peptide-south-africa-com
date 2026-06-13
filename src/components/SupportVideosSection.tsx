@@ -45,16 +45,22 @@ interface TileProps {
   clip: Clip;
   activeId: string | null;
   onUnmute: (id: string) => void;
+  eager?: boolean;
 }
 
-function VideoTile({ clip, activeId, onUnmute }: TileProps) {
+function VideoTile({ clip, activeId, onUnmute, eager = false }: TileProps) {
   const ref = useRef<HTMLVideoElement | null>(null);
   const isUnmuted = activeId === clip.id;
 
-  // Lazy-load + autoplay on intersection
+  // Lazy-load + autoplay on intersection. Lower threshold on mobile so the
+  // first tile in a horizontal carousel reliably triggers a load.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (eager && !el.src) {
+      el.src = el.dataset.src ?? "";
+      el.play().catch(() => {});
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -67,11 +73,11 @@ function VideoTile({ clip, activeId, onUnmute }: TileProps) {
           }
         }
       },
-      { threshold: 0.35 }
+      { threshold: 0.15 }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [eager]);
 
   // Sync mute state with the section-level activeId (single-audio rule)
   useEffect(() => {
@@ -95,7 +101,8 @@ function VideoTile({ clip, activeId, onUnmute }: TileProps) {
         muted
         loop
         playsInline
-        preload="none"
+        autoPlay
+        preload={eager ? "auto" : "metadata"}
         className="h-full w-full object-cover"
         onClick={handleToggle}
       />
