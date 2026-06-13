@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 import logo from "@/assets/logo.png";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
