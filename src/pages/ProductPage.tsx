@@ -31,7 +31,7 @@ export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const product = getProductBySlug(slug || "");
   const { addToCart } = useCart();
-  const { format, display, currency, rate } = useCurrency();
+  const { format, display } = useCurrency();
   const { market, lang } = useMarket();
   const { user } = useAuth();
   const { toast } = useToast();

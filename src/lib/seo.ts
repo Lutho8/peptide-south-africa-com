@@ -11,7 +11,7 @@ export const localBusinessSchema = {
   image: `${SITE_URL}/favicon.png`,
   priceRange: "R450 – R5,000",
   currenciesAccepted: "ZAR",
-  paymentAccepted: "Credit Card, PayPal, Apple Pay, Google Pay, EFT, Cryptocurrency",
+  paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
     "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
   address: {
