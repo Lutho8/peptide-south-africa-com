@@ -219,9 +219,10 @@ export type Database = {
           discount_code: string | null
           free_shipping_applied: boolean
           id: string
-          nowpayments_payment_id: string | null
           order_description: string | null
           paid_at: string | null
+          payfast_pf_payment_id: string | null
+          payfast_token: string | null
           shipping_cost: number
           shipping_country: string | null
           shipping_currency: string | null
@@ -236,9 +237,10 @@ export type Database = {
           discount_code?: string | null
           free_shipping_applied?: boolean
           id?: string
-          nowpayments_payment_id?: string | null
           order_description?: string | null
           paid_at?: string | null
+          payfast_pf_payment_id?: string | null
+          payfast_token?: string | null
           shipping_cost?: number
           shipping_country?: string | null
           shipping_currency?: string | null
@@ -253,9 +255,10 @@ export type Database = {
           discount_code?: string | null
           free_shipping_applied?: boolean
           id?: string
-          nowpayments_payment_id?: string | null
           order_description?: string | null
           paid_at?: string | null
+          payfast_pf_payment_id?: string | null
+          payfast_token?: string | null
           shipping_cost?: number
           shipping_country?: string | null
           shipping_currency?: string | null
@@ -491,11 +494,11 @@ export type Database = {
           id: string
           interval_weeks: number
           next_charge_at: string | null
+          payfast_subscription_id: string | null
+          payfast_token: string | null
           product_slug: string
           status: string
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          unit_price_eur: number | null
+          unit_price_zar: number | null
           updated_at: string
           user_id: string
           variant_label: string | null
@@ -506,11 +509,11 @@ export type Database = {
           id?: string
           interval_weeks?: number
           next_charge_at?: string | null
+          payfast_subscription_id?: string | null
+          payfast_token?: string | null
           product_slug: string
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          unit_price_eur?: number | null
+          unit_price_zar?: number | null
           updated_at?: string
           user_id: string
           variant_label?: string | null
@@ -521,11 +524,11 @@ export type Database = {
           id?: string
           interval_weeks?: number
           next_charge_at?: string | null
+          payfast_subscription_id?: string | null
+          payfast_token?: string | null
           product_slug?: string
           status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          unit_price_eur?: number | null
+          unit_price_zar?: number | null
           updated_at?: string
           user_id?: string
           variant_label?: string | null
