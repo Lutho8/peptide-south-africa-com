@@ -7,14 +7,11 @@ import productBpc from "@/assets/product-bpc.jpg";
 import productGlow from "@/assets/product-glow.jpg";
 import productKlow from "@/assets/product-klow.jpg";
 
-// NOTE: All prices are stored in EUR (canonical base currency).
-// ZAR is computed at display time via CurrencyContext using a live FX rate
-// (fallback 1 EUR = 19.40 ZAR). Source values were converted from the original
-// ZAR catalog by dividing by 19.40 and rounding to 2 decimals.
+// All prices are in ZAR. Single-market site (South Africa).
 
 export interface Variant {
   label: string;
-  price: number; // EUR
+  price: number; // ZAR
   /** Vials per pack (3, 5, 10). When set, the card renders pack-pricing UI. */
   pack?: number;
   /** mg per vial — used to compute per-mg pricing for pack variants. */
@@ -25,7 +22,7 @@ export interface Variant {
 
 /**
  * Build standard 3/5/10-pack variants for a given peptide vial.
- * basePrice = EUR price of a single vial.
+ * basePrice = ZAR price of a single vial.
  * Volume discount tiers: 3-pack -8%, 5-pack -15%, 10-pack -28%.
  */
 function buildPackVariants(
@@ -33,12 +30,18 @@ function buildPackVariants(
   mgPerVial: number,
   stocks: { p3?: number; p5?: number; p10?: number } = {},
 ): Variant[] {
-  const round2 = (n: number) => Math.round(n * 100) / 100;
+  const round0 = (n: number) => Math.round(n);
   return [
-    { label: "3-Pack", price: round2(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
-    { label: "5-Pack", price: round2(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
-    { label: "10-Pack", price: round2(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
+    { label: "3-Pack", price: round0(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "5-Pack", price: round0(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
+    { label: "10-Pack", price: round0(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
   ];
+}
+
+function rangeFromVariants(variants: Variant[]): string {
+  const prices = variants.map((v) => v.price);
+  const fmt = (n: number) => `R${n.toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
+  return `${fmt(Math.min(...prices))} – ${fmt(Math.max(...prices))}`;
 }
 
 export type ProductTrack = "RUO" | "GP";
@@ -49,9 +52,9 @@ export interface Product {
   slug: string;
   shortDescription: string;
   description: string;
-  /** Price in EUR. */
+  /** Price in ZAR. */
   price: number;
-  /** Optional pre-formatted EUR range, e.g. "€23.20 – €148.45". */
+  /** Optional pre-formatted ZAR range, e.g. "R1,250 – R8,950". */
   priceRange?: string;
   image: string;
   category: string;
@@ -62,16 +65,12 @@ export interface Product {
   howItWorks: string[];
   faqs: { question: string; answer: string }[];
   inStock: boolean;
-  /** Units remaining. Omit/undefined = "in stock" with no count shown. */
   stock?: number;
   variants?: Variant[];
   purity?: string;
   storage?: string;
-  /** Internal SKU code (e.g. RTT-RT3-10). Real compound name is always shown. */
   sku?: string;
-  /** CAS Registry Number for the compound. */
   casNumber?: string;
-  /** Short compound class label (e.g. "GLP-1/GIP/Glucagon triple agonist"). */
   compoundClass?: string;
   /**
    * Distribution pathway:
@@ -81,6 +80,15 @@ export interface Product {
   track?: ProductTrack;
 }
 
+// Build all variants first so we can derive priceRange consistently.
+const rt3Variants  = buildPackVariants(1250, 10, { p3: 3, p5: 4, p10: 2 });
+const ghkVariants  = buildPackVariants(630,  50, { p3: 2, p5: 3, p10: 2 });
+const tesVariants  = buildPackVariants(775,  10, { p3: 2, p5: 2, p10: 1 });
+const tz2Variants  = buildPackVariants(895,  10, { p3: 2, p5: 2, p10: 4 });
+const motsVariants = buildPackVariants(485,  10, { p3: 2, p5: 2, p10: 3 });
+const bpcVariants  = buildPackVariants(955,  20, { p3: 2, p5: 2, p10: 2 });
+const glowVariants = buildPackVariants(1080, 70, { p3: 3, p5: 4, p10: 4 });
+const klowVariants = buildPackVariants(1260, 80, { p3: 2, p5: 2, p10: 2 });
 
 export const products: Product[] = [
   {
@@ -89,8 +97,8 @@ export const products: Product[] = [
     slug: "rt3-reta",
     shortDescription: "Triple agonist targeting GLP-1, GIP, and glucagon receptors for metabolic research.",
     description: "RT3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
-    price: 23.20,
-    priceRange: "€102.42 – €267.19",
+    price: 1250,
+    priceRange: rangeFromVariants(rt3Variants),
     image: productRt3,
     category: "GLP",
     tag: "Best Seller",
@@ -100,8 +108,7 @@ export const products: Product[] = [
     casNumber: "2381089-83-2",
     compoundClass: "GLP-1 / GIP / Glucagon triple agonist",
     track: "GP",
-    // Premium-tier pricing — 10-pack anchored to clinical positioning.
-    variants: buildPackVariants(64.43, 10, { p3: 3, p5: 4, p10: 2 }),
+    variants: rt3Variants,
     benefits: ["Targets GLP-1, GIP & glucagon receptors", "Metabolic pathway research", "Insulin resistance studies", "Obesity research applications"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic disorder researchers", "Obesity research labs", "GLP-1 pathway studies"],
@@ -119,8 +126,8 @@ export const products: Product[] = [
     slug: "ghk-cu-50mg",
     shortDescription: "Copper peptide for skin rejuvenation, wound healing, and collagen synthesis research.",
     description: "GHK-Cu is a naturally occurring copper peptide with extensive research backing its role in tissue remodeling, collagen synthesis, and anti-inflammatory pathways. This 50mg vial provides ample material for comprehensive dermatological and regenerative research.",
-    price: 32.47,
-    priceRange: "€89.62 – €233.78",
+    price: 630,
+    priceRange: rangeFromVariants(ghkVariants),
     image: productGhk,
     category: "Skin & Hair",
     purity: "≥99%",
@@ -129,7 +136,7 @@ export const products: Product[] = [
     casNumber: "89030-95-5",
     compoundClass: "Tripeptide copper complex",
     track: "RUO",
-    variants: buildPackVariants(32.47, 50, { p3: 2, p5: 3, p10: 2 }),
+    variants: ghkVariants,
     benefits: ["Collagen synthesis stimulation", "Wound healing pathway research", "Anti-inflammatory studies", "Skin elasticity research"],
     whatsIncluded: ["1x 50mg Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Dermatological researchers", "Wound healing studies", "Anti-aging research"],
@@ -146,8 +153,8 @@ export const products: Product[] = [
     slug: "tesamorelin",
     shortDescription: "Growth hormone-releasing hormone analog for GH secretion and body composition research.",
     description: "Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for its ability to stimulate GH production. Widely researched for its effects on visceral adipose tissue reduction and lipodystrophy.",
-    price: 39.90,
-    priceRange: "€110.12 – €287.28",
+    price: 775,
+    priceRange: rangeFromVariants(tesVariants),
     image: productTesa,
     category: "Growth Hormone",
     purity: "≥99%",
@@ -156,7 +163,7 @@ export const products: Product[] = [
     casNumber: "106612-94-6",
     compoundClass: "GHRH analog",
     track: "RUO",
-    variants: buildPackVariants(39.90, 10, { p3: 2, p5: 2, p10: 1 }),
+    variants: tesVariants,
     benefits: ["GH secretion stimulation", "Visceral fat reduction research", "Lipodystrophy studies", "Body composition optimization"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Dosing reference"],
     whoItsFor: ["Growth hormone researchers", "Body composition labs", "Endocrinology studies"],
@@ -173,8 +180,8 @@ export const products: Product[] = [
     slug: "tz2-tirz",
     shortDescription: "Dual GIP/GLP-1 receptor agonist for advanced metabolic and weight loss research.",
     description: "TZ-2 is a dual GIP and GLP-1 receptor agonist representing the next generation of metabolic peptide research. Studied extensively for its role in glucose homeostasis, appetite regulation, and significant body weight reduction in preclinical models.",
-    price: 45.99,
-    priceRange: "€127.00 – €331.00",
+    price: 895,
+    priceRange: rangeFromVariants(tz2Variants),
     image: productTz2,
     category: "GLP",
     tag: "Pre-Order",
@@ -184,7 +191,7 @@ export const products: Product[] = [
     casNumber: "2023788-19-2",
     compoundClass: "GLP-1 / GIP dual agonist",
     track: "GP",
-    variants: buildPackVariants(45.99, 10, { p3: 2, p5: 2, p10: 4 }),
+    variants: tz2Variants,
     benefits: ["Dual GIP/GLP-1 agonism", "Glucose homeostasis research", "Appetite regulation studies", "Body weight reduction research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Metabolic researchers", "Diabetes research labs", "Weight management studies"],
@@ -200,8 +207,8 @@ export const products: Product[] = [
     slug: "mots-c",
     shortDescription: "Mitochondrial-derived peptide for metabolic homeostasis and longevity research.",
     description: "MOTS-C is a mitochondrial-derived peptide that plays a critical role in metabolic homeostasis. Research shows it regulates insulin sensitivity, promotes fatty acid oxidation, and may have significant implications for aging and exercise physiology.",
-    price: 25.05,
-    priceRange: "€69.14 – €180.36",
+    price: 485,
+    priceRange: rangeFromVariants(motsVariants),
     image: productMots,
     category: "Longevity",
     tag: "Pre-Order",
@@ -211,7 +218,7 @@ export const products: Product[] = [
     casNumber: "1627580-64-6",
     compoundClass: "Mitochondrial-derived peptide",
     track: "RUO",
-    variants: buildPackVariants(25.05, 10, { p3: 2, p5: 2, p10: 3 }),
+    variants: motsVariants,
     benefits: ["Metabolic homeostasis research", "Insulin sensitivity studies", "Fatty acid oxidation pathways", "Exercise physiology research"],
     whatsIncluded: ["1x Research vial", "Certificate of Analysis", "Batch certification", "Storage instructions"],
     whoItsFor: ["Longevity researchers", "Metabolic labs", "Exercise science studies"],
@@ -227,8 +234,8 @@ export const products: Product[] = [
     slug: "bpc-tb500-blend",
     shortDescription: "Synergistic healing blend combining BPC-157 and TB-500 for tissue repair research.",
     description: "This premium blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — into a single vial. Designed for researchers studying tissue repair, angiogenesis, and accelerated recovery pathways.",
-    price: 49.18,
-    priceRange: "€135.74 – €354.10",
+    price: 955,
+    priceRange: rangeFromVariants(bpcVariants),
     image: productBpc,
     category: "Healing",
     tag: "Pre-Order",
@@ -238,7 +245,7 @@ export const products: Product[] = [
     casNumber: "137525-51-0 / 77591-33-4",
     compoundClass: "BPC-157 + TB-500 healing blend",
     track: "RUO",
-    variants: buildPackVariants(49.18, 20, { p3: 2, p5: 2, p10: 2 }),
+    variants: bpcVariants,
     benefits: ["Synergistic tissue repair", "Angiogenesis promotion", "Anti-inflammatory research", "Accelerated recovery studies"],
     whatsIncluded: ["1x 20mg Blend vial", "Certificate of Analysis", "Batch certification", "Protocol guide"],
     whoItsFor: ["Tissue repair researchers", "Sports medicine labs", "Regenerative medicine studies"],
@@ -254,8 +261,8 @@ export const products: Product[] = [
     slug: "glow70",
     shortDescription: "Advanced skin peptide complex for collagen production and skin rejuvenation research.",
     description: "GLOW70 is a specialized 70mg skin peptide formulation designed for advanced dermatological research. Targets multiple pathways involved in collagen production, skin cell turnover, and protective barrier function.",
-    price: 55.67,
-    priceRange: "€153.65 – €400.82",
+    price: 1080,
+    priceRange: rangeFromVariants(glowVariants),
     image: productGlow,
     category: "Skin & Hair",
     purity: "≥99%",
@@ -263,7 +270,7 @@ export const products: Product[] = [
     sku: "RTT-GLW-70",
     compoundClass: "Multi-peptide skin complex",
     track: "RUO",
-    variants: buildPackVariants(55.67, 70, { p3: 3, p5: 4, p10: 4 }),
+    variants: glowVariants,
     benefits: ["Collagen production research", "Skin cell turnover studies", "Barrier function research", "Anti-aging pathway analysis"],
     whatsIncluded: ["1x 70mg Research vial", "Certificate of Analysis", "Batch certification", "Application protocol"],
     whoItsFor: ["Skin biology researchers", "Cosmetic peptide labs", "Dermatology studies"],
@@ -280,8 +287,8 @@ export const products: Product[] = [
     slug: "klow80",
     shortDescription: "Premium 80mg longevity peptide for cellular renewal and anti-aging research.",
     description: "KLOW80 is an 80mg premium longevity peptide designed for advanced aging research. Targets telomerase activation, mitochondrial biogenesis, and cellular senescence pathways — key areas in the quest to understand and potentially slow biological aging.",
-    price: 64.95,
-    priceRange: "€179.26 – €467.64",
+    price: 1260,
+    priceRange: rangeFromVariants(klowVariants),
     image: productKlow,
     category: "Longevity",
     tag: "Pre-Order",
@@ -290,7 +297,7 @@ export const products: Product[] = [
     sku: "RTT-KLW-80",
     compoundClass: "Longevity peptide complex",
     track: "RUO",
-    variants: buildPackVariants(64.95, 80, { p3: 2, p5: 2, p10: 2 }),
+    variants: klowVariants,
     benefits: ["Telomerase activation studies", "Mitochondrial biogenesis research", "Cellular senescence pathways", "Biological aging research"],
     whatsIncluded: ["1x 80mg Research vial", "Certificate of Analysis", "Batch certification", "Research protocol"],
     whoItsFor: ["Longevity researchers", "Aging biology labs", "Cellular biology studies"],
@@ -321,7 +328,6 @@ export function getProductsByTrack(track: "All" | ProductTrack): Product[] {
   if (track === "All") return products;
   return products.filter((p) => (p.track ?? "RUO") === track);
 }
-
 
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);

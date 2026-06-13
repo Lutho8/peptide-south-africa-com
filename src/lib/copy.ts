@@ -1,13 +1,11 @@
 // Single-locale (English, South Africa) microcopy.
-// Locale union kept as "en" | "de" | "af" so legacy callers compile —
-// all three resolve to the same English string at runtime.
+// Locale union kept as "en" so legacy callers compile.
 
-export type Locale = "en" | "de" | "af";
+export type Locale = "en";
 
 export type CopyKey =
   | "shipping_free"
   | "shipping_sa_window"
-  | "shipping_eu_window"
   | "lab_tested"
   | "purity_99"
   | "discreet_packaging"
@@ -34,15 +32,12 @@ export type CopyKey =
   | "shipping_country"
   | "country_blocked"
   | "contact_support_region"
-  | "standard_shipping_de"
   | "local_courier_sa"
   | "away_from_free"
   | "unlocked_free_shipping"
   | "err_required"
   | "err_email"
-  | "err_postal_de"
   | "err_postal_sa"
-  | "err_region_de"
   | "err_region_sa"
   | "err_name_chars"
   | "err_address_short"
@@ -51,16 +46,15 @@ export type CopyKey =
 const EN: Record<CopyKey, string> = {
   shipping_free: "Free shipping across South Africa on orders over R1,500",
   shipping_sa_window: "1–3 business days across South Africa",
-  shipping_eu_window: "1–3 business days across South Africa",
   lab_tested: "Independently lab tested",
   purity_99: "≥99% HPLC purity · COA on every batch",
   discreet_packaging: "Discreet, unbranded packaging",
-  secure_checkout: "Secure checkout via NowPayments",
+  secure_checkout: "Secure checkout via PayFast",
   age_gate_body:
     "You must be 18+ to enter. Research use only — not for human consumption.",
   pay_now: "Pay Now",
   payment_unavailable:
-    "Payments come online once our NowPayments verification completes. Please try again shortly.",
+    "Payments are temporarily unavailable. Please try again shortly.",
   thank_you: "Thank you — your order is being prepared.",
   cancelled: "Payment cancelled",
   paid: "Payment received",
@@ -81,24 +75,23 @@ const EN: Record<CopyKey, string> = {
   country_blocked: "Sorry, we currently only ship within South Africa.",
   contact_support_region:
     "Contact support@ridethetide.site if you're interested in shipping to your region.",
-  standard_shipping_de: "Local courier delivery — 1–3 business days",
   local_courier_sa: "Local courier delivery — 1–3 business days",
   away_from_free: "away from free shipping",
   unlocked_free_shipping: "You've unlocked free shipping!",
   err_required: "This field is required",
   err_email: "Enter a valid email address",
-  err_postal_de: "Postal code must be 4 digits (e.g. 8001)",
   err_postal_sa: "South African postal code must be 4 digits (e.g. 8001)",
-  err_region_de: "Enter a valid province (e.g. Gauteng, Western Cape)",
   err_region_sa: "Enter a valid province (e.g. Gauteng, Western Cape)",
   err_name_chars: "Use letters only (1–60 characters)",
   err_address_short: "Address must be 3–120 characters",
   fix_form: "Please fix the highlighted fields",
 };
 
-export const COPY: Record<CopyKey, Record<Locale, string>> = Object.fromEntries(
+// Keep the old `{ en, de, af }` shape for backward compatibility — all three
+// keys map to the same English copy now.
+export const COPY: Record<CopyKey, { en: string; de: string; af: string }> = Object.fromEntries(
   (Object.keys(EN) as CopyKey[]).map((k) => [k, { en: EN[k], de: EN[k], af: EN[k] }]),
-) as Record<CopyKey, Record<Locale, string>>;
+) as Record<CopyKey, { en: string; de: string; af: string }>;
 
 export function trilingual(key: CopyKey): string {
   return EN[key];
@@ -112,6 +105,6 @@ export function bilingualAF(key: CopyKey): string {
   return EN[key];
 }
 
-export function t(key: CopyKey, _locale: Locale = "en"): string {
+export function t(key: CopyKey, _locale?: string): string {
   return EN[key];
 }

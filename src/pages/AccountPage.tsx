@@ -16,7 +16,7 @@ interface Subscription {
   next_charge_at: string | null;
   status: string;
   discount_pct: number;
-  stripe_subscription_id: string | null;
+  payfast_subscription_id: string | null;
 }
 
 export default function AccountPage() {
@@ -41,14 +41,14 @@ export default function AccountPage() {
       const [subsRes, refRow, balRes, redRes] = await Promise.all([
         supabase
           .from("subscriptions")
-          .select("id, product_slug, variant_label, interval_weeks, next_charge_at, status, discount_pct, stripe_subscription_id")
+          .select("id, product_slug, variant_label, interval_weeks, next_charge_at, status, discount_pct, payfast_subscription_id")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
         ensureReferralCode(user.id),
         supabase.rpc("get_loyalty_balance", { _user_id: user.id }),
         supabase.from("referral_redemptions").select("*", { count: "exact", head: true }),
       ]);
-      setSubs((subsRes.data as Subscription[]) ?? []);
+      setSubs(((subsRes.data ?? []) as unknown) as Subscription[]);
       setReferral(refRow);
       setBalance(Number(balRes.data ?? 0));
       setRedemptions(redRes.count ?? 0);
@@ -202,7 +202,7 @@ export default function AccountPage() {
                             Next charge {new Date(s.next_charge_at).toLocaleDateString()}
                           </p>
                         )}
-                        {!s.stripe_subscription_id && !isCancelled && (
+                        {!s.payfast_subscription_id && !isCancelled && (
                           <p className="mt-1 inline-block rounded bg-badge/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-badge ring-1 ring-badge/20">
                             Awaiting billing activation
                           </p>

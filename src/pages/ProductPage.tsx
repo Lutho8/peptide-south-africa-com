@@ -106,7 +106,6 @@ export default function ProductPage() {
         product_slug: product.slug,
         variant_label: variantLabel ?? null,
         interval_weeks: intervalWeeks,
-        unit_price_eur: currentPrice,
         discount_pct: subDiscountPct,
         next_charge_at: next.toISOString(),
       });

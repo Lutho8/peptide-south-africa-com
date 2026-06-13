@@ -1,7 +1,6 @@
-// Single-market shipping (South Africa). Germany kept as a legal type only
-// so legacy call sites continue to compile; runtime only supports South Africa.
+// Single-market shipping (South Africa, ZAR-only).
 
-export type ShippingCountry = "South Africa" | "Germany";
+export type ShippingCountry = "South Africa";
 
 export interface ShippingRule {
   method: string;
@@ -11,9 +10,9 @@ export interface ShippingRule {
   days: string;
 }
 
-export const SHIPPING_RULES: Record<"South Africa", ShippingRule> = {
+export const SHIPPING_RULES: Record<ShippingCountry, ShippingRule> = {
   "South Africa": {
-    method: "Local courier (The Courier Guy / Ramhis)",
+    method: "Local courier (The Courier Guy / Aramex)",
     flat: 89,
     freeOver: 1500,
     currency: "ZAR",
@@ -27,19 +26,13 @@ export function isSupportedCountry(c: string | null | undefined): c is ShippingC
   return c === "South Africa";
 }
 
-export function getShippingCost(
-  cartTotalInDestCurrency: number,
-  country: string,
-): number | null {
+export function getShippingCost(cartTotalZar: number, country: string): number | null {
   if (country !== "South Africa") return null;
   const rule = SHIPPING_RULES["South Africa"];
-  return cartTotalInDestCurrency >= rule.freeOver ? 0 : rule.flat;
+  return cartTotalZar >= rule.freeOver ? 0 : rule.flat;
 }
 
-export function amountToFreeShipping(
-  cartTotalInDestCurrency: number,
-  _country: ShippingCountry = "South Africa",
-): number {
+export function amountToFreeShipping(cartTotalZar: number): number {
   const rule = SHIPPING_RULES["South Africa"];
-  return Math.max(0, rule.freeOver - cartTotalInDestCurrency);
+  return Math.max(0, rule.freeOver - cartTotalZar);
 }
