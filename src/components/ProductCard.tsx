@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, FlaskConical, CheckCircle2, Stethoscope } from "lucide-react";
+import { ShieldCheck, FlaskConical, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -13,25 +13,16 @@ export default function ProductCard({ product }: { product: Product }) {
   const { format } = useCurrency();
   const productUrl = `/product/${product.slug}`;
 
-  // Only surface single vial and 3-pack on the card — keeps decision simple.
-  // 10-pack remains available on the PDP.
-  const packVariants = useMemo(
-    () =>
-      (product.variants ?? []).filter(
-        (v) => typeof v.pack === "number" && (v.pack === 1 || v.pack === 3),
-      ),
+  const singleVial: Variant | undefined = useMemo(
+    () => (product.variants ?? []).find((v) => v.pack === 1),
     [product.variants],
   );
-  const hasPackVariants = packVariants.length > 0;
-  const defaultIdx = packVariants.findIndex((v) => v.pack === 3);
-  const [selectedIdx, setSelectedIdx] = useState(defaultIdx >= 0 ? defaultIdx : 0);
-  const selected: Variant | undefined = packVariants[selectedIdx];
+  const threePack: Variant | undefined = useMemo(
+    () => (product.variants ?? []).find((v) => v.pack === 3),
+    [product.variants],
+  );
 
-  const hasMultipleVariants = !hasPackVariants && (product.variants?.length ?? 0) > 1;
-
-  const priceRangeDisplay = product.priceRange ?? format(product.price);
-  const priceDisplay = format(selected?.price ?? product.price);
-
+  const headlinePrice = singleVial?.price ?? product.price;
   const isGPTrack = product.track === "GP";
 
   const handleAdd = () => {
@@ -39,16 +30,8 @@ export default function ProductCard({ product }: { product: Product }) {
       navigate(productUrl);
       return;
     }
-    if (isGPTrack) {
-      navigate(`/quiz?product=${product.slug}`);
-      return;
-    }
-    if (hasPackVariants && selected) {
-      addToCart(product, { variantLabel: selected.label, unitPrice: selected.price });
-      return;
-    }
-    if (hasMultipleVariants) {
-      navigate(`${productUrl}#variants`);
+    if (singleVial) {
+      addToCart(product, { variantLabel: singleVial.label, unitPrice: singleVial.price });
       return;
     }
     const onlyVariant = product.variants?.[0];
@@ -117,53 +100,22 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-3 flex items-baseline justify-between">
           <div>
-            <p className="font-mono text-base font-bold text-primary">
-              {hasPackVariants ? priceDisplay : priceRangeDisplay}
+            <p className="font-mono text-lg font-bold text-primary">
+              {format(headlinePrice)}
+              <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                / single vial
+              </span>
             </p>
-            {hasPackVariants ? (
-              <p className="font-mono text-[10px] uppercase tracking-wide text-trust font-semibold">
-                {product.inStock ? "Available" : "Pre-Order"}
-              </p>
-            ) : null}
+            {threePack && (
+              <Link
+                to={productUrl}
+                className="mt-0.5 inline-block font-mono text-[11px] font-medium text-trust hover:underline"
+              >
+                or 3-Pack {format(threePack.price)} · save 8%
+              </Link>
+            )}
           </div>
         </div>
-
-        {hasPackVariants && (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {packVariants.map((v, i) => {
-              const isSelected = i === selectedIdx;
-              const totalMg = (v.pack ?? 1) * (v.mgPerVial ?? 1);
-              const perMg = v.price / totalMg;
-              const perMgLabel = `R${perMg.toLocaleString("en-ZA", { maximumFractionDigits: 2 })}/mg`;
-              return (
-                <button
-                  type="button"
-                  key={v.label}
-                  onClick={() => setSelectedIdx(i)}
-                  aria-pressed={isSelected}
-                  className={`flex flex-col items-center gap-0.5 rounded-lg border px-2 py-2 text-center transition-all ${
-                    isSelected
-                      ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-border bg-background hover:border-primary/50"
-                  }`}
-                >
-                  <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {v.label}
-                  </span>
-                  <span className="font-mono text-sm font-bold text-foreground">
-                    {format(v.price)}
-                  </span>
-                  <span className="font-mono text-[10px] font-medium text-primary">{perMgLabel}</span>
-                  {typeof v.stock === "number" && (
-                    <span className={`font-mono text-[10px] font-semibold ${v.stock <= 2 ? "text-destructive" : "text-trust"}`}>
-                      {v.stock} Avail
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
 
         <div className="mt-3 flex gap-2">
           <Link
@@ -176,18 +128,18 @@ export default function ProductCard({ product }: { product: Product }) {
             onClick={handleAdd}
             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
-            {isGPTrack ? <Stethoscope className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-            {!product.inStock
-              ? "Notify Me"
-              : isGPTrack
-                ? "Start Consultation"
-                : hasPackVariants
-                  ? "Add To Cart"
-                  : hasMultipleVariants
-                    ? "Select Size"
-                    : "Add To Cart"}
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {!product.inStock ? "Notify Me" : "Add To Cart"}
           </button>
         </div>
+        {isGPTrack && product.inStock && (
+          <Link
+            to={`/quiz?product=${product.slug}`}
+            className="mt-2 block text-center text-[11px] font-medium text-muted-foreground hover:text-primary hover:underline"
+          >
+            or book a clinician consult →
+          </Link>
+        )}
       </div>
     </div>
   );
