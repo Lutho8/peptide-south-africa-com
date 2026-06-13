@@ -284,10 +284,10 @@ export default function AboutPage() {
             Take a 2-minute assessment and discover the protocol designed for your body and goals.
           </p>
           <Link
-            to="/quiz"
+            to="/quiz?intent=consult"
             className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
           >
-            Get Started <ArrowRight className="h-5 w-5" />
+            Book a Consultation <ArrowRight className="h-5 w-5" />
           </Link>
         </div>
       </section>
