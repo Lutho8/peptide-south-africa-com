@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     const expectedSig = buildSignature(fields, passphrase);
     if (!fields.signature || fields.signature !== expectedSig) {
       await supabase.from('integration_logs').insert({
-        source: 'payfast-itn',
+        integration: 'payfast', action: 'itn',
         status: 'invalid_signature',
         payload: fields,
       });
@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
     const validateText = (await validateRes.text()).trim().toUpperCase();
     if (validateText !== 'VALID') {
       await supabase.from('integration_logs').insert({
-        source: 'payfast-itn',
+        integration: 'payfast', action: 'itn',
         status: 'validate_failed',
         payload: { validateText, fields },
       });
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
 
     if (!order) {
       await supabase.from('integration_logs').insert({
-        source: 'payfast-itn',
+        integration: 'payfast', action: 'itn',
         status: 'order_not_found',
         payload: fields,
       });
@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
 
     if (Math.abs(Number(order.total) - amountGross) > 0.01) {
       await supabase.from('integration_logs').insert({
-        source: 'payfast-itn',
+        integration: 'payfast', action: 'itn',
         status: 'amount_mismatch',
         payload: { storedTotal: order.total, amountGross, fields },
       });
@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
     await supabase.from('orders').update(update).eq('id', orderId);
 
     await supabase.from('integration_logs').insert({
-      source: 'payfast-itn',
+      integration: 'payfast', action: 'itn',
       status: paymentStatus.toLowerCase() || 'received',
       payload: fields,
     });
@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
     return ok();
   } catch (err) {
     await supabase.from('integration_logs').insert({
-      source: 'payfast-itn',
+      integration: 'payfast', action: 'itn',
       status: 'exception',
       payload: { error: err instanceof Error ? err.message : String(err) },
     });
