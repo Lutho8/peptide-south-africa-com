@@ -21,9 +21,9 @@ const tiers = [
   {
     name: "Pro",
     rate: "25%",
-    eyebrow: "After €1,000 / R20k referred",
+    eyebrow: "After R20,000 referred",
     perks: ["25% commission + recurring on repeat orders", "Custom discount code (10% off)", "Free product for content", "Priority WhatsApp support"],
-    cta: "Unlock at €1,000",
+    cta: "Unlock at R20,000",
     highlight: true,
   },
   {
