@@ -1,103 +1,120 @@
+## Goal
+Make the site cleanly single-market (South Africa, ZAR-only) by removing every Shopify, Stripe, and EUR/Germany code path, then wiring **PayFast** as the sole payment processor.
 
-# Join Our Community — WhatsApp Capture Flow
+---
 
-Mirrors directpeptides.com's phone-gated entry. Captures name, WhatsApp number (with country code validation), and interest area before handing the user a one-tap link to the WhatsApp group. All WhatsApp BSP credentials live behind an Edge Function — never the frontend.
+## 1. Remove Shopify
 
-## User flow
+**Delete files**
+- `src/components/shopify/ShopifyCartDrawer.tsx`
+- `src/stores/shopifyCartStore.ts`
+- `src/hooks/useShopifyCartSync.ts`
+- `src/lib/shopify.ts`
+- `src/pages/ShopifyStorePage.tsx`
+- `src/pages/ShopifyProductPage.tsx`
 
-```text
-[Join Community CTA in Header / Footer / Floating]
-        ↓
-/community  → <CommunityJoinPage>
-        ↓
-  Form: Name • WhatsApp (E.164) • Interest
-        ↓
-  Client validates (zod + libphonenumber-js)
-        ↓
-  supabase.functions.invoke('community-join', { ...payload })
-        ↓
-  Edge Function:
-    1. Re-validates payload (zod)
-    2. Rate limits by IP (5/hr) + dedupes by phone
-    3. INSERT into public.community_members
-    4. (Stub) POST to BSP — logs payload, returns ok:true when no BSP key
-        ↓
-  Success screen → "Open WhatsApp Group" deep link (wa.me / chat.whatsapp.com)
-        ↓
-  Group join → BSP welcome template fires (when key is later added)
+**Edit**
+- `src/App.tsx` — drop `/store` and `/store/:handle` routes, drop Shopify cart sync hook.
+- `src/components/Header.tsx` / `Footer.tsx` — remove any Shopify links.
+- `package.json` — remove `zustand` only if no other store uses it (check first; keep if used).
+
+**Backend**
+- Remove `SHOPIFY_ACCESS_TOKEN` and `SHOPIFY_STOREFRONT_ACCESS_TOKEN` secrets.
+- Disconnect the Shopify connector via `standard_connectors--disconnect`.
+
+---
+
+## 2. Remove Stripe & NowPayments (current crypto processor)
+
+- Delete edge functions: `supabase/functions/nowpayments-create-payment/`, `supabase/functions/nowpayments-ipn/`.
+- Remove their entries from `supabase/config.toml`.
+- Drop `nowpayments_payment_id` column from `orders` (migration) and replace with `payfast_pf_payment_id` + `payfast_m_payment_id`.
+- Remove the `protect_subscription_sensitive_cols` Stripe field guards for `stripe_subscription_id` / `stripe_customer_id`; drop those columns from `subscriptions` (migration) and replace with `payfast_token` (for tokenized recurring) + `payfast_subscription_id`.
+- Strip any Stripe UI/copy in checkout pages.
+
+---
+
+## 3. Remove EUR / Germany
+
+**Make ZAR the only currency (no EUR base prices, no FX conversion).**
+
+- `src/data/products.ts` — convert all `price` fields from EUR to ZAR using current rate (~19.40) and round to clean ZAR tiers; store ZAR directly.
+- `src/context/CurrencyContext.tsx` — simplify: no rate fetch, no EUR; `format(zar)` returns `Rxxx.xx`. Keep API shape so callers don't break, but `convert` becomes identity.
+- `src/lib/price.ts`, `src/lib/currency.ts` — remove EUR helpers, keep `formatZAR`.
+- `src/lib/shipping.ts` — drop `"Germany"` from the type union, drop the legacy second arg.
+- `src/lib/checkoutSchema.ts` — remove `DE_BUNDESLAENDER`, `deSchema`, German postal regex; export only `saSchema` and a single `validateCheckout(input)` (no country arg).
+- `src/components/FreeShippingBar.tsx` — drop EUR/rate logic; show ZAR directly.
+- `src/components/MarketSwitcher.tsx`, `src/components/CurrencySwitcher.tsx` — delete (already no-ops).
+- `src/hooks/useMarket.ts` — collapse to a single ZA constant export; remove `Market` union.
+- `src/pages/ImpressumPage.tsx` — DE legal page: remove from routes & nav (keep file only if needed for archived link, otherwise delete).
+- `src/lib/marketCopy.ts`, `src/lib/copy.ts` — strip DE strings.
+- Tests: update/remove `src/test/market-routing.test.tsx`.
+- Sitemap/SEO: remove `de` alternates from `useMarket.buildAlternates`, regenerate `public/sitemap.xml` via `scripts/generate-sitemap.ts`.
+
+---
+
+## 4. Integrate PayFast (primary processor, ZAR)
+
+PayFast supports a **redirect "Process" form** with server-signed fields plus an **ITN (Instant Transaction Notification)** webhook. Both will live in Supabase Edge Functions so credentials never hit the browser.
+
+### Secrets (request via `add_secret` once user confirms)
+- `PAYFAST_MERCHANT_ID`
+- `PAYFAST_MERCHANT_KEY`
+- `PAYFAST_PASSPHRASE` (used in signature)
+- `PAYFAST_MODE` = `sandbox` | `live`
+
+### Edge functions
+
+**`supabase/functions/payfast-create-payment/index.ts`** (auth-required)
+1. Verify JWT, load `orders` row, confirm `user_id` matches and `total`/`currency='zar'` match the request.
+2. Build PayFast field map: `merchant_id`, `merchant_key`, `return_url`, `cancel_url`, `notify_url` (→ `payfast-itn`), `m_payment_id` = order UUID, `amount` (2dp), `item_name`, `email_address`, `name_first`, `name_last`, optional `subscription_type=1` for tokenized recurring.
+3. Compute signature: URL-encode each non-empty field in **field order**, append `&passphrase=…`, md5, lowercase hex.
+4. Return either `{ redirectUrl, fields }` for the client to POST, or render a self-submitting HTML form.
+
+**`supabase/functions/payfast-itn/index.ts`** (public, `verify_jwt = false` in `supabase/config.toml`)
+1. Parse `application/x-www-form-urlencoded` body.
+2. Re-compute signature using passphrase, compare to `signature` field.
+3. Validate source IP against PayFast's published ranges (`www.payfast.co.za`, `sandbox.payfast.co.za` resolved).
+4. Server-to-server validate by POSTing the raw body back to `https://{sandbox.,}payfast.co.za/eng/query/validate` and expecting `VALID`.
+5. Cross-check `amount_gross` against stored `orders.total`.
+6. On `payment_status = COMPLETE` → update `orders.status='paid'`, store `pf_payment_id`, write `integration_logs` row, optionally create `subscriptions` row when `token` is returned.
+7. Always 200 OK to PayFast.
+
+### Frontend
+- `src/pages/CheckoutPage.tsx` — replace NowPayments call with `supabase.functions.invoke('payfast-create-payment')`, then auto-submit the returned form (or `window.location` to PayFast).
+- `src/pages/CheckoutSuccessPage.tsx` / `CheckoutCancelPage.tsx` — keep, point `return_url`/`cancel_url` here.
+- `src/components/PaymentMethodsBanner.tsx` — show PayFast logo + supported methods (card, Instant EFT, SnapScan, Zapper, Mobicred). Drop Stripe/crypto logos.
+- Remove all "EUR", "€", "Germany", "Versand" copy from checkout, footer, FAQ, shipping policy.
+
+### DB migration
+```sql
+ALTER TABLE public.orders
+  DROP COLUMN IF EXISTS nowpayments_payment_id,
+  ADD COLUMN IF NOT EXISTS payfast_m_payment_id text,
+  ADD COLUMN IF NOT EXISTS payfast_pf_payment_id text,
+  ADD COLUMN IF NOT EXISTS payfast_token text;
+
+ALTER TABLE public.subscriptions
+  DROP COLUMN IF EXISTS stripe_subscription_id,
+  DROP COLUMN IF EXISTS stripe_customer_id,
+  ADD COLUMN IF NOT EXISTS payfast_token text,
+  ADD COLUMN IF NOT EXISTS payfast_subscription_id text;
 ```
+Plus an updated `protect_subscription_sensitive_cols` trigger guarding the new PayFast columns.
 
-## Database (migration)
+---
 
-New table `public.community_members`:
-- `name` (text, required)
-- `phone_e164` (text, unique, required) — normalized E.164
-- `phone_country` (text) — ISO-2
-- `interest` (text) — enum-like: `weight-loss`, `peptide-stacks`, `biohacking`, `recovery`, `longevity`, `other`
-- `source` (text, default `community-page`)
-- `consent_marketing` (bool, required true)
-- `ip_hash` (text) — sha256(ip + salt) for rate limit auditing, no raw IP
-- `bsp_status` (text, default `pending`) — `pending` | `sent` | `failed` | `disabled`
-- `bsp_last_error` (text, nullable)
-- `joined_group_at` (timestamptz, nullable)
-- timestamps + update trigger
+## 5. QA checklist
+- `rg -i "shopify|stripe|nowpayments|EUR|€|Germany|Bundesland"` returns zero hits in `src/` and `supabase/functions/`.
+- Build passes; product cards show `Rxxx.xx`.
+- Test order → PayFast sandbox → ITN flips order to `paid`.
+- Sitemap has no `/de` URLs.
 
-Security:
-- RLS enabled
-- GRANT INSERT to `anon` only via the edge function path (we'll insert with `service_role`, so anon gets NO direct grants)
-- GRANT ALL to `service_role`
-- GRANT SELECT to `authenticated` WHERE `has_role(auth.uid(),'admin')`
-- Policies: admin read; no client writes (everything goes through the edge function)
+---
 
-Rate-limit helper table `public.community_join_rate` (ip_hash, window_start, count) with a small `bump_rate` SECURITY DEFINER function returning boolean (false = blocked).
+## Open questions before I implement
 
-## Edge Function `community-join`
-
-`supabase/functions/community-join/index.ts`
-- Public (verify_jwt = false) — anonymous signups
-- CORS via `npm:@supabase/supabase-js@2/cors`
-- Zod schema on body: `{ name (1..80), phone (E.164), interest (enum), consent (true) }`
-- Server-side phone parse with `libphonenumber-js/min` (re-validates E.164 + country)
-- Rate limit: hash `x-forwarded-for` with `RATE_SALT`, call `bump_rate`; 429 on block
-- Dedup: `ON CONFLICT (phone_e164) DO UPDATE SET name, interest, updated_at` — idempotent
-- BSP call: `sendWelcomeTemplate(phoneE164)` — wrapper that:
-  - Reads `WHATSAPP_BSP_API_KEY`, `WHATSAPP_BSP_BASE_URL`, `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_GROUP_INVITE_URL` from env
-  - If `WHATSAPP_BSP_API_KEY` missing → returns `{ status: 'disabled' }` and logs to `integration_logs` (table exists)
-  - When set later → POSTs the template with `group_invite_url` variable; updates `bsp_status`
-- Response: `{ ok: true, groupUrl: WHATSAPP_GROUP_INVITE_URL ?? null }`
-
-Secrets to add later (NOT requested now per user):
-`WHATSAPP_BSP_API_KEY`, `WHATSAPP_BSP_BASE_URL`, `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_GROUP_INVITE_URL`, `RATE_SALT`.
-
-## Frontend
-
-New files:
-- `src/pages/CommunityJoinPage.tsx` — hero (medical-navy + teal, mono eyebrow "01 / JOIN"), form card, success state with "Open WhatsApp Group" button + QR fallback, trust strip (members count, "no spam", "leave anytime")
-- `src/components/community/CommunityJoinForm.tsx` — react-hook-form + zod, country dial-code `<select>` (top 10 markets, default ZA +27), `libphonenumber-js` validation, loading + error states, success callback
-- `src/components/community/PhoneInput.tsx` — split country + national number
-- `src/lib/communitySchema.ts` — shared zod schema (front + edge re-use shape)
-
-Edits:
-- `src/App.tsx` — route `/community` → `CommunityJoinPage`
-- `src/components/Header.tsx` — add **Explore › Join WhatsApp Community** dropdown item; mobile menu entry
-- `src/components/Footer.tsx` — "Community" link
-- `src/components/FloatingProductFollower.tsx` — when no last-viewed product, optionally surface a small "Join WhatsApp" pill (low priority, behind flag)
-
-SEO: `<SEO title="Join the Ride The Tide WhatsApp Community" description="…" path="/community" />` + JSON-LD `Organization` with `contactPoint`.
-
-## Dependencies
-
-- `libphonenumber-js` (frontend + edge via `npm:libphonenumber-js@1.11.7`)
-- `react-hook-form` + `@hookform/resolvers` + `zod` (already in project — confirm during build)
-
-## Out of scope (explicitly)
-
-- Sending the actual welcome WhatsApp message — wrapper exists, returns `disabled` until BSP key is provisioned.
-- Bot onboarding sequence — server-side cron/queue, separate follow-up task.
-- Admin dashboard for community members — only DB-level admin read for now.
-
-## Open questions before build
-
-1. **Group invite URL** — do you already have the `chat.whatsapp.com/...` invite, or should the success screen show "We'll text you the link" until BSP is wired?
-2. **Interest options** — keep the 6 I listed (weight-loss, peptide-stacks, biohacking, recovery, longevity, other) or your own list?
-3. **Consent copy** — fine with "I agree to receive WhatsApp messages from Ride The Tide. Reply STOP to opt out."?
+1. **Tokenized recurring subscriptions** — do you want PayFast's tokenization wired now (for the subscription products), or one-off payments only for v1?
+2. **Existing data** — any live `orders`/`subscriptions` rows that need migrating, or is it safe to drop the Stripe/NowPayments columns outright?
+3. **EUR → ZAR price conversion** — convert at today's ~R19.40/€ and round, or do you want to set custom ZAR prices per SKU (send me a list)?
+4. **Impressum (German legal page)** — delete entirely, or keep as a stub redirect to `/about`?
