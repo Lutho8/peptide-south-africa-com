@@ -21,19 +21,19 @@ export interface Variant {
 }
 
 /**
- * Build standard 3/5/10-pack variants for a given peptide vial.
+ * Build standard 1/3/10-pack variants for a given peptide vial.
  * basePrice = ZAR price of a single vial.
- * Volume discount tiers: 3-pack -8%, 5-pack -15%, 10-pack -28%.
+ * Volume discount tiers: 3-pack -8%, 10-pack -28%.
  */
 function buildPackVariants(
   basePrice: number,
   mgPerVial: number,
-  stocks: { p3?: number; p5?: number; p10?: number } = {},
+  stocks: { p1?: number; p3?: number; p10?: number } = {},
 ): Variant[] {
   const round0 = (n: number) => Math.round(n);
   return [
+    { label: "Single Vial", price: round0(basePrice), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
     { label: "3-Pack", price: round0(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
-    { label: "5-Pack", price: round0(basePrice * 5 * 0.85), pack: 5, mgPerVial, stock: stocks.p5 ?? 2 },
     { label: "10-Pack", price: round0(basePrice * 10 * 0.72), pack: 10, mgPerVial, stock: stocks.p10 ?? 4 },
   ];
 }
