@@ -108,9 +108,7 @@ export function productSchema(product: {
   inStock: boolean;
   sku?: string;
 }) {
-  // Base price is stored in EUR-equivalent units; ZAR display uses live rate.
-  // For schema, we approximate ZAR at the fallback rate so it's machine-readable.
-  const RATE = 19.4;
+  // Product prices are stored in ZAR.
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -126,7 +124,7 @@ export function productSchema(product: {
       "@type": "Offer",
       url: `${SITE_URL}/product/${product.slug}`,
       priceCurrency: "ZAR",
-      price: Math.round(product.price * RATE),
+      price: Math.round(product.price),
       priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
       itemCondition: "https://schema.org/NewCondition",
       availability: product.inStock

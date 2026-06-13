@@ -86,7 +86,7 @@ export default function AffiliatePage() {
 
   // Earnings calculator
   const [refs, setRefs] = useState(20);
-  const [aov, setAov] = useState(80);
+  const [aov, setAov] = useState(1500);
   const [rate, setRate] = useState(0.25);
   const monthly = useMemo(() => Math.round(refs * aov * rate), [refs, aov, rate]);
 
