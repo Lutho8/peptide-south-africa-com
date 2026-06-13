@@ -88,17 +88,20 @@ export default function CartDrawer() {
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
                 <span>{COPY.total.en} / {COPY.total.de}</span><span>{format(totalPrice)}</span>
               </div>
+              <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Cart → Shipping → Pay
+              </p>
               <Link
                 to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full rounded-lg bg-primary py-3 text-center text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
+                className="block w-full rounded-lg bg-hero-gradient py-4 text-center text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.99]"
               >
-                Checkout
+                Secure Checkout →
               </Link>
               <Link
                 to={mp("/cart")}
                 onClick={() => setIsCartOpen(false)}
-                className="mt-2 block w-full rounded-lg border border-border py-3 text-center text-sm font-semibold text-foreground transition-all hover:bg-muted"
+                className="mt-2 block w-full rounded-lg border border-border py-2.5 text-center text-sm font-semibold text-foreground transition-all hover:bg-muted"
               >
                 View Cart
               </Link>
