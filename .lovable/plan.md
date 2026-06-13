@@ -1,51 +1,52 @@
-## Scope
+## Goal
 
-Four focused changes — UI/presentation only, no backend or payment-logic changes.
+Let any visitor buy a single vial (or 3-pack) and check out without a clinician consultation. Simplify the variant set to just **Single Vial** and **3-Pack** everywhere, and show single-vial pricing first on catalog cards.
 
-### 1. Clearer checkout flow
+## Changes
 
-Currently the Header has no cart icon, so users can't see what's in their cart from anywhere on the site. Add a persistent cart entry point:
+### 1. Remove the 10-pack entirely
+**File:** `src/data/products.ts`
+- `buildPackVariants()` returns only `Single Vial` and `3-Pack` (drop the 10-pack row and the `p10` stock param).
+- Reorder so **3-Pack is first** in the array — this makes it the default selection on the PDP ("leads with 3-pack").
+- `rangeFromVariants` still works (now spans 1-vial → 3-pack).
 
-- **Header (desktop + mobile):** Add a cart icon button with a live item-count badge that opens the existing `CartDrawer`. Sits next to Account on desktop, next to the menu button on mobile.
-- **CartDrawer:** Make the primary "Checkout" button more prominent (full-width, bigger) and surface a short progress hint: `Cart → Shipping → Pay`.
-- **CheckoutPage:** Add a 3-step progress indicator (Cart · Details · Pay) at the top so users feel oriented.
-- **ShopPage / ProductPage:** After "Add to cart", the drawer already opens — add a clearer "Go to Checkout" CTA inside the drawer's success state.
+### 2. Catalog cards: show single-vial price only, no pack toggle
+**File:** `src/components/ProductCard.tsx`
+- Remove the 2-button pack picker grid.
+- Always display the **single-vial price** as the headline price (find the variant with `pack === 1`).
+- Below it, a small line: `or 3-Pack from R{3-pack price} · save 8%` linking into the PDP.
+- "Add To Cart" on the card adds the **single vial** directly (works for both RUO and GP tracks — see #3).
+- "View" button keeps secondary role for users who want to pick the 3-pack.
 
-### 2. Remove "Get Started" CTA, keep "Book Consult"
+### 3. Allow direct checkout for GP-track products (RT3, etc.)
+GP-track products currently force users into `/quiz`. Users who don't want a consultation can't buy.
 
-- Remove **Get Started** button from `Header.tsx` (desktop nav, line 124-129) and the mobile "Start" pill (line 133-138).
-- Remove **Get Started** CTAs from `AboutPage.tsx`, `FatLossProtocolPage.tsx` (3 instances), `QuizFunnelPage.tsx`.
-- Keep **Book Consult** in the header as the single primary nav CTA.
-- Leave **Book a Consultation** buttons on FatLossProtocolPage intact.
+**File:** `src/pages/ProductPage.tsx`
+- Remove the GP-track branch that redirects to `/quiz` from `handleAdd`. GP products now add to cart like any other product.
+- Replace the single "Start Clinician Consultation" CTA with **two CTAs stacked**:
+  - Primary: `Add to Cart` (gradient, full width)
+  - Secondary: `Prefer guidance? Start Clinician Consultation →` (text/outline link to `/quiz?product=...`)
+- Keep the Subscribe & Save panel visible for GP products too (it was hidden via `!isGPTrack`).
 
-### 3. Product catalog: only 1-vial and 3-pack
+**File:** `src/components/ProductCard.tsx`
+- Same: GP-track cards add to cart instead of routing to quiz. Add a small "or book a consult" link under the CTA for users who want the clinical path.
 
-- `ProductCard.tsx`: change variant filter from `pack === 3 || pack === 5` to `pack === 1 || pack === 3`. Default selection becomes 3-pack.
-- `data/products.ts`: remove the 5-Pack variant from the generator and update the comment. (10-pack stays available on PDP only.)
-- PDP (`ProductPage.tsx`): audit and remove any explicit 5-pack callouts; keep 1, 3, and 10-pack tiers available.
+### 4. PDP variant selector — 3-Pack leads
+**File:** `src/pages/ProductPage.tsx`
+- Because we reorder variants in `products.ts`, `selectedVariant = 0` will already default to the 3-Pack. No code change needed beyond the data reorder.
+- Variant buttons render in order: `[3-Pack] [Single Vial]`, with 3-Pack visually highlighted as the default.
 
-### 4. Mobile video experience
-
-- **Hero video** (`HeroShop.tsx`): keep autoplay but add `poster` fallback display when `prefers-reduced-data` or slow connection — already partially handled, verify it renders on mobile (not hidden by scrim z-index).
-- **SupportVideosSection** (the swipeable Tide Talk reels): on mobile the IntersectionObserver threshold of 0.35 + `preload="none"` can prevent the first clip from ever loading. Fix:
-  - Eager-set `src` for the first clip so it has a visible frame on load.
-  - Lower IO threshold to 0.15 on mobile.
-  - Add `poster` images so the tile is never blank.
-  - Ensure container `overflow-x-auto` + snap works in iOS Safari (add `-webkit-overflow-scrolling: touch`).
-
-### Broader mobile polish
-
-- Tighten Header height on mobile (reduce padding).
-- Verify CartDrawer is full-width on mobile (`w-full sm:w-[420px]`).
-- Verify CheckoutPage form stacks cleanly at 375px width; ensure inputs are min 44px tall.
-- Verify sticky mobile CTA (`StickyMobileCTA`) doesn't overlap the cart drawer or footer CTAs.
+### 5. Sweep references to 10-pack
+- `src/components/ProductCard.tsx` comment about "10-pack remains available on the PDP" — remove.
+- Quick grep for `10-Pack`, `pack === 10`, `p10` in components/pages and clean stragglers (any copy in `FatLossProtocolPage`, `seo.ts`, etc.). No data migration needed — variants are derived from `data/products.ts` at build time.
 
 ## Out of scope
-
-- No changes to payment processor, edge functions, or order/database schema.
-- No changes to product pricing math (only the variant filter on cards).
-- No new pages.
+- No backend, RLS, or payment changes.
+- No changes to subscription billing or the clinician quiz funnel itself — just removing the forced redirect.
+- Cart, checkout, and PayFast flow already work; this only unblocks the entry point.
 
 ## Files touched
-
-`src/components/Header.tsx`, `src/components/CartDrawer.tsx`, `src/components/ProductCard.tsx`, `src/components/SupportVideosSection.tsx`, `src/components/HeroShop.tsx`, `src/data/products.ts`, `src/pages/CheckoutPage.tsx`, `src/pages/AboutPage.tsx`, `src/pages/FatLossProtocolPage.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/pages/ProductPage.tsx`.
+- `src/data/products.ts`
+- `src/components/ProductCard.tsx`
+- `src/pages/ProductPage.tsx`
+- Small copy sweeps wherever "10-pack" appears in marketing pages.
