@@ -155,14 +155,14 @@ export default function SupportVideosSection() {
           </p>
         </div>
 
-        <div className="mt-10 -mx-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-10 -mx-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           <ul className="flex snap-x snap-mandatory gap-4 md:gap-6">
-            {CLIPS.map((c) => (
+            {CLIPS.map((c, idx) => (
               <li
                 key={c.id}
                 className="w-[78%] flex-shrink-0 snap-center sm:w-[48%] md:w-[32%] lg:w-[22%]"
               >
-                <VideoTile clip={c} activeId={activeId} onUnmute={handleUnmute} />
+                <VideoTile clip={c} activeId={activeId} onUnmute={handleUnmute} eager={idx === 0} />
                 <p className="mt-3 px-1 text-sm font-medium text-foreground">
                   {c.caption}
                 </p>
