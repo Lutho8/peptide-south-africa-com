@@ -16,7 +16,7 @@ interface Subscription {
   next_charge_at: string | null;
   status: string;
   discount_pct: number;
-  payfast_subscription_id: string | null;
+  
 }
 
 export default function AccountPage() {
@@ -41,7 +41,7 @@ export default function AccountPage() {
       const [subsRes, refRow, balRes, redRes] = await Promise.all([
         supabase
           .from("subscriptions")
-          .select("id, product_slug, variant_label, interval_weeks, next_charge_at, status, discount_pct, payfast_subscription_id")
+          .select("id, product_slug, variant_label, interval_weeks, next_charge_at, status, discount_pct")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
         ensureReferralCode(user.id),
@@ -200,11 +200,6 @@ export default function AccountPage() {
                         {s.next_charge_at && isActive && (
                           <p className="mt-0.5 text-xs text-trust">
                             Next charge {new Date(s.next_charge_at).toLocaleDateString()}
-                          </p>
-                        )}
-                        {!s.payfast_subscription_id && !isCancelled && (
-                          <p className="mt-1 inline-block rounded bg-badge/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-badge ring-1 ring-badge/20">
-                            Awaiting billing activation
                           </p>
                         )}
                       </div>
