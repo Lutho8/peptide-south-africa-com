@@ -110,8 +110,8 @@ const quizSteps = [
     question: "What monthly budget works for you?",
     key: "budget" as const,
     options: [
-      { value: "starter", label: "Under €75 / R1,500 per month", icon: "💰", desc: "Focused, essential protocol" },
-      { value: "standard", label: "€75–€130 / R1,500–R2,500 per month", icon: "⭐", desc: "Comprehensive guided program" },
+      { value: "starter", label: "Under R1,500 per month", icon: "💰", desc: "Focused, essential protocol" },
+      { value: "standard", label: "R1,500–R2,500 per month", icon: "⭐", desc: "Comprehensive guided program" },
       { value: "premium", label: "R2,500+/month", icon: "👑", desc: "Full protocol with premium support" },
     ],
   },
@@ -194,7 +194,7 @@ export default function QuizFunnelPage() {
 
     return (
       <>
-        <SEO title="Free Peptide Protocol Quiz — Personalized Stack" description="Take our 6-step quiz and get a personalized peptide protocol recommendation reviewed by a GP. Available to clients in South Africa and Germany / the EU. Free, 2 minutes." path="/quiz" />
+        <SEO title="Free Peptide Protocol Quiz — Personalized Stack" description="Take our 6-step quiz and get a personalized peptide protocol recommendation reviewed by a GP. Available across South Africa. Free, 2 minutes." path="/quiz" />
         <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Free Quiz", href: "/quiz" }]} />
         <div className="flex min-h-[80vh] flex-col">
         <div className="border-b border-border bg-card">

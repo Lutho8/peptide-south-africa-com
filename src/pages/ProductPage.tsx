@@ -149,7 +149,7 @@ export default function ProductPage() {
       }} />
       <SEO
         title={`${product.name} | Research Peptide | Ride The Tide`}
-        description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships to Germany & South Africa.`}
+        description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
@@ -182,20 +182,8 @@ export default function ProductPage() {
               <span className="text-sm text-muted-foreground">(47 reviews)</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product?.priceRange
-                ? (currency === "EUR"
-                    ? product.priceRange
-                    : (() => {
-                        const nums = product.priceRange.match(/[\d.,]+/g)?.map((s) => parseFloat(s.replace(",", "."))) ?? [];
-                        if (nums.length !== 2) return product.priceRange;
-                        const fmt = (eur: number) => `R${(eur * rate).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
-                        return `${fmt(nums[0])} – ${fmt(nums[1])}`;
-                      })())
-                : display(currentPrice).primary}
+              {product?.priceRange ?? display(currentPrice).primary}
             </p>
-            {display(currentPrice).secondary && (
-              <p className="text-xs text-muted-foreground">{display(currentPrice).secondary}</p>
-            )}
 
             {/* Purity & Storage */}
             {product.purity && (

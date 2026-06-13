@@ -79,10 +79,8 @@ export default function OrderStatusPage() {
 
   const headlineKey = isPaid ? "paid" : isCancelled ? "cancelled" : "pending";
 
-  const formatMoney = (n: number, ccy: string) =>
-    ccy === "EUR"
-      ? `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatMoney = (n: number, _ccy: string) =>
+    `R${n.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <>

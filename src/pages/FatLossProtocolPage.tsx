@@ -130,7 +130,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 export default function FatLossProtocolPage() {
   return (
     <div className="flex flex-col">
-      <SEO title="Peptide Fat Loss Protocol — SA &amp; Germany / EU" description="12-week GP-led fat loss protocol using Retatrutide and Tirzepatide. BMI calculator, dosing guide, physician oversight. Served across South Africa and the EU." path="/fat-loss-protocol" />
+      <SEO title="Peptide Fat Loss Protocol — South Africa" description="12-week GP-led fat loss protocol using Retatrutide and Tirzepatide. BMI calculator, dosing guide, physician oversight. Available nationwide across South Africa." path="/fat-loss-protocol" />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Fat Loss Protocol", href: "/fat-loss-protocol" }]} />
       {/* HERO */}
       <section className="bg-hero-gradient py-16 sm:py-24">
@@ -508,7 +508,7 @@ export default function FatLossProtocolPage() {
               <FAQItem q="Can I exercise during the protocol?" a="Absolutely. Moderate exercise is encouraged and can enhance results. We'll provide activity recommendations suited to your fitness level and protocol." />
               <FAQItem q="How do I get my monthly supply?" a="Your protocol supply is delivered monthly via discreet packaging. We handle everything — you just follow the guided schedule provided." />
               <FAQItem q="What happens after 12 weeks?" a="After completing the protocol, you can book a follow-up consultation to assess maintenance, continue with an extended protocol, or transition to our Recovery & Performance stack." />
-              <FAQItem q="Where do you serve?" a="South Africa nationwide (Cape Town, Johannesburg, Durban, Pretoria and beyond) plus Germany and the EU via our DHL fulfilment partner. All consultations run remotely via WhatsApp or Zoom." />
+              <FAQItem q="Where do you serve?" a="South Africa nationwide — Cape Town, Johannesburg, Durban, Pretoria and beyond. All consultations run remotely via WhatsApp or Zoom." />
             </div>
           </div>
         </div>
