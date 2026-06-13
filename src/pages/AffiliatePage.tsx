@@ -21,9 +21,9 @@ const tiers = [
   {
     name: "Pro",
     rate: "25%",
-    eyebrow: "After €1,000 / R20k referred",
+    eyebrow: "After R20,000 referred",
     perks: ["25% commission + recurring on repeat orders", "Custom discount code (10% off)", "Free product for content", "Priority WhatsApp support"],
-    cta: "Unlock at €1,000",
+    cta: "Unlock at R20,000",
     highlight: true,
   },
   {
@@ -39,7 +39,7 @@ const tiers = [
 const perks = [
   { icon: TrendingUp, title: "Real-time dashboard", desc: "Track clicks, conversions and earnings live." },
   { icon: Clock, title: "60-day cookie", desc: "Twice the industry standard. We credit you for repeat visitors." },
-  { icon: Wallet, title: "Monthly payouts", desc: "PayPal · EFT (SA) · USDT. €25 minimum." },
+  { icon: Wallet, title: "Monthly payouts", desc: "EFT (SA ZAR). R500 minimum." },
   { icon: Gift, title: "Free product for content", desc: "Sample kit shipped after your first 3 referrals." },
   { icon: Megaphone, title: "Swipe-file & creatives", desc: "On-brand reels, banners and copy ready to post." },
   { icon: MessageCircle, title: "Dedicated manager", desc: "Direct WhatsApp line with your affiliate manager." },
@@ -62,12 +62,12 @@ const steps = [
 ];
 
 const faqs = [
-  { q: "How much can I realistically earn?", a: "Active affiliates with engaged audiences (5k–20k) typically earn €400–€2,500/month at the Pro tier. Top creators clear €5k+." },
+  { q: "How much can I realistically earn?", a: "Active affiliates with engaged audiences (5k–20k) typically earn R8,000–R50,000/month at the Pro tier. Top creators clear R100k+." },
   { q: "What's the cookie window?", a: "60 days from last click — twice the industry default of 30 days." },
-  { q: "When and how do I get paid?", a: "Payouts go out on the 1st of each month for the prior month's confirmed orders. Choose PayPal, EFT (SA), or USDT." },
+  { q: "When and how do I get paid?", a: "Payouts go out on the 1st of each month for the prior month's confirmed orders, via EFT in ZAR." },
   { q: "Are refunded orders clawed back?", a: "Only if refunded inside the 14-day window. After that, your commission is locked." },
   { q: "Can I run paid ads on your brand name?", a: "No bidding on 'Ride The Tide' or close variants. Other paid traffic is welcome — just check with us first." },
-  { q: "Do you support international affiliates?", a: "Yes — we pay globally in EUR or USDT. South African affiliates can opt for EFT in ZAR." },
+  { q: "Do you support international affiliates?", a: "We currently pay out via South African EFT in ZAR. International affiliates can join — payouts are made into a local ZAR-receiving account of your choosing." },
 ];
 
 const applicationSchema = z.object({
@@ -86,7 +86,7 @@ export default function AffiliatePage() {
 
   // Earnings calculator
   const [refs, setRefs] = useState(20);
-  const [aov, setAov] = useState(80);
+  const [aov, setAov] = useState(1500);
   const [rate, setRate] = useState(0.25);
   const monthly = useMemo(() => Math.round(refs * aov * rate), [refs, aov, rate]);
 
@@ -144,7 +144,7 @@ export default function AffiliatePage() {
             </h1>
             <p className="mt-5 text-base text-white/80 md:text-lg">
               Promote lab-tested research peptides trusted by 1,200+ researchers and clinicians.
-              Industry-leading commissions, 60-day cookie, and monthly payouts in EUR, ZAR or USDT.
+              Industry-leading commissions, 60-day cookie, and monthly payouts in ZAR.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <a href="#apply" className="inline-flex items-center gap-2 rounded-xl bg-[#00d4aa] px-6 py-3.5 text-sm font-bold text-[#0a2540] shadow-glow transition-all hover:opacity-90 active:scale-95">
@@ -257,9 +257,9 @@ export default function AffiliatePage() {
                 </div>
                 <div>
                   <label className="flex justify-between text-sm font-semibold">
-                    <span>Average order value (€)</span><span>€{aov}</span>
+                    <span>Average order value (R)</span><span>R{aov}</span>
                   </label>
-                  <input type="range" min={20} max={400} value={aov} onChange={(e) => setAov(+e.target.value)} className="mt-2 w-full accent-[#00d4aa]" />
+                  <input type="range" min={500} max={8000} step={100} value={aov} onChange={(e) => setAov(+e.target.value)} className="mt-2 w-full accent-[#00d4aa]" />
                 </div>
                 <div>
                   <label className="flex justify-between text-sm font-semibold">
@@ -277,9 +277,8 @@ export default function AffiliatePage() {
               </div>
               <div className="flex flex-col items-center justify-center rounded-xl bg-black/20 p-8 text-center">
                 <p className="text-sm font-semibold uppercase tracking-wider text-white/70">Estimated monthly</p>
-                <p className="mt-2 font-display text-6xl font-bold text-[#00d4aa]">€{monthly.toLocaleString()}</p>
-                <p className="mt-2 text-sm text-white/70">≈ R{(monthly * 19.4).toLocaleString()} / month</p>
-                <p className="mt-4 text-xs text-white/60">Annual potential: €{(monthly * 12).toLocaleString()}</p>
+                <p className="mt-2 font-display text-6xl font-bold text-[#00d4aa]">R{monthly.toLocaleString()}</p>
+                <p className="mt-4 text-xs text-white/60">Annual potential: R{(monthly * 12).toLocaleString()}</p>
               </div>
             </div>
           </div>

@@ -12,13 +12,13 @@ const faqs = [
   { question: "What makes Ride The Tide different from other peptide suppliers?", answer: "We don't just sell peptides — we provide GP-led, structured protocols with German-certified compounds (≥99% purity). Every client gets personalized dosing, weekly check-ins, and a complete transformation system rather than standalone products." },
   { question: "Are your peptides lab tested?", answer: "Yes, every batch is independently tested by third-party laboratories. Each order includes a Certificate of Analysis (COA) confirming ≥99% purity. Our compounds meet strict German pharmaceutical quality standards." },
   { question: "How long does shipping take in South Africa?", answer: "Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri). Delivery is 1–3 business days to major metros (Cape Town, Johannesburg, Durban, Pretoria) and 2–5 business days to regional addresses, via Aramex / PEP Paxi. Free shipping on orders over R1,500." },
-  { question: "Do you ship to Germany and the EU? · Versand nach Deutschland & EU?", answer: "Yes. Orders for Germany and the EU are dispatched via DHL from an EU fulfilment partner within 24 hours of confirmation. Estimated delivery is 4–7 Werktage in Germany and 5–10 business days to the rest of the EU. Free shipping on orders over €75. No customs duties or import VAT for EU destinations." },
-  { question: "Which currency am I charged in?", answer: "Prices are displayed in EUR (€) by default and can be switched to ZAR (R) using the currency toggle in the header. You are charged in your chosen currency at checkout — the exchange rate is refreshed live from a public FX feed." },
+  { question: "Do you ship outside South Africa?", answer: "We currently ship within South Africa only. Same-day dispatch from Cape Town on orders placed before 14:00 SAST (Mon–Fri). Contact support@ridethetide.site if you'd like to be notified when other regions open." },
+  { question: "Which currency am I charged in?", answer: "All prices are displayed and charged in South African Rand (ZAR / R). PayFast handles the secure checkout in ZAR." },
   { question: "What results can I expect from a fat loss protocol?", answer: "Clients on our fat loss protocols typically see 8–12 kg reduction over 6–12 weeks when following the structured program. Results vary based on adherence, starting point, and individual metabolism. Our GLP-1 agonist protocols (RT3, TZ-2) target visceral fat specifically." },
   { question: "Can I book a consultation before starting?", answer: "Absolutely. After completing the quiz, you can book a free consultation via Zoom to discuss your results and protocol with our team. This helps ensure the recommended protocol aligns with your specific needs and health history." },
-  { question: "What payment methods do you accept?", answer: "We accept PayPal, Visa, Mastercard, Apple Pay, Google Pay, SEPA bank transfers, and major cryptocurrencies (Bitcoin, USDT, etc.) — all processed securely through our payment partner NowPayments. PCI-DSS-compliant and GDPR-aligned." },
+  { question: "What payment methods do you accept?", answer: "We accept Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred and Masterpass — all processed securely through PayFast. PCI-DSS compliant and POPIA-aligned." },
   { question: "How should peptides be stored?", answer: "Unreconstituted peptides should be stored in a cool, dry place. Once reconstituted, store refrigerated (2–8°C) and use within the recommended timeframe noted in the included protocol guide." },
-  { question: "Are research peptides legal to buy?", answer: "In South Africa, research peptides are legal to purchase for research and educational purposes. In Germany and the EU, peptides are sold strictly as research chemicals (not for human consumption) and are legal to purchase by adults 18+ for laboratory use. Our protocols are designed within these frameworks using pharmaceutical-grade compounds." },
+  { question: "Are research peptides legal to buy?", answer: "In South Africa, research peptides are legal to purchase for research and educational purposes by adults 18+. Our protocols are designed within these frameworks using pharmaceutical-grade compounds." },
 ];
 
 // FAQ schema combines the visible FAQs with extra dual-market Q&A surfaced for search.
@@ -29,8 +29,8 @@ const schemaFaqs: { question: string; answer: string }[] = [
     answer: "All our peptides are ≥99% purity, verified by independent third-party HPLC testing. A Certificate of Analysis (COA) is provided with every batch.",
   },
   {
-    question: "Do you ship to Germany?",
-    answer: "Yes, we ship to Germany via Deutsche Post / DHL. Delivery takes 4–7 business days. Free shipping on orders over €120.",
+    question: "Do you ship within South Africa?",
+    answer: "Yes, we offer local courier delivery across South Africa via The Courier Guy / Aramex. Delivery takes 1–3 business days. Free shipping on orders over R1,500.",
   },
   {
     question: "Do you ship within South Africa?",
@@ -48,7 +48,7 @@ export default function FAQPage() {
 
   return (
     <>
-      <SEO title="Peptide Research FAQ | Dosing, Shipping, Purity" description="Common questions about research peptides answered. Shipping, purity testing, dosing protocols, storage & more. GP-led guidance for Germany & South Africa." path="/faq" />
+      <SEO title="Peptide Research FAQ | Dosing, Shipping, Purity" description="Common questions about research peptides answered. Shipping, purity testing, dosing protocols, storage & more. GP-led guidance for South Africa." path="/faq" />
       <div className="flex flex-col">
       <JsonLd data={faqSchema(faqsForSchema)} />
       <Breadcrumbs crumbs={[

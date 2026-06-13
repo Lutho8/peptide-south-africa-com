@@ -109,7 +109,7 @@ export default function ShopPage() {
         <div className="container px-4 py-10 md:py-14">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-block rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              Lab-tested · ≥99% HPLC purity · Shipped from South Africa &amp; an EU partner
+              Lab-tested · ≥99% HPLC purity · Shipped from Cape Town across South Africa
             </span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
               {shopCopy.h1}
@@ -146,8 +146,8 @@ export default function ShopPage() {
             {[
               { icon: FlaskConical, label: "≥99% HPLC", sub: "Every batch" },
               { icon: ShieldCheck, label: "COA on every product", sub: "3rd-party verified" },
-              { icon: MapPin, label: "ZA &amp; DE / EU", sub: "Local + EU support" },
-              { icon: Truck, label: "Free shipping", sub: "R1,500 SA · €75 DE / EU" },
+              { icon: MapPin, label: "Ships across SA", sub: "Same-day dispatch" },
+              { icon: Truck, label: "Free shipping", sub: "On orders over R1,500" },
             ].map((t, i) => (
               <div
                 key={i}

@@ -1,13 +1,13 @@
-// Footer payment-methods strip. Monochrome text-badges for visual restraint.
+// Footer payment-methods strip — PayFast (South Africa).
 const METHODS = [
-  "PayPal",
   "Visa",
   "Mastercard",
-  "Apple Pay",
-  "Google Pay",
-  "SEPA",
-  "Bitcoin",
-  "Revolut",
+  "Instant EFT",
+  "Capitec Pay",
+  "SnapScan",
+  "Zapper",
+  "Mobicred",
+  "Masterpass",
 ];
 
 export default function PaymentMethodsBanner() {
@@ -30,13 +30,14 @@ export default function PaymentMethodsBanner() {
         <p className="text-[10px] text-muted-foreground">
           Secure payments powered by{" "}
           <a
-            href="https://nowpayments.io"
+            href="https://www.payfast.co.za"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-foreground hover:text-primary"
           >
-            NowPayments
+            PayFast
           </a>
+          {" "}· PCI-DSS compliant · ZAR
         </p>
       </div>
     </div>

@@ -112,7 +112,7 @@ export default function CartPage() {
             to={mp("/checkout")}
             className="mt-6 block w-full rounded-lg bg-hero-gradient py-3.5 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90"
           >
-            Proceed to Checkout · Zur Kasse
+            Proceed to Checkout
           </Link>
           <p className="mt-4 text-center text-xs text-muted-foreground">🔒 {trilingual("secure_checkout")}</p>
         </div>

@@ -1,24 +1,4 @@
 import { z } from "zod";
-import type { ShippingCountry } from "@/lib/shipping";
-
-export const DE_BUNDESLAENDER = [
-  "Baden-Württemberg",
-  "Bayern",
-  "Berlin",
-  "Brandenburg",
-  "Bremen",
-  "Hamburg",
-  "Hessen",
-  "Mecklenburg-Vorpommern",
-  "Niedersachsen",
-  "Nordrhein-Westfalen",
-  "Rheinland-Pfalz",
-  "Saarland",
-  "Sachsen",
-  "Sachsen-Anhalt",
-  "Schleswig-Holstein",
-  "Thüringen",
-];
 
 export const SA_PROVINCES = [
   "Eastern Cape",
@@ -46,44 +26,28 @@ export type CheckoutForm = {
 
 export type CheckoutErrors = Partial<Record<keyof CheckoutForm, string>>;
 
-const baseShape = {
+export const saSchema = z.object({
   firstName: z.string().trim().regex(NAME_RE, "err_name_chars"),
   lastName: z.string().trim().regex(NAME_RE, "err_name_chars"),
   email: z.string().trim().email("err_email").max(120, "err_email"),
   address1: z.string().trim().min(3, "err_address_short").max(120, "err_address_short"),
   city: z.string().trim().min(2, "err_required").max(80, "err_required"),
-};
-
-function matchEnum(list: string[], value: string): boolean {
-  const v = value.trim().toLowerCase();
-  return list.some((x) => x.toLowerCase() === v);
-}
-
-export const deSchema = z.object({
-  ...baseShape,
-  postalCode: z.string().trim().regex(/^\d{5}$/, "err_postal_de"),
-  region: z
-    .string()
-    .trim()
-    .refine((v) => matchEnum(DE_BUNDESLAENDER, v), "err_region_de"),
-});
-
-export const saSchema = z.object({
-  ...baseShape,
   postalCode: z.string().trim().regex(/^\d{4}$/, "err_postal_sa"),
   region: z
     .string()
     .trim()
-    .refine((v) => matchEnum(SA_PROVINCES, v), "err_region_sa"),
+    .refine(
+      (v) => SA_PROVINCES.some((p) => p.toLowerCase() === v.trim().toLowerCase()),
+      "err_region_sa",
+    ),
 });
 
 export type ValidateResult =
   | { ok: true; data: CheckoutForm }
   | { ok: false; errors: CheckoutErrors };
 
-export function validateCheckout(input: CheckoutForm, country: ShippingCountry): ValidateResult {
-  const schema = country === "Germany" ? deSchema : saSchema;
-  const r = schema.safeParse(input);
+export function validateCheckout(input: CheckoutForm): ValidateResult {
+  const r = saSchema.safeParse(input);
   if (r.success) return { ok: true, data: r.data as CheckoutForm };
   const errors: CheckoutErrors = {};
   for (const issue of r.error.issues) {

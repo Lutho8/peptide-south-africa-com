@@ -27,7 +27,7 @@ export default function AgeVerificationModal() {
         </div>
         <h2 className="font-display text-2xl font-bold text-foreground">Age Verification</h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          You must be 18 years or older to access this website. Our products are strictly for research purposes only — not for human consumption. By entering, you confirm you are of legal age in your jurisdiction (South Africa: 18+ · Deutschland: 18+).
+          You must be 18 years or older to access this website. Our products are strictly for research purposes only — not for human consumption. By entering, you confirm you are 18 or older under South African law.
         </p>
         <p className="mt-2 text-xs italic text-muted-foreground">
           Sie müssen 18 Jahre oder älter sein. Nur für Forschungszwecke. · Jy moet 18+ wees. Slegs vir navorsing.

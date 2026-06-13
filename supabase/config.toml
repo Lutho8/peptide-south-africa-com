@@ -12,3 +12,8 @@ verify_jwt = false
 [functions.community-join]
 verify_jwt = false
 
+[functions.payfast-create-payment]
+verify_jwt = true
+
+[functions.payfast-itn]
+verify_jwt = false

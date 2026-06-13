@@ -126,7 +126,7 @@ export default function HeroShop() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:mt-4 sm:text-lg"
           >
-            HPLC-verified · ZAR &amp; EUR pricing · Discreet shipping to South Africa (1–3 days) &amp; EU (4–7 days).
+            HPLC-verified · ZAR pricing · Discreet shipping across South Africa in 1–3 business days.
           </motion.p>
 
           {/* Primary CTAs — mobile-first, big tap targets */}

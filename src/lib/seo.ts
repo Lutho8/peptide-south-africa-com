@@ -11,7 +11,7 @@ export const localBusinessSchema = {
   image: `${SITE_URL}/favicon.png`,
   priceRange: "R450 – R5,000",
   currenciesAccepted: "ZAR",
-  paymentAccepted: "Credit Card, PayPal, Apple Pay, Google Pay, EFT, Cryptocurrency",
+  paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
     "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
   address: {
@@ -108,9 +108,7 @@ export function productSchema(product: {
   inStock: boolean;
   sku?: string;
 }) {
-  // Base price is stored in EUR-equivalent units; ZAR display uses live rate.
-  // For schema, we approximate ZAR at the fallback rate so it's machine-readable.
-  const RATE = 19.4;
+  // Product prices are stored in ZAR.
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -126,7 +124,7 @@ export function productSchema(product: {
       "@type": "Offer",
       url: `${SITE_URL}/product/${product.slug}`,
       priceCurrency: "ZAR",
-      price: Math.round(product.price * RATE),
+      price: Math.round(product.price),
       priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
       itemCondition: "https://schema.org/NewCondition",
       availability: product.inStock

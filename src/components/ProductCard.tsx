@@ -6,14 +6,12 @@ import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
 import TrackBadge from "@/components/TrackBadge";
-import { useMarket, marketPath } from "@/hooks/useMarket";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const { display, currency, rate, format } = useCurrency();
-  const { market } = useMarket();
-  const productUrl = marketPath(`/product/${product.slug}`, market);
+  const { format } = useCurrency();
+  const productUrl = `/product/${product.slug}`;
 
   // Only surface 3-pack and 5-pack on the card — keeps decision simple.
   // 10-pack (and any other tiers) remain available on the PDP.
@@ -25,23 +23,14 @@ export default function ProductCard({ product }: { product: Product }) {
     [product.variants],
   );
   const hasPackVariants = packVariants.length > 0;
-  // Default to 5-pack (best perceived value); fall back to first available.
   const defaultIdx = packVariants.findIndex((v) => v.pack === 5);
   const [selectedIdx, setSelectedIdx] = useState(defaultIdx >= 0 ? defaultIdx : 0);
   const selected: Variant | undefined = packVariants[selectedIdx];
 
   const hasMultipleVariants = !hasPackVariants && (product.variants?.length ?? 0) > 1;
 
-  // Convert EUR price range to ZAR display when ZAR is active.
-  const priceRangeDisplay = (() => {
-    if (!product.priceRange) return null;
-    if (currency === "EUR") return product.priceRange;
-    const nums = product.priceRange.match(/[\d.,]+/g)?.map((s) => parseFloat(s.replace(",", "."))) ?? [];
-    if (nums.length !== 2) return product.priceRange;
-    const fmt = (eur: number) => `R${(eur * rate).toLocaleString("en-ZA", { maximumFractionDigits: 0 })}`;
-    return `${fmt(nums[0])} – ${fmt(nums[1])}`;
-  })();
-  const priceDisplay = display(selected?.price ?? product.price);
+  const priceRangeDisplay = product.priceRange ?? format(product.price);
+  const priceDisplay = format(selected?.price ?? product.price);
 
   const isGPTrack = product.track === "GP";
 
@@ -50,7 +39,6 @@ export default function ProductCard({ product }: { product: Product }) {
       navigate(productUrl);
       return;
     }
-    // GP-track (Reta/Tirz/Sema) goes through clinician pathway, never raw add-to-cart.
     if (isGPTrack) {
       navigate(`/quiz?product=${product.slug}`);
       return;
@@ -90,7 +78,6 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
-        {/* Trust micro-row */}
         <div className="mb-2 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
           {product.purity && (
             <span className="inline-flex items-center gap-1 rounded bg-primary/5 px-1.5 py-0.5 text-primary ring-1 ring-primary/15">
@@ -128,12 +115,10 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.shortDescription}
         </p>
 
-
-        {/* Headline price row */}
         <div className="mt-3 flex items-baseline justify-between">
           <div>
             <p className="font-mono text-base font-bold text-primary">
-              {hasPackVariants ? priceDisplay.primary : priceRangeDisplay || priceDisplay.primary}
+              {hasPackVariants ? priceDisplay : priceRangeDisplay}
             </p>
             {hasPackVariants ? (
               <p className="font-mono text-[10px] uppercase tracking-wide text-trust font-semibold">
@@ -143,18 +128,13 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* Pack picker */}
         {hasPackVariants && (
           <div className="mt-3 grid grid-cols-2 gap-2">
             {packVariants.map((v, i) => {
               const isSelected = i === selectedIdx;
               const totalMg = (v.pack ?? 1) * (v.mgPerVial ?? 1);
-              const perMgEur = v.price / totalMg;
-              const perMgZar = perMgEur * rate;
-              const perMgLabel =
-                currency === "EUR"
-                  ? `€${perMgEur.toFixed(2)}/mg`
-                  : `R${perMgZar.toLocaleString("en-ZA", { maximumFractionDigits: 2 })}/mg`;
+              const perMg = v.price / totalMg;
+              const perMgLabel = `R${perMg.toLocaleString("en-ZA", { maximumFractionDigits: 2 })}/mg`;
               return (
                 <button
                   type="button"
