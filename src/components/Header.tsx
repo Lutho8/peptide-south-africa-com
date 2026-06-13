@@ -51,6 +51,24 @@ const DROPDOWNS: Dropdown[] = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const { totalItems, setIsCartOpen } = useCart();
+
+  const CartButton = ({ className = "" }: { className?: string }) => (
+    <button
+      type="button"
+      onClick={() => setIsCartOpen(true)}
+      aria-label={`Open cart (${totalItems} item${totalItems === 1 ? "" : "s"})`}
+      className={`relative inline-flex items-center justify-center rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-muted ${className}`}
+    >
+      <ShoppingCart className="h-5 w-5" />
+      {totalItems > 0 && (
+        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
+          {totalItems}
+        </span>
+      )}
+    </button>
+  );
+
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
