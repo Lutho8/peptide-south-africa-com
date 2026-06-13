@@ -88,11 +88,6 @@ export default function ProductPage() {
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
-    // GP-track: route to clinician quiz instead of cart
-    if (isGPTrack) {
-      navigate(`/quiz?product=${product.slug}`);
-      return;
-    }
     if (purchaseMode === "subscribe") {
       if (!user) {
         navigate(`/auth?redirect=/product/${product.slug}`);
@@ -236,8 +231,8 @@ export default function ProductPage() {
               <StockBadge product={product} size="md" />
             </div>
 
-            {/* Purchase mode — Subscribe & save (hidden for GP-track) */}
-            {!isGPTrack && product.inStock && (
+            {/* Purchase mode — Subscribe & save */}
+            {product.inStock && (
               <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
                 <div className="grid grid-cols-2">
                   <button
@@ -293,15 +288,13 @@ export default function ProductPage() {
               </div>
             )}
 
-            {/* CTA */}
+            {/* Primary CTA — Add to Cart */}
             <button
               onClick={handleAdd}
-              disabled={(!product.inStock && !isGPTrack) || subBusy}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 md:w-auto md:px-12"
+              disabled={!product.inStock || subBusy}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             >
-              {isGPTrack ? (
-                <><Stethoscope className="h-4 w-4" /> Start Clinician Consultation</>
-              ) : !product.inStock ? (
+              {!product.inStock ? (
                 "Pre-Order"
               ) : purchaseMode === "subscribe" ? (
                 subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%</>
@@ -311,6 +304,16 @@ export default function ProductPage() {
                 "Add to Cart"
               )}
             </button>
+
+            {/* Secondary CTA — Clinician consult for GP-track */}
+            {isGPTrack && product.inStock && (
+              <Link
+                to={`/quiz?product=${product.slug}`}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/10"
+              >
+                <Stethoscope className="h-4 w-4" /> Prefer guidance? Start Clinician Consultation
+              </Link>
+            )}
 
             <TrackerBridgeCard productName={product.name} productSlug={product.slug} />
 
