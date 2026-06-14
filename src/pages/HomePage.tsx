@@ -4,78 +4,57 @@ import {
   CheckCircle,
   Star,
   Shield,
-  Clock,
-  Target,
-  Heart,
-  Sparkles,
   Flame,
   Dumbbell,
+  Heart,
+  Sparkles,
   Leaf,
-  Brain,
-  Award,
+  Activity,
+  ClipboardCheck,
+  Stethoscope,
+  Package,
 } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
-import RelatedContent from "@/components/RelatedContent";
-import MediaLogos from "@/components/MediaLogos";
-import HeroShop from "@/components/HeroShop";
-import SupportVideosSection from "@/components/SupportVideosSection";
-import TextUsSection from "@/components/TextUsSection";
-import CategoryShowcase from "@/components/CategoryShowcase";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
-import CustomerProofStrip from "@/components/CustomerProofStrip";
-import SectionReveal from "@/components/SectionReveal";
-import EcosystemSection from "@/components/EcosystemSection";
-import WaitlistSection from "@/components/WaitlistSection";
-import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
+import { organizationSchema, websiteSchema, localBusinessSchema } from "@/lib/seo";
 import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 
-const results = [
-  { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
-  { icon: Dumbbell, title: "Guaranteed Healing", desc: "Accelerated recovery from injury and tissue repair" },
-  { icon: Heart, title: "Better Recovery", desc: "Enhanced athletic performance and faster bounce-back" },
-  { icon: Sparkles, title: "Clear Skin & Hair Growth", desc: "Visible improvement in skin clarity and hair thickness" },
-  { icon: Leaf, title: "Gut Health & Immunity", desc: "Strengthened immune system and digestive function" },
-  { icon: Brain, title: "Mental Clarity", desc: "Sharper focus and improved cognitive performance" },
+const goals = [
+  { slug: "weight-loss", label: "Lose Weight", icon: Flame, blurb: "GLP-1 program with clinical oversight." },
+  { slug: "recovery", label: "Improve Recovery", icon: Dumbbell, blurb: "Heal faster. Train harder." },
+  { slug: "energy", label: "Increase Energy", icon: Sparkles, blurb: "Sharper days. Steadier output." },
+  { slug: "longevity", label: "Age Better", icon: Leaf, blurb: "Mitochondrial & longevity peptides." },
+  { slug: "performance", label: "Improve Performance", icon: Activity, blurb: "Strength, output and recovery." },
+];
+
+const steps = [
+  { n: "01", icon: ClipboardCheck, title: "Take the Assessment", desc: "9 questions. Under 3 minutes." },
+  { n: "02", icon: Sparkles, title: "Get a Personalised Program", desc: "Matched to your goal, age and biology." },
+  { n: "03", icon: Package, title: "Join Today", desc: "Start your membership in one tap." },
+  { n: "04", icon: Stethoscope, title: "Clinical Review", desc: "Where clinically required, a licensed physician reviews your eligibility." },
+  { n: "05", icon: Heart, title: "Start Your Journey", desc: "Discreet delivery. Ongoing support." },
 ];
 
 const testimonials = [
-  {
-    name: "Michael T.",
-    location: "Cape Town, ZA",
-    text: "I lost 8 kg in 6 weeks. The protocol was so simple — no guessing, no confusion. Just followed the plan and the results came.",
-    rating: 5,
-    result: "Lost 8 kg in 6 weeks",
-  },
-  {
-    name: "Lerato P.",
-    location: "Cape Town, ZA",
-    text: "The protocol was clear from day one. Lab results to back it up. Down two dress sizes in 10 weeks with no guesswork.",
-    rating: 5,
-    result: "Down 2 dress sizes",
-  },
-  {
-    name: "James K.",
-    location: "Durban, ZA",
-    text: "My recovery time between training sessions dropped dramatically. I'm performing better at 38 than I did at 28.",
-    rating: 5,
-    result: "50% faster recovery",
-  },
+  { name: "Michael T.", location: "Cape Town", text: "Lost 8 kg in 6 weeks. The program was clear and simple — I just followed it.", result: "Lost 8 kg in 6 weeks" },
+  { name: "Lerato P.", location: "Johannesburg", text: "Down two dress sizes in 10 weeks with lab work to back it up. No guesswork.", result: "Down 2 dress sizes" },
+  { name: "James K.", location: "Durban", text: "My recovery between training sessions dropped dramatically. Performing better at 38 than I did at 28.", result: "50% faster recovery" },
 ];
 
-const whyItWorks = [
-  { title: "Pharmaceutical-Grade Quality", desc: "Every compound meets the highest international pharmaceutical standards." },
-  { title: "No Random Products", desc: "You get a structured protocol, not a shopping cart of guesses." },
-  { title: "No Guessing Doses", desc: "Exact dosing schedules tailored to your body and goals." },
-  { title: "No Trial and Error", desc: "Proven protocols based on clinical research and real results." },
-  { title: "Structured System", desc: "Week-by-week guidance so you always know what to do next." },
-  { title: "Personalized Approach", desc: "Your protocol is built around YOUR body, goals, and lifestyle." },
+const faqs = [
+  { q: "How is this different from a regular pharmacy?", a: "Programs are personalised to your goal and biology, delivered discreetly, and where clinically required reviewed by a licensed South African physician — all from one membership." },
+  { q: "Do I need to book a consultation first?", a: "No. You complete the assessment, join your program and check out. Where clinically required, a licensed physician will review your eligibility before treatment activation — usually within one business day." },
+  { q: "Are the peptides lab tested?", a: "Yes. Every batch is independently HPLC tested with a Certificate of Analysis published online." },
+  { q: "Can I cancel my membership?", a: "Yes. Memberships are month-to-month and cancellable at any time from your account." },
+  { q: "Is this legal in South Africa?", a: "Peptides are dispensed in line with South African medical and pharmacy regulations. Programs follow GP-led clinical oversight." },
 ];
 
 export default function HomePage() {
   const { market, lang } = useMarket();
   const home = pageCopy("home", market);
+
   return (
     <div className="flex flex-col">
       <SEO
@@ -88,328 +67,205 @@ export default function HomePage() {
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={localBusinessSchema} />
-      {/* ===================== HERO (shop-first) ===================== */}
-      <HeroShop />
 
-      {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
-      <SupportVideosSection />
-
-      {/* ===================== CATEGORY SHOWCASES (Whoosh-style) ===================== */}
-      <CategoryShowcase
-        eyebrow="Weight Loss"
-        title="GLP-1 protocols that actually work."
-        blurb="Triple- and dual-agonist peptides for metabolic research — RT3, Tirzepatide and more."
-        productIds={["1", "4"]}
-        shopHref="/shop?category=GLP"
-        accent="weight-loss"
-      />
-      <CategoryShowcase
-        eyebrow="Wellness & Longevity"
-        title="Live longer. Recover smarter."
-        blurb="Mitochondrial peptides and longevity blends researched by the world's top biohackers."
-        productIds={["5", "8", "2"]}
-        shopHref="/shop?category=Longevity"
-        accent="longevity"
-      />
-      <CategoryShowcase
-        eyebrow="Recovery"
-        title="Heal faster. Train harder."
-        blurb="Healing-stack peptides used in clinical recovery and tissue-repair research."
-        productIds={["6", "3"]}
-        shopHref="/shop?category=Healing"
-        accent="recovery"
-      />
-
-
-      {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
-      <FeaturedProductRail />
-
-      {/* ===================== TEXT US (WhatsApp) ===================== */}
-      <TextUsSection />
-
-      {/* ===================== REAL CUSTOMERS ===================== */}
-      <CustomerProofStrip />
-
-      {/* ===================== AS SEEN IN ===================== */}
-      <SectionReveal>
-        <MediaLogos variant="muted" />
-      </SectionReveal>
-
-      {/* ===================== HOW IT WORKS ===================== */}
-      <section className="border-y border-border bg-background py-16 md:py-20">
-        <div className="container px-4">
-          <div className="mb-12 text-center">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              Simple 3-Step Process
-            </span>
-            <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              How It Works
-            </h2>
+      {/* ===================== 1. HERO ===================== */}
+      <section className="relative isolate overflow-hidden border-b border-border bg-background">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-[hsl(var(--gold))]/15 blur-3xl" />
+        </div>
+        <div className="container grid items-center gap-12 px-4 py-16 md:grid-cols-[1.1fr,0.9fr] md:py-24 lg:py-28">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              South Africa's first peptide-forward telehealth platform
+            </div>
+            <h1 className="mt-5 font-display text-[2.75rem] leading-[1.02] tracking-tight text-foreground sm:text-6xl lg:text-[4.5rem]">
+              Get your personalised <span className="italic text-accent">health plan</span> in 1 minute.
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {home.sub} Complete a quick assessment and discover the peptides designed for your goals.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link
+                to="/assessment"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-4 text-base font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+              >
+                Take the Assessment <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/shop"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-7 py-4 text-base font-medium text-foreground hover:bg-muted"
+              >
+                Browse programs
+              </Link>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-accent" /> GP-led clinical oversight</span>
+              <span className="inline-flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-accent" /> ≥99% HPLC lab tested</span>
+              <span className="inline-flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-accent" /> POPIA-compliant · ZAR pricing</span>
+            </div>
           </div>
 
-          <div className="mx-auto grid max-w-4xl gap-8 sm:grid-cols-3">
-            {[
-              {
-                step: "1",
-                icon: Target,
-                title: "Answer a Few Questions",
-                desc: "Tell us about your goals, lifestyle, and what you've tried before. Takes under 2 minutes.",
-              },
-              {
-                step: "2",
-                icon: Shield,
-                title: "Get Your Protocol",
-                desc: "Receive a personalized protocol designed specifically for your body and objectives.",
-              },
-              {
-                step: "3",
-                icon: Clock,
-                title: "Start Your Transformation",
-                desc: "Begin your guided journey with weekly support, tracking, and expert guidance.",
-              },
-            ].map((s, i) => (
-              <div key={i} className="flex flex-col items-center text-center">
-                <div className="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                  <s.icon className="h-7 w-7 text-primary" />
-                  <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-hero-gradient text-xs font-bold text-primary-foreground">
-                    {s.step}
-                  </span>
-                </div>
-                <h3 className="font-display text-lg font-semibold text-foreground">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+          <div className="relative">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-border bg-card shadow-card-hover">
+              <img
+                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1200&q=80"
+                alt="Personalised peptide telehealth"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                fetchPriority="high"
+                width={900}
+                height={1125}
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/85 via-primary/30 to-transparent p-6">
+                <p className="font-display text-xl text-primary-foreground">"My program was ready in minutes. Lost 8 kg in six weeks."</p>
+                <p className="mt-1 text-xs text-primary-foreground/80">— Michael T., Cape Town</p>
               </div>
+            </div>
+            <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-border bg-card p-4 shadow-card-hover md:block">
+              <div className="flex items-center gap-1 text-[hsl(var(--gold))]">
+                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+              </div>
+              <p className="mt-1 text-xs font-semibold text-foreground">4.9 · 1,200+ members</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================== 2. CHOOSE YOUR GOAL ===================== */}
+      <section className="bg-card py-20">
+        <div className="container px-4">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">Step 1</p>
+            <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Choose your goal.</h2>
+            <p className="mt-3 text-muted-foreground">Customers buy outcomes. Peptides are the engine.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {goals.map((g) => (
+              <Link
+                key={g.slug}
+                to={`/assessment?goal=${g.slug}`}
+                className="group flex flex-col rounded-2xl border border-border bg-background p-6 transition-all hover:border-accent hover:shadow-card-hover"
+              >
+                <g.icon className="h-7 w-7 text-accent" />
+                <h3 className="mt-5 font-display text-2xl text-foreground">{g.label}</h3>
+                <p className="mt-2 flex-1 text-sm text-muted-foreground">{g.blurb}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
+                  Start <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ===================== 3. HOW IT WORKS ===================== */}
+      <section id="how-it-works" className="bg-background py-20">
+        <div className="container px-4">
+          <div className="mb-12 max-w-2xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">How it works</p>
+            <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">From assessment to activation.</h2>
+            <p className="mt-3 text-muted-foreground">Simple, clinically considered, built for South Africa.</p>
+          </div>
+
+          <ol className="grid gap-6 md:grid-cols-5">
+            {steps.map((s) => (
+              <li key={s.n} className="relative rounded-2xl border border-border bg-card p-6">
+                <span className="font-mono text-xs text-[hsl(var(--gold))]">{s.n}</span>
+                <s.icon className="mt-2 h-6 w-6 text-accent" />
+                <h3 className="mt-4 font-display text-xl leading-tight text-foreground">{s.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+              </li>
+            ))}
+          </ol>
 
           <div className="mt-10 text-center">
             <Link
-              to="/shop"
-              className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+              to="/assessment"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              Buy Now <ArrowRight className="h-4 w-4" />
+              Take the Assessment <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ===================== THE OFFER ===================== */}
-      <section className="bg-card py-16 md:py-20">
-        <div className="container px-4">
-          <div className="mb-12 text-center">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              Flagship Program
-            </span>
-            <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              12-Week Fat Loss Protocol
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-              A complete, guided transformation system — not a product. Everything you need, mapped out week by week.
-            </p>
-          </div>
-
-          <div className="mx-auto max-w-4xl">
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* What's Included */}
-              <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
-                <h3 className="mb-5 font-display text-xl font-semibold text-foreground">
-                  What's Included
-                </h3>
-                <ul className="space-y-4">
-                  {[
-                    "Personalized protocol plan",
-                    "Monthly supply (guided system)",
-                    "Weekly check-ins & guidance",
-                    "Progress tracking dashboard",
-                    "WhatsApp support access",
-                    "Dosing schedules & timelines",
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
-                      <span className="text-sm text-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Results You Can Expect */}
-              <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
-                <h3 className="mb-5 font-display text-xl font-semibold text-foreground">
-                  Results You Can Expect
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {results.map((r, i) => (
-                    <div key={i} className="text-center">
-                      <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                        <r.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <p className="text-xs font-semibold text-foreground sm:text-sm">{r.title}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border-2 border-border bg-background p-6 text-center shadow-card">
-                <p className="text-sm font-medium text-muted-foreground">Monthly</p>
-                <p className="mt-1 font-display text-3xl font-bold text-foreground">
-                  R1,999<span className="text-base font-normal text-muted-foreground">/month</span>
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">Flexible, cancel anytime</p>
-                <Link
-                  to="/shop"
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
-                >
-                  Buy Monthly — R1,999
-                </Link>
-              </div>
-              <div className="relative rounded-2xl border-2 border-primary bg-background p-6 text-center shadow-glow">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-hero-gradient px-4 py-1 text-xs font-bold text-primary-foreground">
-                  BEST VALUE
-                </span>
-                <p className="text-sm font-medium text-muted-foreground">Full 12-Week Program</p>
-                <p className="mt-1 font-display text-3xl font-bold text-gradient">
-                  R4,999
-                </p>
-                <p className="mt-2 text-xs text-trust font-semibold">Save R997 — 17% off</p>
-                <Link
-                  to="/shop"
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-                >
-                  Buy Now — R4,999 <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              ⚡ Limited spots available for personalized onboarding
-            </p>
-          </div>
+      {/* ===================== 4. PROGRAMS ===================== */}
+      <section className="border-y border-border bg-card py-20">
+        <div className="container mb-10 px-4">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">Programs</p>
+          <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Built around your outcome.</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">Memberships include the program plan, supply, and ongoing clinical support.</p>
         </div>
+        <FeaturedProductRail />
       </section>
 
-      {/* ===================== SOCIAL PROOF ===================== */}
-      <section className="bg-background py-16 md:py-20">
+      {/* ===================== 5. SUCCESS STORIES ===================== */}
+      <section className="bg-background py-20">
         <div className="container px-4">
-          <div className="mb-12 text-center">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              Real Clients, Real Results
-            </span>
-            <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              What Our Clients Say
-            </h2>
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">Success stories</p>
+            <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Real members. Real outcomes.</h2>
           </div>
-
-          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
-                <div className="mb-3 flex gap-1">
-                  {Array(t.rating).fill(null).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-badge text-badge" />
-                  ))}
+              <figure key={i} className="rounded-2xl border border-border bg-card p-7">
+                <div className="flex gap-1 text-[hsl(var(--gold))]">
+                  {Array.from({ length: 5 }).map((_, j) => <Star key={j} className="h-4 w-4 fill-current" />)}
                 </div>
-                <p className="text-sm text-muted-foreground">"{t.text}"</p>
-                <div className="mt-4 border-t border-border pt-3">
+                <blockquote className="mt-4 font-display text-xl leading-snug text-foreground">"{t.text}"</blockquote>
+                <figcaption className="mt-5 border-t border-border pt-4">
                   <p className="text-sm font-semibold text-foreground">{t.name}</p>
                   <p className="text-xs text-muted-foreground">{t.location}</p>
-                  <span className="mt-2 inline-block rounded-full bg-trust/10 px-3 py-1 text-xs font-semibold text-trust">
-                    {t.result}
-                  </span>
-                </div>
-              </div>
+                  <span className="mt-2 inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{t.result}</span>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===================== (clinician hero removed for conversion focus) ===================== */}
-
-      {/* ===================== WHY THIS WORKS ===================== */}
-      <section className="border-y border-border bg-card py-16 md:py-20">
+      {/* ===================== 6. FAQ ===================== */}
+      <section className="border-t border-border bg-card py-20">
         <div className="container px-4">
-          <div className="mb-12 text-center">
-            <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              The Difference
-            </span>
-            <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              Why This Works When Other Approaches Fail
-            </h2>
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">FAQ</p>
+            <h2 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">Common questions.</h2>
           </div>
-
-          <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {whyItWorks.map((item, i) => (
-              <div key={i} className="flex items-start gap-3 rounded-xl border border-border bg-background p-5 shadow-card">
-                <Award className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{item.desc}</p>
-                </div>
-              </div>
+          <div className="mx-auto max-w-3xl divide-y divide-border rounded-2xl border border-border bg-background">
+            {faqs.map((f, i) => (
+              <details key={i} className="group px-6 py-5 [&_summary]:list-none">
+                <summary className="flex cursor-pointer items-center justify-between font-display text-lg text-foreground">
+                  {f.q}
+                  <span className="ml-4 text-accent transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===================== RESEARCH HUB ===================== */}
-      <section className="bg-background py-16 md:py-20">
-        <div className="container px-4">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center sm:p-10">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-              <Brain className="h-7 w-7 text-primary" />
-            </div>
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              Peptide Research Hub
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-              Access our comprehensive database of 98+ peptides with clinical research, dosage calculators, stack builders, and scientific literature — free for the research community.
-            </p>
-            <Link
-              to="/research"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-            >
-              Explore Research Hub <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+      {/* ===================== 7. FINAL CTA ===================== */}
+      <section className="relative isolate overflow-hidden bg-primary py-24">
+        <div aria-hidden className="absolute inset-0 -z-10 opacity-30">
+          <div className="absolute -left-32 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-accent/40 blur-3xl" />
+          <div className="absolute -right-32 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[hsl(var(--gold))]/30 blur-3xl" />
         </div>
-      </section>
-
-      {/* ===================== ENTITY LINKS ===================== */}
-      <RelatedContent
-        title="Explore By Goal"
-        links={[
-          ...entityClusters.fatLoss.links.slice(0, 2),
-          ...entityClusters.healing.links.slice(0, 1),
-          ...entityClusters.growthHormone.links.slice(0, 1),
-          ...entityClusters.trust.links.slice(0, 2),
-        ]}
-      />
-
-      {/* ===================== ECOSYSTEM ===================== */}
-      <EcosystemSection />
-
-      {/* ===================== WAITLIST ===================== */}
-      <WaitlistSection />
-
-      {/* ===================== BOTTOM CTA ===================== */}
-      <section className="bg-hero-gradient py-14 md:py-20">
         <div className="container px-4 text-center">
-          <h2 className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
-            Ready to start? Save 10% on your first order.
+          <h2 className="mx-auto max-w-3xl font-display text-5xl leading-[1.05] text-primary-foreground sm:text-6xl">
+            Get your <span className="italic text-[hsl(var(--gold))]">peptide plan</span>.
           </h2>
-          <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-            Use code <span className="font-mono font-bold">RIDETHETIDE10</span> at checkout.
-            Free shipping over R1,500 across South Africa. Same-day dispatch from Cape Town.
+          <p className="mx-auto mt-5 max-w-xl text-primary-foreground/80">
+            Built for your goal. Reviewed by a licensed physician where clinically required. Delivered discreetly across South Africa.
           </p>
           <Link
-            to="/shop"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-bold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
+            to="/assessment"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-[hsl(var(--gold))] px-8 py-4 text-base font-semibold text-primary shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
-            Buy Now <ArrowRight className="h-5 w-5" />
+            Get Peptide Plan <ArrowRight className="h-4 w-4" />
           </Link>
-          <p className="mt-3 text-sm text-primary-foreground/70">
-            Or <Link to="/quiz" className="underline">take the 2-min quiz</Link> for a personalised protocol
-          </p>
         </div>
       </section>
     </div>

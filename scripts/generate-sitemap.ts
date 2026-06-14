@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://www.ridethetide.site";
+const BASE_URL = "https://peptide-south-africa.com";
 const today = new Date().toISOString().slice(0, 10);
 
 interface SitemapEntry {
@@ -17,6 +17,7 @@ interface SitemapEntry {
 
 const staticEntries: SitemapEntry[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
+  { path: "/assessment", changefreq: "weekly", priority: "0.95" },
   { path: "/shop", changefreq: "daily", priority: "0.9" },
   { path: "/fat-loss-protocol", changefreq: "weekly", priority: "0.85" },
   { path: "/quiz", changefreq: "weekly", priority: "0.8" },

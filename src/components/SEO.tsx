@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://www.ridethetide.site";
-const SITE_NAME = "Ride The Tide";
+const SITE_URL = "https://peptide-south-africa.com";
+const SITE_NAME = "Peptide South Africa";
 const DEFAULT_OG = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8baac3f7-3ee8-4976-8c38-ac9d73046bbc/id-preview-8fd492ca--444b5a36-70e0-4613-a86e-bcb50367db3d.lovable.app-1774135344354.png";
 const DEFAULT_KEYWORDS =
-  "peptides South Africa, peptides Cape Town, buy peptides online, research peptides, retatrutide, tirzepatide, BPC-157, GHK-Cu, tesamorelin, fat loss peptides, healing peptides, GLP-1 peptides";
+  "peptide telehealth South Africa, weight loss program South Africa, peptides Cape Town, retatrutide South Africa, tirzepatide, GLP-1 program, BPC-157, longevity peptides, recovery peptides, online peptide doctor";
 
 interface SEOProps {
   title: string;
@@ -69,7 +69,7 @@ export default function SEO({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
 
-      {/* Geo — Cape Town */}
+      {/* Geo — South Africa */}
       <meta name="geo.region" content="ZA-WC" />
       <meta name="geo.placename" content="Cape Town, South Africa" />
       <meta name="geo.position" content="-33.9249;18.4241" />
