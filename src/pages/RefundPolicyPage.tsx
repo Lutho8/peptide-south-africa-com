@@ -3,13 +3,13 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const refundSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${SITE_URL}/refund#page`,
-  name: "Refund Policy — Ride The Tide",
+  name: "Refund Policy — Peptide South Africa",
   url: `${SITE_URL}/refund`,
   description:
     "Refund eligibility for damaged, lost, or incorrect orders. Research-use products are non-returnable once opened. 2-hour cancellation window.",

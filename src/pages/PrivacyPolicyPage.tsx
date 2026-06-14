@@ -4,16 +4,16 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const privacySchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${SITE_URL}/privacy#page`,
-  name: "Privacy Policy — Ride The Tide",
+  name: "Privacy Policy — Peptide South Africa",
   url: `${SITE_URL}/privacy`,
   description:
-    "POPIA-compliant Privacy Policy explaining how Ride The Tide collects, uses, stores, and safeguards personal information.",
+    "POPIA-compliant Privacy Policy explaining how Peptide South Africa collects, uses, stores, and safeguards personal information.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Privacy & Data Protection" },
@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
     <>
       <SEO
         title="Privacy Policy — POPIA Compliant"
-        description="How Ride The Tide handles your personal information, compliant with South Africa's Protection of Personal Information Act (POPIA)."
+        description="How Peptide South Africa handles your personal information, compliant with South Africa's Protection of Personal Information Act (POPIA)."
         path="/privacy"
         lang="en"
         alternates={buildAlternates("/privacy")}
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">1. Introduction</h2>
             <p className="mt-3">
-              Ride The Tide (Pty) Ltd ("Ride The Tide", "we", "us", or "our") respects your privacy and is committed to protecting the personal information you share with us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our Website, use our services, or interact with us.
+              Peptide South Africa (Pty) Ltd ("Peptide South Africa", "we", "us", or "our") respects your privacy and is committed to protecting the personal information you share with us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our Website, use our services, or interact with us.
             </p>
             <p className="mt-3">
               This policy complies with the Protection of Personal Information Act (POPIA) of South Africa.

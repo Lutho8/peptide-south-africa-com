@@ -3,16 +3,16 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const shippingSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${SITE_URL}/shipping#page`,
-  name: "Shipping Policy — Ride The Tide",
+  name: "Shipping Policy — Peptide South Africa",
   url: `${SITE_URL}/shipping`,
   description:
-    "Ride The Tide shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping over R1,500.",
+    "Peptide South Africa shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping over R1,500.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -37,7 +37,7 @@ export default function ShippingPolicyPage() {
 
           <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
             <p>
-              Ride The Tide dispatches all orders from our Cape Town fulfilment hub. Please review the shipping terms below
+              Peptide South Africa dispatches all orders from our Cape Town fulfilment hub. Please review the shipping terms below
               before placing your order.
             </p>
 
@@ -93,7 +93,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">4. Tracking &amp; Delivery Responsibility</h2>
               <p className="mt-3">
-                Once shipped, you receive an email with a carrier tracking link. Ride The Tide's responsibility ends when the package is
+                Once shipped, you receive an email with a carrier tracking link. Peptide South Africa's responsibility ends when the package is
                 handed to the carrier. For lost, delayed, or marked-as-delivered-but-not-received packages, please open a claim with the
                 carrier directly; we will supply shipment details on request.
               </p>
@@ -110,7 +110,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">6. Discreet Packaging</h2>
               <p className="mt-3">
-                All orders ship in plain, unmarked outer boxes with a neutral sender name on the waybill. No Ride The Tide branding,
+                All orders ship in plain, unmarked outer boxes with a neutral sender name on the waybill. No Peptide South Africa branding,
                 logos, or product references appear on the exterior.
               </p>
             </section>

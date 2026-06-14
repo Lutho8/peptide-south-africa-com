@@ -51,7 +51,7 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
           </AccordionTrigger>
           <AccordionContent className="text-sm text-muted-foreground">
             <ul className="ml-1 flex flex-col gap-1.5">
-              <li>• Plain, unmarked outer box — no Ride The Tide branding, logos, or product references on the exterior.</li>
+              <li>• Plain, unmarked outer box — no Peptide South Africa branding, logos, or product references on the exterior.</li>
               <li>• Sealed, temperature-stable inner packaging with a silica desiccant.</li>
               <li>• Sender shown on the waybill as a neutral fulfilment name.</li>
             </ul>

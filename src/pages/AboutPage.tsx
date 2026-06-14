@@ -29,7 +29,7 @@ const team = [
   {
     name: "Founder & Protocol Director",
     role: "Health Systems Architect",
-    bio: "With a background in health optimization and pharmaceutical-grade compound research, our founder built Ride The Tide to bridge the gap between clinical science and accessible health transformation.",
+    bio: "With a background in health optimization and pharmaceutical-grade compound research, our founder built Peptide South Africa to bridge the gap between clinical science and accessible health transformation.",
   },
   {
     name: "Clinical Advisory Team",
@@ -84,7 +84,7 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <SEO title="About Ride The Tide | Premium Peptide Research Supplier" description="Ride The Tide supplies 99%+ purity research peptides with third-party HPLC testing & COAs. Serving researchers across South Africa since 2024." path="/about" />
+      <SEO title="About Peptide South Africa | Premium Peptide Research Supplier" description="Peptide South Africa supplies 99%+ purity research peptides with third-party HPLC testing & COAs. Serving researchers across South Africa since 2024." path="/about" />
       <div className="flex flex-col">
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]} />
 
@@ -93,14 +93,14 @@ export default function AboutPage() {
         <div className="container px-4 py-16 md:py-24">
           <div className="mx-auto max-w-3xl text-center">
             <span className="mb-4 inline-block rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
-              About Ride The Tide
+              About Peptide South Africa
             </span>
             <h1 className="font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
               We're Building the Future of{" "}
               <span className="text-gradient">Personalized Health</span>
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Ride The Tide isn't a supplement store. It's a guided health
+              Peptide South Africa isn't a supplement store. It's a guided health
               transformation system — built on science, personalized to you,
               and focused entirely on results.
             </p>

@@ -7,7 +7,7 @@ export default function ImpressumPage() {
     <>
       <SEO
         title="Legal Notice"
-        description="Legal notice and company registration details for Ride The Tide (Jenluko Investments (Pty) Ltd), Cape Town, South Africa."
+        description="Legal notice and company registration details for Peptide South Africa (Jenluko Investments (Pty) Ltd), Cape Town, South Africa."
         path="/impressum"
         lang="en"
         alternates={buildAlternates("/impressum")}
@@ -26,7 +26,7 @@ export default function ImpressumPage() {
             </div>
             <div className="grid grid-cols-[160px_1fr] gap-3">
               <dt className="font-semibold text-muted-foreground">Trading as</dt>
-              <dd className="text-foreground">Ride The Tide</dd>
+              <dd className="text-foreground">Peptide South Africa</dd>
             </div>
             <div className="grid grid-cols-[160px_1fr] gap-3">
               <dt className="font-semibold text-muted-foreground">Director</dt>

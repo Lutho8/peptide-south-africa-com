@@ -46,7 +46,7 @@ export default function AdminIndexPage() {
   return (
     <div className="container py-12">
       <h1 className="font-display text-3xl font-bold text-foreground">Admin</h1>
-      <p className="mt-2 text-muted-foreground">Operational tools for the Ride The Tide team.</p>
+      <p className="mt-2 text-muted-foreground">Operational tools for the Peptide South Africa team.</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (

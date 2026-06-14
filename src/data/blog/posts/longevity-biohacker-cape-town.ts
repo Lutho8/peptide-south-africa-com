@@ -30,7 +30,7 @@ export const post: BlogPost = {
     },
     { type: "p", text: "The evidence base for the foundational layer is strong.<sup>1,2</sup> The evidence base for the peptide layer is thinner and more experimental — which is exactly why tracking and GP oversight matter." },
     { type: "h2", text: "Clinical infrastructure" },
-    { type: "p", text: "Cape Town is unusual in South Africa for having a working network of GPs comfortable with longevity protocols. The practical implication: you can get an experienced clinician to oversee a protocol, run the right bloodwork, and adjust as you go. The Ride The Tide network and the Cape Town Peptide Club both maintain referral lists." },
+    { type: "p", text: "Cape Town is unusual in South Africa for having a working network of GPs comfortable with longevity protocols. The practical implication: you can get an experienced clinician to oversee a protocol, run the right bloodwork, and adjust as you go. The Peptide South Africa network and the Cape Town Peptide Club both maintain referral lists." },
     { type: "p", text: "On the lab side, the three major pathology providers — Lancet, Ampath, PathCare — all run the longevity-relevant marker set, with PathCare particularly strong in the Western Cape." },
     { type: "h2", text: "Where the community meets" },
     {

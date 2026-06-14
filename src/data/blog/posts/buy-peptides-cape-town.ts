@@ -94,7 +94,7 @@ export const post: BlogPost = {
     { id: "3", label: "Medicines and Related Substances Act 101 of 1965 — compounding provisions.", url: "https://www.sahpra.org.za/" },
   ],
   faqs: [
-    { q: "Where's the safest place to buy?", a: "A compounding pharmacy on prescription. The Ride The Tide network can refer you to pharmacies and GPs experienced with peptide protocols." },
+    { q: "Where's the safest place to buy?", a: "A compounding pharmacy on prescription. The Peptide South Africa network can refer you to pharmacies and GPs experienced with peptide protocols." },
     { q: "Can I pay by EFT or card?", a: "Yes for legitimate suppliers and pharmacies. Crypto-only is a major red flag." },
     { q: "Will customs seize an imported order?", a: "Possibly. Importing as a private individual is legally and logistically uncertain. The local supply chain is mature enough to avoid the question." },
     { q: "What if my supplier won't share a COA?", a: "Don't buy from them. There is no acceptable reason a legitimate supplier refuses to share a lot-matched COA." },

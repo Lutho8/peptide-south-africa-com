@@ -141,7 +141,7 @@ export default function CommunityJoinForm({
           className="mt-0.5 h-4 w-4 rounded border-input"
         />
         <span>
-          I agree to receive WhatsApp messages from Ride The Tide about peptides, protocols and
+          I agree to receive WhatsApp messages from Peptide South Africa about peptides, protocols and
           community events. Reply <span className="font-mono font-semibold">STOP</span> to opt out
           at any time.
         </span>

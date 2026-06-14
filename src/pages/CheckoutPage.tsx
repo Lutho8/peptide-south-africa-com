@@ -160,7 +160,7 @@ export default function CheckoutPage() {
         body: {
           orderId: orderRow.id,
           amount,
-          itemName: description.slice(0, 100) || "Ride The Tide order",
+          itemName: description.slice(0, 100) || "Peptide South Africa order",
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,

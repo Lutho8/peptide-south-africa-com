@@ -66,7 +66,7 @@ const faqs = [
   { q: "What's the cookie window?", a: "60 days from last click — twice the industry default of 30 days." },
   { q: "When and how do I get paid?", a: "Payouts go out on the 1st of each month for the prior month's confirmed orders, via EFT in ZAR." },
   { q: "Are refunded orders clawed back?", a: "Only if refunded inside the 14-day window. After that, your commission is locked." },
-  { q: "Can I run paid ads on your brand name?", a: "No bidding on 'Ride The Tide' or close variants. Other paid traffic is welcome — just check with us first." },
+  { q: "Can I run paid ads on your brand name?", a: "No bidding on 'Peptide South Africa' or close variants. Other paid traffic is welcome — just check with us first." },
   { q: "Do you support international affiliates?", a: "We currently pay out via South African EFT in ZAR. International affiliates can join — payouts are made into a local ZAR-receiving account of your choosing." },
 ];
 
@@ -127,7 +127,7 @@ export default function AffiliatePage() {
   return (
     <>
       <SEO
-        title="Affiliate Program — Earn 20–30% with Ride The Tide"
+        title="Affiliate Program — Earn 20–30% with Peptide South Africa"
         description="Earn 20–30% commission promoting lab-tested research peptides. 60-day cookie, monthly payouts, dedicated manager. Apply in 60 seconds."
         path="/affiliate"
       />

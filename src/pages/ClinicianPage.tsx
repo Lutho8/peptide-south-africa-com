@@ -61,11 +61,11 @@ const personSchema = {
   "@type": "Person",
   name: "Lutho Kote",
   jobTitle: "Peptide & Bio-Health Expert",
-  worksFor: { "@type": "Organization", name: "Ride The Tide" },
+  worksFor: { "@type": "Organization", name: "Peptide South Africa" },
   url: `${SITE_URL}/clinician`,
   sameAs: [`${SITE_URL}/about`],
   description:
-    "Founder and lead clinician at Ride The Tide. Certified peptide therapist with 8+ years experience designing personalized peptide protocols for fat loss, recovery, longevity and performance.",
+    "Founder and lead clinician at Peptide South Africa. Certified peptide therapist with 8+ years experience designing personalized peptide protocols for fat loss, recovery, longevity and performance.",
   alumniOf: [
     { "@type": "EducationalOrganization", name: "University of Cape Town" },
     { "@type": "Organization", name: "American Academy of Anti-Aging Medicine" },
@@ -85,7 +85,7 @@ const personSchema = {
 export default function ClinicianPage() {
   return (
     <>
-      <SEO title="For Clinicians — Partner With Ride The Tide (SA &amp; DE / EU)" description="South African GPs and EU practitioners: prescribe and supply German-certified peptides through Ride The Tide's compliant, GP-led protocol pathway." path="/clinician" />
+      <SEO title="For Clinicians — Partner With Peptide South Africa (SA &amp; DE / EU)" description="South African GPs and EU practitioners: prescribe and supply German-certified peptides through Peptide South Africa's compliant, GP-led protocol pathway." path="/clinician" />
       <JsonLd data={personSchema} />
       <Breadcrumbs
         crumbs={[
@@ -124,7 +124,7 @@ export default function ClinicianPage() {
                 Peptide & Bio-Health Expert
               </p>
               <p className="mt-5 text-base text-foreground/90">
-                I'm Lutho. I founded Ride The Tide because South Africans were
+                I'm Lutho. I founded Peptide South Africa because South Africans were
                 being forced to choose between sketchy international peptide
                 vendors and a healthcare system that hasn't caught up with the
                 research. Neither is good enough. So I built a third option —

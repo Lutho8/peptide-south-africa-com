@@ -46,7 +46,7 @@ export default function ClinicianHero() {
                 <span className="text-gradient">Lutho Kote</span>
               </h2>
               <p className="mt-4 text-base text-muted-foreground">
-                Lutho is the peptide & bio-health expert behind Ride The Tide. He
+                Lutho is the peptide & bio-health expert behind Peptide South Africa. He
                 personally signs off on every Certificate of Analysis and oversees
                 each protocol — no anonymous "support team", no offshore call centre.
                 Just a real practitioner accountable for your results.
@@ -71,7 +71,7 @@ export default function ClinicianHero() {
               <blockquote className="mt-6 flex gap-3 rounded-xl border-l-4 border-primary bg-background p-4">
                 <Quote className="h-5 w-5 flex-shrink-0 text-primary/60" />
                 <p className="text-sm italic text-foreground">
-                  "I built Ride The Tide so South Africans could access the same
+                  "I built Peptide South Africa so South Africans could access the same
                   clinical-grade peptide protocols I use with my private clients —
                   without the gatekeeping, the inflated pricing, or the guesswork."
                 </p>

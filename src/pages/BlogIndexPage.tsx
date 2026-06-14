@@ -3,26 +3,26 @@ import { Link } from "react-router-dom";
 import BlogCard from "@/components/blog/BlogCard";
 import { posts } from "@/data/blog";
 
-const SITE = "https://www.ridethetide.site";
+const SITE = "https://www.peptide-south-africa.com";
 
 export default function BlogIndexPage() {
   const sorted = [...posts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   return (
     <>
       <Helmet>
-        <title>Peptide research blog — Ride The Tide</title>
+        <title>Peptide research blog — Peptide South Africa</title>
         <meta
           name="description"
           content="Honest, research-cited peptide guides from Cape Town. Protocols, bloodwork, dosing math, community and sourcing — built for South African biohackers."
         />
         <link rel="canonical" href={`${SITE}/blog`} />
-        <meta property="og:title" content="Peptide research blog — Ride The Tide" />
+        <meta property="og:title" content="Peptide research blog — Peptide South Africa" />
         <meta property="og:url" content={`${SITE}/blog`} />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Blog",
-          name: "Ride The Tide Blog",
+          name: "Peptide South Africa Blog",
           url: `${SITE}/blog`,
           blogPost: sorted.map((p) => ({
             "@type": "BlogPosting",

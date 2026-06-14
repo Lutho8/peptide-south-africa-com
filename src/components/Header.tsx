@@ -74,8 +74,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
-          <img src={logo} alt="Ride The Tide logo" className="h-8 w-8" />
-          Ride The Tide
+          <img src={logo} alt="Peptide South Africa logo" className="h-8 w-8" />
+          Peptide South Africa
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

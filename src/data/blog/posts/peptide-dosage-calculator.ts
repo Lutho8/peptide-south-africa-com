@@ -109,7 +109,7 @@ export const post: BlogPost = {
     { id: "3", label: "USP <797> Pharmaceutical compounding sterile preparations. United States Pharmacopeia.", url: "https://www.usp.org/" },
   ],
   faqs: [
-    { q: "Does the Ride The Tide tracker do this math for me?", a: "Yes. Enter vial size, reconstitution volume and target dose; the tracker outputs syringe units automatically." },
+    { q: "Does the Peptide South Africa tracker do this math for me?", a: "Yes. Enter vial size, reconstitution volume and target dose; the tracker outputs syringe units automatically." },
     { q: "Why are some peptides dosed in mg and others in mcg?", a: "Convention. Smaller-dose peptides (BPC-157, ipamorelin) are typically quoted in mcg; larger-dose peptides (TB-500, GLP-1s) in mg. The math is the same — just convert." },
     { q: "Can I use saline instead of bacteriostatic water?", a: "Yes for single-use; for multi-dose vials use bacteriostatic water (contains 0.9% benzyl alcohol preservative) for safety across the 2–4 week in-solution window." },
     { q: "How do I draw exactly 10 units accurately?", a: "Use a 0.5 mL (50-unit) insulin syringe rather than a 1 mL syringe — the markings are wider and more precise at small volumes." },

@@ -56,7 +56,7 @@ export default function ShopPage() {
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `Ride The Tide — ${activeCategory === "All" ? "All Products" : activeCategory}`,
+    name: `Peptide South Africa — ${activeCategory === "All" ? "All Products" : activeCategory}`,
     description:
       "Research-grade peptide kits, guides, and bundles including Retatrutide, Tirzepatide, BPC-157, Tesamorelin, and GHK-Cu.",
     numberOfItems: filtered.length,

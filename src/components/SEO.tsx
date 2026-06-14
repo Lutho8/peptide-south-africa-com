@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://www.ridethetide.site";
-const SITE_NAME = "Ride The Tide";
+const SITE_URL = "https://www.peptide-south-africa.com";
+const SITE_NAME = "Peptide South Africa";
 const DEFAULT_OG = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8baac3f7-3ee8-4976-8c38-ac9d73046bbc/id-preview-8fd492ca--444b5a36-70e0-4613-a86e-bcb50367db3d.lovable.app-1774135344354.png";
 const DEFAULT_KEYWORDS =
   "peptides South Africa, peptides Cape Town, buy peptides online, research peptides, retatrutide, tirzepatide, BPC-157, GHK-Cu, tesamorelin, fat loss peptides, healing peptides, GLP-1 peptides";

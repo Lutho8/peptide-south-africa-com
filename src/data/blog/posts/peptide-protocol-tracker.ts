@@ -41,7 +41,7 @@ export const post: BlogPost = {
     { type: "p", text: "Track the cycle as a unit, not just individual doses. A cycle has a start date, an end date, a planned washout, and a hypothesis. Writing the hypothesis down before you start (\"I expect BPC-157 to reduce my Achilles pain from 6/10 to ≤2/10 within 21 days\") is what separates a researcher from a hobbyist." },
     { type: "h2", text: "Tools" },
     { type: "p", text: "You can do all of this in a notebook. Most people don't, because friction kills adherence. A dedicated tracker — even a basic one — wins because it remembers the schema for you, surfaces trends, and lets you export to a clinician." },
-    { type: "p", text: "Ride The Tide ships a free protocol tracker built specifically for peptide research workflows: structured fields, batch tracking, bloodwork integration, and a clean export. It's the same tool we use internally with the Cape Town Peptide Club." },
+    { type: "p", text: "Peptide South Africa ships a free protocol tracker built specifically for peptide research workflows: structured fields, batch tracking, bloodwork integration, and a clean export. It's the same tool we use internally with the Cape Town Peptide Club." },
     { type: "h2", text: "Common mistakes" },
     {
       type: "ul",
@@ -62,7 +62,7 @@ export const post: BlogPost = {
   faqs: [
     { q: "Do I really need a tracker if my cycle is only 4 weeks?", a: "Yes — short cycles are exactly where small effects get lost to noise. Without a baseline you can't quantify the delta." },
     { q: "Can I share the log with my doctor?", a: "That's the point. A clean export turns a vague 'I tried some peptides' conversation into an actionable clinical discussion." },
-    { q: "Is the Ride The Tide tracker free?", a: "Yes. The core log, bloodwork import and cycle planner are free to use." },
+    { q: "Is the Peptide South Africa tracker free?", a: "Yes. The core log, bloodwork import and cycle planner are free to use." },
     { q: "What about privacy?", a: "Your log is yours. We don't sell, share, or train models on protocol data." },
   ],
   cta: "tracker",

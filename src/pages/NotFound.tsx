@@ -13,7 +13,7 @@ const NotFound = () => {
     <>
       <SEO
         title="Page Not Found (404)"
-        description="The page you're looking for doesn't exist. Return to Ride The Tide to explore GP-led peptide protocols in South Africa."
+        description="The page you're looking for doesn't exist. Return to Peptide South Africa to explore GP-led peptide protocols in South Africa."
         path={location.pathname}
         noindex
       />

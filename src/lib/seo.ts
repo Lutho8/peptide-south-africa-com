@@ -1,5 +1,5 @@
-const SITE_URL = "https://www.ridethetide.site";
-const SITE_NAME = "Ride The Tide";
+const SITE_URL = "https://www.peptide-south-africa.com";
+const SITE_NAME = "Peptide South Africa";
 
 /** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
@@ -42,7 +42,7 @@ export const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   description:
-    "Ride The Tide provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
+    "Peptide South Africa provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
   areaServed: [{ "@type": "Country", name: "South Africa" }],
   knowsAbout: [
     "Peptide therapy",

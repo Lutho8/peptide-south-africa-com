@@ -55,8 +55,8 @@ export const post: BlogPost = {
     { type: "callout", title: "Privacy matters more than you'd think", text: "Protocol data describes your hormonal interventions and bloodwork. That's exactly the kind of data you don't want surfacing in an insurance underwriting decision or a data-broker dossier. Read the privacy policy before you log anything." },
     { type: "h2", text: "Web vs native" },
     { type: "p", text: "Honestly, web wins for most peptide tracking workflows. You enter data once or twice a day; you review it weekly on a real screen; you export it monthly to your GP. A well-designed responsive web tracker is more useful than a native app cluttered with notification features. Native makes more sense for medication-style reminders, less so for protocol research." },
-    { type: "h2", text: "Ride The Tide tracker" },
-    { type: "p", text: "We built the Ride The Tide tracker because the existing options didn't meet the bar above. It's:" },
+    { type: "h2", text: "Peptide South Africa tracker" },
+    { type: "p", text: "We built the Peptide South Africa tracker because the existing options didn't meet the bar above. It's:" },
     {
       type: "ul",
       items: [
@@ -77,7 +77,7 @@ export const post: BlogPost = {
     { id: "2", label: "Clemmons DR. Standardization of IGF-I assays consensus. Clin Chem. 2011.", url: "https://pubmed.ncbi.nlm.nih.gov/21474639/" },
   ],
   faqs: [
-    { q: "Is the Ride The Tide tracker free?", a: "Yes. The core log, bloodwork import, batch tracking and clinical export are all free." },
+    { q: "Is the Peptide South Africa tracker free?", a: "Yes. The core log, bloodwork import, batch tracking and clinical export are all free." },
     { q: "Do I need to install anything?", a: "No. It runs in the browser on mobile and desktop." },
     { q: "Can I export to my GP?", a: "Yes — clean PDF and CSV export with the structure GPs actually want to see." },
     { q: "What happens to my data?", a: "It's yours. We don't sell, share, or train models on protocol data." },

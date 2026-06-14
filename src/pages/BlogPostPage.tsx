@@ -7,7 +7,7 @@ import BlogCTA from "@/components/blog/BlogCTA";
 import BlogCard from "@/components/blog/BlogCard";
 import { getPost, getRelated } from "@/data/blog";
 
-const SITE = "https://www.ridethetide.site";
+const SITE = "https://www.peptide-south-africa.com";
 
 export default function BlogPostPage() {
   const { slug = "" } = useParams();
@@ -24,8 +24,8 @@ export default function BlogPostPage() {
     description: post.metaDescription,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
-    author: { "@type": "Organization", name: "Ride The Tide Editorial" },
-    publisher: { "@type": "Organization", name: "Ride The Tide" },
+    author: { "@type": "Organization", name: "Peptide South Africa Editorial" },
+    publisher: { "@type": "Organization", name: "Peptide South Africa" },
     mainEntityOfPage: url,
     keywords: post.keyword,
   };
@@ -83,7 +83,7 @@ export default function BlogPostPage() {
                 <Clock className="h-4 w-4" />
                 {post.readingMinutes} min read
               </span>
-              <span>By Ride The Tide Editorial</span>
+              <span>By Peptide South Africa Editorial</span>
             </div>
           </div>
         </header>
