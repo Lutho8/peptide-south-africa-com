@@ -12,6 +12,7 @@ import FreeShippingBar from "@/components/FreeShippingBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import GuaranteeBadge from "@/components/GuaranteeBadge";
 import { useToast } from "@/hooks/use-toast";
 import { COPY, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
@@ -381,6 +382,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          <GuaranteeBadge variant="bar" />
           <SecurityChecklist />
         </div>
       </div>
