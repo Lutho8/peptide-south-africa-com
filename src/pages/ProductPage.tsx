@@ -161,8 +161,11 @@ export default function ProductPage() {
       {/* Product Detail */}
       <section className="container pb-16">
         <div className="grid gap-10 md:grid-cols-2 md:items-start">
-          {/* Image */}
-          <ProductImageZoom src={product.image} alt={product.name} />
+          {/* Image — sticks on desktop so the product follows the user as they scroll. */}
+          <div className="md:sticky md:top-24 md:self-start">
+            <ProductImageZoom src={product.image} alt={product.name} />
+          </div>
+
 
           {/* Info — sticks on desktop so price + CTA follow the user. */}
           <div className="flex flex-col md:sticky md:top-24 md:self-start">
