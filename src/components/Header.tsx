@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingCart, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import logoAsset from "@/assets/logo-peptide-sa.png.asset.json";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
 
@@ -13,6 +12,7 @@ const DROPDOWNS: Dropdown[] = [
       { label: "Weight Loss", to: "/shop?category=GLP", desc: "GLP-1 program · Retatrutide & Tirzepatide" },
       { label: "Recovery", to: "/shop?category=Healing", desc: "Tissue repair & faster recovery" },
       { label: "Longevity", to: "/shop?category=Longevity", desc: "Mitochondrial & age-better stacks" },
+      { label: "Kits", to: "/shop#kits", desc: "Bundled peptide kits by goal" },
       { label: "All Programs", to: "/shop" },
     ],
   },
@@ -34,6 +34,19 @@ const DROPDOWNS: Dropdown[] = [
   },
 ];
 
+function Wordmark() {
+  return (
+    <span className="flex items-baseline gap-2 leading-none">
+      <span className="font-display text-[26px] tracking-tight text-foreground sm:text-[30px]">
+        Peptide
+      </span>
+      <span className="font-display text-[26px] italic text-clay sm:text-[30px]">SA</span>
+      <span aria-hidden className="hidden h-1.5 w-1.5 rounded-full bg-accent sm:inline-block" />
+      <span className="eyebrow hidden text-foreground/60 md:inline">South Africa</span>
+    </span>
+  );
+}
+
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
@@ -44,11 +57,11 @@ export default function Header() {
       type="button"
       onClick={() => setIsCartOpen(true)}
       aria-label={`Open cart (${totalItems} item${totalItems === 1 ? "" : "s"})`}
-      className={`relative inline-flex items-center justify-center rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-muted ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-full border border-border p-2.5 text-foreground transition-colors hover:bg-muted ${className}`}
     >
       <ShoppingCart className="h-5 w-5" />
       {totalItems > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1 font-mono text-[10px] font-bold text-accent-foreground shadow">
+        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-clay px-1 font-mono text-[10px] font-bold text-background shadow">
           {totalItems}
         </span>
       )}
@@ -56,16 +69,10 @@ export default function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-lg">
+      <div className="container flex h-[68px] items-center justify-between px-4">
         <Link to="/" aria-label="Peptide South Africa" className="flex items-center">
-          <img
-            src={logoAsset.url}
-            alt="Peptide South Africa"
-            className="h-9 w-auto"
-            width={216}
-            height={36}
-          />
+          <Wordmark />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
@@ -119,8 +126,7 @@ export default function Header() {
 
           <Link
             to="/assessment"
-            className="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-primary shadow-glow transition-all hover:opacity-90 active:scale-95"
-            style={{ color: "hsl(var(--primary))" }}
+            className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-background shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
             Take Assessment <ArrowRight className="h-4 w-4" />
           </Link>
@@ -130,7 +136,7 @@ export default function Header() {
         <div className="flex items-center gap-2 lg:hidden">
           <Link
             to="/assessment"
-            className="rounded-lg bg-gold px-3 py-2 text-xs font-bold text-primary"
+            className="rounded-full bg-clay px-3 py-2 text-xs font-bold text-background"
           >
             Assessment
           </Link>
@@ -148,7 +154,7 @@ export default function Header() {
       {mobileOpen && (
         <nav className="border-t border-border bg-card p-4 lg:hidden">
           <div className="flex flex-col gap-2">
-            <Link to="/assessment" onClick={() => setMobileOpen(false)} className="rounded-lg bg-gold px-3 py-3 text-center text-sm font-bold text-primary">
+            <Link to="/assessment" onClick={() => setMobileOpen(false)} className="rounded-full bg-clay px-3 py-3 text-center text-sm font-bold text-background">
               Take Assessment →
             </Link>
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
