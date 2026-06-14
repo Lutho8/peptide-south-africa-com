@@ -23,6 +23,39 @@ function pickAllowed(input: unknown, key: keyof typeof ALLOWED): string | undefi
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Require authenticated caller — prevents anonymous abuse of LOVABLE_API_KEY credits.
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY");
+    if (supabaseUrl && supabaseAnon) {
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const supabase = createClient(supabaseUrl, supabaseAnon, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData?.user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+  } catch {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+
+
   try {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
