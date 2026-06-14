@@ -1,7 +1,7 @@
-const SITE_URL = "https://www.ridethetide.site";
-const SITE_NAME = "Ride The Tide";
+const SITE_URL = "https://peptide-south-africa.com";
+const SITE_NAME = "Peptide South Africa";
 
-/** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
+/** LocalBusiness + MedicalBusiness schema — South Africa telehealth. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": ["MedicalBusiness", "OnlineStore", "LocalBusiness"],
@@ -9,11 +9,11 @@ export const localBusinessSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   image: `${SITE_URL}/favicon.png`,
-  priceRange: "R450 – R5,000",
+  priceRange: "R1,500 – R6,000",
   currenciesAccepted: "ZAR",
   paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
-    "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
+    "South Africa's first peptide-forward telehealth platform. GP-led personalised peptide programs for weight loss, longevity, recovery, energy and performance.",
   address: {
     "@type": "PostalAddress",
     addressCountry: "ZA",
@@ -26,7 +26,7 @@ export const localBusinessSchema = {
     longitude: 18.4241,
   },
   areaServed: [{ "@type": "Country", name: "South Africa" }],
-  medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
+  medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine", "Longevity"],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
@@ -42,37 +42,25 @@ export const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   description:
-    "Ride The Tide provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
+    "Peptide South Africa is South Africa's first peptide-forward telehealth platform — personalised, GP-led peptide programs for weight loss, longevity, recovery, energy and performance.",
   areaServed: [{ "@type": "Country", name: "South Africa" }],
   knowsAbout: [
     "Peptide therapy",
-    "Fat loss protocols",
+    "GLP-1 receptor agonists",
     "Retatrutide",
+    "Tirzepatide",
     "BPC-157",
     "Tesamorelin",
-    "GLP-1 receptor agonists",
-    "Growth hormone releasing peptides",
-    "Personalized health protocols",
+    "Longevity protocols",
+    "Personalised telehealth",
   ],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Peptide Protocols & Research Compounds",
+    name: "Peptide Programs",
     itemListElement: [
-      {
-        "@type": "OfferCatalog",
-        name: "Fat Loss Protocols",
-        description: "Personalized peptide protocols for targeted fat reduction using GLP-1 agonists.",
-      },
-      {
-        "@type": "OfferCatalog",
-        name: "Healing & Recovery",
-        description: "BPC-157 and tissue repair peptides for accelerated recovery.",
-      },
-      {
-        "@type": "OfferCatalog",
-        name: "Growth Hormone",
-        description: "Tesamorelin and GHRH analogs for body composition research.",
-      },
+      { "@type": "OfferCatalog", name: "Weight Loss", description: "Personalised GLP-1 program for sustainable weight loss." },
+      { "@type": "OfferCatalog", name: "Recovery", description: "Tissue repair and recovery peptide programs." },
+      { "@type": "OfferCatalog", name: "Longevity", description: "Mitochondrial and longevity peptide programs." },
     ],
   },
 };
@@ -86,7 +74,7 @@ export const websiteSchema = {
   inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
   description:
-    "GP-led, lab-tested peptide protocols and research compounds for fat loss, healing and performance — Cape Town, South Africa.",
+    "South Africa's first peptide-forward telehealth platform — personalised peptide programs for weight loss, longevity, recovery, energy and performance.",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -108,7 +96,6 @@ export function productSchema(product: {
   inStock: boolean;
   sku?: string;
 }) {
-  // Product prices are stored in ZAR.
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -154,10 +141,7 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
     mainEntity: faqs.map((f) => ({
       "@type": "Question",
       name: f.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: f.answer,
-      },
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
     })),
   };
 }
@@ -165,37 +149,37 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
 /** Entity relationship clusters for internal linking */
 export const entityClusters = {
   fatLoss: {
-    title: "Fat Loss & Metabolic Health",
+    title: "Weight Loss & Metabolic Health",
     links: [
-      { label: "Fat Loss Protocol", href: "/fat-loss-protocol", description: "Our structured fat loss program using GLP-1 agonists and metabolic peptides." },
+      { label: "Weight Loss Program", href: "/fat-loss-protocol", description: "Personalised GLP-1 program with clinical oversight." },
       { label: "RT3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
-      { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist for metabolic research." },
-      { label: "Take the Quiz", href: "/quiz", description: "Get a personalized protocol recommendation based on your goals." },
+      { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist." },
+      { label: "Take the Assessment", href: "/assessment", description: "Get your personalised peptide program in under 3 minutes." },
     ],
   },
   healing: {
-    title: "Healing & Recovery",
+    title: "Recovery",
     links: [
-      { label: "BPC-157", href: "/product/bpc-157", description: "Body Protection Compound for tissue repair and gut healing research." },
-      { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Copper peptide for wound healing and collagen synthesis." },
-      { label: "Research Hub", href: "/research", description: "Access 500+ citations and clinical data on healing peptides." },
+      { label: "BPC-157", href: "/product/bpc-157", description: "Tissue repair and gut healing." },
+      { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Wound healing and collagen synthesis." },
+      { label: "Research Hub", href: "/research", description: "Clinical data on recovery peptides." },
     ],
   },
   growthHormone: {
-    title: "Growth Hormone & Performance",
+    title: "Performance & Longevity",
     links: [
-      { label: "Tesamorelin", href: "/product/tesamorelin", description: "GHRH analog for growth hormone secretion studies." },
-      { label: "MOTS-C", href: "/product/mots-c", description: "Mitochondrial peptide for metabolic and exercise research." },
-      { label: "About Our Protocols", href: "/about", description: "Learn about our evidence-based, GP-led approach." },
+      { label: "Tesamorelin", href: "/product/tesamorelin", description: "GHRH analog for body composition." },
+      { label: "MOTS-C", href: "/product/mots-c", description: "Mitochondrial peptide for performance." },
+      { label: "How It Works", href: "/#how-it-works", description: "Our GP-led telehealth process." },
     ],
   },
   trust: {
     title: "Trust & Transparency",
     links: [
-      { label: "About Us", href: "/about", description: "Our mission, team, and pharmaceutical-grade sourcing standards." },
-      { label: "FAQ", href: "/faq", description: "Common questions about peptides, shipping, and protocols." },
-      { label: "Research Hub", href: "/research", description: "Evidence-based research tools and peptide database." },
-      { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch from Cape Town across South Africa." },
+      { label: "About Us", href: "/about", description: "Mission, team, and pharmaceutical-grade sourcing." },
+      { label: "FAQ", href: "/faq", description: "Common questions about programs, clinical review and shipping." },
+      { label: "Research Hub", href: "/research", description: "Evidence-based research tools." },
+      { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch across South Africa." },
     ],
   },
 };
