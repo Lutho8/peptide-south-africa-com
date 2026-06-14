@@ -8,10 +8,15 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const DIR = "supabase/migrations";
+// Only enforce on migrations created after this baseline. Earlier files had
+// GRANTs added in follow-up migrations.
+const BASELINE = "20260614000000";
 let failed = 0;
 
 for (const file of readdirSync(DIR)) {
   if (!file.endsWith(".sql")) continue;
+  if (file < BASELINE) continue;
+
   const sql = readFileSync(join(DIR, file), "utf8");
   const created = [...sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?public\.(\w+)/gi)].map((m) => m[1]);
   for (const t of created) {
