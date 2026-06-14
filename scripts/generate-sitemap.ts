@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://www.ridethetide.site";
+const BASE_URL = "https://www.peptide-south-africa.com";
 const today = new Date().toISOString().slice(0, 10);
 
 interface SitemapEntry {
