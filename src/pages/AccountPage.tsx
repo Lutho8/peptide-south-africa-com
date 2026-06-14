@@ -83,7 +83,7 @@ export default function AccountPage() {
 
   return (
     <>
-      <SEO title="My Account · Ride The Tide" description="Manage your subscriptions, referrals, and loyalty balance." path="/account" />
+      <SEO title="My Account · Peptide South Africa" description="Manage your subscriptions, referrals, and loyalty balance." path="/account" />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Account" }]} />
 
       <section className="container px-4 py-10 md:py-14">
@@ -154,7 +154,7 @@ export default function AccountPage() {
                   <button
                     onClick={() =>
                       navigator.share({
-                        title: "Ride The Tide",
+                        title: "Peptide South Africa",
                         text: `Get R150 off premium research peptides with my code ${referral.code}`,
                         url: shareUrl(referral.code),
                       }).catch(() => undefined)

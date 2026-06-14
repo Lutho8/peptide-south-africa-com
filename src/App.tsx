@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
 import { LastViewedProductProvider } from "@/context/LastViewedProductContext";
 import FloatingProductFollower from "@/components/FloatingProductFollower";
+import FloatingTrustBadge from "@/components/FloatingTrustBadge";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -112,6 +113,7 @@ const App = () => (
             <Footer />
             <StickyMobileCTA />
             <FloatingProductFollower />
+            <FloatingTrustBadge />
             <CookieConsent />
             <WhatsAppButton />
             <LiveActivity />

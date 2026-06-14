@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
       email_address: String(email).slice(0, 100),
       m_payment_id: orderId,
       amount: storedTotal.toFixed(2),
-      item_name: (itemName || 'Ride The Tide order').toString().slice(0, 100),
+      item_name: (itemName || 'Peptide South Africa order').toString().slice(0, 100),
       item_description: `Order ${orderId.slice(0, 8)}`,
     };
 

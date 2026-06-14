@@ -102,7 +102,7 @@ export default function CartPage() {
           </div>
           {!isDiscountEligible && (
             <Link to="/auth" className="mt-4 block rounded-lg bg-primary/10 px-3 py-2.5 text-center text-xs font-semibold text-primary hover:bg-primary/15">
-              🎁 Sign in to auto-apply RIDETHETIDE10 (10% off your first order)
+              🎁 Sign in to auto-apply PEPTIDESA10 (10% off your first order)
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">

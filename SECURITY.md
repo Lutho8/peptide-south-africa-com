@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Email security@ridethetide.site with a reproducible report. Please do not file
+Email security@peptide-south-africa.com with a reproducible report. Please do not file
 public GitHub issues for suspected vulnerabilities.
 
 ## Automated checks (CI)
@@ -29,7 +29,7 @@ and only publish from a green commit.
 format. **HSTS and `X-Frame-Options` must be sent as real HTTP headers** — the
 meta-tag equivalents are ignored by browsers. Apply the rules from `_headers`
 at your CDN proxy (Cloudflare Transform Rules, Netlify, Vercel) for the custom
-domain `ridethetide.site`.
+domain `peptide-south-africa.com`.
 
 ## Row-level security
 

@@ -15,7 +15,7 @@ export default function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
       "@type": "ListItem",
       position: i + 1,
       name: c.label,
-      ...(c.href ? { item: `https://www.ridethetide.site${c.href}` } : {}),
+      ...(c.href ? { item: `https://www.peptide-south-africa.com${c.href}` } : {}),
     })),
   };
 

@@ -398,7 +398,7 @@ export default function HomePage() {
             Ready to start? Save 10% on your first order.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-            Use code <span className="font-mono font-bold">RIDETHETIDE10</span> at checkout.
+            Use code <span className="font-mono font-bold">PEPTIDESA10</span> at checkout.
             Free shipping over R1,500 across South Africa. Same-day dispatch from Cape Town.
           </p>
           <Link

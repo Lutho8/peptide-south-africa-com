@@ -15,7 +15,7 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <SEO title="Track Your Order — Ride The Tide" description="Track your peptide order. Same-day dispatch in South Africa (before 14:00 SAST) · 1–3 business days nationwide." path="/track-order" />
+      <SEO title="Track Your Order — Peptide South Africa" description="Track your peptide order. Same-day dispatch in South Africa (before 14:00 SAST) · 1–3 business days nationwide." path="/track-order" />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Track Order", href: "/track-order" }]} />
       <div className="container py-16">
       <div className="mx-auto max-w-md text-center">
@@ -64,7 +64,7 @@ export default function TrackOrderPage() {
           <div className="mt-8 rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">
               No order found with those details. Please double-check your Order ID and email address, or contact us at{" "}
-              <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </div>
         )}

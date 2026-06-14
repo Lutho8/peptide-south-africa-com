@@ -160,7 +160,7 @@ export default function CheckoutPage() {
         body: {
           orderId: orderRow.id,
           amount,
-          itemName: description.slice(0, 100) || "Ride The Tide order",
+          itemName: description.slice(0, 100) || "Peptide South Africa order",
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,
@@ -294,7 +294,7 @@ export default function CheckoutPage() {
               <Tag className="h-4 w-4 text-primary" /> Discount Code
             </h3>
             <div className="mt-3 flex items-center gap-2">
-              <input readOnly value={discountCode ?? ""} placeholder={isDiscountEligible ? "" : "Sign in to auto-apply RIDETHETIDE10"}
+              <input readOnly value={discountCode ?? ""} placeholder={isDiscountEligible ? "" : "Sign in to auto-apply PEPTIDESA10"}
                 className="flex-1 rounded-lg border border-input bg-muted px-4 py-3 text-sm font-mono text-foreground" />
               {isDiscountEligible ? (
                 <span className="rounded-md bg-trust/10 px-3 py-2 text-xs font-bold text-trust">−10% APPLIED</span>

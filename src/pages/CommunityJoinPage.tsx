@@ -9,7 +9,7 @@ export default function CommunityJoinPage() {
   return (
     <>
       <SEO
-        title="Join the Ride The Tide WhatsApp Community"
+        title="Join the Peptide South Africa WhatsApp Community"
         description="Get peptide protocols, lab updates and GP-led guidance via our private WhatsApp community. Free to join — capped at 2,000 verified members."
         path="/community"
       />
@@ -21,7 +21,7 @@ export default function CommunityJoinPage() {
               00 / Community Access
             </span>
             <h1 className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl md:text-5xl">
-              Join the Ride The Tide WhatsApp Community
+              Join the Peptide South Africa WhatsApp Community
             </h1>
             <p className="mt-4 text-base text-muted-foreground md:text-lg">
               Real protocols, lab-tested data, and GP-led guidance — straight to your phone. No spam,

@@ -4,16 +4,16 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const termsSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${SITE_URL}/terms#page`,
-  name: "Terms and Conditions — Ride The Tide",
+  name: "Terms and Conditions — Peptide South Africa",
   url: `${SITE_URL}/terms`,
   description:
-    "Website Terms and Conditions of Use for Ride The Tide (Jenluko Investments (Pty) Ltd). South African jurisdiction, research-use disclaimers, user obligations.",
+    "Website Terms and Conditions of Use for Peptide South Africa (Jenluko Investments (Pty) Ltd). South African jurisdiction, research-use disclaimers, user obligations.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Terms of Service" },
@@ -24,7 +24,7 @@ export default function TermsPage() {
     <>
       <SEO
         title="Terms &amp; Conditions"
-        description="Ride The Tide terms of service for South African customers. Research-use disclaimers, account and subscription terms."
+        description="Peptide South Africa terms of service for South African customers. Research-use disclaimers, account and subscription terms."
         path="/terms"
         lang="en"
         alternates={buildAlternates("/terms")}
@@ -43,13 +43,13 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">1. Terms and Conditions of Use</h2>
             <p className="mt-3">
-              Welcome to the Ride The Tide website and applications (collectively, "Website"). The content and information on this Website do not constitute licensed medical services or medical advice and are for educational and informational purposes only.
+              Welcome to the Peptide South Africa website and applications (collectively, "Website"). The content and information on this Website do not constitute licensed medical services or medical advice and are for educational and informational purposes only.
             </p>
             <p className="mt-3">
               By using this Website, you agree to be bound by these Terms and Conditions of Use ("Terms") and our <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>. Please review them carefully.
             </p>
             <p className="mt-3">
-              Ride The Tide (Pty) Ltd ("Ride The Tide", "we", "us") owns and manages the Website. You may only use the Website if you can form a binding contract with us and comply with these Terms and all applicable South African and international laws, rules, and regulations.
+              Peptide South Africa (Pty) Ltd ("Peptide South Africa", "we", "us") owns and manages the Website. You may only use the Website if you can form a binding contract with us and comply with these Terms and all applicable South African and international laws, rules, and regulations.
             </p>
             <p className="mt-3">
               We may alter these Terms without notice, and your continued use of the Website signifies agreement to any future changes. You are encouraged to review these Terms regularly. If you disagree, please do not use our Website.
@@ -59,7 +59,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">2. Access Governed by These Terms</h2>
             <p className="mt-3">
-              These Terms govern your access to and use of this Website and any content provided on, from, or through our Website, our software, and any applications created by Ride The Tide. For a non-electronic copy, email <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              These Terms govern your access to and use of this Website and any content provided on, from, or through our Website, our software, and any applications created by Peptide South Africa. For a non-electronic copy, email <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </section>
 
@@ -73,10 +73,10 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">4. Services Disclaimer</h2>
             <p className="mt-3">
-              Ride The Tide is not a medical or healthcare provider. We do not recommend or endorse any specific tests, products, medications, or course of treatment. Protocol advisors operate independently and have sole discretion over protocol recommendations.
+              Peptide South Africa is not a medical or healthcare provider. We do not recommend or endorse any specific tests, products, medications, or course of treatment. Protocol advisors operate independently and have sole discretion over protocol recommendations.
             </p>
             <p className="mt-3">
-              Information is provided on an "as-is" basis. Ride The Tide disclaims all warranties, express or implied, including warranties of merchantability and fitness for a particular purpose.
+              Information is provided on an "as-is" basis. Peptide South Africa disclaims all warranties, express or implied, including warranties of merchantability and fitness for a particular purpose.
             </p>
           </section>
 
@@ -90,7 +90,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">6. Information Collection, Use, and Disclosure</h2>
             <p className="mt-3">
-              By using this Website, you agree to allow Ride The Tide to collect, use, and disclose your information under the terms provided in our <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+              By using this Website, you agree to allow Peptide South Africa to collect, use, and disclose your information under the terms provided in our <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
           </section>
 
@@ -112,8 +112,8 @@ export default function TermsPage() {
                 <li>You are over the age of 18.</li>
                 <li>You will not use Website services or content for commercial purposes.</li>
                 <li>Corporate entities are not eligible for registration as a member.</li>
-                <li>Your use of the Website may be revoked at any time at Ride The Tide's sole discretion.</li>
-                <li>Ride The Tide may modify, suspend, or discontinue the Website at any time with or without notice.</li>
+                <li>Your use of the Website may be revoked at any time at Peptide South Africa's sole discretion.</li>
+                <li>Peptide South Africa may modify, suspend, or discontinue the Website at any time with or without notice.</li>
               </ul>
             </div>
           </section>
@@ -137,7 +137,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">11. Permitted Use of Content</h2>
             <p className="mt-3">
-              Unless otherwise stated, Ride The Tide owns all content on this Website, protected by South African and international copyright laws. You are granted a limited, personal, non-exclusive, and non-transferable licence to use and display the content, provided you comply with these Terms and do not modify any proprietary notices.
+              Unless otherwise stated, Peptide South Africa owns all content on this Website, protected by South African and international copyright laws. You are granted a limited, personal, non-exclusive, and non-transferable licence to use and display the content, provided you comply with these Terms and do not modify any proprietary notices.
             </p>
             <p className="mt-3">
               You may not copy, reproduce, modify, republish, upload, post, transmit, or distribute any content in any commercial manner without prior written consent.
@@ -161,13 +161,13 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">14. Disclaimer of Liability and No Warranty</h2>
             <p className="mt-3 uppercase font-semibold text-foreground/80">
-              THE INFORMATION ON OUR WEBSITE IS PROVIDED ON AN "AS IS" BASIS. RIDE THE TIDE MAKES NO REPRESENTATIONS AND NO EXPRESS OR IMPLIED WARRANTIES CONCERNING THE CONTENT OR THIS WEBSITE.
+              THE INFORMATION ON OUR WEBSITE IS PROVIDED ON AN "AS IS" BASIS. PEPTIDE SOUTH AFRICA MAKES NO REPRESENTATIONS AND NO EXPRESS OR IMPLIED WARRANTIES CONCERNING THE CONTENT OR THIS WEBSITE.
             </p>
             <p className="mt-3 uppercase font-semibold text-foreground/80">
-              TO THE FULLEST EXTENT PERMITTED BY SOUTH AFRICAN LAW, RIDE THE TIDE DISCLAIMS ALL EXPRESS OR IMPLIED WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+              TO THE FULLEST EXTENT PERMITTED BY SOUTH AFRICAN LAW, PEPTIDE SOUTH AFRICA DISCLAIMS ALL EXPRESS OR IMPLIED WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
             </p>
             <p className="mt-3">
-              At all times, Ride The Tide's liability to any member shall not exceed the amount paid by you to Ride The Tide for services during the term of your membership.
+              At all times, Peptide South Africa's liability to any member shall not exceed the amount paid by you to Peptide South Africa for services during the term of your membership.
             </p>
           </section>
 
@@ -181,7 +181,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">16. Indemnification</h2>
             <p className="mt-3">
-              You agree to indemnify Ride The Tide against any claims, damages, losses, liabilities, costs, or expenses arising from third-party claims related to your use of this Website, failure to comply with applicable laws, or misrepresentations made in violation of these Terms.
+              You agree to indemnify Peptide South Africa against any claims, damages, losses, liabilities, costs, or expenses arising from third-party claims related to your use of this Website, failure to comply with applicable laws, or misrepresentations made in violation of these Terms.
             </p>
           </section>
 
@@ -202,7 +202,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">19. No Warranty or Guarantee of Outcome</h2>
             <p className="mt-3">
-              Ride The Tide does not guarantee or warrant that you will achieve any specific result from using our protocols or Website. Testimonials and examples are not guarantees of comparable results. Your results depend on your background, effort, health, and many other factors.
+              Peptide South Africa does not guarantee or warrant that you will achieve any specific result from using our protocols or Website. Testimonials and examples are not guarantees of comparable results. Your results depend on your background, effort, health, and many other factors.
             </p>
           </section>
 
@@ -224,7 +224,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">22. Entire Agreement</h2>
             <p className="mt-3">
-              These Terms and our Privacy Policy constitute the entire agreement between you and Ride The Tide relating to this Website. Ride The Tide may amend these Terms at any time without prior notice.
+              These Terms and our Privacy Policy constitute the entire agreement between you and Peptide South Africa relating to this Website. Peptide South Africa may amend these Terms at any time without prior notice.
             </p>
           </section>
 
@@ -236,21 +236,21 @@ export default function TermsPage() {
               <p><strong className="text-foreground/80">Billing Cycle:</strong> The first subscription period runs from the date of purchase until the 1st of the following month. Renewals occur on the 1st of each month.</p>
               <p><strong className="text-foreground/80">Limitations:</strong> Unused consultations do not roll over. Additional consultations must be purchased separately. Missed consultations incur standard no-show fees.</p>
               <p><strong className="text-foreground/80">Refunds:</strong> Subscription payments are non-refundable except in exceptional circumstances.</p>
-              <p><strong className="text-foreground/80">Cancellation:</strong> Users may cancel subscriptions at any time. Ride The Tide may cancel subscriptions for failed payments, policy violations, or at its sole discretion.</p>
+              <p><strong className="text-foreground/80">Cancellation:</strong> Users may cancel subscriptions at any time. Peptide South Africa may cancel subscriptions for failed payments, policy violations, or at its sole discretion.</p>
             </div>
           </section>
 
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">24. Your Agreement</h2>
             <p className="mt-3">
-              By your continued use of Ride The Tide's Website, you understand and acknowledge that you have read these Terms and Conditions and agree to be bound by them.
+              By your continued use of Peptide South Africa's Website, you understand and acknowledge that you have read these Terms and Conditions and agree to be bound by them.
             </p>
           </section>
 
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">25. Contact</h2>
             <p className="mt-3">
-              For questions about these Terms, contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              For questions about these Terms, contact us at <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </section>
         </div>

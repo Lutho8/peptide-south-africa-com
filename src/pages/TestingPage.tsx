@@ -55,7 +55,7 @@ export default function TestingPage() {
   return (
     <>
       <SEO
-        title="Lab Testing & COA Verification | Ride The Tide"
+        title="Lab Testing & COA Verification | Peptide South Africa"
         description="Every batch is independently HPLC-tested by Janoshik Analytical. Verify any lot number or download a Certificate of Analysis."
         path="/testing"
       />

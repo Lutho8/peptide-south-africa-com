@@ -7,7 +7,7 @@ export interface MarketInfo {
   basePath: "";
 }
 
-export const SITE_URL = "https://www.ridethetide.site";
+export const SITE_URL = "https://www.peptide-south-africa.com";
 
 const INFO: MarketInfo = {
   market: "default",

@@ -4,7 +4,7 @@ import { Truck, ShieldCheck, Tag, X } from "lucide-react";
 const STORAGE_KEY = "rtt_announcement_dismissed_v1";
 
 const messages = [
-  { icon: Tag, text: "🎁 Sign in to auto-apply 10% off your first order — code RIDETHETIDE10" },
+  { icon: Tag, text: "🎁 Sign in to auto-apply 10% off your first order — code PEPTIDESA10" },
   { icon: Truck, text: "Free shipping across South Africa on orders over R1,500 — same-day dispatch from Cape Town" },
   { icon: ShieldCheck, text: "Every batch ≥99% HPLC tested · COA on every product · Independently lab tested" },
 ];

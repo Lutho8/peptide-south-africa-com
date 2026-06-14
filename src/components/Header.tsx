@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import logo from "@/assets/logo.png";
+import logoIcon from "@/assets/logo-icon.png.asset.json";
+import logoHorizontal from "@/assets/logo-horizontal.png.asset.json";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
 
@@ -73,10 +74,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
-          <img src={logo} alt="Ride The Tide logo" className="h-8 w-8" />
-          Ride The Tide
+        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground" aria-label="Peptide South Africa — home">
+          <img src={logoHorizontal.url} alt="Peptide South Africa" className="hidden h-9 w-auto md:block" />
+          <img src={logoIcon.url} alt="Peptide South Africa" className="h-9 w-9 md:hidden" />
+          <span className="sr-only">Peptide South Africa</span>
         </Link>
+
 
         <nav className="hidden items-center gap-1 lg:flex">
           <Link to="/shop" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">

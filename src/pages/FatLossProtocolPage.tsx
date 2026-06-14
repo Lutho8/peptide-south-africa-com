@@ -460,7 +460,7 @@ export default function FatLossProtocolPage() {
               Tips like "eat less and exercise more" may not be enough.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              At Ride The Tide, we focus on an integrative approach to fat loss management. We aim to help you achieve your ideal body composition and maintain the results.
+              At Peptide South Africa, we focus on an integrative approach to fat loss management. We aim to help you achieve your ideal body composition and maintain the results.
             </p>
             <div className="mt-8">
               <Link

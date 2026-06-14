@@ -36,7 +36,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const FIRST_ORDER_CODE = "RIDETHETIDE10";
+export const FIRST_ORDER_CODE = "PEPTIDESA10";
 export const FIRST_ORDER_PCT = 0.10;
 
 function makeLineId(productId: string, variantLabel?: string) {

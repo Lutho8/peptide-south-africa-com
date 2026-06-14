@@ -49,7 +49,7 @@ export default function ResearchHubPage() {
       <section className="bg-hero-gradient py-16 sm:py-20">
         <div className="container px-4 text-center">
           <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white/80">
-            <FlaskConical className="h-4 w-4" /> Powered by Ride The Tide
+            <FlaskConical className="h-4 w-4" /> Powered by Peptide South Africa
           </span>
           <h1 className="font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl">
             Peptide Research Hub

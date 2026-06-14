@@ -47,7 +47,7 @@ export const post: BlogPost = {
     { type: "h2", text: "Costs and frequency" },
     { type: "p", text: "Sessions run monthly in the Cape Town Peptide Club calendar. Pricing is typically R450–R900 per session depending on whether it's introductory or advanced. Members of the Club get discounted access and the recordings of past sessions." },
     { type: "h2", text: "How to sign up" },
-    { type: "p", text: "The current schedule and registration runs through the Cape Town Peptide Club. The Ride The Tide blog announces upcoming sessions but the Club is the source of truth for dates and topics." },
+    { type: "p", text: "The current schedule and registration runs through the Cape Town Peptide Club. The Peptide South Africa blog announces upcoming sessions but the Club is the source of truth for dates and topics." },
   ],
   citations: [
     { id: "1", label: "Sikiric P et al. Pentadecapeptide BPC 157 and human medicine. Curr Pharm Des. 2014.", url: "https://pubmed.ncbi.nlm.nih.gov/24345255/" },

@@ -39,14 +39,14 @@ export default function AdminIndexPage() {
     { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },
     { to: "/admin/testimonials", icon: MessageSquareQuote, title: "Testimonials", desc: "Manage social proof shown across the site." },
     { to: "/admin/faqs", icon: HelpCircle, title: "Product FAQs", desc: "Edit the global FAQ accordion on every product page." },
-    { to: "/admin/discounts", icon: Tag, title: "Discount Eligibility", desc: "Check why RIDETHETIDE10 is or isn't applied for a user." },
+    { to: "/admin/discounts", icon: Tag, title: "Discount Eligibility", desc: "Check why PEPTIDESA10 is or isn't applied for a user." },
     { to: "/admin/seo-reindex", icon: Search, title: "SEO Re-indexing", desc: "Checklist to re-run URL Inspection after each sitemap update." },
   ];
 
   return (
     <div className="container py-12">
       <h1 className="font-display text-3xl font-bold text-foreground">Admin</h1>
-      <p className="mt-2 text-muted-foreground">Operational tools for the Ride The Tide team.</p>
+      <p className="mt-2 text-muted-foreground">Operational tools for the Peptide South Africa team.</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (

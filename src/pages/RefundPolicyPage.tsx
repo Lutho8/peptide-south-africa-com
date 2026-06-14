@@ -3,13 +3,13 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 import { buildAlternates } from "@/hooks/useMarket";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const refundSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "@id": `${SITE_URL}/refund#page`,
-  name: "Refund Policy — Ride The Tide",
+  name: "Refund Policy — Peptide South Africa",
   url: `${SITE_URL}/refund`,
   description:
     "Refund eligibility for damaged, lost, or incorrect orders. Research-use products are non-returnable once opened. 2-hour cancellation window.",
@@ -56,7 +56,7 @@ export default function RefundPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">How to Request a Refund</h2>
               <ul className="mt-3 list-disc space-y-1 pl-5">
-                <li>Contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a> within 7 days of delivery</li>
+                <li>Contact us at <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a> within 7 days of delivery</li>
                 <li>Include your order number and photos of any damaged/incorrect items</li>
                 <li>We will review and respond within 2–3 business days</li>
               </ul>

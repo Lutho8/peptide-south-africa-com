@@ -10,7 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const FIRST_ORDER_CODE = "RIDETHETIDE10";
+const FIRST_ORDER_CODE = "PEPTIDESA10";
 const FIRST_ORDER_PCT = 10;
 
 Deno.serve(async (req) => {

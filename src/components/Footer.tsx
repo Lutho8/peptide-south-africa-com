@@ -35,7 +35,7 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
-            <Link to="/" className="font-display text-lg font-bold text-foreground">Ride The Tide</Link>
+            <Link to="/" className="font-display text-lg font-bold text-foreground">Peptide South Africa</Link>
             <p className="mt-3 text-sm text-muted-foreground">
               Research-grade peptides. Lab-tested. 99% purity. Cape Town, South Africa.
             </p>
@@ -93,7 +93,7 @@ export default function Footer() {
 
         </div>
         <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 px-4 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
+          <p>© {new Date().getFullYear()} Peptide South Africa. All rights reserved. For research purposes only.</p>
           <nav
             aria-label="Legal"
             className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs"

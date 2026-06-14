@@ -36,7 +36,7 @@ export const post: BlogPost = {
     { type: "p", text: "Independent testing of grey-market peptides has repeatedly shown contamination, underdosing, and outright misidentification — sometimes finding entirely different compounds in the vial.<sup>2</sup> The price difference between a vetted supplier and a discount source is rarely more than 20–30%; the quality difference is potentially everything." },
     { type: "h2", text: "The compounding pharmacy alternative" },
     { type: "p", text: "Cape Town has a working network of compounding pharmacies that prepare peptides on prescription. Pros: traceable, COA-backed, legal under Act 101 of 1965 when properly prescribed, and you get clinical oversight as part of the transaction. Cons: slightly more expensive, requires a script, slightly less flexibility on dose forms." },
-    { type: "p", text: "For anyone actually running a protocol — as opposed to actual laboratory research — the compounding pharmacy route is what the Cape Town Peptide Club and Ride The Tide network recommend." },
+    { type: "p", text: "For anyone actually running a protocol — as opposed to actual laboratory research — the compounding pharmacy route is what the Cape Town Peptide Club and Peptide South Africa network recommend." },
     { type: "h2", text: "Storage" },
     { type: "p", text: "Even the best peptide degrades fast if you store it wrong:" },
     {

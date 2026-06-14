@@ -55,7 +55,7 @@ export const post: BlogPost = {
     },
     { type: "p", text: "If a supplier can't produce a COA on request, walk away. The peptide industry's biggest quality problem is mislabelled or underdosed product, and a COA is your only line of defence.<sup>4</sup>" },
     { type: "h2", text: "GP oversight" },
-    { type: "p", text: "Find a doctor who will work with you. The Ride The Tide medical network includes Cape Town GPs experienced with peptide research protocols who'll run baseline bloodwork, check in mid-cycle, and adjust if markers move. This isn't optional in our model — it's the difference between a protocol and an experiment on yourself." },
+    { type: "p", text: "Find a doctor who will work with you. The Peptide South Africa medical network includes Cape Town GPs experienced with peptide research protocols who'll run baseline bloodwork, check in mid-cycle, and adjust if markers move. This isn't optional in our model — it's the difference between a protocol and an experiment on yourself." },
     { type: "h2", text: "Reasonable expectations" },
     { type: "p", text: "Most people who run BPC-157 for a tendinopathy or post-surgical recovery report meaningful improvement by week 3–4. People running it 'for general health' report less consistent benefit, which matches the mechanistic literature — BPC-157 appears to act primarily where there's tissue damage to repair.<sup>5</sup>" },
   ],
@@ -67,7 +67,7 @@ export const post: BlogPost = {
     { id: "5", label: "Seiwerth S et al. BPC 157 and standard angiogenic growth factors. Curr Pharm Des. 2018.", url: "https://pubmed.ncbi.nlm.nih.gov/29879882/" },
   ],
   faqs: [
-    { q: "Can I get a BPC-157 prescription in Cape Town?", a: "Yes — through compounding pharmacies on script from a registered GP. The Ride The Tide network can refer you to clinicians familiar with the protocol." },
+    { q: "Can I get a BPC-157 prescription in Cape Town?", a: "Yes — through compounding pharmacies on script from a registered GP. The Peptide South Africa network can refer you to clinicians familiar with the protocol." },
     { q: "Subcutaneous vs intramuscular?", a: "Subcutaneous is standard for systemic effect and what most published self-experiment protocols use. IM is occasionally used for localised musculoskeletal injuries." },
     { q: "Do I need to cycle off?", a: "Most experienced users do — typically 4–6 weeks on, 2–4 weeks off — though there's no definitive evidence on optimal cycling. Conservative cycling is reasonable while the data matures." },
     { q: "Can I stack it with TB-500?", a: "Yes — see our BPC-157 + TB-500 stack guide for dosing and timing." },

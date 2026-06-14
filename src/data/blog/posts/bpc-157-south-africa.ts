@@ -23,7 +23,7 @@ export const post: BlogPost = {
     {
       type: "ul",
       items: [
-        "<strong>Compounding pharmacies (prescription)</strong> — the cleanest route. Cape Town has several pharmacies experienced with peptide compounding, all of whom work with the Ride The Tide medical network.",
+        "<strong>Compounding pharmacies (prescription)</strong> — the cleanest route. Cape Town has several pharmacies experienced with peptide compounding, all of whom work with the Peptide South Africa medical network.",
         "<strong>Research-use suppliers</strong> — legal for sale and possession, but vet rigorously. Demand the lot-matched COA.",
         "<strong>Import as a private individual</strong> — legally and logistically painful. The local supply chain is mature enough that direct import is rarely worth it in 2026.",
       ],
@@ -69,7 +69,7 @@ export const post: BlogPost = {
       type: "ol",
       items: [
         "Read our <a href=\"/blog/bpc-157-protocol-cape-town\" class=\"text-accent underline\">BPC-157 protocol guide</a>",
-        "Book a consult with a peptide-experienced GP — the Ride The Tide network maintains a referral list",
+        "Book a consult with a peptide-experienced GP — the Peptide South Africa network maintains a referral list",
         "Get baseline bloodwork",
         "Source via the compounding pharmacy your GP recommends",
         "Set up a tracker before your first dose",
@@ -85,7 +85,7 @@ export const post: BlogPost = {
     { q: "Is BPC-157 a schedule medicine in SA?", a: "It's not a scheduled finished medicine. It's accessible via compounding pharmacies on prescription from a registered medical practitioner." },
     { q: "Can I bring BPC-157 into SA from abroad?", a: "Importing as a private individual is legally and logistically complicated. The local supply chain is mature; importing is rarely worth the friction." },
     { q: "What's the typical cost per vial?", a: "Roughly R650–R950 for compounded 5mg vials in 2026; R450–R700 for research-use vials. A standard 4–6 week cycle uses 2–4 vials." },
-    { q: "Can my regular GP write the script?", a: "If they're comfortable with it, yes. If not, the Ride The Tide network can refer you to clinicians familiar with peptide protocols." },
+    { q: "Can my regular GP write the script?", a: "If they're comfortable with it, yes. If not, the Peptide South Africa network can refer you to clinicians familiar with peptide protocols." },
   ],
   cta: "both",
   related: ["bpc-157-protocol-cape-town", "buy-peptides-cape-town", "research-peptides-cape-town"],
