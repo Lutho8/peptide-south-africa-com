@@ -1,51 +1,52 @@
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingCart, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import logo from "@/assets/logo.png";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
 
 const DROPDOWNS: Dropdown[] = [
   {
-    label: "Programs",
+    label: "Weight Loss",
     items: [
-      { label: "Weight Loss", to: "/shop?category=GLP", desc: "GLP-1 program · Retatrutide & Tirzepatide" },
-      { label: "Recovery", to: "/shop?category=Healing", desc: "Tissue repair & faster recovery" },
-      { label: "Longevity", to: "/shop?category=Longevity", desc: "Mitochondrial & age-better stacks" },
-      { label: "Kits", to: "/shop#kits", desc: "Bundled peptide kits by goal" },
-      { label: "All Programs", to: "/shop" },
+      { label: "RT3 (Reta)", to: "/product/rt3-reta", desc: "Triple agonist · best seller" },
+      { label: "TZ-2 (Tirzepatide)", to: "/product/tz2-tirz", desc: "Dual GLP-1 / GIP" },
+      { label: "Fat-Loss Protocol", to: "/fat-loss-protocol", desc: "12-week guided program" },
+      { label: "Shop all Weight Loss", to: "/shop?category=GLP" },
     ],
   },
   {
-    label: "How It Works",
+    label: "Wellness & Longevity",
     items: [
-      { label: "Our Process", to: "/#how-it-works", desc: "Assess → Recommend → Activate" },
-      { label: "Clinical Review", to: "/#how-it-works", desc: "GP-led, where clinically required" },
-      { label: "FAQ", to: "/faq" },
+      { label: "MOTS-C", to: "/product/mots-c", desc: "Mitochondrial peptide" },
+      { label: "KLOW80", to: "/product/klow80", desc: "Longevity blend" },
+      { label: "GHK-Cu", to: "/product/ghk-cu-50mg", desc: "Skin · hair · repair" },
+      { label: "Shop all Longevity", to: "/shop?category=Longevity" },
     ],
   },
   {
-    label: "Science",
+    label: "Recovery",
     items: [
-      { label: "Research Hub", to: "/research", desc: "98+ peptides, dosing, citations" },
-      { label: "Lab Testing & COAs", to: "/testing", desc: "≥99% HPLC · per-batch reports" },
-      { label: "Blog", to: "/blog" },
+      { label: "BPC / TB-500 Blend", to: "/product/bpc-tb500-blend", desc: "Healing stack" },
+      { label: "Tesamorelin", to: "/product/tesamorelin", desc: "GH releasing" },
+      { label: "Shop all Recovery", to: "/shop?category=Healing" },
+    ],
+  },
+  {
+    label: "Explore",
+    items: [
+      { label: "Lab Testing & COAs", to: "/testing", desc: "Janoshik-verified · per-batch reports" },
+      { label: "Research Hub", to: "/research", desc: "Protocols & studies" },
+      { label: "Blog", to: "/blog", desc: "Guides & deep dives" },
+      { label: "FAQ", to: "/faq", desc: "Common questions" },
+      { label: "Find My Protocol (Quiz)", to: "/quiz", desc: "60-second match" },
+      { label: "Join WhatsApp Community", to: "/community", desc: "Free · 2,000-member cap" },
+      { label: "Tracker", to: "https://ridethetide.info", external: true },
+      { label: "Cape Town Peptide Club", to: "https://capetownpeptideclub.co.za", external: true },
     ],
   },
 ];
-
-function Wordmark() {
-  return (
-    <span className="flex items-baseline gap-2 leading-none">
-      <span className="font-display text-[26px] tracking-tight text-foreground sm:text-[30px]">
-        Peptide
-      </span>
-      <span className="font-display text-[26px] italic text-clay sm:text-[30px]">SA</span>
-      <span aria-hidden className="hidden h-1.5 w-1.5 rounded-full bg-accent sm:inline-block" />
-      <span className="eyebrow hidden text-foreground/60 md:inline">South Africa</span>
-    </span>
-  );
-}
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -57,25 +58,31 @@ export default function Header() {
       type="button"
       onClick={() => setIsCartOpen(true)}
       aria-label={`Open cart (${totalItems} item${totalItems === 1 ? "" : "s"})`}
-      className={`relative inline-flex items-center justify-center rounded-full border border-border p-2.5 text-foreground transition-colors hover:bg-muted ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-muted ${className}`}
     >
       <ShoppingCart className="h-5 w-5" />
       {totalItems > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-clay px-1 font-mono text-[10px] font-bold text-background shadow">
+        <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground shadow">
           {totalItems}
         </span>
       )}
     </button>
   );
 
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-lg">
-      <div className="container flex h-[68px] items-center justify-between px-4">
-        <Link to="/" aria-label="Peptide South Africa" className="flex items-center">
-          <Wordmark />
+    <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground">
+          <img src={logo} alt="Ride The Tide logo" className="h-8 w-8" />
+          Ride The Tide
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
+          <Link to="/shop" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            Shop
+          </Link>
+
           {DROPDOWNS.map((d, idx) => (
             <div
               key={d.label}
@@ -120,26 +127,23 @@ export default function Header() {
             </div>
           ))}
 
+          <Link to="/affiliate" className="px-3 py-2 text-sm font-semibold text-primary hover:underline">
+            Affiliate
+          </Link>
           <Link to="/account" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             Account
           </Link>
 
           <Link
-            to="/assessment"
-            className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-background shadow-glow transition-all hover:opacity-90 active:scale-95"
+            to="/quiz?intent=consult"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
-            Take Assessment <ArrowRight className="h-4 w-4" />
+            Book Consult
           </Link>
           <CartButton className="ml-2" />
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <Link
-            to="/assessment"
-            className="rounded-full bg-clay px-3 py-2 text-xs font-bold text-background"
-          >
-            Assessment
-          </Link>
           <CartButton />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -151,14 +155,12 @@ export default function Header() {
         </div>
       </div>
 
+
       {mobileOpen && (
         <nav className="border-t border-border bg-card p-4 lg:hidden">
           <div className="flex flex-col gap-2">
-            <Link to="/assessment" onClick={() => setMobileOpen(false)} className="rounded-full bg-clay px-3 py-3 text-center text-sm font-bold text-background">
-              Take Assessment →
-            </Link>
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
-            <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Programs</Link>
+            <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Shop</Link>
             {DROPDOWNS.map((d) => (
               <details key={d.label} className="rounded-lg border border-border">
                 <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-foreground">
@@ -179,6 +181,9 @@ export default function Header() {
                 </div>
               </details>
             ))}
+            <Link to="/affiliate" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">
+              Affiliate Program
+            </Link>
             <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
               My Account
             </Link>

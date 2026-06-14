@@ -1,4 +1,6 @@
-// Single-locale (English, South Africa) microcopy for Peptide South Africa.
+// Single-locale (English, South Africa) microcopy.
+// Locale union kept as "en" so legacy callers compile.
+
 export type Locale = "en";
 
 export type CopyKey =
@@ -49,30 +51,30 @@ const EN: Record<CopyKey, string> = {
   discreet_packaging: "Discreet, unbranded packaging",
   secure_checkout: "Secure checkout via PayFast",
   age_gate_body:
-    "You must be 18+ to enter. Peptide programs require clinical review where applicable.",
-  pay_now: "Start My Program",
+    "You must be 18+ to enter. Research use only — not for human consumption.",
+  pay_now: "Pay Now",
   payment_unavailable:
     "Payments are temporarily unavailable. Please try again shortly.",
-  thank_you: "You're in. Your program is being activated.",
+  thank_you: "Thank you — your order is being prepared.",
   cancelled: "Payment cancelled",
   paid: "Payment received",
   pending: "Waiting for payment confirmation",
-  order_summary: "Your Program",
+  order_summary: "Order Summary",
   subtotal: "Subtotal",
   shipping: "Shipping",
   total: "Total",
   free: "Free",
   tax: "Tax",
-  view_order: "View Program",
-  back_to_shop: "Browse Programs",
+  view_order: "View Order",
+  back_to_shop: "Continue Shopping",
   back_to_cart: "Back to Cart",
-  processing_payment: "Preparing checkout…",
-  order_number: "Program",
-  continue_shopping: "Browse Programs",
+  processing_payment: "Preparing payment…",
+  order_number: "Order",
+  continue_shopping: "Continue Shopping",
   shipping_country: "Shipping Country",
   country_blocked: "Sorry, we currently only ship within South Africa.",
   contact_support_region:
-    "Contact support@peptide-south-africa.com if you're interested in shipping to your region.",
+    "Contact support@ridethetide.site if you're interested in shipping to your region.",
   local_courier_sa: "Local courier delivery — 1–3 business days",
   away_from_free: "away from free shipping",
   unlocked_free_shipping: "You've unlocked free shipping!",
@@ -85,7 +87,8 @@ const EN: Record<CopyKey, string> = {
   fix_form: "Please fix the highlighted fields",
 };
 
-// Keep the old `{ en, de, af }` shape for backward compatibility.
+// Keep the old `{ en, de, af }` shape for backward compatibility — all three
+// keys map to the same English copy now.
 export const COPY: Record<CopyKey, { en: string; de: string; af: string }> = Object.fromEntries(
   (Object.keys(EN) as CopyKey[]).map((k) => [k, { en: EN[k], de: EN[k], af: EN[k] }]),
 ) as Record<CopyKey, { en: string; de: string; af: string }>;
@@ -93,12 +96,15 @@ export const COPY: Record<CopyKey, { en: string; de: string; af: string }> = Obj
 export function trilingual(key: CopyKey): string {
   return EN[key];
 }
+
 export function bilingualDE(key: CopyKey): string {
   return EN[key];
 }
+
 export function bilingualAF(key: CopyKey): string {
   return EN[key];
 }
+
 export function t(key: CopyKey, _locale?: string): string {
   return EN[key];
 }

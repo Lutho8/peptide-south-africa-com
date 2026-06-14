@@ -35,15 +35,14 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
-            <Link to="/" className="font-display text-2xl font-normal text-foreground tracking-tight">
-              Peptide South Africa
-            </Link>
-            <p className="mt-3 max-w-md text-sm text-muted-foreground">
-              South Africa's first peptide-forward telehealth platform. Personalised programs for weight loss, longevity, recovery, energy and performance.
+            <Link to="/" className="font-display text-lg font-bold text-foreground">Ride The Tide</Link>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Research-grade peptides. Lab-tested. 99% purity. Cape Town, South Africa.
             </p>
+            {/* Newsletter */}
             <div className="mt-5">
               <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Mail className="h-4 w-4 text-accent" /> Stay in the loop
+                <Mail className="h-4 w-4 text-primary" /> Stay in the loop
               </h4>
               {subscribed ? (
                 <p className="mt-2 text-sm text-trust font-medium">Thanks for subscribing! 🎉</p>
@@ -68,31 +67,33 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-base font-normal text-foreground">Programs</h4>
+            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Shop</h4>
             <div className="flex flex-col gap-2">
-              <Link to="/assessment" className="text-sm font-semibold text-accent hover:text-foreground">Take the Assessment →</Link>
+              <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
               <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
               <Link to="/shop?category=Longevity" className="text-sm text-muted-foreground hover:text-foreground">Longevity</Link>
               <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Recovery</Link>
-              <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Programs</Link>
+              <Link to="/shop?category=Skin+%26+Hair" className="text-sm text-muted-foreground hover:text-foreground">Skin &amp; Hair</Link>
             </div>
           </div>
           <div>
-            <h4 className="mb-3 font-display text-base font-normal text-foreground">Learn</h4>
+            <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Learn</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/research" className="hover:text-foreground">Research Hub</Link>
               <Link to="/blog" className="hover:text-foreground">Blog</Link>
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
-              <Link to="/affiliate" className="font-semibold text-accent hover:text-foreground">Affiliate Program</Link>
-              <span className="mt-2 inline-flex items-center gap-1.5 text-xs"><Globe2 className="h-3.5 w-3.5" /> South Africa</span>
-              <span className="text-xs">✓ GP-led · Lab Tested · POPIA-compliant</span>
+              <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
+              <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
+              <a href="https://ridethetide.info" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Tracker ↗</a>
+              <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
+              <span className="mt-2 inline-flex items-center gap-1.5 text-xs"><Globe2 className="h-3.5 w-3.5" /> Cape Town, South Africa</span>
+              <span className="text-xs">✓ Lab Tested · 99% Purity · Secure Checkout</span>
             </div>
           </div>
 
         </div>
         <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 px-4 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Peptide South Africa. All rights reserved.</p>
-          <p className="text-xs max-w-2xl">Where clinically required, a licensed physician will review your eligibility before treatment activation. Peptide programs are not a substitute for medical advice.</p>
+          <p>© {new Date().getFullYear()} Ride The Tide. All rights reserved. For research purposes only.</p>
           <nav
             aria-label="Legal"
             className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs"

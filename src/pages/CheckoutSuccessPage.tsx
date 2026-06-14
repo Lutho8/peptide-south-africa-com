@@ -1,6 +1,7 @@
 import { Link, Navigate, useSearchParams } from "react-router-dom";
-import { CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import SEO from "@/components/SEO";
+import { COPY } from "@/lib/copy";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 
 export default function CheckoutSuccessPage() {
@@ -16,29 +17,24 @@ export default function CheckoutSuccessPage() {
   return (
     <>
       <SEO
-        title="You're In — Activate Your Program"
-        description="Your program is being activated."
+        title="Order Received"
+        description="Thank you for your order."
         path={mp("/checkout/success")}
         lang={lang}
         alternates={buildAlternates("/checkout/success")}
         noindex
       />
       <div className="container flex flex-col items-center justify-center py-32 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent/10">
-          <CheckCircle className="h-10 w-10 text-accent" />
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-trust/10">
+          <CheckCircle className="h-10 w-10 text-trust" />
         </div>
-        <h1 className="mt-4 font-display text-4xl text-foreground">You're in.</h1>
-        <p className="mt-3 max-w-lg text-muted-foreground">
-          Your program is being activated. Where clinically required, a licensed physician will review your eligibility before treatment activation — usually within one business day.
+        <h1 className="mt-4 font-display text-2xl font-bold text-foreground">{COPY.thank_you.en}</h1>
+        <p className="mt-2 max-w-md text-muted-foreground">
+          {COPY.thank_you.de} · {COPY.thank_you.af}
         </p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link to={mp("/account")} className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground hover:opacity-90">
-            Complete clinical verification <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link to={mp("/shop")} className="inline-flex items-center gap-2 rounded-lg border border-border px-8 py-3 font-semibold text-foreground hover:bg-muted">
-            Browse programs
-          </Link>
-        </div>
+        <Link to={mp("/shop")} className="mt-6 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground">
+          {COPY.continue_shopping.en} · {COPY.continue_shopping.de}
+        </Link>
       </div>
     </>
   );

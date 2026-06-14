@@ -1,107 +1,70 @@
+## Goal
+Block deployments on new security findings, ship browser security headers for the storefront, and tighten Postgres row-level security so users can only ever read/modify their own cart, orders, and subscriptions.
 
-# Peptide SA — Conversion + Brand Upgrade Plan
+---
 
-Scope is frontend/presentation and one data file for bundles. No new tables, no auth changes. PayFast checkout stays.
+## 1. CI security gates (GitHub Actions)
 
-## 1. Brand polish (Whoosh-inspired)
+Add `.github/workflows/security.yml`, triggered on `pull_request` and `push` to `main`. Three jobs, all required to pass:
 
-- Refresh `src/index.css` tokens toward Whoosh palette: warm cream `#F5F1EA` background, deep ink `#0E1A1A`, sage accent `#3F5B4A`, soft clay `#C97A5B` for CTAs. Keep teal as secondary.
-- Type pair: **Editorial New / Instrument Serif** for display, **JetBrains Mono** for eyebrows/labels (monospace = raw/authentic signal), **Inter Tight** for body.
-- Increase H1 scale to `clamp(3rem, 7vw, 6.5rem)`, tighten tracking, add italic serif emphasis on one keyword ("*personalised*").
-- Generous editorial whitespace; hairline `1px` dividers in `--ink/12%`.
+- **supabase-linter** — installs the Supabase CLI, runs `supabase db lint` against `supabase/migrations/**`, fails on any `error` or `warn` level finding.
+- **prompt-injection-scan** — small Node script (`scripts/security/scan-edge-functions.ts`) that walks `supabase/functions/**/index.ts` and fails if any file passes `req.json()` fields into an AI prompt without going through a Zod schema or an allowlist. Catches the same class as the recent `generate-protocol` finding.
+- **secret-scan** — runs `gitleaks` in detect mode on the diff; fails on any high-confidence hit.
 
-## 2. Logo — bold and outstanding
+A short `SECURITY.md` documents how to mark a finding as accepted (add an inline `// security-ok: <reason>` comment, which the scanner respects).
 
-- Replace the small wordmark in `Header.tsx` with a larger lockup: serif "Peptide" + monospace small-caps "SOUTH AFRICA" on a second line, total height 44–56px desktop / 36px mobile.
-- Add a tiny teal dot mark next to wordmark. Sticky header gets a subtle backdrop blur on scroll only.
-- Update `src/assets/logo-peptide-sa.png.asset.json` with a regenerated, higher-contrast wordmark used only for OG/social.
+Caveat to call out in the PR description: GitHub Actions blocks merges to `main`, but the Lovable "Publish" button is manual and not gated by Actions. The workflow protects the source of truth; publishing remains a human step.
 
-## 3. Hero rebuild (broader, better UX)
+## 2. Security response headers
 
-In `src/pages/HomePage.tsx` hero section:
+Lovable's CDN serves a fixed header set, so we layer defenses in two places:
 
-- Two-column editorial grid (60/40 desktop, stacked mobile) with `display: grid` + `z-index` layering for depth.
-- Left: mono eyebrow "SA'S FIRST PEPTIDE-FORWARD TELEHEALTH" → giant serif H1 "Your personalised health plan. In **60 seconds.**" → one-line supporting sentence (not duplicated) → primary CTA "Take the 60-second assessment" (clay) + secondary "How it works".
-- Right: full-bleed portrait using `object-fit: cover` inside a tall card, with a floating monospace label ("PROTOCOL #014 · GLP-1 + BPC-157") positioned `position: absolute` over the image.
-- Add a `FloatingProductFollower` style sticky vial that follows down the page (CSS `position: sticky` on a side rail) labelled "Your kit builds as you scroll".
-- Trust strip directly under hero: "GP-led · 3rd-party lab tested · Same-day Cape Town dispatch · POPIA compliant" in mono caps.
+**a) `index.html` `<meta>` tags** (works in every browser, ships immediately):
+- `Content-Security-Policy-Report-Only` — strict allowlist (self, Supabase project, PayFast sandbox+live, Lovable AI gateway, Google Fonts, Webflow CDN images, GA). Report-only for one week so we can collect violations before enforcing.
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `X-Content-Type-Options: nosniff` (via `<meta http-equiv>`)
 
-CSS-only motion first (sticky + transforms). GSAP ScrollTrigger only if already installed; otherwise use `IntersectionObserver` + CSS for the pin effect to avoid new deps.
+**b) `public/_headers`** — if the user's custom domain (`ridethetide.site`) sits behind Cloudflare or a similar proxy, this file gives them a ready-to-paste rule set for real HTTP headers:
+- `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
+- `X-Frame-Options: DENY`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- Same CSP as above but enforcing.
 
-## 4. Dynamic program recommendation after assessment
+I'll document in `SECURITY.md` that HSTS and `X-Frame-Options` only take effect once the Cloudflare/Netlify rule is applied — Lovable's CDN ignores meta-tag versions of these two.
 
-In `src/pages/QuizFunnelPage.tsx`:
+After the report-only window, a follow-up change flips the CSP meta tag from `Content-Security-Policy-Report-Only` to `Content-Security-Policy`.
 
-- Add `src/lib/recommendation.ts` mapping `{ goal, bmi, experience, budget } → { programId, kitId, tierId, healthScore, timelineWeeks, rationale[] }`.
-- Final quiz step becomes a **Results screen** (not a redirect):
-  - Health Score ring (0–100)
-  - "Recommended for you: **[Kit Name]**" card with hero image, peptide list, 12-week timeline, ZAR/month price.
-  - Primary CTA: "Start this program — RXXX/mo" → adds the recommended kit + membership tier to cart → `/checkout`.
-  - Secondary: "See all programs" → `/shop`.
-- Persist result to `localStorage.peptidesa.recommendation` so PDP/checkout can surface "Recommended for your goals" badges.
+## 3. RLS hardening — cart, orders, subscriptions
 
-## 5. Bundled kits
+Single migration that rewrites the policies for least-privilege coverage of every command (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), explicitly scoped to `auth.uid()`.
 
-- New `src/data/kits.ts` with 4 starter kits tied to assessment goals:
-  - **Lean Kit** (Weight Loss): Retatrutide + B12 + Lipo-Mino
-  - **Longevity Kit**: NAD+ + Epitalon + Glutathione
-  - **Recovery Kit**: BPC-157 + TB-500 + Collagen peptide
-  - **Performance Kit**: CJC-1295/Ipamorelin + Tesamorelin
-- Each kit: name, goal, peptides[], single-pack price ZAR, monthly price ZAR, savings vs à la carte, hero image, 12-week protocol summary.
-- Surface kits in:
-  - `/shop` as a "Bundled Kits" rail above individual vials.
-  - Homepage "Choose your goal" cards link to the matching kit, not the quiz, for users who already know.
-  - PDP gets a "Frequently bundled" cross-sell using the kit that contains that peptide.
+**`cart_snapshots`** — replace the broad `FOR ALL` policy with four narrow ones (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), each gated on `auth.uid() = user_id` for both `USING` and `WITH CHECK`. Add a `BEFORE INSERT/UPDATE` trigger that forces `user_id := auth.uid()` so a client can't write someone else's id even if RLS allowed it.
 
-## 6. Product cards + PDP — single-vial first
+**`orders`** — already has `SELECT (own)`, `INSERT (own)`, admin `SELECT`. Add:
+- `UPDATE` policy: users may update **only** `shipping_country`, `shipping_method` while `status = 'pending'`. Enforced by a trigger (`protect_orders_sensitive_cols`) that raises if any of `user_id, total, status, currency, paid_at, payfast_*, shipping_cost, free_shipping_applied, discount_code, order_description` changes from a non-service-role session.
+- Explicit `DELETE` denial for `anon`/`authenticated` (no policy = denied, but add a comment for clarity).
+- Re-confirm column-level GRANTs from the 2026-06-13 migration still exclude `payfast_token` and `payfast_pf_payment_id` from `authenticated`.
 
-`src/components/ProductCard.tsx` and `src/pages/ProductPage.tsx`:
+**`subscriptions`** — keep existing policies, add:
+- A `protect_subscription_user_id` check in the existing `protect_subscription_sensitive_cols` trigger (already covers most fields; add `id` and re-verify).
+- Explicit `DELETE` denial (only `service_role`/admin).
+- Re-confirm column-level GRANTs exclude `payfast_token` and `payfast_subscription_id`.
 
-- **Default purchase path = single vial**, single price prominent, big "Add to Cart" (clay, full width on mobile).
-- Multi-pack/subscription become a secondary toggle row below ("Save 15% with 3-pack" / "Subscribe & save 20%"), collapsed by default.
-- Card layout: full-bleed product photo (`object-fit: cover`, 4:5 aspect), monospace SKU/lot label overlaid bottom-left, price top-right.
-- PDP: sticky right-rail buy box on desktop using `position: sticky; top: 96px` — keeps Add to Cart visible while user reads. Already partly exists via `StickyProductCTA`; consolidate.
+**Verification queries** included as comments in the migration so anyone can re-run them: `SELECT count(*) FROM orders WHERE user_id <> auth.uid()` from an authenticated session must return 0.
 
-## 7. Guarantee / certainty badge
+## 4. Files
 
-New `src/components/GuaranteeBadge.tsx`:
+```text
+.github/workflows/security.yml           new
+scripts/security/scan-edge-functions.ts  new
+SECURITY.md                              new
+public/_headers                          new (documented, opt-in)
+index.html                               edited (CSP report-only + referrer + nosniff meta)
+supabase/migrations/<ts>_rls_hardening.sql  new
+```
 
-- Bold circular seal: "99% PURITY · 3RD-PARTY LAB TESTED · 30-DAY REFUND" in monospace caps around a center checkmark, clay border, ink fill.
-- Placed on:
-  - PDP — above Add to Cart and again near reviews.
-  - Cart drawer footer.
-  - `/checkout` — under order summary and next to the Pay button.
-  - Kit cards.
+## 5. Out of scope
 
-## 8. One-page checkout
-
-Refactor `src/pages/CheckoutPage.tsx` to a single scrollable page, two columns desktop / stacked mobile:
-
-- **Left (form)**: Contact (email + phone), Shipping (name, address, city, postcode, province — autodetect SA), Shipping method (radio: Standard R99 / Express R199 / Free over R1500), Payment = PayFast only (no card fields, single button).
-- **Right (sticky summary)**: line items with thumbs, subtotal, shipping, total in big serif, GuaranteeBadge, trust row (POPIA, SSL, PayFast logos), discount code collapsible.
-- Remove multi-step navigation. Validate inline with `checkoutSchema`. Single primary CTA "Pay securely — R[total]".
-- Keep `cart_snapshots` write on submit; no schema changes.
-
-## 9. Rivo-style testimonials section
-
-Replace existing testimonials block on `HomePage.tsx` with a 3-up grid matching the attached screenshot:
-
-- Card 1 & 3: cream card, 5 stars (serif asterisks), bold title ("Life-changing", "Metabolic Support"), quote, name + result line ("Hannah — lost 22kg"), two before/after thumbs side by side at bottom.
-- Card 2 (center): full-bleed video card with rounded corners, play button overlay, name + protocol label centered at bottom (matches the Tati card layout exactly).
-- Carousel arrows top-right. Reuses existing testimonial copy/video we already have — only the layout changes.
-
-## 10. Files to touch
-
-- Edit: `src/index.css`, `tailwind.config.ts`, `index.html` (font links), `src/components/Header.tsx`, `src/pages/HomePage.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/pages/ProductPage.tsx`, `src/pages/CheckoutPage.tsx`, `src/pages/ShopPage.tsx`, `src/pages/CartPage.tsx`, `src/components/ProductCard.tsx`, `src/components/CartDrawer.tsx`, `src/components/StickyProductCTA.tsx`, `src/lib/checkoutSchema.ts` (loosen to required minimum).
-- Create: `src/data/kits.ts`, `src/lib/recommendation.ts`, `src/components/GuaranteeBadge.tsx`, `src/components/RecommendationResult.tsx`, `src/components/TestimonialsRail.tsx`, `src/components/HeroEditorial.tsx`, `src/components/FloatingKitRail.tsx`.
-
-## Out of scope
-
-- No DB migrations, no RLS changes, no new edge functions.
-- No new payment provider — PayFast stays.
-- GSAP only if already installed; otherwise CSS sticky + IntersectionObserver.
-- Outstanding security findings not touched in this pass.
-
-## Open question
-
-The Whoosh palette I'm proposing is cream + sage + clay. Confirm you want that direction, or stay on the current navy/teal/gold and only adopt Whoosh's *layout/typography* energy? Default if you don't reply: cream/sage/clay.
+- Flipping CSP from report-only to enforce (follow-up after one week of telemetry).
+- Setting real HTTP headers — needs Cloudflare/Netlify access on `ridethetide.site` from the user.
+- Rewriting PayFast ITN verification (already server-side verified).

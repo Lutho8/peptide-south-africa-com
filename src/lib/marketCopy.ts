@@ -11,21 +11,21 @@ type Page = "home" | "shop" | "productSuffix";
 
 const COPY: Record<Page, PageCopy> = {
   home: {
-    title: "Peptide South Africa — Personalised Peptide Telehealth",
+    title: "Research Peptides Cape Town | Ride The Tide",
     description:
-      "South Africa's first peptide-forward telehealth platform. Get your personalised peptide program for weight loss, longevity, recovery, energy and performance in under 3 minutes.",
-    h1: "Get Your Personalised Health Plan in 1 Minute",
-    sub: "Complete a quick assessment and discover the peptides designed for your goals.",
+      "99%+ HPLC-verified research peptides — Retatrutide, Tirzepatide, BPC-157, GHK-Cu. COA on every batch, same-day Cape Town courier.",
+    h1: "Premium Research Peptides — Cape Town, South Africa",
+    sub: "99%+ HPLC purity. COA on every batch. Same-day local courier dispatch nationwide.",
   },
   shop: {
-    title: "Programs | Peptide South Africa",
+    title: "Shop Research Peptides | Fast SA Delivery | Ride The Tide",
     description:
-      "Browse personalised peptide programs — weight loss, recovery, longevity, energy and performance. GP-led, lab-tested, delivered across South Africa.",
-    h1: "Programs",
-    sub: "GP-led peptide programs · Lab-tested · Delivered nationwide",
+      "HPLC-verified research peptides with same-day SA courier. Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, Tesamorelin & blends.",
+    h1: "Shop Research Peptides",
+    sub: "HPLC-verified · COA on every batch · Same-day SA dispatch",
   },
 
-  productSuffix: { title: "Peptide Program", description: "" },
+  productSuffix: { title: "Research Peptide", description: "" },
 };
 
 export function pageCopy(page: Page, _market?: Market): PageCopy {
@@ -33,7 +33,7 @@ export function pageCopy(page: Page, _market?: Market): PageCopy {
 }
 
 export const PRODUCT_SECTIONS = {
-  default: { description: "Description", related: "Related Programs" },
-  de: { description: "Description", related: "Related Programs" },
-  za: { description: "Description", related: "Related Programs" },
+  default: { description: "Description", related: "Related Products" },
+  de: { description: "Description", related: "Related Products" },
+  za: { description: "Description", related: "Related Products" },
 } as const;
