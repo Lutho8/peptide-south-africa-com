@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, RefreshCw, CheckCheck, AlertTriangle, Search } from "lucide-react";
 import { toast } from "sonner";
 
-const SITE_URL = "https://www.ridethetide.site";
+const SITE_URL = "https://www.peptide-south-africa.com";
 const CYCLE_DAYS = 14;
 const GSC_PROPERTY = encodeURIComponent(`${SITE_URL}/`);
 

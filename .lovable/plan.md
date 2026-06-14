@@ -1,6 +1,6 @@
 # Rebrand to Peptide South Africa + SEO/Conversion Push
 
-Rename the storefront from "Ride The Tide" to **Peptide South Africa**, install the new logo/icon, retarget SEO around peptide-South-Africa keywords, hook up Google Search Console, and ship the conversion-focused scroll/sticky effects you listed.
+Rename the storefront from "Peptide South Africa" to **Peptide South Africa**, install the new logo/icon, retarget SEO around peptide-South-Africa keywords, hook up Google Search Console, and ship the conversion-focused scroll/sticky effects you listed.
 
 ## 1. Brand identity rollout
 
@@ -10,7 +10,7 @@ Rename the storefront from "Ride The Tide" to **Peptide South Africa**, install 
 - `public/favicon.png`, `public/apple-touch-icon.png`, `public/icon-192.png`, `public/icon-512.png`, `public/og-image.png` — derived from the icon + lockup for PWA/social previews.
 - `public/site.webmanifest` — name "Peptide South Africa", short_name "Peptide SA", theme `#0a2540`, icons above.
 
-**Text rename (every occurrence of "Ride The Tide" / "ridethetide.site"):**
+**Text rename (every occurrence of "Peptide South Africa" / "peptide-south-africa.com"):**
 - `index.html` (title, meta, OG, Twitter, Organization + WebSite JSON-LD, hreflang, canonical, og:url, og:image → new asset).
 - `src/lib/seo.ts`, `src/lib/marketCopy.ts`, `src/lib/copy.ts`, `src/hooks/useMarket.ts`.
 - All page components and blog posts in the grep list above (Header, Footer, CartDrawer, HeroShop, AnnouncementBar, Breadcrumbs, ClinicianHero, DeliveryReturnsAccordion, DiscountPopup, EcosystemSection, FloatingVial, TrackerBridgeCard, BlogCTA, CommunityJoinForm, SEO, CartContext, all `src/pages/*`, all `src/data/blog/posts/*`).

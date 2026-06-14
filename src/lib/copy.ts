@@ -74,7 +74,7 @@ const EN: Record<CopyKey, string> = {
   shipping_country: "Shipping Country",
   country_blocked: "Sorry, we currently only ship within South Africa.",
   contact_support_region:
-    "Contact support@ridethetide.site if you're interested in shipping to your region.",
+    "Contact support@peptide-south-africa.com if you're interested in shipping to your region.",
   local_courier_sa: "Local courier delivery — 1–3 business days",
   away_from_free: "away from free shipping",
   unlocked_free_shipping: "You've unlocked free shipping!",
