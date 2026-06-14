@@ -113,6 +113,7 @@ const App = () => (
             <Footer />
             <StickyMobileCTA />
             <FloatingProductFollower />
+            <FloatingTrustBadge />
             <CookieConsent />
             <WhatsAppButton />
             <LiveActivity />
