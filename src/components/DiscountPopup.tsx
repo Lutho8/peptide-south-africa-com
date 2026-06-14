@@ -47,7 +47,7 @@ export default function DiscountPopup() {
             <Gift className="mx-auto h-12 w-12 text-primary" />
             <h3 className="mt-4 font-display text-xl font-bold text-foreground">Welcome aboard! 🎉</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Use code <span className="font-bold text-primary">RIDETHETIDE10</span> at checkout for 10% off your first order.
+              Use code <span className="font-bold text-primary">PEPTIDESA10</span> at checkout for 10% off your first order.
             </p>
           </div>
         ) : (

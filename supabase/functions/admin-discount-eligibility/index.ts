@@ -1,5 +1,5 @@
 // supabase/functions/admin-discount-eligibility/index.ts
-// Admin-only: looks up a user by email, returns RIDETHETIDE10 eligibility breakdown.
+// Admin-only: looks up a user by email, returns PEPTIDESA10 eligibility breakdown.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
     user: { id: foundUser.id, email: foundUser.email, created_at: foundUser.created_at },
     order_count: orderCount ?? 0,
     eligible,
-    code: "RIDETHETIDE10",
+    code: "PEPTIDESA10",
     reasons,
     recent_orders: recent ?? [],
   }), {

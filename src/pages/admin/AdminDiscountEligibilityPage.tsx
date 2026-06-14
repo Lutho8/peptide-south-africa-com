@@ -62,7 +62,7 @@ export default function AdminDiscountEligibilityPage() {
     <div className="container py-12">
       <h1 className="font-display text-3xl font-bold text-foreground">Discount Eligibility</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Check whether the <code className="rounded bg-muted px-1 py-0.5 text-xs">RIDETHETIDE10</code> first-order discount applies to a given customer, and why.
+        Check whether the <code className="rounded bg-muted px-1 py-0.5 text-xs">PEPTIDESA10</code> first-order discount applies to a given customer, and why.
       </p>
 
       <form onSubmit={lookup} className="mt-6 flex max-w-xl gap-2">
@@ -86,7 +86,7 @@ export default function AdminDiscountEligibilityPage() {
         <div className="mt-8 max-w-2xl rounded-xl border border-border bg-card p-6 shadow-card">
           <div className="flex items-center gap-3">
             {result.eligible ? (
-              <><CheckCircle2 className="h-7 w-7 text-trust" /><h2 className="font-display text-xl font-bold text-foreground">Eligible — RIDETHETIDE10 will auto-apply</h2></>
+              <><CheckCircle2 className="h-7 w-7 text-trust" /><h2 className="font-display text-xl font-bold text-foreground">Eligible — PEPTIDESA10 will auto-apply</h2></>
             ) : (
               <><XCircle className="h-7 w-7 text-destructive" /><h2 className="font-display text-xl font-bold text-foreground">Not eligible</h2></>
             )}

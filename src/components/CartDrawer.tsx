@@ -79,7 +79,7 @@ export default function CartDrawer() {
               )}
               {!isDiscountEligible && (
                 <Link to="/auth" onClick={() => setIsCartOpen(false)} className="mb-2 block rounded-md bg-primary/10 px-2 py-1.5 text-center text-xs font-semibold text-primary hover:bg-primary/15">
-                  🎁 Sign in to auto-apply RIDETHETIDE10 (10% off)
+                  🎁 Sign in to auto-apply PEPTIDESA10 (10% off)
                 </Link>
               )}
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">

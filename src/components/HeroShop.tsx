@@ -40,7 +40,7 @@ export default function HeroShop() {
     toast({
       title: "✓ Added to cart",
       description: eligible
-        ? "RIDETHETIDE10 (10% off) auto-applied."
+        ? "PEPTIDESA10 (10% off) auto-applied."
         : user
           ? "You've already ordered before — discount no longer eligible."
           : "Sign in to auto-apply 10% off your first order.",
@@ -88,10 +88,10 @@ export default function HeroShop() {
           <Tag className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate sm:whitespace-normal">
             {eligible
-              ? <>10% off auto-applied · <span className="font-mono">RIDETHETIDE10</span></>
+              ? <>10% off auto-applied · <span className="font-mono">PEPTIDESA10</span></>
               : user
-                ? <>Welcome back · <span className="font-mono">RIDETHETIDE10</span></>
-                : <><Link to="/auth" className="underline underline-offset-2">Sign in</Link> for <span className="font-bold">10% off</span> · <span className="font-mono">RIDETHETIDE10</span></>}
+                ? <>Welcome back · <span className="font-mono">PEPTIDESA10</span></>
+                : <><Link to="/auth" className="underline underline-offset-2">Sign in</Link> for <span className="font-bold">10% off</span> · <span className="font-mono">PEPTIDESA10</span></>}
           </span>
         </motion.div>
 
