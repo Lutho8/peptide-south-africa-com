@@ -64,7 +64,7 @@ export default function TrackOrderPage() {
           <div className="mt-8 rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">
               No order found with those details. Please double-check your Order ID and email address, or contact us at{" "}
-              <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </div>
         )}

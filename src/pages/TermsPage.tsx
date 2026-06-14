@@ -59,7 +59,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">2. Access Governed by These Terms</h2>
             <p className="mt-3">
-              These Terms govern your access to and use of this Website and any content provided on, from, or through our Website, our software, and any applications created by Peptide South Africa. For a non-electronic copy, email <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              These Terms govern your access to and use of this Website and any content provided on, from, or through our Website, our software, and any applications created by Peptide South Africa. For a non-electronic copy, email <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </section>
 
@@ -161,10 +161,10 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">14. Disclaimer of Liability and No Warranty</h2>
             <p className="mt-3 uppercase font-semibold text-foreground/80">
-              THE INFORMATION ON OUR WEBSITE IS PROVIDED ON AN "AS IS" BASIS. RIDE THE TIDE MAKES NO REPRESENTATIONS AND NO EXPRESS OR IMPLIED WARRANTIES CONCERNING THE CONTENT OR THIS WEBSITE.
+              THE INFORMATION ON OUR WEBSITE IS PROVIDED ON AN "AS IS" BASIS. PEPTIDE SOUTH AFRICA MAKES NO REPRESENTATIONS AND NO EXPRESS OR IMPLIED WARRANTIES CONCERNING THE CONTENT OR THIS WEBSITE.
             </p>
             <p className="mt-3 uppercase font-semibold text-foreground/80">
-              TO THE FULLEST EXTENT PERMITTED BY SOUTH AFRICAN LAW, RIDE THE TIDE DISCLAIMS ALL EXPRESS OR IMPLIED WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+              TO THE FULLEST EXTENT PERMITTED BY SOUTH AFRICAN LAW, PEPTIDE SOUTH AFRICA DISCLAIMS ALL EXPRESS OR IMPLIED WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
             </p>
             <p className="mt-3">
               At all times, Peptide South Africa's liability to any member shall not exceed the amount paid by you to Peptide South Africa for services during the term of your membership.
@@ -250,7 +250,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">25. Contact</h2>
             <p className="mt-3">
-              For questions about these Terms, contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>.
+              For questions about these Terms, contact us at <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
             </p>
           </section>
         </div>

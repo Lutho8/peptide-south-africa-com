@@ -52,8 +52,8 @@ export default function ImpressumPage() {
             <div className="grid grid-cols-[160px_1fr] gap-3">
               <dt className="font-semibold text-muted-foreground">Contact</dt>
               <dd className="text-foreground">
-                <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">
-                  support@ridethetide.info
+                <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">
+                  support@peptide-south-africa.com
                 </a>
               </dd>
             </div>

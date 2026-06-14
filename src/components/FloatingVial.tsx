@@ -77,7 +77,7 @@ export default function FloatingVial() {
           <div className="absolute left-2 top-4 h-44 w-1.5 rounded-full bg-white/40" />
           {/* Label */}
           <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-card/80 px-1 py-2 text-center backdrop-blur">
-            <div className="text-[7px] font-bold tracking-widest text-foreground">RIDE THE TIDE</div>
+            <div className="text-[7px] font-bold tracking-widest text-foreground">PEPTIDE SOUTH AFRICA</div>
             <div className="mt-0.5 font-display text-[10px] font-bold text-primary">RT3</div>
             <div className="text-[6px] text-muted-foreground">≥99% HPLC</div>
           </div>

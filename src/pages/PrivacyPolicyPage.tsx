@@ -142,7 +142,7 @@ export default function PrivacyPolicyPage() {
               <li>Lodge a complaint with the Information Regulator of South Africa</li>
             </ul>
             <p className="mt-3">
-              To exercise any of these rights, contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a>. We respond within 30 days.
+              To exercise any of these rights, contact us at <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>. We respond within 30 days.
             </p>
           </section>
 
@@ -181,8 +181,8 @@ export default function PrivacyPolicyPage() {
               For questions, requests, or concerns about this Privacy Policy or how we handle your personal information, please contact us:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Email: <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a></li>
-              <li>Website: <Link to="/" className="text-primary hover:underline">ridethetide.info</Link></li>
+              <li>Email: <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a></li>
+              <li>Website: <Link to="/" className="text-primary hover:underline">peptide-south-africa.com</Link></li>
             </ul>
           </section>
         </div>

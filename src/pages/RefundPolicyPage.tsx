@@ -56,7 +56,7 @@ export default function RefundPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">How to Request a Refund</h2>
               <ul className="mt-3 list-disc space-y-1 pl-5">
-                <li>Contact us at <a href="mailto:support@ridethetide.info" className="text-primary hover:underline">support@ridethetide.info</a> within 7 days of delivery</li>
+                <li>Contact us at <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a> within 7 days of delivery</li>
                 <li>Include your order number and photos of any damaged/incorrect items</li>
                 <li>We will review and respond within 2–3 business days</li>
               </ul>
