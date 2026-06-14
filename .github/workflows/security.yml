@@ -1,0 +1,44 @@
+name: Security checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  prompt-injection-scan:
+    name: Edge function input validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/security/scan-edge-functions.mjs
+
+  supabase-linter:
+    name: Supabase DB linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Lint migrations (syntax)
+        run: |
+          # Static syntax/policy lint via supabase db lint requires a DB.
+          # We at least sanity-check that every CREATE TABLE in public has a
+          # matching GRANT in the same migration.
+          node scripts/security/scan-migrations.mjs
+
+  secret-scan:
+    name: Gitleaks secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

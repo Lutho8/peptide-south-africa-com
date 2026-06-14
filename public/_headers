@@ -1,0 +1,14 @@
+# Security response headers — Netlify/Cloudflare Pages format.
+# Lovable's default CDN does NOT honor this file. Apply these rules at your
+# custom-domain proxy (Cloudflare Transform Rules, Netlify, Vercel, etc.).
+# HSTS and X-Frame-Options only take effect as real HTTP headers — meta-tag
+# equivalents are ignored by browsers.
+
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://*.lovable.dev https://*.lovableproject.com https://cdn.gpteng.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://cveapedneuhgbxqydpjc.supabase.co wss://cveapedneuhgbxqydpjc.supabase.co https://ai.gateway.lovable.dev https://www.google-analytics.com https://*.lovable.dev https://api.nowpayments.io; frame-src 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za; frame-ancestors 'none'; upgrade-insecure-requests

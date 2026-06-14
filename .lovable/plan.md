@@ -1,52 +1,70 @@
 ## Goal
+Block deployments on new security findings, ship browser security headers for the storefront, and tighten Postgres row-level security so users can only ever read/modify their own cart, orders, and subscriptions.
 
-Let any visitor buy a single vial (or 3-pack) and check out without a clinician consultation. Simplify the variant set to just **Single Vial** and **3-Pack** everywhere, and show single-vial pricing first on catalog cards.
+---
 
-## Changes
+## 1. CI security gates (GitHub Actions)
 
-### 1. Remove the 10-pack entirely
-**File:** `src/data/products.ts`
-- `buildPackVariants()` returns only `Single Vial` and `3-Pack` (drop the 10-pack row and the `p10` stock param).
-- Reorder so **3-Pack is first** in the array — this makes it the default selection on the PDP ("leads with 3-pack").
-- `rangeFromVariants` still works (now spans 1-vial → 3-pack).
+Add `.github/workflows/security.yml`, triggered on `pull_request` and `push` to `main`. Three jobs, all required to pass:
 
-### 2. Catalog cards: show single-vial price only, no pack toggle
-**File:** `src/components/ProductCard.tsx`
-- Remove the 2-button pack picker grid.
-- Always display the **single-vial price** as the headline price (find the variant with `pack === 1`).
-- Below it, a small line: `or 3-Pack from R{3-pack price} · save 8%` linking into the PDP.
-- "Add To Cart" on the card adds the **single vial** directly (works for both RUO and GP tracks — see #3).
-- "View" button keeps secondary role for users who want to pick the 3-pack.
+- **supabase-linter** — installs the Supabase CLI, runs `supabase db lint` against `supabase/migrations/**`, fails on any `error` or `warn` level finding.
+- **prompt-injection-scan** — small Node script (`scripts/security/scan-edge-functions.ts`) that walks `supabase/functions/**/index.ts` and fails if any file passes `req.json()` fields into an AI prompt without going through a Zod schema or an allowlist. Catches the same class as the recent `generate-protocol` finding.
+- **secret-scan** — runs `gitleaks` in detect mode on the diff; fails on any high-confidence hit.
 
-### 3. Allow direct checkout for GP-track products (RT3, etc.)
-GP-track products currently force users into `/quiz`. Users who don't want a consultation can't buy.
+A short `SECURITY.md` documents how to mark a finding as accepted (add an inline `// security-ok: <reason>` comment, which the scanner respects).
 
-**File:** `src/pages/ProductPage.tsx`
-- Remove the GP-track branch that redirects to `/quiz` from `handleAdd`. GP products now add to cart like any other product.
-- Replace the single "Start Clinician Consultation" CTA with **two CTAs stacked**:
-  - Primary: `Add to Cart` (gradient, full width)
-  - Secondary: `Prefer guidance? Start Clinician Consultation →` (text/outline link to `/quiz?product=...`)
-- Keep the Subscribe & Save panel visible for GP products too (it was hidden via `!isGPTrack`).
+Caveat to call out in the PR description: GitHub Actions blocks merges to `main`, but the Lovable "Publish" button is manual and not gated by Actions. The workflow protects the source of truth; publishing remains a human step.
 
-**File:** `src/components/ProductCard.tsx`
-- Same: GP-track cards add to cart instead of routing to quiz. Add a small "or book a consult" link under the CTA for users who want the clinical path.
+## 2. Security response headers
 
-### 4. PDP variant selector — 3-Pack leads
-**File:** `src/pages/ProductPage.tsx`
-- Because we reorder variants in `products.ts`, `selectedVariant = 0` will already default to the 3-Pack. No code change needed beyond the data reorder.
-- Variant buttons render in order: `[3-Pack] [Single Vial]`, with 3-Pack visually highlighted as the default.
+Lovable's CDN serves a fixed header set, so we layer defenses in two places:
 
-### 5. Sweep references to 10-pack
-- `src/components/ProductCard.tsx` comment about "10-pack remains available on the PDP" — remove.
-- Quick grep for `10-Pack`, `pack === 10`, `p10` in components/pages and clean stragglers (any copy in `FatLossProtocolPage`, `seo.ts`, etc.). No data migration needed — variants are derived from `data/products.ts` at build time.
+**a) `index.html` `<meta>` tags** (works in every browser, ships immediately):
+- `Content-Security-Policy-Report-Only` — strict allowlist (self, Supabase project, PayFast sandbox+live, Lovable AI gateway, Google Fonts, Webflow CDN images, GA). Report-only for one week so we can collect violations before enforcing.
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `X-Content-Type-Options: nosniff` (via `<meta http-equiv>`)
 
-## Out of scope
-- No backend, RLS, or payment changes.
-- No changes to subscription billing or the clinician quiz funnel itself — just removing the forced redirect.
-- Cart, checkout, and PayFast flow already work; this only unblocks the entry point.
+**b) `public/_headers`** — if the user's custom domain (`ridethetide.site`) sits behind Cloudflare or a similar proxy, this file gives them a ready-to-paste rule set for real HTTP headers:
+- `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
+- `X-Frame-Options: DENY`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- Same CSP as above but enforcing.
 
-## Files touched
-- `src/data/products.ts`
-- `src/components/ProductCard.tsx`
-- `src/pages/ProductPage.tsx`
-- Small copy sweeps wherever "10-pack" appears in marketing pages.
+I'll document in `SECURITY.md` that HSTS and `X-Frame-Options` only take effect once the Cloudflare/Netlify rule is applied — Lovable's CDN ignores meta-tag versions of these two.
+
+After the report-only window, a follow-up change flips the CSP meta tag from `Content-Security-Policy-Report-Only` to `Content-Security-Policy`.
+
+## 3. RLS hardening — cart, orders, subscriptions
+
+Single migration that rewrites the policies for least-privilege coverage of every command (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), explicitly scoped to `auth.uid()`.
+
+**`cart_snapshots`** — replace the broad `FOR ALL` policy with four narrow ones (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), each gated on `auth.uid() = user_id` for both `USING` and `WITH CHECK`. Add a `BEFORE INSERT/UPDATE` trigger that forces `user_id := auth.uid()` so a client can't write someone else's id even if RLS allowed it.
+
+**`orders`** — already has `SELECT (own)`, `INSERT (own)`, admin `SELECT`. Add:
+- `UPDATE` policy: users may update **only** `shipping_country`, `shipping_method` while `status = 'pending'`. Enforced by a trigger (`protect_orders_sensitive_cols`) that raises if any of `user_id, total, status, currency, paid_at, payfast_*, shipping_cost, free_shipping_applied, discount_code, order_description` changes from a non-service-role session.
+- Explicit `DELETE` denial for `anon`/`authenticated` (no policy = denied, but add a comment for clarity).
+- Re-confirm column-level GRANTs from the 2026-06-13 migration still exclude `payfast_token` and `payfast_pf_payment_id` from `authenticated`.
+
+**`subscriptions`** — keep existing policies, add:
+- A `protect_subscription_user_id` check in the existing `protect_subscription_sensitive_cols` trigger (already covers most fields; add `id` and re-verify).
+- Explicit `DELETE` denial (only `service_role`/admin).
+- Re-confirm column-level GRANTs exclude `payfast_token` and `payfast_subscription_id`.
+
+**Verification queries** included as comments in the migration so anyone can re-run them: `SELECT count(*) FROM orders WHERE user_id <> auth.uid()` from an authenticated session must return 0.
+
+## 4. Files
+
+```text
+.github/workflows/security.yml           new
+scripts/security/scan-edge-functions.ts  new
+SECURITY.md                              new
+public/_headers                          new (documented, opt-in)
+index.html                               edited (CSP report-only + referrer + nosniff meta)
+supabase/migrations/<ts>_rls_hardening.sql  new
+```
+
+## 5. Out of scope
+
+- Flipping CSP from report-only to enforce (follow-up after one week of telemetry).
+- Setting real HTTP headers — needs Cloudflare/Netlify access on `ridethetide.site` from the user.
+- Rewriting PayFast ITN verification (already server-side verified).
