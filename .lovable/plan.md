@@ -1,99 +1,107 @@
-# Plan: Peptide South Africa — Conversion-First Telehealth Rebrand
 
-A full rebrand + funnel restructure focused on the single KPI: **Assessment → Checkout**. No new backend tables are required; this is presentation, copy, routing, and conversion plumbing on top of the existing shop + quiz + Cloud stack.
+# Peptide SA — Conversion + Brand Upgrade Plan
 
----
+Scope is frontend/presentation and one data file for bundles. No new tables, no auth changes. PayFast checkout stays.
 
-## 1. Brand & Identity
+## 1. Brand polish (Whoosh-inspired)
 
-- **Name everywhere:** "Ride The Tide" → **Peptide South Africa**
-  - Files: `src/components/Header.tsx`, `Footer.tsx`, `src/lib/copy.ts`, `src/lib/marketCopy.ts`, `index.html` (title, OG, meta), `public/sitemap-meta.json`, `SECURITY.md`, `README.md`, blog signatures.
-- **Logo:** new wordmark "Peptide South Africa" with a small RX/peptide-chain glyph. Generated via imagegen (premium, transparent), saved to `src/assets/logo-peptide-sa.png` + asset pointer.
-- **Tagline:** "South Africa's First Peptide-Forward Telehealth Platform."
-- **Design tokens (`src/index.css`, `tailwind.config.ts`):** refine current navy/teal into a luxury telehealth palette:
-  - `--bg`: warm off-white #FAF8F4
-  - `--ink`: deep navy #0A1B2E
-  - `--accent`: medical teal #008C7A (slightly desaturated)
-  - `--gold`: #B8945A (luxury accent, used sparingly on CTAs/dividers)
-  - Type pair: **Instrument Serif** (display) + **Inter Tight** (UI/body) — distinct from current Inter/default.
-  - Generous whitespace, hairline dividers, soft shadows, 1px gold rules.
-- **Favicon + OG image** regenerated.
+- Refresh `src/index.css` tokens toward Whoosh palette: warm cream `#F5F1EA` background, deep ink `#0E1A1A`, sage accent `#3F5B4A`, soft clay `#C97A5B` for CTAs. Keep teal as secondary.
+- Type pair: **Editorial New / Instrument Serif** for display, **JetBrains Mono** for eyebrows/labels (monospace = raw/authentic signal), **Inter Tight** for body.
+- Increase H1 scale to `clamp(3rem, 7vw, 6.5rem)`, tighten tracking, add italic serif emphasis on one keyword ("*personalised*").
+- Generous editorial whitespace; hairline `1px` dividers in `--ink/12%`.
 
-## 2. Domain
+## 2. Logo — bold and outstanding
 
-- Update SEO canonical + sitemap base URL → `https://peptide-south-africa.com`.
-- Files: `src/lib/seo.ts`, `src/components/SEO.tsx`, `public/sitemap.xml`, `public/sitemap-meta.json`, `scripts/generate-sitemap.ts`, `index.html` canonical.
-- Tell the user to attach `peptide-south-africa.com` (already on Cloudflare) in Lovable → Project Settings → Domains (A → 185.158.133.1 with Cloudflare proxy mode enabled). I'll provide the exact steps in chat — Lovable issues the cert automatically.
+- Replace the small wordmark in `Header.tsx` with a larger lockup: serif "Peptide" + monospace small-caps "SOUTH AFRICA" on a second line, total height 44–56px desktop / 36px mobile.
+- Add a tiny teal dot mark next to wordmark. Sticky header gets a subtle backdrop blur on scroll only.
+- Update `src/assets/logo-peptide-sa.png.asset.json` with a regenerated, higher-contrast wordmark used only for OG/social.
 
-## 3. Homepage Restructure (`src/pages/HomePage.tsx`)
+## 3. Hero rebuild (broader, better UX)
 
-Replace current sections with the prescribed 7:
+In `src/pages/HomePage.tsx` hero section:
 
-1. **Hero** — H1 "Get Your Personalised Health Plan in 1 Minute" • sub "Complete a quick assessment and discover the peptides designed for your goals." • single primary CTA **Take Assessment** → `/assessment`. Secondary muted link: "Browse programs". Trust strip below: SAHPRA-aligned · GP-led · POPIA. Full-bleed editorial visual right side.
-2. **Choose Your Goal** — 5 large cards (Lose Weight, Improve Recovery, Increase Energy, Age Better, Improve Performance). Each card deep-links into the assessment with `?goal=` prefilled.
-3. **How It Works** — 5 numbered steps (Assess → Recommend → Join → Clinical Review → Start).
-4. **Programs** — keep existing program rail (`FeaturedProductRail` reskinned as "Programs" with membership framing, not vials).
-5. **Success Stories** — keep current testimonials.
-6. **FAQ** — keep, retitle questions around programs + clinical review.
-7. **Final CTA** — full-width band, "Get Peptide Plan" → `/assessment`.
+- Two-column editorial grid (60/40 desktop, stacked mobile) with `display: grid` + `z-index` layering for depth.
+- Left: mono eyebrow "SA'S FIRST PEPTIDE-FORWARD TELEHEALTH" → giant serif H1 "Your personalised health plan. In **60 seconds.**" → one-line supporting sentence (not duplicated) → primary CTA "Take the 60-second assessment" (clay) + secondary "How it works".
+- Right: full-bleed portrait using `object-fit: cover` inside a tall card, with a floating monospace label ("PROTOCOL #014 · GLP-1 + BPC-157") positioned `position: absolute` over the image.
+- Add a `FloatingProductFollower` style sticky vial that follows down the page (CSS `position: sticky` on a side rail) labelled "Your kit builds as you scroll".
+- Trust strip directly under hero: "GP-led · 3rd-party lab tested · Same-day Cape Town dispatch · POPIA compliant" in mono caps.
 
-Remove from homepage: discount popup competing with assessment CTA (keep but delay to 30s and only if no quiz interaction), age-gate stays.
+CSS-only motion first (sticky + transforms). GSAP ScrollTrigger only if already installed; otherwise use `IntersectionObserver` + CSS for the pin effect to avoid new deps.
 
-## 4. Assessment Funnel (`src/pages/QuizFunnelPage.tsx` → `/assessment`)
+## 4. Dynamic program recommendation after assessment
 
-- Add route alias `/assessment` (keep `/quiz` as redirect).
-- Tighten to **9 questions**, ≤3 min, progress bar, one question per screen:
-  Goal → Age → Gender → Weight → Height → Activity → Primary Challenge → Medical Conditions → Current Medications.
-- Output screen: **Health Score** (0–100, computed client-side from inputs), **Program Recommendation** (maps to existing programs in `src/data/products.ts`), **Estimated Timeline**, **Recommended Membership tier**.
-- Primary CTA on results: **Start Program — RXXX/mo** → adds membership to cart → `/checkout`. Secondary: "See what's included".
-- Persist answers to `localStorage` + (if logged in) the existing `cart_snapshots` table so clinical review has context post-purchase. No new tables.
+In `src/pages/QuizFunnelPage.tsx`:
 
-## 5. Checkout-Before-Review Flow
+- Add `src/lib/recommendation.ts` mapping `{ goal, bmi, experience, budget } → { programId, kitId, tierId, healthScore, timelineWeeks, rationale[] }`.
+- Final quiz step becomes a **Results screen** (not a redirect):
+  - Health Score ring (0–100)
+  - "Recommended for you: **[Kit Name]**" card with hero image, peptide list, 12-week timeline, ZAR/month price.
+  - Primary CTA: "Start this program — RXXX/mo" → adds the recommended kit + membership tier to cart → `/checkout`.
+  - Secondary: "See all programs" → `/shop`.
+- Persist result to `localStorage.peptidesa.recommendation` so PDP/checkout can surface "Recommended for your goals" badges.
 
-- Checkout (`/checkout`) unchanged in mechanics (PayFast). Reframe copy:
-  - Order summary header: "Your Program Membership".
-  - Below totals: subtle one-liner — *"Where clinically required, a licensed physician will review your eligibility before treatment activation."*
-  - Remove any "book consultation / schedule doctor / wait for approval" wording (audit `src/lib/copy.ts`, `CheckoutPage.tsx`, `CheckoutSuccessPage.tsx`, `ClinicianPage.tsx`).
-- Success page becomes **Activation page**: "You're in. Complete your clinical verification →" with the medical intake form (existing onboarding), framed as activation, not gating.
+## 5. Bundled kits
 
-## 6. Header / Nav / Mobile
+- New `src/data/kits.ts` with 4 starter kits tied to assessment goals:
+  - **Lean Kit** (Weight Loss): Retatrutide + B12 + Lipo-Mino
+  - **Longevity Kit**: NAD+ + Epitalon + Glutathione
+  - **Recovery Kit**: BPC-157 + TB-500 + Collagen peptide
+  - **Performance Kit**: CJC-1295/Ipamorelin + Tesamorelin
+- Each kit: name, goal, peptides[], single-pack price ZAR, monthly price ZAR, savings vs à la carte, hero image, 12-week protocol summary.
+- Surface kits in:
+  - `/shop` as a "Bundled Kits" rail above individual vials.
+  - Homepage "Choose your goal" cards link to the matching kit, not the quiz, for users who already know.
+  - PDP gets a "Frequently bundled" cross-sell using the kit that contains that peptide.
 
-- Nav: Programs · How It Works · Science · About · **Take Assessment** (primary button, gold).
-- Sticky mobile CTA → "Take Assessment" (replaces current cart-centric CTA on non-product pages).
-- Remove "Book consultation" entry points sitewide.
+## 6. Product cards + PDP — single-vial first
 
-## 7. Copy Audit
+`src/components/ProductCard.tsx` and `src/pages/ProductPage.tsx`:
 
-Single pass through `src/lib/copy.ts`, `marketCopy.ts`, all page headers, and FAQ entries to remove consultation-first language and reframe around outcomes (Weight Loss, Longevity, Recovery, Energy, Performance). Peptides = engine, outcomes = product.
+- **Default purchase path = single vial**, single price prominent, big "Add to Cart" (clay, full width on mobile).
+- Multi-pack/subscription become a secondary toggle row below ("Save 15% with 3-pack" / "Subscribe & save 20%"), collapsed by default.
+- Card layout: full-bleed product photo (`object-fit: cover`, 4:5 aspect), monospace SKU/lot label overlaid bottom-left, price top-right.
+- PDP: sticky right-rail buy box on desktop using `position: sticky; top: 96px` — keeps Add to Cart visible while user reads. Already partly exists via `StickyProductCTA`; consolidate.
 
-## 8. Analytics / KPI Instrumentation
+## 7. Guarantee / certainty badge
 
-- Add lightweight event helper `src/lib/analytics.ts` wrapping `window.dataLayer.push` (GA4 already loaded):
-  - `assessment_start`, `assessment_complete`, `program_recommended`, `checkout_start`, `checkout_complete`, `activation_complete`.
-- Primary funnel report: assessment_complete → checkout_complete.
+New `src/components/GuaranteeBadge.tsx`:
 
-## 9. Out of Scope (this plan)
+- Bold circular seal: "99% PURITY · 3RD-PARTY LAB TESTED · 30-DAY REFUND" in monospace caps around a center checkmark, clay border, ink fill.
+- Placed on:
+  - PDP — above Add to Cart and again near reviews.
+  - Cart drawer footer.
+  - `/checkout` — under order summary and next to the Pay button.
+  - Kit cards.
 
-- Payment provider changes (PayFast stays).
-- New database tables or RLS changes.
-- Open security findings in the More panel (PayFast realtime, generate-protocol auth, etc.) — tracked separately; flag at the end so you can approve a follow-up.
-- Building a physician dashboard.
+## 8. One-page checkout
 
----
+Refactor `src/pages/CheckoutPage.tsx` to a single scrollable page, two columns desktop / stacked mobile:
 
-## File-Level Summary
+- **Left (form)**: Contact (email + phone), Shipping (name, address, city, postcode, province — autodetect SA), Shipping method (radio: Standard R99 / Express R199 / Free over R1500), Payment = PayFast only (no card fields, single button).
+- **Right (sticky summary)**: line items with thumbs, subtotal, shipping, total in big serif, GuaranteeBadge, trust row (POPIA, SSL, PayFast logos), discount code collapsible.
+- Remove multi-step navigation. Validate inline with `checkoutSchema`. Single primary CTA "Pay securely — R[total]".
+- Keep `cart_snapshots` write on submit; no schema changes.
 
-**Edit:** `index.html`, `src/index.css`, `tailwind.config.ts`, `src/lib/copy.ts`, `src/lib/marketCopy.ts`, `src/lib/seo.ts`, `src/components/Header.tsx`, `Footer.tsx`, `SEO.tsx`, `StickyMobileCTA.tsx`, `DiscountPopup.tsx`, `src/pages/HomePage.tsx`, `QuizFunnelPage.tsx`, `CheckoutPage.tsx`, `CheckoutSuccessPage.tsx`, `ClinicianPage.tsx`, `App.tsx` (route alias), `public/sitemap.xml`, `sitemap-meta.json`, `scripts/generate-sitemap.ts`, `README.md`, `SECURITY.md`.
+## 9. Rivo-style testimonials section
 
-**Create:** `src/assets/logo-peptide-sa.png(.asset.json)`, new OG image, `src/components/home/ChooseYourGoal.tsx`, `HowItWorks.tsx`, `FinalCTA.tsx`, `src/lib/analytics.ts`, `src/lib/healthScore.ts`.
+Replace existing testimonials block on `HomePage.tsx` with a 3-up grid matching the attached screenshot:
 
-**Delete:** none.
+- Card 1 & 3: cream card, 5 stars (serif asterisks), bold title ("Life-changing", "Metabolic Support"), quote, name + result line ("Hannah — lost 22kg"), two before/after thumbs side by side at bottom.
+- Card 2 (center): full-bleed video card with rounded corners, play button overlay, name + protocol label centered at bottom (matches the Tati card layout exactly).
+- Carousel arrows top-right. Reuses existing testimonial copy/video we already have — only the layout changes.
 
----
+## 10. Files to touch
 
-## Confirm before I build
+- Edit: `src/index.css`, `tailwind.config.ts`, `index.html` (font links), `src/components/Header.tsx`, `src/pages/HomePage.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/pages/ProductPage.tsx`, `src/pages/CheckoutPage.tsx`, `src/pages/ShopPage.tsx`, `src/pages/CartPage.tsx`, `src/components/ProductCard.tsx`, `src/components/CartDrawer.tsx`, `src/components/StickyProductCTA.tsx`, `src/lib/checkoutSchema.ts` (loosen to required minimum).
+- Create: `src/data/kits.ts`, `src/lib/recommendation.ts`, `src/components/GuaranteeBadge.tsx`, `src/components/RecommendationResult.tsx`, `src/components/TestimonialsRail.tsx`, `src/components/HeroEditorial.tsx`, `src/components/FloatingKitRail.tsx`.
 
-1. Domain: I'll wire canonical/sitemap to `peptide-south-africa.com` and give you Cloudflare DNS steps — OK?
-2. Type pair **Instrument Serif + Inter Tight** with **navy + teal + gold** palette — OK or want options?
-3. Keep PayFast as the only checkout (no Stripe added) — OK?
-4. Defer the open security findings to a follow-up turn — OK?
+## Out of scope
+
+- No DB migrations, no RLS changes, no new edge functions.
+- No new payment provider — PayFast stays.
+- GSAP only if already installed; otherwise CSS sticky + IntersectionObserver.
+- Outstanding security findings not touched in this pass.
+
+## Open question
+
+The Whoosh palette I'm proposing is cream + sage + clay. Confirm you want that direction, or stay on the current navy/teal/gold and only adopt Whoosh's *layout/typography* energy? Default if you don't reply: cream/sage/clay.
