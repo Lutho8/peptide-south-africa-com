@@ -6,17 +6,55 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const ALLOWED = {
+  goal: ["fat-loss", "recovery", "both"],
+  issues: ["stubborn-fat", "slow-recovery", "low-energy", "plateau"],
+  lifestyle: ["active", "moderate", "sedentary"],
+  experience: ["never", "some", "experienced"],
+  readiness: ["ready-now", "exploring", "planning"],
+  budget: ["starter", "standard", "premium"],
+} as const;
+
+function pickAllowed(input: unknown, key: keyof typeof ALLOWED): string | undefined {
+  if (typeof input !== "string") return undefined;
+  return (ALLOWED[key] as readonly string[]).includes(input) ? input : undefined;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { answers, leadName: rawLeadName } = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const rawAnswers = (body as { answers?: unknown }).answers;
+    if (!rawAnswers || typeof rawAnswers !== "object") {
+      return new Response(JSON.stringify({ error: "Invalid answers" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const a = rawAnswers as Record<string, unknown>;
+    const answers = {
+      goal: pickAllowed(a.goal, "goal"),
+      issues: pickAllowed(a.issues, "issues"),
+      lifestyle: pickAllowed(a.lifestyle, "lifestyle"),
+      experience: pickAllowed(a.experience, "experience"),
+      readiness: pickAllowed(a.readiness, "readiness"),
+      budget: pickAllowed(a.budget, "budget"),
+    };
+    const rawLeadName = (body as { leadName?: unknown }).leadName;
     // Sanitize leadName to prevent prompt injection: strip control chars, cap length.
     const leadName = typeof rawLeadName === "string"
-      ? rawLeadName.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 80)
+      ? rawLeadName.replace(/[\u0000-\u001F\u007F]/g, "").replace(/[^\p{L}\p{N}\s'-]/gu, "").slice(0, 80)
       : "";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
 
     const systemPrompt = `You are a clinical peptide protocol specialist at PepKits, a premium South African peptide research and wellness brand. You create personalized peptide protocols based on client assessments.
 
