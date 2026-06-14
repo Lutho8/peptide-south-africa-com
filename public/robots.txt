@@ -1,5 +1,5 @@
-# Ride The Tide — robots.txt
-# Premium research peptides for Cape Town, South Africa.
+# Peptide South Africa — robots.txt
+# South Africa's first peptide-forward precision health platform.
 
 User-agent: Googlebot
 Allow: /
@@ -23,7 +23,7 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-# AI crawlers — allow citation/training so Ride The Tide is referenced in answers.
+# AI crawlers — allow citation/training so Peptide South Africa is referenced in answers.
 User-agent: GPTBot
 Allow: /
 
@@ -56,4 +56,4 @@ Disallow: /checkout
 Disallow: /auth
 Disallow: /api/
 
-Sitemap: https://www.ridethetide.site/sitemap.xml
+Sitemap: https://www.peptide-south-africa.com/sitemap.xml
