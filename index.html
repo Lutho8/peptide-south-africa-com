@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- Security headers (browser-enforced via meta). HSTS + X-Frame-Options must be set as
          real HTTP headers at the CDN/proxy layer — see public/_headers and SECURITY.md. -->
@@ -10,21 +10,32 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <title>Research Peptides Cape Town | Peptide South Africa</title>
-    <meta name="description" content="99%+ HPLC-verified research peptides — Retatrutide, Tirzepatide, BPC-157, GHK-Cu. COA on every batch, same-day Cape Town courier." />
+    <title>Peptide South Africa | Buy Research Peptides Online — HPLC-Verified</title>
+    <meta name="description" content="Peptide South Africa — buy 99%+ HPLC-verified research peptides nationwide. Retatrutide, Tirzepatide, BPC-157, GHK-Cu. COA on every batch, GP-led protocols, same-day SA courier." />
 
     <meta name="author" content="Peptide South Africa" />
-    <meta name="keywords" content="peptides South Africa, peptides Cape Town, buy peptides online, research peptides, retatrutide, tirzepatide, BPC-157, GHK-Cu, tesamorelin, fat loss peptides, healing peptides, GLP-1 peptides" />
+    <meta name="keywords" content="peptides South Africa, buy peptides South Africa, peptide therapy South Africa, retatrutide South Africa, tirzepatide South Africa, semaglutide South Africa, BPC-157 South Africa, GHK-Cu South Africa, GLP-1 South Africa, peptides Cape Town, peptides Johannesburg, peptides Pretoria, peptides Durban, research peptides ZA, peptides for fat loss South Africa, peptides for healing South Africa, MOTS-C South Africa, tesamorelin South Africa" />
     <meta name="distribution" content="global" />
+    <link rel="canonical" href="https://www.peptide-south-africa.com/" />
     <link rel="alternate" hreflang="en-za" href="https://www.peptide-south-africa.com/" />
     <link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/" />
     <link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/" />
 
-    <!-- Geo signals — Cape Town -->
-    <meta name="geo.region" content="ZA-WC" />
-    <meta name="geo.placename" content="Cape Town, South Africa" />
-    <meta name="geo.position" content="-33.9249;18.4241" />
-    <meta name="ICBM" content="-33.9249, 18.4241" />
+    <!-- Mobile / PWA -->
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0a2540" />
+    <meta name="apple-mobile-web-app-title" content="Peptide SA" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Geo signals — South Africa -->
+    <meta name="geo.region" content="ZA" />
+    <meta name="geo.placename" content="South Africa" />
+    <meta name="geo.position" content="-29.0;24.0" />
+    <meta name="ICBM" content="-29.0, 24.0" />
 
     <!-- Search engine verification -->
     <meta name="google-site-verification" content="3FxnDg7WJp7BqphIFbJH9lgfQlH3DNoWYAAJTpSNMjg" />
@@ -39,29 +50,38 @@
 
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Premium Research Peptides | Cape Town, South Africa | Peptide South Africa" />
-    <meta property="og:description" content="Buy 99%+ HPLC-verified research peptides in Cape Town. Retatrutide, Tirzepatide, BPC-157 & more." />
+    <meta property="og:title" content="Peptide South Africa | HPLC-Verified Research Peptides" />
+    <meta property="og:description" content="South Africa's first peptide-forward precision health platform. 99%+ HPLC-verified research peptides, GP-led protocols, nationwide courier." />
     <meta property="og:url" content="https://www.peptide-south-africa.com/" />
     <meta property="og:site_name" content="Peptide South Africa" />
     <meta property="og:locale" content="en_ZA" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8baac3f7-3ee8-4976-8c38-ac9d73046bbc/id-preview-8fd492ca--444b5a36-70e0-4613-a86e-bcb50367db3d.lovable.app-1774135344354.png" />
+    <meta property="og:image" content="https://www.peptide-south-africa.com/apple-touch-icon.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Premium Research Peptides | Cape Town, South Africa | Peptide South Africa" />
-    <meta name="twitter:description" content="99%+ HPLC-verified research peptides — Cape Town, South Africa." />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8baac3f7-3ee8-4976-8c38-ac9d73046bbc/id-preview-8fd492ca--444b5a36-70e0-4613-a86e-bcb50367db3d.lovable.app-1774135344354.png" />
+    <meta name="twitter:title" content="Peptide South Africa | HPLC-Verified Research Peptides" />
+    <meta name="twitter:description" content="99%+ HPLC-verified research peptides — nationwide South Africa." />
+    <meta name="twitter:image" content="https://www.peptide-south-africa.com/apple-touch-icon.png" />
 
     <!-- Sitewide Organization schema -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
+        "@type": "MedicalBusiness",
         "name": "Peptide South Africa",
+        "alternateName": "Peptide SA",
         "url": "https://www.peptide-south-africa.com",
-        "logo": "https://www.peptide-south-africa.com/logo.png",
-        "description": "Premium research peptides supplier with 99%+ HPLC purity, COA on every batch. Cape Town, South Africa.",
+        "logo": "https://www.peptide-south-africa.com/apple-touch-icon.png",
+        "image": "https://www.peptide-south-africa.com/apple-touch-icon.png",
+        "description": "South Africa's first peptide-forward precision health platform. 99%+ HPLC-verified research peptides with COA on every batch.",
         "foundingDate": "2024",
-        "areaServed": ["ZA"],
+        "areaServed": [
+          { "@type": "Country", "name": "South Africa" },
+          { "@type": "City", "name": "Cape Town" },
+          { "@type": "City", "name": "Johannesburg" },
+          { "@type": "City", "name": "Pretoria" },
+          { "@type": "City", "name": "Durban" }
+        ],
+        "medicalSpecialty": ["Endocrinology", "Preventive Medicine", "Internal Medicine"],
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "Customer Support",
