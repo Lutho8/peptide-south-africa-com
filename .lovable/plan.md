@@ -1,70 +1,99 @@
-## Goal
-Block deployments on new security findings, ship browser security headers for the storefront, and tighten Postgres row-level security so users can only ever read/modify their own cart, orders, and subscriptions.
+# Plan: Peptide South Africa — Conversion-First Telehealth Rebrand
+
+A full rebrand + funnel restructure focused on the single KPI: **Assessment → Checkout**. No new backend tables are required; this is presentation, copy, routing, and conversion plumbing on top of the existing shop + quiz + Cloud stack.
 
 ---
 
-## 1. CI security gates (GitHub Actions)
+## 1. Brand & Identity
 
-Add `.github/workflows/security.yml`, triggered on `pull_request` and `push` to `main`. Three jobs, all required to pass:
+- **Name everywhere:** "Ride The Tide" → **Peptide South Africa**
+  - Files: `src/components/Header.tsx`, `Footer.tsx`, `src/lib/copy.ts`, `src/lib/marketCopy.ts`, `index.html` (title, OG, meta), `public/sitemap-meta.json`, `SECURITY.md`, `README.md`, blog signatures.
+- **Logo:** new wordmark "Peptide South Africa" with a small RX/peptide-chain glyph. Generated via imagegen (premium, transparent), saved to `src/assets/logo-peptide-sa.png` + asset pointer.
+- **Tagline:** "South Africa's First Peptide-Forward Telehealth Platform."
+- **Design tokens (`src/index.css`, `tailwind.config.ts`):** refine current navy/teal into a luxury telehealth palette:
+  - `--bg`: warm off-white #FAF8F4
+  - `--ink`: deep navy #0A1B2E
+  - `--accent`: medical teal #008C7A (slightly desaturated)
+  - `--gold`: #B8945A (luxury accent, used sparingly on CTAs/dividers)
+  - Type pair: **Instrument Serif** (display) + **Inter Tight** (UI/body) — distinct from current Inter/default.
+  - Generous whitespace, hairline dividers, soft shadows, 1px gold rules.
+- **Favicon + OG image** regenerated.
 
-- **supabase-linter** — installs the Supabase CLI, runs `supabase db lint` against `supabase/migrations/**`, fails on any `error` or `warn` level finding.
-- **prompt-injection-scan** — small Node script (`scripts/security/scan-edge-functions.ts`) that walks `supabase/functions/**/index.ts` and fails if any file passes `req.json()` fields into an AI prompt without going through a Zod schema or an allowlist. Catches the same class as the recent `generate-protocol` finding.
-- **secret-scan** — runs `gitleaks` in detect mode on the diff; fails on any high-confidence hit.
+## 2. Domain
 
-A short `SECURITY.md` documents how to mark a finding as accepted (add an inline `// security-ok: <reason>` comment, which the scanner respects).
+- Update SEO canonical + sitemap base URL → `https://peptide-south-africa.com`.
+- Files: `src/lib/seo.ts`, `src/components/SEO.tsx`, `public/sitemap.xml`, `public/sitemap-meta.json`, `scripts/generate-sitemap.ts`, `index.html` canonical.
+- Tell the user to attach `peptide-south-africa.com` (already on Cloudflare) in Lovable → Project Settings → Domains (A → 185.158.133.1 with Cloudflare proxy mode enabled). I'll provide the exact steps in chat — Lovable issues the cert automatically.
 
-Caveat to call out in the PR description: GitHub Actions blocks merges to `main`, but the Lovable "Publish" button is manual and not gated by Actions. The workflow protects the source of truth; publishing remains a human step.
+## 3. Homepage Restructure (`src/pages/HomePage.tsx`)
 
-## 2. Security response headers
+Replace current sections with the prescribed 7:
 
-Lovable's CDN serves a fixed header set, so we layer defenses in two places:
+1. **Hero** — H1 "Get Your Personalised Health Plan in 1 Minute" • sub "Complete a quick assessment and discover the peptides designed for your goals." • single primary CTA **Take Assessment** → `/assessment`. Secondary muted link: "Browse programs". Trust strip below: SAHPRA-aligned · GP-led · POPIA. Full-bleed editorial visual right side.
+2. **Choose Your Goal** — 5 large cards (Lose Weight, Improve Recovery, Increase Energy, Age Better, Improve Performance). Each card deep-links into the assessment with `?goal=` prefilled.
+3. **How It Works** — 5 numbered steps (Assess → Recommend → Join → Clinical Review → Start).
+4. **Programs** — keep existing program rail (`FeaturedProductRail` reskinned as "Programs" with membership framing, not vials).
+5. **Success Stories** — keep current testimonials.
+6. **FAQ** — keep, retitle questions around programs + clinical review.
+7. **Final CTA** — full-width band, "Get Peptide Plan" → `/assessment`.
 
-**a) `index.html` `<meta>` tags** (works in every browser, ships immediately):
-- `Content-Security-Policy-Report-Only` — strict allowlist (self, Supabase project, PayFast sandbox+live, Lovable AI gateway, Google Fonts, Webflow CDN images, GA). Report-only for one week so we can collect violations before enforcing.
-- `Referrer-Policy: strict-origin-when-cross-origin`
-- `X-Content-Type-Options: nosniff` (via `<meta http-equiv>`)
+Remove from homepage: discount popup competing with assessment CTA (keep but delay to 30s and only if no quiz interaction), age-gate stays.
 
-**b) `public/_headers`** — if the user's custom domain (`ridethetide.site`) sits behind Cloudflare or a similar proxy, this file gives them a ready-to-paste rule set for real HTTP headers:
-- `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
-- `X-Frame-Options: DENY`
-- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
-- Same CSP as above but enforcing.
+## 4. Assessment Funnel (`src/pages/QuizFunnelPage.tsx` → `/assessment`)
 
-I'll document in `SECURITY.md` that HSTS and `X-Frame-Options` only take effect once the Cloudflare/Netlify rule is applied — Lovable's CDN ignores meta-tag versions of these two.
+- Add route alias `/assessment` (keep `/quiz` as redirect).
+- Tighten to **9 questions**, ≤3 min, progress bar, one question per screen:
+  Goal → Age → Gender → Weight → Height → Activity → Primary Challenge → Medical Conditions → Current Medications.
+- Output screen: **Health Score** (0–100, computed client-side from inputs), **Program Recommendation** (maps to existing programs in `src/data/products.ts`), **Estimated Timeline**, **Recommended Membership tier**.
+- Primary CTA on results: **Start Program — RXXX/mo** → adds membership to cart → `/checkout`. Secondary: "See what's included".
+- Persist answers to `localStorage` + (if logged in) the existing `cart_snapshots` table so clinical review has context post-purchase. No new tables.
 
-After the report-only window, a follow-up change flips the CSP meta tag from `Content-Security-Policy-Report-Only` to `Content-Security-Policy`.
+## 5. Checkout-Before-Review Flow
 
-## 3. RLS hardening — cart, orders, subscriptions
+- Checkout (`/checkout`) unchanged in mechanics (PayFast). Reframe copy:
+  - Order summary header: "Your Program Membership".
+  - Below totals: subtle one-liner — *"Where clinically required, a licensed physician will review your eligibility before treatment activation."*
+  - Remove any "book consultation / schedule doctor / wait for approval" wording (audit `src/lib/copy.ts`, `CheckoutPage.tsx`, `CheckoutSuccessPage.tsx`, `ClinicianPage.tsx`).
+- Success page becomes **Activation page**: "You're in. Complete your clinical verification →" with the medical intake form (existing onboarding), framed as activation, not gating.
 
-Single migration that rewrites the policies for least-privilege coverage of every command (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), explicitly scoped to `auth.uid()`.
+## 6. Header / Nav / Mobile
 
-**`cart_snapshots`** — replace the broad `FOR ALL` policy with four narrow ones (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), each gated on `auth.uid() = user_id` for both `USING` and `WITH CHECK`. Add a `BEFORE INSERT/UPDATE` trigger that forces `user_id := auth.uid()` so a client can't write someone else's id even if RLS allowed it.
+- Nav: Programs · How It Works · Science · About · **Take Assessment** (primary button, gold).
+- Sticky mobile CTA → "Take Assessment" (replaces current cart-centric CTA on non-product pages).
+- Remove "Book consultation" entry points sitewide.
 
-**`orders`** — already has `SELECT (own)`, `INSERT (own)`, admin `SELECT`. Add:
-- `UPDATE` policy: users may update **only** `shipping_country`, `shipping_method` while `status = 'pending'`. Enforced by a trigger (`protect_orders_sensitive_cols`) that raises if any of `user_id, total, status, currency, paid_at, payfast_*, shipping_cost, free_shipping_applied, discount_code, order_description` changes from a non-service-role session.
-- Explicit `DELETE` denial for `anon`/`authenticated` (no policy = denied, but add a comment for clarity).
-- Re-confirm column-level GRANTs from the 2026-06-13 migration still exclude `payfast_token` and `payfast_pf_payment_id` from `authenticated`.
+## 7. Copy Audit
 
-**`subscriptions`** — keep existing policies, add:
-- A `protect_subscription_user_id` check in the existing `protect_subscription_sensitive_cols` trigger (already covers most fields; add `id` and re-verify).
-- Explicit `DELETE` denial (only `service_role`/admin).
-- Re-confirm column-level GRANTs exclude `payfast_token` and `payfast_subscription_id`.
+Single pass through `src/lib/copy.ts`, `marketCopy.ts`, all page headers, and FAQ entries to remove consultation-first language and reframe around outcomes (Weight Loss, Longevity, Recovery, Energy, Performance). Peptides = engine, outcomes = product.
 
-**Verification queries** included as comments in the migration so anyone can re-run them: `SELECT count(*) FROM orders WHERE user_id <> auth.uid()` from an authenticated session must return 0.
+## 8. Analytics / KPI Instrumentation
 
-## 4. Files
+- Add lightweight event helper `src/lib/analytics.ts` wrapping `window.dataLayer.push` (GA4 already loaded):
+  - `assessment_start`, `assessment_complete`, `program_recommended`, `checkout_start`, `checkout_complete`, `activation_complete`.
+- Primary funnel report: assessment_complete → checkout_complete.
 
-```text
-.github/workflows/security.yml           new
-scripts/security/scan-edge-functions.ts  new
-SECURITY.md                              new
-public/_headers                          new (documented, opt-in)
-index.html                               edited (CSP report-only + referrer + nosniff meta)
-supabase/migrations/<ts>_rls_hardening.sql  new
-```
+## 9. Out of Scope (this plan)
 
-## 5. Out of scope
+- Payment provider changes (PayFast stays).
+- New database tables or RLS changes.
+- Open security findings in the More panel (PayFast realtime, generate-protocol auth, etc.) — tracked separately; flag at the end so you can approve a follow-up.
+- Building a physician dashboard.
 
-- Flipping CSP from report-only to enforce (follow-up after one week of telemetry).
-- Setting real HTTP headers — needs Cloudflare/Netlify access on `ridethetide.site` from the user.
-- Rewriting PayFast ITN verification (already server-side verified).
+---
+
+## File-Level Summary
+
+**Edit:** `index.html`, `src/index.css`, `tailwind.config.ts`, `src/lib/copy.ts`, `src/lib/marketCopy.ts`, `src/lib/seo.ts`, `src/components/Header.tsx`, `Footer.tsx`, `SEO.tsx`, `StickyMobileCTA.tsx`, `DiscountPopup.tsx`, `src/pages/HomePage.tsx`, `QuizFunnelPage.tsx`, `CheckoutPage.tsx`, `CheckoutSuccessPage.tsx`, `ClinicianPage.tsx`, `App.tsx` (route alias), `public/sitemap.xml`, `sitemap-meta.json`, `scripts/generate-sitemap.ts`, `README.md`, `SECURITY.md`.
+
+**Create:** `src/assets/logo-peptide-sa.png(.asset.json)`, new OG image, `src/components/home/ChooseYourGoal.tsx`, `HowItWorks.tsx`, `FinalCTA.tsx`, `src/lib/analytics.ts`, `src/lib/healthScore.ts`.
+
+**Delete:** none.
+
+---
+
+## Confirm before I build
+
+1. Domain: I'll wire canonical/sitemap to `peptide-south-africa.com` and give you Cloudflare DNS steps — OK?
+2. Type pair **Instrument Serif + Inter Tight** with **navy + teal + gold** palette — OK or want options?
+3. Keep PayFast as the only checkout (no Stripe added) — OK?
+4. Defer the open security findings to a follow-up turn — OK?
