@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useCart } from "@/context/CartContext";
 import logoIcon from "@/assets/logo-icon.png.asset.json";
 import logoHorizontal from "@/assets/logo-horizontal.png.asset.json";
