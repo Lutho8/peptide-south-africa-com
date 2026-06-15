@@ -175,6 +175,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("nocobase-sync error:", message);
     await logEvent(SUPABASE_URL, SERVICE_KEY, {
       integration: "nocobase",
       action,
@@ -182,6 +183,6 @@ Deno.serve(async (req) => {
       payload,
       error: message,
     });
-    return jsonResponse({ ok: false, error: message }, 500);
+    return jsonResponse({ ok: false, error: "Internal server error" }, 500);
   }
 });
