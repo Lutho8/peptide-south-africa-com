@@ -110,7 +110,8 @@ Deno.serve(async (req) => {
 
     return json({ actionUrl, fields });
   } catch (err) {
-    return json({ error: err instanceof Error ? err.message : 'Internal error' }, 500);
+    console.error('payfast-create-payment error:', err);
+    return json({ error: 'Payment initialisation failed. Please try again.' }, 500);
   }
 });
 
