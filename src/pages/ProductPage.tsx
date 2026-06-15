@@ -19,6 +19,7 @@ import TrackBadge from "@/components/TrackBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
 import StickyProductCTA from "@/components/StickyProductCTA";
+import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
