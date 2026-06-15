@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useCart } from "@/context/CartContext";
 import logoIcon from "@/assets/logo-icon.png.asset.json";
 import logoHorizontal from "@/assets/logo-horizontal.png.asset.json";
@@ -53,6 +53,22 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const { totalItems, setIsCartOpen } = useCart();
+  const location = useLocation();
+
+  const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    setMobileOpen(false);
+    setOpenIdx(null);
+    if (location.pathname === "/") {
+      e.preventDefault();
+      const hero = document.getElementById("top");
+      if (hero) {
+        hero.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
 
   const CartButton = ({ className = "" }: { className?: string }) => (
     <button
@@ -74,11 +90,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold text-foreground" aria-label="Peptide South Africa — home">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 font-display text-xl font-bold text-foreground" aria-label="Peptide South Africa — home">
           <img src={logoHorizontal.url} alt="Peptide South Africa" className="hidden h-9 w-auto md:block" />
           <img src={logoIcon.url} alt="Peptide South Africa" className="h-9 w-9 md:hidden" />
           <span className="sr-only">Peptide South Africa</span>
         </Link>
+
 
 
         <nav className="hidden items-center gap-1 lg:flex">
