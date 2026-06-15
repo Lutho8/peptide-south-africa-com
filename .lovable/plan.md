@@ -1,32 +1,44 @@
-## Goal
+# Fix "Ride The Tide" branding leak on Google login
 
-Make the brand logo behave as a universal "home" control: clicking it anywhere on the site returns the user to the hero on `/`, and the installed/home-screen icon (favicon, Apple touch icon, PWA install) opens the same place.
+## Root cause
 
-## What's already correct
+The text **"Ride The Tide Shop Build"** on the Google consent screen is **not in the app code** — I searched the entire codebase and found zero references to "ride the tide" / "ridethetide".
 
-- `src/components/Header.tsx` already wraps the logo in `<Link to="/">` for both desktop (`logo-horizontal`) and mobile (`logo-icon`) variants, with `aria-label="Peptide South Africa — home"`.
-- `index.html` already declares `/favicon.png`, `/apple-touch-icon.png`, and links `site.webmanifest`.
-- `public/site.webmanifest` already has `start_url: "/"`, `scope: "/"`, and 192/512/180px icons.
+That string is the **Lovable project's display name**. The managed Google OAuth flow shows the project name (and its first-letter avatar — the "R") on the consent screen. There's also a leftover custom domain `ridethetide.site` / `www.ridethetide.site` still attached to this project.
 
-## What to fix
+Nothing in the React code, Supabase config, or assets needs to change for the consent screen — it's a project-settings + custom-domain issue.
 
-1. **Logo click while already on `/` does nothing visible.** React Router's `Link` to the current path won't scroll, so a user deep in the homepage who taps the logo stays where they are. Add an `onClick` on the header logo `Link` that, when `location.pathname === "/"`, calls `window.scrollTo({ top: 0, behavior: "smooth" })` and also closes the mobile menu if open. On other routes, let the normal navigation happen (the existing route change behaviour will land them at the top of `/`).
+## What needs to happen
 
-2. **Ensure the hero is reachable by anchor.** Give the `HomePage` hero section an `id="top"` (or reuse an existing top-of-page landmark) so the logo target is explicit and any future "back to top" links can share it.
+### 1. Rename the Lovable project (fixes the consent screen)
+Only you can do this — it lives in Project Settings, not in code.
 
-3. **Replace placeholder favicon/PWA icons with the brand logo.** Right now `public/favicon.png`, `public/apple-touch-icon.png`, `public/icon-192.png`, and `public/icon-512.png` may not be the navy/teal Peptide SA logo. Regenerate them from the existing `src/assets/logo-icon.png.asset.json` (the same mark used in the mobile header) at 32, 180, 192, and 512 px so the home-screen button visually matches the in-app logo.
+- Open **Project Settings → rename** from `Ride The Tide Shop Build` to **`Peptide South Africa`**.
+- After saving, the next Google login will show "Grant permission to **Peptide South Africa**" and a "P" avatar instead of "R".
 
-4. **No PWA/service-worker changes.** Per the PWA guidance, this is manifest-only home-screen support — we keep things as-is, no service worker is added.
+I'll surface the settings entry point in chat once we're in build mode.
 
-## Technical details
+### 2. Remove the `ridethetide.site` custom domains
+The project currently has these custom domains attached:
+- `peptide-south-africa.com` ✅ keep
+- `www.peptide-south-africa.com` ✅ keep
+- `ridethetide.site` ❌ remove
+- `www.ridethetide.site` ❌ remove
 
-- `src/components/Header.tsx`: import `useLocation` from `react-router-dom`. Add a `handleLogoClick` handler used by both the desktop and mobile logo `Link`s.
-- `src/pages/HomePage.tsx`: add `id="top"` to the outer wrapper or the hero `<section>` so screen readers / future skip-links have a stable target.
-- `public/` icons: produce new 512×512 master from the brand logo on a navy background (matches `theme_color: #0a2540`), downsize to 192, 180 (apple-touch), and 32 (favicon).
-- No changes to `index.html` head tags, `site.webmanifest`, or routing.
+This is also done from Project Settings → Domains (I can't detach domains from code). Removing them prevents the old brand from being reachable and prevents any stray share links from showing the old name.
+
+### 3. Codebase audit — already clean
+- `rg -i "ride.?the.?tide|ridethetide"` across the repo: **0 matches**.
+- Brand, logo, favicon, manifest, SEO, and OG tags are already "Peptide South Africa".
+- No code changes required.
+
+### 4. Optional: tighten Google button copy
+The current `AuthPage` uses the managed `lovable.auth.signInWithOAuth("google", …)` flow, which is correct. No code change needed there. If you'd like, I can add a small note under the Google button like *"You'll be redirected to Google to authorize Peptide South Africa"* so users have context before they see the consent screen — say the word and I'll add it.
 
 ## Out of scope
+- No changes to auth logic, Supabase config, RLS, or edge functions.
+- No favicon/logo regeneration (already done in the previous turn).
+- No new pages or routes.
 
-- Adding offline support / service workers.
-- Changing header layout, nav items, or the mobile drawer.
-- Touching SEO metadata beyond the icon files.
+## Your next step
+Confirm you'd like me to (a) post the Project Settings deep-link so you can rename + detach the two `ridethetide.site` domains, and (b) optionally add the reassurance line under the Google button. Once renamed, log out and retry Google sign-in — the consent screen will say **Peptide South Africa**.
