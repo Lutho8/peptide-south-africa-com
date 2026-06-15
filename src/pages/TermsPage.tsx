@@ -13,7 +13,7 @@ const termsSchema = {
   name: "Terms and Conditions — Peptide South Africa",
   url: `${SITE_URL}/terms`,
   description:
-    "Website Terms and Conditions of Use for Peptide South Africa (Jenluko Investments (Pty) Ltd). South African jurisdiction, research-use disclaimers, user obligations.",
+    "Website Terms and Conditions of Use for Peptide South Africa (Pty) Ltd. South African jurisdiction, research-use disclaimers, user obligations.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Terms of Service" },

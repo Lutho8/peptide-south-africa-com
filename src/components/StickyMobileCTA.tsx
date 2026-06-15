@@ -19,7 +19,7 @@ export default function StickyMobileCTA() {
   if (!isHome || !visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 p-3 backdrop-blur-lg md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-lg md:hidden">
       <Link
         to="/shop"
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow transition-all active:scale-95"
