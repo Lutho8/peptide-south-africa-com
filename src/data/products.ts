@@ -1,11 +1,20 @@
-import productRt3 from "@/assets/product-rt3.jpg";
-import productGhk from "@/assets/product-ghk.jpg";
-import productTesa from "@/assets/product-tesa.jpg";
-import productTz2 from "@/assets/product-tz2.jpg";
-import productMots from "@/assets/product-mots.jpg";
-import productBpc from "@/assets/product-bpc.jpg";
-import productGlow from "@/assets/product-glow.jpg";
-import productKlow from "@/assets/product-klow.jpg";
+import rt3Asset from "@/assets/vials/rt3.jpg.asset.json";
+import ghkAsset from "@/assets/vials/ghk.jpg.asset.json";
+import tesaAsset from "@/assets/vials/tesa.jpg.asset.json";
+import tz2Asset from "@/assets/vials/tz2.jpg.asset.json";
+import motsAsset from "@/assets/vials/mots.jpg.asset.json";
+import bpcAsset from "@/assets/vials/bpc.jpg.asset.json";
+import glowAsset from "@/assets/vials/glow.jpg.asset.json";
+import klowAsset from "@/assets/vials/klow.jpg.asset.json";
+
+const productRt3 = rt3Asset.url;
+const productGhk = ghkAsset.url;
+const productTesa = tesaAsset.url;
+const productTz2 = tz2Asset.url;
+const productMots = motsAsset.url;
+const productBpc = bpcAsset.url;
+const productGlow = glowAsset.url;
+const productKlow = klowAsset.url;
 
 // All prices are in ZAR. Single-market site (South Africa).
 
