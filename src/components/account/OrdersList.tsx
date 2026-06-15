@@ -4,7 +4,7 @@ import { Package, Repeat, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { productsBySlug } from "@/data/products";
+import { products, getProductBySlug } from "@/data/products";
 import { toast } from "sonner";
 
 interface OrderRow {
@@ -44,13 +44,13 @@ function parseDescription(desc: string | null): { slug: string; variantLabel?: s
       const m = chunk.match(/^(.+?)(?:\s+\((.+?)\))?\s+x(\d+)$/i);
       if (!m) return null;
       const [, name, variant, qtyStr] = m;
-      const product = Object.values(productsBySlug).find(
+      const product = products.find(
         (p) => p.name.toLowerCase() === name.trim().toLowerCase(),
       );
       if (!product) return null;
-      return { slug: product.slug, variantLabel: variant, qty: Number(qtyStr) || 1 };
+      return { slug: product.slug, variantLabel: variant ?? undefined, qty: Number(qtyStr) || 1 };
     })
-    .filter((x): x is { slug: string; variantLabel?: string; qty: number } => x !== null);
+    .filter((x): x is { slug: string; variantLabel: string | undefined; qty: number } => x !== null);
 }
 
 export default function OrdersList() {
@@ -83,7 +83,7 @@ export default function OrdersList() {
     setReordering(order.id);
     let added = 0;
     for (const line of parsed) {
-      const product = productsBySlug[line.slug];
+      const product = getProductBySlug(line.slug);
       if (!product) continue;
       const variant = product.variants?.find((v) => v.label === line.variantLabel);
       for (let i = 0; i < line.qty; i++) {
