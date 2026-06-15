@@ -349,6 +349,11 @@ export default function ProductPage() {
         </div>
       </section>
 
+      {/* Frequently bought together */}
+      <section className="container">
+        <FrequentlyBoughtTogether slug={product.slug} />
+      </section>
+
       {/* Details Sections */}
       <section className="border-t border-border bg-card py-16">
         <div className="container grid gap-12 md:grid-cols-3">
