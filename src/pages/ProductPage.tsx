@@ -24,6 +24,7 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
+import TrustComplianceSection from "@/components/TrustComplianceSection";
 
 interface CmsFaq { question: string; answer: string }
 
