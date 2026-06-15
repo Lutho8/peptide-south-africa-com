@@ -400,6 +400,9 @@ export default function ProductPage() {
         </div>
       </section>
 
+      {/* Trust & compliance — reinforces premium pricing */}
+      <TrustComplianceSection variant="compact" />
+
       {/* Reviews */}
       <ProductReviews slug={product.slug} />
 

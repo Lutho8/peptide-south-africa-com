@@ -351,6 +351,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===================== TRUST & COMPLIANCE ARCHITECTURE ===================== */}
+      <TrustComplianceSection />
+
       {/* ===================== RESEARCH HUB ===================== */}
       <section className="bg-background py-16 md:py-20">
         <div className="container px-4">

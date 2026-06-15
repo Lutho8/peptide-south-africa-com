@@ -12,6 +12,7 @@ import FreeShippingBar from "@/components/FreeShippingBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import CheckoutStepper from "@/components/CheckoutStepper";
 import { useToast } from "@/hooks/use-toast";
 import { COPY, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
@@ -198,9 +199,10 @@ export default function CheckoutPage() {
     <>
     <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
     <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
-    <div className="container py-12">
+    <div className="container py-6 md:py-12">
+      <CheckoutStepper current="details" className="mb-6" />
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
+        <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl">Checkout</h1>
         <CartCountdown variant="compact" />
       </div>
       <div className="grid gap-8 lg:grid-cols-3">
