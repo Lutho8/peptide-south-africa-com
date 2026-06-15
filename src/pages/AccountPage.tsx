@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureReferralCode, shareUrl, type ReferralCode } from "@/lib/referral";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import OrdersList from "@/components/account/OrdersList";
+import ProfileEditor from "@/components/account/ProfileEditor";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Subscription {
   id: string;
@@ -169,68 +172,85 @@ export default function AccountPage() {
           </div>
         </div>
 
-        {/* Subscriptions */}
+        {/* Tabbed sections: Orders · Subscriptions · Profile */}
         <div className="mt-8">
-          <h2 className="font-display text-xl font-bold text-foreground">Your subscriptions</h2>
-          {subs.length === 0 ? (
-            <div className="mt-3 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-              <Repeat className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-3 text-sm font-medium text-foreground">No subscriptions yet</p>
-              <p className="mt-1 text-xs text-muted-foreground">Subscribe & save 12% on any research-track product.</p>
-              <Link to="/shop?track=RUO" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-                Browse research catalog <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          ) : (
-            <div className="mt-3 space-y-3">
-              {subs.map((s) => {
-                const isActive = s.status === "active";
-                const isPaused = s.status === "paused";
-                const isCancelled = s.status === "cancelled";
-                return (
-                  <div key={s.id} className="rounded-2xl border border-border bg-card p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <Link to={`/product/${s.product_slug}`} className="font-display text-base font-bold text-foreground hover:underline">
-                          {s.product_slug}
-                        </Link>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          {s.variant_label ?? "—"} · every {s.interval_weeks} weeks · −{s.discount_pct}%
-                        </p>
-                        {s.next_charge_at && isActive && (
-                          <p className="mt-0.5 text-xs text-trust">
-                            Next charge {new Date(s.next_charge_at).toLocaleDateString()}
-                          </p>
-                        )}
+          <Tabs defaultValue="orders" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:inline-grid">
+              <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="subs">Subscriptions</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="orders" className="mt-4">
+              <OrdersList />
+            </TabsContent>
+
+            <TabsContent value="subs" className="mt-4">
+              {subs.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+                  <Repeat className="mx-auto h-8 w-8 text-muted-foreground" />
+                  <p className="mt-3 text-sm font-medium text-foreground">No subscriptions yet</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Subscribe & save 12% on any research-track product.</p>
+                  <Link to="/shop?track=RUO" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                    Browse research catalog <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {subs.map((s) => {
+                    const isActive = s.status === "active";
+                    const isPaused = s.status === "paused";
+                    const isCancelled = s.status === "cancelled";
+                    return (
+                      <div key={s.id} className="rounded-2xl border border-border bg-card p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <Link to={`/product/${s.product_slug}`} className="font-display text-base font-bold text-foreground hover:underline">
+                              {s.product_slug}
+                            </Link>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {s.variant_label ?? "—"} · every {s.interval_weeks} weeks · −{s.discount_pct}%
+                            </p>
+                            {s.next_charge_at && isActive && (
+                              <p className="mt-0.5 text-xs text-trust">
+                                Next charge {new Date(s.next_charge_at).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            {isActive && (
+                              <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "paused")} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-muted">
+                                <Pause className="h-3.5 w-3.5" /> Pause
+                              </button>
+                            )}
+                            {isPaused && (
+                              <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "active")} className="inline-flex items-center gap-1 rounded-lg bg-trust px-3 py-1.5 text-xs font-semibold text-trust-foreground">
+                                <Play className="h-3.5 w-3.5" /> Resume
+                              </button>
+                            )}
+                            {!isCancelled && (
+                              <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "cancelled")} className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10">
+                                <X className="h-3.5 w-3.5" /> Cancel
+                              </button>
+                            )}
+                            {isCancelled && (
+                              <span className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                                Cancelled
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        {isActive && (
-                          <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "paused")} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-muted">
-                            <Pause className="h-3.5 w-3.5" /> Pause
-                          </button>
-                        )}
-                        {isPaused && (
-                          <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "active")} className="inline-flex items-center gap-1 rounded-lg bg-trust px-3 py-1.5 text-xs font-semibold text-trust-foreground">
-                            <Play className="h-3.5 w-3.5" /> Resume
-                          </button>
-                        )}
-                        {!isCancelled && (
-                          <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "cancelled")} className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10">
-                            <X className="h-3.5 w-3.5" /> Cancel
-                          </button>
-                        )}
-                        {isCancelled && (
-                          <span className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                            Cancelled
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="profile" className="mt-4">
+              <ProfileEditor />
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
     </>
