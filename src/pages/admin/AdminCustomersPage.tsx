@@ -104,7 +104,7 @@ export default function AdminCustomersPage() {
     if (!selected) return;
     setBusy(true);
     await supabase.from("loyalty_credits").insert({
-      user_id: selected.user_id, delta_zar: 100, reason: "admin_manual_credit", source: "admin",
+      user_id: selected.user_id, delta_zar: 100, reason: "admin_manual_credit",
     });
     await supabase.from("retention_events").insert({
       user_id: selected.user_id, event: "loyalty_credit_issued", meta: { amount: 100, by: "admin" },
