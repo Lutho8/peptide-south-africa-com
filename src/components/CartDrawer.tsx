@@ -4,7 +4,10 @@ import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { COPY } from "@/lib/copy";
 import CartCountdown from "@/components/CartCountdown";
+import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath } from "@/hooks/useMarket";
+
+const FREE_SHIP_THRESHOLD = 1500; // ZAR
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
@@ -16,11 +19,17 @@ export default function CartDrawer() {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
-      <div className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-card shadow-2xl">
+  const anchorSlug = items[0]?.product.slug;
+  const shipProgress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
+  const shipRemaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+
+  return (
+    <>
+      <div className="fixed inset-0 z-50 bg-foreground/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
+      <div className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col bg-card shadow-2xl pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 className="font-display text-lg font-bold text-foreground">Your Cart ({totalItems})</h2>
-          <button onClick={() => setIsCartOpen(false)} className="rounded-full p-2 hover:bg-muted">
+          <button onClick={() => setIsCartOpen(false)} aria-label="Close cart" className="rounded-full p-2 hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center">
             <X className="h-5 w-5" />
           </button>
         </div>
