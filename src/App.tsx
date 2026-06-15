@@ -15,6 +15,7 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import CartDrawer from "@/components/CartDrawer";
+import PostAddUpsellModal from "@/components/PostAddUpsellModal";
 import AgeVerificationModal from "@/components/AgeVerificationModal";
 import DiscountPopup from "@/components/DiscountPopup";
 import HomePage from "@/pages/HomePage";
@@ -71,6 +72,7 @@ const App = () => (
             <AnnouncementBar />
             <Header />
             <CartDrawer />
+            <PostAddUpsellModal />
             <main className="min-h-screen">
               <Routes>
                 <Route path="/" element={<HomePage />} />
