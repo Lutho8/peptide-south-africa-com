@@ -4,7 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
 
 const PEPTIDE_PRO_URL = "https://peptide-mastery.lovable.app";
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const researchHubSchema = {
   "@context": "https://schema.org",
