@@ -15,13 +15,11 @@ export default function CartDrawer() {
   const { market } = useMarket();
   const mp = (p: string) => marketPath(p, market);
 
-  if (!isCartOpen) return null;
-
-  return (
-    <>
   const anchorSlug = items[0]?.product.slug;
   const shipProgress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
   const shipRemaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+
+  if (!isCartOpen) return null;
 
   return (
     <>
@@ -29,7 +27,7 @@ export default function CartDrawer() {
       <div className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col bg-card shadow-2xl pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 className="font-display text-lg font-bold text-foreground">Your Cart ({totalItems})</h2>
-          <button onClick={() => setIsCartOpen(false)} aria-label="Close cart" className="rounded-full p-2 hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <button onClick={() => setIsCartOpen(false)} aria-label="Close cart" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-2 hover:bg-muted">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -50,21 +48,21 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto p-4">
               <div className="flex flex-col gap-4">
                 {items.map((item) => (
-                  <div key={item.lineId} className="flex gap-4 rounded-lg border border-border p-3">
-                    <img src={item.product.image} alt={item.product.name} className="h-20 w-20 rounded-md object-cover" />
+                  <div key={item.lineId} className="flex gap-3 rounded-lg border border-border p-3">
+                    <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-md object-cover" />
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
                       {item.variantLabel && (
-                        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{item.variantLabel}</span>
+                        <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{item.variantLabel}</span>
                       )}
                       <span className="text-sm font-bold text-primary">{format(item.unitPrice)}</span>
                       <div className="mt-auto flex items-center gap-2">
-                        <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} className="rounded-md border border-border p-1 hover:bg-muted">
-                          <Minus className="h-3 w-3" />
+                        <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} aria-label="Decrease quantity" className="flex h-9 w-9 items-center justify-center rounded-md border border-border hover:bg-muted">
+                          <Minus className="h-3.5 w-3.5" />
                         </button>
-                        <span className="min-w-[2ch] text-center text-sm font-medium">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.lineId, item.quantity + 1)} className="rounded-md border border-border p-1 hover:bg-muted">
-                          <Plus className="h-3 w-3" />
+                        <span className="min-w-[2ch] text-center text-sm font-semibold">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.lineId, item.quantity + 1)} aria-label="Increase quantity" className="flex h-9 w-9 items-center justify-center rounded-md border border-border hover:bg-muted">
+                          <Plus className="h-3.5 w-3.5" />
                         </button>
                         <button onClick={() => removeFromCart(item.lineId)} className="ml-auto text-xs text-destructive hover:underline">
                           Remove
@@ -74,6 +72,27 @@ export default function CartDrawer() {
                   </div>
                 ))}
               </div>
+
+              {/* Free-shipping progress */}
+              <div className="mt-4 rounded-xl border border-border bg-muted/30 p-3">
+                {shipRemaining > 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    Add <span className="font-bold text-foreground">{format(shipRemaining)}</span> more for <span className="font-semibold text-trust">free shipping</span>
+                  </p>
+                ) : (
+                  <p className="text-xs font-semibold text-trust">✓ Free shipping unlocked</p>
+                )}
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
+                  <div className="h-full bg-trust transition-all" style={{ width: `${shipProgress}%` }} />
+                </div>
+              </div>
+
+              {/* Frequently bought together */}
+              {anchorSlug && (
+                <div className="mt-4">
+                  <FrequentlyBoughtTogether slug={anchorSlug} variant="compact" />
+                </div>
+              )}
             </div>
 
             <div className="border-t border-border p-4">
