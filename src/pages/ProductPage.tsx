@@ -24,6 +24,7 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
+import TrustComplianceSection from "@/components/TrustComplianceSection";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -399,6 +400,9 @@ export default function ProductPage() {
           </p>
         </div>
       </section>
+
+      {/* Trust & compliance — reinforces premium pricing */}
+      <TrustComplianceSection variant="compact" />
 
       {/* Reviews */}
       <ProductReviews slug={product.slug} />
