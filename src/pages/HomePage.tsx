@@ -78,7 +78,7 @@ export default function HomePage() {
   const { market, lang } = useMarket();
   const home = pageCopy("home", market);
   return (
-    <div className="flex flex-col">
+    <div id="top" className="flex flex-col">
       <SEO
         title={home.title}
         description={home.description}
