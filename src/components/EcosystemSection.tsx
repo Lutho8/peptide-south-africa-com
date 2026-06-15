@@ -15,7 +15,7 @@ const CARDS = [
   },
   {
     key: "tracker",
-    title: "RTD Protocol Tracker",
+    title: "Peptide Tracker",
     eyebrow: "THE TRACKER",
     body:
       "Free tracking for every protocol. Bloodwork integration. Monthly Q&As. No paywalls. Ever.",
@@ -27,10 +27,10 @@ const CARDS = [
   },
   {
     key: "store",
-    title: "RTD Research Peptides",
+    title: "Peptide South Africa",
     eyebrow: "THE STORE",
     body:
-      "Four compounds. COA on every batch. Locally stocked in Cape Town.",
+      "HPLC-verified research peptides. COA on every batch. Locally stocked in South Africa.",
     cta: null,
     href: null,
     border: "#475569",
@@ -45,7 +45,7 @@ export default function EcosystemSection() {
       <div className="container px-4">
         <div className="mb-10 text-center">
           <span className="text-sm font-medium uppercase tracking-wider text-primary">
-            The RTD Ecosystem
+            The Peptide SA Ecosystem
           </span>
           <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
             One Ecosystem. Three Properties.

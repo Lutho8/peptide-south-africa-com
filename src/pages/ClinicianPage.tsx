@@ -17,7 +17,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import SEO from "@/components/SEO";
 
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const credentials = [
   { icon: GraduationCap, title: "BSc Biochemistry & Physiology", detail: "University of Cape Town" },

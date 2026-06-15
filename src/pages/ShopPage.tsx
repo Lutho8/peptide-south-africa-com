@@ -11,7 +11,7 @@ import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 
-const SITE_URL = "https://tide-shop-clone.lovable.app";
+const SITE_URL = "https://www.peptide-south-africa.com";
 
 const protocols = [
   {

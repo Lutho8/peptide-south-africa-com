@@ -16,14 +16,14 @@ export default function TrackerBridgeCard({ productName, productSlug }: Props) {
     <aside
       className="mt-4 rounded-lg border border-border bg-card p-4 text-sm"
       style={{ borderLeft: "3px solid #06b6d4" }}
-      aria-label={`Track ${productName} in the RTD Tracker`}
+      aria-label={`Track ${productName} in the Peptide Tracker`}
     >
       <div className="flex items-start gap-3">
         <LineChart className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: "#06b6d4" }} />
         <div className="flex-1">
           <p className="font-semibold text-foreground">Track this protocol free</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Load into your RTD Tracker and monitor your results from day one.
+            Load into the Peptide Tracker and monitor your results from day one.
           </p>
         </div>
         <a
