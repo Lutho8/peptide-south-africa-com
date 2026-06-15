@@ -41,7 +41,8 @@ Deno.serve(async (req) => {
     .lt("updated_at", cutoff);
 
   if (error) {
-    return new Response(JSON.stringify({ ok: false, error: error.message }), {
+    console.error("nocobase-abandoned-cart query error:", error);
+    return new Response(JSON.stringify({ ok: false, error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

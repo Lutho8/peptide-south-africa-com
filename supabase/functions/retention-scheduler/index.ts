@@ -12,13 +12,11 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  // Allow optional CRON_SECRET gating
+  // Require shared cron secret on every call. Without it, no access.
   const cronSecret = Deno.env.get('CRON_SECRET');
-  if (cronSecret) {
-    const provided = req.headers.get('x-cron-secret') ?? '';
-    if (provided !== cronSecret) {
-      return new Response('forbidden', { status: 403, headers: corsHeaders });
-    }
+  const provided = req.headers.get('x-cron-secret') ?? '';
+  if (!cronSecret || provided !== cronSecret) {
+    return new Response('unauthorized', { status: 401, headers: corsHeaders });
   }
 
   const supabase = createClient(
@@ -93,7 +91,8 @@ Deno.serve(async (req) => {
 
     return json({ ok: true, processed: due.length, enqueued });
   } catch (e) {
-    return json({ ok: false, error: (e as Error).message }, 500);
+    console.error('retention-scheduler error:', e);
+    return json({ ok: false, error: 'Internal server error' }, 500);
   }
 });
 
