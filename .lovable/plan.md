@@ -1,68 +1,68 @@
-# Rebrand to Peptide South Africa + SEO/Conversion Push
+## Scope (this round)
 
-Rename the storefront from "Peptide South Africa" to **Peptide South Africa**, install the new logo/icon, retarget SEO around peptide-South-Africa keywords, hook up Google Search Console, and ship the conversion-focused scroll/sticky effects you listed.
+Quick-wins + premium UX upgrade. ERP/SMS/ads/SOPs/inventory backend is **deferred** to a phased plan after this lands.
 
-## 1. Brand identity rollout
+---
 
-**New assets (from uploaded images):**
-- `src/assets/logo-horizontal.png` — full lockup (light mode, navy text).
-- `src/assets/logo-icon.png` — circular icon (mobile/avatar).
-- `public/favicon.png`, `public/apple-touch-icon.png`, `public/icon-192.png`, `public/icon-512.png`, `public/og-image.png` — derived from the icon + lockup for PWA/social previews.
-- `public/site.webmanifest` — name "Peptide South Africa", short_name "Peptide SA", theme `#0a2540`, icons above.
+## 1. Fix Google login (400 "provider is not enabled")
 
-**Text rename (every occurrence of "Peptide South Africa" / "peptide-south-africa.com"):**
-- `index.html` (title, meta, OG, Twitter, Organization + WebSite JSON-LD, hreflang, canonical, og:url, og:image → new asset).
-- `src/lib/seo.ts`, `src/lib/marketCopy.ts`, `src/lib/copy.ts`, `src/hooks/useMarket.ts`.
-- All page components and blog posts in the grep list above (Header, Footer, CartDrawer, HeroShop, AnnouncementBar, Breadcrumbs, ClinicianHero, DeliveryReturnsAccordion, DiscountPopup, EcosystemSection, FloatingVial, TrackerBridgeCard, BlogCTA, CommunityJoinForm, SEO, CartContext, all `src/pages/*`, all `src/data/blog/posts/*`).
-- `scripts/generate-sitemap.ts` + regenerated `public/sitemap.xml` → `https://www.peptide-south-africa.com`.
-- `SECURITY.md`, `.lovable/plan.md` references.
+- Enable Lovable Cloud **managed Google OAuth** (`configure_social_auth providers=["google"]`, keep email enabled).
+- Migrate `src/pages/AuthPage.tsx` from `supabase.auth.signInWithOAuth("google", …)` to `lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin })`.
+- Add "Continue with Google" button on both sign-in and sign-up tabs; handle `result.error` / `result.redirected` correctly.
 
-**Header/Footer logo swap:** replace text/old logo with `logo-horizontal.png` on desktop, `logo-icon.png` ≤ md breakpoint. Alt: "Peptide South Africa".
+## 2. Rebrand vials & box renders (AI-generated)
 
-## 2. SEO retarget — peptide-south-africa.com
+- Generate fresh **navy + teal Peptide South Africa label** vial+box renders via `imagegen` (premium tier for label legibility) for: BPC-157, TB-500, Retatrutide, Tirzepatide, Semaglutide, CJC-1295/Ipamorelin, GHK-Cu, NAD+, Selank, Sermorelin, MOTS-c, Epitalon.
+- One shared label template (logo top, peptide name in display font, monospace LOT/PURITY/STORE strip at bottom, "Research use only — South Africa").
+- Save each to `src/assets/vials/<slug>.png.asset.json` via `lovable-assets`. Update `src/data/products.ts` image fields.
+- Replace `src/components/FloatingVial.tsx` source image with new icon-only render.
 
-- Update canonical, og:url, hreflang, sitemap base to `https://www.peptide-south-africa.com`.
-- Rewrite `<title>` + meta description with primary keyword "Peptide South Africa":
-  - Home: `Peptide South Africa | Buy Research Peptides Online — HPLC-Verified`
-  - Description: ZA-wide courier, 99% purity, GP-led protocols.
-- Expand `keywords` and per-page Helmet titles to cluster around: *peptides south africa, buy peptides south africa, retatrutide south africa, tirzepatide south africa, BPC-157 south africa, GLP-1 south africa, semaglutide south africa, peptide therapy johannesburg / durban / pretoria / cape town, research peptides ZA, peptides for fat loss south africa, peptides for healing south africa*.
-- Add `MedicalBusiness` + `Product` JSON-LD with `areaServed: ZA` and city list (Cape Town, Johannesburg, Pretoria, Durban) to feed local-pack signals.
-- Refresh `public/llms.txt` and `public/robots.txt` `Sitemap:` line to new domain.
+## 3. Mobile-first polish
 
-## 3. Google Search Console
+- Header: ensure icon-only logo + condensed cart/menu under `md`, larger 44px tap targets.
+- Product grid: 2-up on mobile, sticky add-to-cart bar inside PDP.
+- Cart drawer: full-height sheet on mobile, larger qty steppers.
+- Hero typography clamp; collapse decorative sections on `sm` to reduce TTI.
+- Audit `src/components/StickyMobileCTA.tsx` for safe-area inset + bottom-nav overlap.
+- Run Lighthouse-style pass: lazy-load non-critical images, `loading="lazy"` everywhere, defer `FloatingTrustBadge` mount until idle.
 
-- Issue a META verification token for `https://www.peptide-south-africa.com/` via the Search Console connector, replace the existing `google-site-verification` meta in `index.html`, then call verify + add-site.
-- Note: requires the domain to be live and serving the new meta tag before verify will succeed; if not yet deployed, instruct the user and leave the call pending.
-- Submit `https://www.peptide-south-africa.com/sitemap.xml` once verified.
+## 4. Legal copy — new business name
 
-## 4. Mobile-first polish
+Update all references to "Ride The Tide" → **Peptide South Africa (Pty) Ltd** in:
+- `src/pages/PrivacyPolicyPage.tsx`
+- `src/pages/TermsPage.tsx`
+- `src/pages/RefundPolicyPage.tsx`
+- `src/pages/ShippingPolicyPage.tsx`
+- `src/pages/ImpressumPage.tsx`
+- Footer legal line, cookie consent text, age-verification modal.
+- Replace contact email/domain references with `legal@peptide-south-africa.com`, `support@peptide-south-africa.com`.
+- POPIA controller block updated to new entity.
 
-- Set `theme-color`, `apple-mobile-web-app-title=Peptide SA`, `apple-mobile-web-app-capable=yes`, link the new manifest + apple-touch-icon.
-- Header uses the icon-only logo under `md` to save width; tap target ≥44px.
-- Verify `StickyMobileCTA` reads new brand copy.
+## 5. Premium UX upgrade (DirectPeptides-benchmarked, trust architecture)
 
-## 5. Conversion mechanics (the 6 effects)
-
-Add a new `src/components/product/StickyProductExperience.tsx` used on `ProductPage`:
-
-1. **Sticky product card** — `position: sticky; top: 96px` left column, scrollable specs/reviews right column on `lg+`. Mobile keeps existing `StickyProductCTA`.
-2. **Monospace authenticity strip** — JetBrains Mono (already loaded) for lot #, purity %, COA hash, batch date under the price → reinforces "lab-grade".
-3. **Full-bleed product photography** — hero section using `object-fit: cover; aspect-ratio: 16/9; height: clamp(420px, 60vh, 720px)` for product hero on PDP + Home.
-4. **GSAP ScrollTrigger pin** — install `gsap`, pin the product image while right-column copy scrolls through "Purity → Protocol → Proof → Shipping" panels. Honors `prefers-reduced-motion`.
-5. **Floating centered label** — `position: fixed; left:50%; transform: translate(-50%, -50%)` badge ("99% HPLC · COA verified") that fades in between scroll milestones, fades out near checkout CTA.
-6. **Editorial grid with z-index depth** — Home "Why Peptide SA" section uses CSS grid with overlapping cards (z-index layered photo + stat card + quote card) for magazine-style depth.
-
-Each effect is wrapped so it degrades gracefully on mobile (sticky becomes natural flow, GSAP pin disabled <`lg`).
+- **PDP refresh**: lab-report card above the fold (HPLC %, mass-spec match, batch, COA download), "Tested by Janoshik / Auriga" badges row, monospace facts strip already in place — extend to include manufacture date, sterility, endotoxin <0.5 EU/mg.
+- **Cart drawer redesign**: 3 panels — line items, "Frequently bought together" rail, "Order summary" with free-shipping progress.
+- **Frequently Bought Together** (PDP + cart drawer):
+  - New component `src/components/FrequentlyBoughtTogether.tsx`.
+  - Hard-coded curated pairs in `src/data/bundles.ts` (e.g. BPC-157 ↔ TB-500, Retatrutide ↔ B12, any peptide ↔ Bac Water + Syringe Kit).
+  - One-click "Add 3 to cart" with bundle discount line.
+- **Post-add upsell modal**: `src/components/PostAddUpsellModal.tsx` fires after `addToCart`, shows bacteriostatic water, insulin syringes, sharps bin, alcohol swabs as one-tap adds; dismissible, max once per session.
+- **Premium signals throughout**: replace "discount" framing with "member pricing", add "Compounded under GP oversight" badge, "Cold-chain shipped from Johannesburg" line in cart, payment-method strip (PayFast, EFT, Card) in checkout.
 
 ## 6. Memory updates
 
-- Update `mem://index.md` Core: brand name → Peptide South Africa, primary domain `peptide-south-africa.com`.
-- New memory `mem://brand/identity` — logo files, color usage, monospace = trust signal rule.
+- Add `mem://features/cart-upsell` — FBT rules, post-add modal rules.
+- Add `mem://legal/entity` — "Peptide South Africa (Pty) Ltd" canonical name.
+- Update `mem://brand/identity` with new vial asset paths.
 
-## Out of scope
-- Domain DNS/registrar setup (user-side).
-- Paid Google Ads.
-- Migrating existing customer data or order links.
+---
 
-## Files touched (high level)
-`index.html`, `public/_headers`, `public/robots.txt`, `public/llms.txt`, `public/site.webmanifest` (new), `public/favicon*`, `public/apple-touch-icon.png`, `public/icon-*.png`, `public/og-image.png`, `scripts/generate-sitemap.ts`, `src/assets/logo-*.png` (new), `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/components/product/StickyProductExperience.tsx` (new), `src/pages/ProductPage.tsx`, `src/pages/HomePage.tsx`, all files in the grep list under §1, plus a `package.json` add for `gsap`.
+## Out of scope (next phased plan)
+
+ERP backend, fulfilment workflows, customer DB beyond auth, SMS/email automation engine, ad-account integrations, payment-processing workarounds, SOPs, inventory system, retention machine. I'll write a dedicated multi-phase plan for these once this round ships — they're a multi-week build involving new tables (inventory, shipments, SMS queue, automation rules), edge functions (SMS sender via connector, email drip, reorder reminders), and admin dashboards.
+
+## Files
+
+**Edit**: `src/pages/AuthPage.tsx`, `src/pages/{Privacy,Terms,Refund,Shipping,Impressum}Page.tsx`, `src/pages/ProductPage.tsx`, `src/components/{Header,CartDrawer,FloatingVial,StickyMobileCTA,Footer,AgeVerificationModal,CookieConsent}.tsx`, `src/data/products.ts`.
+**Create**: `src/components/FrequentlyBoughtTogether.tsx`, `src/components/PostAddUpsellModal.tsx`, `src/data/bundles.ts`, `src/assets/vials/*.png.asset.json` (~12 files), memory files.
+**Tools**: `supabase--configure_social_auth`, `imagegen--generate_image` (×12, premium tier).
