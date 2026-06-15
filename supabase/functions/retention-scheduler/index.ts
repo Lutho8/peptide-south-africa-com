@@ -91,7 +91,8 @@ Deno.serve(async (req) => {
 
     return json({ ok: true, processed: due.length, enqueued });
   } catch (e) {
-    return json({ ok: false, error: (e as Error).message }, 500);
+    console.error('retention-scheduler error:', e);
+    return json({ ok: false, error: 'Internal server error' }, 500);
   }
 });
 
