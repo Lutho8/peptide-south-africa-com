@@ -50,6 +50,7 @@ import AdminFAQsPage from "@/pages/admin/AdminFAQsPage";
 import AdminDiscountEligibilityPage from "@/pages/admin/AdminDiscountEligibilityPage";
 import AdminSEOReindexPage from "@/pages/admin/AdminSEOReindexPage";
 import AdminBatchesPage from "@/pages/admin/AdminBatchesPage";
+import AdminCustomersPage from "@/pages/admin/AdminCustomersPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
@@ -109,6 +110,7 @@ const App = () => (
                 <Route path="/admin/discounts" element={<AdminDiscountEligibilityPage />} />
                 <Route path="/admin/seo-reindex" element={<AdminSEOReindexPage />} />
                 <Route path="/admin/batches" element={<AdminBatchesPage />} />
+                <Route path="/admin/customers" element={<AdminCustomersPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
