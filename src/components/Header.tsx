@@ -53,6 +53,22 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const { totalItems, setIsCartOpen } = useCart();
+  const location = useLocation();
+
+  const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    setMobileOpen(false);
+    setOpenIdx(null);
+    if (location.pathname === "/") {
+      e.preventDefault();
+      const hero = document.getElementById("top");
+      if (hero) {
+        hero.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
 
   const CartButton = ({ className = "" }: { className?: string }) => (
     <button
