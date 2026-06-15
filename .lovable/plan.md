@@ -1,44 +1,64 @@
-# Fix "Ride The Tide" branding leak on Google login
+# Rebrand cleanup — Peptide South Africa
 
-## Root cause
+## 1. Purge remaining "Ride The Tide" / stale-domain strings
 
-The text **"Ride The Tide Shop Build"** on the Google consent screen is **not in the app code** — I searched the entire codebase and found zero references to "ride the tide" / "ridethetide".
+Found via `rg -i "ride.?the.?tide|ridethetide|tide-shop"`:
 
-That string is the **Lovable project's display name**. The managed Google OAuth flow shows the project name (and its first-letter avatar — the "R") on the consent screen. There's also a leftover custom domain `ridethetide.site` / `www.ridethetide.site` still attached to this project.
+- **`public/llms.txt`** — every `https://www.ridethetide.site/...` URL (≈12 occurrences) → `https://www.peptide-south-africa.com/...`. Also update the bottom `Website:` line.
+- **`src/pages/ShopPage.tsx`**, **`src/pages/ResearchHubPage.tsx`**, **`src/pages/ClinicianPage.tsx`** — `const SITE_URL = "https://tide-shop-clone.lovable.app"` → `"https://www.peptide-south-africa.com"`.
+- **`.lovable/plan.md`** — replace old plan body with a one-line note (it's a working doc, but it still contains the phrase and shouldn't pollute future searches).
 
-Nothing in the React code, Supabase config, or assets needs to change for the consent screen — it's a project-settings + custom-domain issue.
+Tracker external URL `https://ridethetide.info` **stays** (per your answer) but every visible label becomes "Peptide Tracker":
+- `src/components/Header.tsx` nav item `Tracker` (already short — keep label "Tracker", but ensure the visible "Peptide Tracker" tooltip/aria reads correctly; the host URL is invisible).
+- `src/components/Footer.tsx` — link text "Tracker ↗" stays neutral.
+- `src/components/EcosystemSection.tsx` — confirm card title says "Peptide Tracker" not "Ride The Tide".
+- `src/components/blog/BlogCTA.tsx` — same.
+- `src/components/TrackerBridgeCard.tsx` — same.
 
-## What needs to happen
+(These components don't currently print "Ride The Tide" text, only the URL — so visually they're already neutral. I'll audit each and adjust any stray copy to "Peptide Tracker".)
 
-### 1. Rename the Lovable project (fixes the consent screen)
-Only you can do this — it lives in Project Settings, not in code.
+## 2. Regenerate full icon + manifest set from Peptide SA logo
 
-- Open **Project Settings → rename** from `Ride The Tide Shop Build` to **`Peptide South Africa`**.
-- After saving, the next Google login will show "Grant permission to **Peptide South Africa**" and a "P" avatar instead of "R".
+Source: `src/assets/logo-icon.png.asset.json` (existing brand mark).
 
-I'll surface the settings entry point in chat once we're in build mode.
+Pipeline (Python/Pillow in the sandbox):
+1. Download the CDN logo to `/tmp/logo-src.png`.
+2. Composite onto a navy `#0a2540` square (rounded corners, 12% padding) → master 1024×1024.
+3. Resize with LANCZOS to:
+   - `public/icon-512.png` (512×512, maskable-safe)
+   - `public/icon-192.png` (192×192, maskable-safe)
+   - `public/apple-touch-icon.png` (180×180, no rounding — iOS masks)
+   - `public/favicon.png` (32×32)
+   - `public/favicon-16.png` (16×16)
+4. Update `public/site.webmanifest`:
+   - Confirm name/short_name = "Peptide South Africa" / "Peptide SA" ✅ (already set)
+   - Keep theme_color `#0a2540`
+   - Add separate `"purpose": "maskable"` and `"purpose": "any"` entries (current single entry mixes both, which Android renders oddly).
+5. `index.html` — add `<link rel="icon" sizes="16x16" href="/favicon-16.png">` next to the existing 32px favicon line.
 
-### 2. Remove the `ridethetide.site` custom domains
-The project currently has these custom domains attached:
-- `peptide-south-africa.com` ✅ keep
-- `www.peptide-south-africa.com` ✅ keep
-- `ridethetide.site` ❌ remove
-- `www.ridethetide.site` ❌ remove
+## 3. OAuth & email copy alignment
 
-This is also done from Project Settings → Domains (I can't detach domains from code). Removing them prevents the old brand from being reachable and prevents any stray share links from showing the old name.
+**OAuth UI copy (`src/pages/AuthPage.tsx`)** — add a reassurance line under the Google button: *"You'll be redirected to Google to authorize Peptide South Africa."* Verify no other strings reference the old brand.
 
-### 3. Codebase audit — already clean
-- `rg -i "ride.?the.?tide|ridethetide"` across the repo: **0 matches**.
-- Brand, logo, favicon, manifest, SEO, and OG tags are already "Peptide South Africa".
-- No code changes required.
+**Email templates** — `supabase/functions/_shared/` is currently empty (no auth-email-hook or transactional templates scaffolded yet). No template strings to update. If/when you scaffold them later, they'll inherit the brand from `index.html`/manifest.
 
-### 4. Optional: tighten Google button copy
-The current `AuthPage` uses the managed `lovable.auth.signInWithOAuth("google", …)` flow, which is correct. No code change needed there. If you'd like, I can add a small note under the Google button like *"You'll be redirected to Google to authorize Peptide South Africa"* so users have context before they see the consent screen — say the word and I'll add it.
+**Out of scope (project-settings, not code):**
+- The Lovable **project display name** — still controls the Google consent screen string. You must rename it in Project Settings to fully remove "Ride The Tide Shop Build" from the consent prompt.
+- Detaching `ridethetide.site` / `www.ridethetide.site` custom domains (Project Settings → Domains).
 
-## Out of scope
-- No changes to auth logic, Supabase config, RLS, or edge functions.
-- No favicon/logo regeneration (already done in the previous turn).
-- No new pages or routes.
+I'll surface both as reminders after the code changes ship.
 
-## Your next step
-Confirm you'd like me to (a) post the Project Settings deep-link so you can rename + detach the two `ridethetide.site` domains, and (b) optionally add the reassurance line under the Google button. Once renamed, log out and retry Google sign-in — the consent screen will say **Peptide South Africa**.
+## Technical Details
+
+- Image generation: `pip`-free; sandbox already has Pillow. Script writes to `/tmp/icon-gen.py` then runs once.
+- All file writes are parallel where independent (icons, page constants, llms.txt).
+- No DB, edge-function, RLS, or auth-logic changes.
+- No new dependencies.
+
+## Files touched
+
+- `public/llms.txt`, `public/site.webmanifest`, `public/favicon.png`, `public/favicon-16.png` (new), `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`
+- `index.html` (add 16px favicon link)
+- `src/pages/ShopPage.tsx`, `src/pages/ResearchHubPage.tsx`, `src/pages/ClinicianPage.tsx`, `src/pages/AuthPage.tsx`
+- `src/components/EcosystemSection.tsx`, `src/components/TrackerBridgeCard.tsx`, `src/components/blog/BlogCTA.tsx` (label audit only)
+- `.lovable/plan.md` (clear stale plan body)
