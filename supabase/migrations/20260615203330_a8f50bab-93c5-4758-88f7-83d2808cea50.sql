@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public read testimonial photos" ON storage.objects;
