@@ -508,6 +508,60 @@ export default function QuizFunnelPage() {
             </div>
           )}
 
+          {/* Recommended Stack — drives quiz takers into the shop */}
+          {matchedProducts.length > 0 && (
+            <div className="mb-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-background p-5 shadow-glow sm:p-6">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    Ready to start
+                  </span>
+                  <h3 className="mt-1 font-display text-lg font-bold text-foreground sm:text-xl">
+                    Your recommended stack
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {matchedProducts.length} product{matchedProducts.length === 1 ? "" : "s"} matched to your protocol.
+                  </p>
+                </div>
+                <span className="rounded-full bg-trust/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-trust">
+                  In stock
+                </span>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                {matchedProducts.map((p) => (
+                  <Link
+                    key={p.id}
+                    to={`/product/${p.slug}`}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-muted"
+                  >
+                    <img src={p.image} alt={p.name} className="h-12 w-12 flex-shrink-0 rounded-lg object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-display text-sm font-semibold text-foreground">{p.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{p.shortDescription}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  onClick={addStackToCart}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+                >
+                  <ShoppingCart className="h-4 w-4" /> Add stack to cart
+                </button>
+                <Link
+                  to={`/shop?stack=${matchedProducts.map((p) => p.id).join(",")}`}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                >
+                  View stack in shop <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+
           {/* Expected Results */}
           {aiProtocol.expectedResults && aiProtocol.expectedResults.length > 0 && (
             <div className="mb-8">
