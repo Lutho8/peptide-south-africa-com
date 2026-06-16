@@ -129,6 +129,39 @@ export default function ShopPage() {
           ...(activeCategory !== "All" ? [{ label: activeCategory }] : []),
         ]}
       />
+      <QuizResultBanner />
+
+      {/* ============ RECOMMENDED STACK (from quiz deep-link) ============ */}
+      {stackProducts.length > 0 && (
+        <section className="border-b border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+          <div className="container px-4 py-8 md:py-10">
+            <div className="mx-auto max-w-4xl">
+              <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    Your recommended stack
+                  </span>
+                  <h2 className="mt-1 font-display text-xl font-bold text-foreground sm:text-2xl">
+                    {stackProducts.length} product{stackProducts.length === 1 ? "" : "s"} matched to your protocol
+                  </h2>
+                </div>
+                <button
+                  onClick={addStackToCart}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+                >
+                  <ShoppingCart className="h-4 w-4" /> Add stack to cart
+                </button>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {stackProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
 
       {/* ============ HERO ============ */}
       <section className="border-b border-border bg-card">
