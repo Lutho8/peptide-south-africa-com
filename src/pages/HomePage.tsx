@@ -122,6 +122,32 @@ export default function HomePage() {
       />
 
 
+      {/* ===================== FIND MY PROTOCOL BAND ===================== */}
+      <section className="border-y border-primary/15 bg-gradient-to-br from-primary/5 via-background to-primary/5 py-10 md:py-12">
+        <div className="container px-4">
+          <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 text-center md:flex-row md:text-left">
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+            <div className="flex-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">60-second match</span>
+              <h2 className="mt-1 font-display text-xl font-bold text-foreground sm:text-2xl">
+                Not sure where to start?
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Answer 6 quick questions and we'll build a peptide stack for your exact goal — ready to add to cart in one tap.
+              </p>
+            </div>
+            <Link
+              to="/quiz"
+              className="inline-flex items-center gap-2 rounded-xl bg-hero-gradient px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+            >
+              Take the 60-second quiz <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ===================== FEATURED PRODUCTS RAIL ===================== */}
       <FeaturedProductRail />
 

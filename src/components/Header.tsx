@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart, LineChart } from "lucide-react";
 import { useState, type MouseEvent } from "react";
+
+const TRACKER_URL = "https://ridethetide.info";
 import { useCart } from "@/context/CartContext";
 import logoIcon from "@/assets/logo-icon.png.asset.json";
 import logoHorizontal from "@/assets/logo-horizontal.png.asset.json";
@@ -43,7 +45,6 @@ const DROPDOWNS: Dropdown[] = [
       { label: "FAQ", to: "/faq", desc: "Common questions" },
       { label: "Find My Protocol (Quiz)", to: "/quiz", desc: "60-second match" },
       { label: "Join WhatsApp Community", to: "/community", desc: "Free · 2,000-member cap" },
-      { label: "Tracker", to: "https://ridethetide.info", external: true },
       { label: "Cape Town Peptide Club", to: "https://capetownpeptideclub.co.za", external: true },
     ],
   },
@@ -154,9 +155,18 @@ export default function Header() {
             Account
           </Link>
 
+          <a
+            href={TRACKER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open Peptide Tracker (external)"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <LineChart className="h-4 w-4 text-primary" /> Peptide Tracker
+          </a>
           <Link
             to="/quiz?intent=consult"
-            className="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+            className="ml-1 inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
             Book Consult
           </Link>
@@ -179,6 +189,15 @@ export default function Header() {
       {mobileOpen && (
         <nav className="border-t border-border bg-card p-4 lg:hidden">
           <div className="flex flex-col gap-2">
+            <a
+              href={TRACKER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileOpen(false)}
+              className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-2 py-2 text-sm font-semibold text-primary hover:bg-primary/10"
+            >
+              <LineChart className="h-4 w-4" /> Peptide Tracker ↗
+            </a>
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
             <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Shop</Link>
             {DROPDOWNS.map((d) => (

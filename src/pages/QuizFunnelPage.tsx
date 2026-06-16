@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   CheckCircle,
   ArrowRight,
@@ -18,10 +19,14 @@ import {
   Zap,
   Video,
   Bot,
+  ShoppingCart,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
+import { toast as sonnerToast } from "sonner";
 
 const WA_NUMBER = "491624747159";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -133,6 +138,39 @@ export default function QuizFunnelPage() {
   const [aiProtocol, setAiProtocol] = useState<AIProtocol | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart, setIsCartOpen } = useCart();
+
+  // Match AI-recommended peptides to actual shop products by fuzzy name match.
+  const matchedProducts = useMemo(() => {
+    if (!aiProtocol?.peptides?.length) return [];
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const seen = new Set<string>();
+    const out: typeof products = [];
+    for (const pep of aiProtocol.peptides) {
+      const target = norm(pep.name);
+      const hit = products.find((p) => {
+        const a = norm(p.name);
+        const b = norm(p.slug);
+        return a.includes(target) || target.includes(a) || b.includes(target) || target.includes(b);
+      });
+      if (hit && !seen.has(hit.id)) {
+        seen.add(hit.id);
+        out.push(hit);
+      }
+    }
+    return out;
+  }, [aiProtocol]);
+
+  const addStackToCart = () => {
+    matchedProducts.forEach((p) => {
+      const v = p.variants?.[0];
+      addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+    });
+    setIsCartOpen(true);
+    sonnerToast.success("Stack added to cart", {
+      description: `${matchedProducts.length} product${matchedProducts.length === 1 ? "" : "s"} from your protocol.`,
+    });
+  };
 
   const totalSteps = quizSteps.length;
   const isQuiz = step < totalSteps;
@@ -469,6 +507,60 @@ export default function QuizFunnelPage() {
               </div>
             </div>
           )}
+
+          {/* Recommended Stack — drives quiz takers into the shop */}
+          {matchedProducts.length > 0 && (
+            <div className="mb-8 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-background p-5 shadow-glow sm:p-6">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    Ready to start
+                  </span>
+                  <h3 className="mt-1 font-display text-lg font-bold text-foreground sm:text-xl">
+                    Your recommended stack
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {matchedProducts.length} product{matchedProducts.length === 1 ? "" : "s"} matched to your protocol.
+                  </p>
+                </div>
+                <span className="rounded-full bg-trust/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-trust">
+                  In stock
+                </span>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                {matchedProducts.map((p) => (
+                  <Link
+                    key={p.id}
+                    to={`/product/${p.slug}`}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-muted"
+                  >
+                    <img src={p.image} alt={p.name} className="h-12 w-12 flex-shrink-0 rounded-lg object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-display text-sm font-semibold text-foreground">{p.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{p.shortDescription}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  onClick={addStackToCart}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+                >
+                  <ShoppingCart className="h-4 w-4" /> Add stack to cart
+                </button>
+                <Link
+                  to={`/shop?stack=${matchedProducts.map((p) => p.id).join(",")}`}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                >
+                  View stack in shop <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          )}
+
 
           {/* Expected Results */}
           {aiProtocol.expectedResults && aiProtocol.expectedResults.length > 0 && (

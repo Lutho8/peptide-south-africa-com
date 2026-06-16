@@ -10,7 +10,10 @@ import {
   FlaskConical,
   ShoppingCart,
   Tag,
+  LineChart,
 } from "lucide-react";
+
+const TRACKER_URL = "https://ridethetide.info";
 import { products } from "@/data/products";
 
 const HERO_VIDEO_SRC =
@@ -148,6 +151,15 @@ export default function HeroShop() {
             >
               <Sparkles className="h-5 w-5" /> Find my protocol
             </Link>
+            <a
+              href={TRACKER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open Peptide Tracker (external)"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/5 px-6 py-3.5 text-base font-semibold text-white backdrop-blur-md hover:bg-white/15"
+            >
+              <LineChart className="h-5 w-5" /> Open Peptide Tracker
+            </a>
           </motion.div>
 
           <motion.div
