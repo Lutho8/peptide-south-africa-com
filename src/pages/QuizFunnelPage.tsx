@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   CheckCircle,
   ArrowRight,
@@ -139,6 +139,7 @@ export default function QuizFunnelPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { addToCart, setIsCartOpen } = useCart();
+  const navigate = useNavigate();
 
   // Match AI-recommended peptides to actual shop products by fuzzy name match.
   const matchedProducts = useMemo(() => {
