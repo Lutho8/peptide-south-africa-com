@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPin, Truck } from "lucide-react";
+import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPin, Truck, ShoppingCart } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import QuizResultBanner from "@/components/QuizResultBanner";
 import { products, categories, tracks, getProductsByCategory, type ProductTrack } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
+import { useCart } from "@/context/CartContext";
+import { toast as sonnerToast } from "sonner";
 
 const SITE_URL = "https://www.peptide-south-africa.com";
 
@@ -48,6 +51,29 @@ export default function ShopPage() {
   const [activeTrack, setActiveTrack] = useState<"All" | ProductTrack>(initialTrack);
   const { market, lang } = useMarket();
   const shopCopy = pageCopy("shop", market);
+  const { addToCart, setIsCartOpen } = useCart();
+
+  // Deep-link stack from the quiz: /shop?stack=id1,id2&from=quiz
+  const stackIds = useMemo(
+    () => (searchParams.get("stack") || "").split(",").map((s) => s.trim()).filter(Boolean),
+    [searchParams],
+  );
+  const stackProducts = useMemo(() => {
+    if (!stackIds.length) return [];
+    const byId = new Map(products.map((p) => [p.id, p]));
+    return stackIds.map((id) => byId.get(id)).filter((p): p is typeof products[number] => !!p);
+  }, [stackIds]);
+
+  const addStackToCart = () => {
+    stackProducts.forEach((p) => {
+      const v = p.variants?.[0];
+      addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+    });
+    setIsCartOpen(true);
+    sonnerToast.success("Stack added to cart", {
+      description: `${stackProducts.length} product${stackProducts.length === 1 ? "" : "s"} from your protocol.`,
+    });
+  };
 
   const filtered = getProductsByCategory(activeCategory).filter(
     (p) => activeTrack === "All" || (p.track ?? "RUO") === activeTrack,
