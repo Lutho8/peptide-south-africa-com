@@ -1,0 +1,33 @@
+name: Brand guard
+
+# Fails the build if any "ridethetide" / "Ride The Tide" UI string appears in
+# source or built output. The external tracker URL `ridethetide.info` is
+# allowlisted by the scanner's regex (negative lookahead on `.info`).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  brand-guard:
+    name: Scan source + build output
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Scan source
+        run: node scripts/security/scan-brand.mjs src public index.html
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Scan built output
+        run: node scripts/security/scan-brand.mjs dist
