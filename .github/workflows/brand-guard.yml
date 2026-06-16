@@ -1,8 +1,9 @@
 name: Brand guard
 
 # Fails the build if any "ridethetide" / "Ride The Tide" UI string appears in
-# source or built output. The external tracker URL `ridethetide.info` is
-# allowlisted by the scanner's regex (negative lookahead on `.info`).
+# source, public assets, generated manifests, configs, env files, or built
+# output (including bundled VITE_* runtime env). The external tracker URL
+# `ridethetide.info` is allowlisted by the scanner's regex (negative lookahead).
 
 on:
   pull_request:
@@ -12,16 +13,22 @@ on:
 
 jobs:
   brand-guard:
-    name: Scan source + build output
+    name: Scan source, configs, env + build output
     runs-on: ubuntu-latest
+    env:
+      # Pass through any VITE_* secrets so the scanner can flag legacy values
+      # before they get baked into the bundle.
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Scan source
-        run: node scripts/security/scan-brand.mjs src public index.html
+      - name: Scan source, public, configs, env
+        run: node scripts/security/scan-brand.mjs src public index.html .
 
       - name: Install deps
         run: bun install --frozen-lockfile
@@ -29,5 +36,5 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Scan built output
+      - name: Scan built output (incl. bundled VITE_* env)
         run: node scripts/security/scan-brand.mjs dist

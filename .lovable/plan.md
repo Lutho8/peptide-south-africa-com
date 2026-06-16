@@ -1,58 +1,52 @@
-# Brand Guard CI + UX Polish
+# Plan
 
-Four scoped changes. No business logic touched outside what's listed.
+## 1. Peptide Tracker — dedicated hero button + mobile sticky
 
-## 1. CI: fail build on legacy brand strings
+**`src/components/HeroShop.tsx`**
+- Remove the Tracker CTA from the existing trio of buttons (Shop / Find my protocol / Tracker).
+- Add a dedicated full-bleed Tracker band directly below the CTA row: card with `bg-white text-[#0a2540]` (highest contrast over dark hero), thick border, `LineChart` icon, headline "Track your peptide cycles", subline "Doses, bloods, body comp — free, mobile-ready", and a large solid button `bg-[#0a2540] text-white` "Open Peptide Tracker →" linking to `https://ridethetide.info` (`target="_blank" rel="noopener noreferrer"`, `aria-label="Open Peptide Tracker (external)"`).
 
-New file: `.github/workflows/brand-guard.yml`
+**`src/components/StickyMobileCTA.tsx`**
+- Convert the single "Buy Now" button into a 2-column grid: primary "Shop" (current gradient style) + secondary "Tracker" (outline, navy border + LineChart icon). Tracker opens the external URL in a new tab.
+- Keep visibility rules (homepage only, >400px scroll).
 
-- Runs on push + PR.
-- Steps:
-  1. Checkout.
-  2. `rg -i --hidden -g '!node_modules' -g '!dist' -g '!.git' -g '!bun.lockb' -g '!brand-guard.yml' -g '!.lovable/plan.md' 'ride[\s-]?the[\s-]?tide|ridethetide'` — fail if any hit (exit 0 inverted).
-  3. Build step: `bun install && bun run build`.
-  4. Re-run the same `rg` against `dist/` — fail on any hit.
-- Allowlist comment in workflow explaining the two intentional exceptions: the external tracker URL `https://ridethetide.info` and the `rtt-cookie-consent` localStorage key (renamed in step 2 below, so it disappears from the allowlist).
+## 2. Cookie banner — lighter, layout-stable
 
-Also add a matching local script `scripts/security/scan-brand.mjs` so devs can run `node scripts/security/scan-brand.mjs` before pushing. Wire it into the existing `security.yml` job as a quick parallel step too.
+**`src/components/CookieConsent.tsx`**
+- Render the wrapper container always (reserve space) but keep contents hidden until consent decision is needed, so the fixed-position banner never reflows the page (already `position: fixed` — confirm no body padding side-effects).
+- Collapse to a single-line pill: text + one "OK" button + small `×` dismiss. Drop the separate Accept/Decline pair. Map: OK = accept, × = decline. Privacy link inline.
+- Reduce max-width to ~320px, padding `px-3 py-2`, text `text-[11px]`. Use `bg-card/95 border-border`.
+- Render `null` from SSR/initial paint as today, but precompute `visible` synchronously from `localStorage` in `useState` initializer to avoid the 2.5s delay flash that can cause perceived shift. Keep delay only when no decision exists.
 
-## 2. Cookie banner — minimal, non-disruptive
+## 3. Quiz deep-links — route to stack/product immediately
 
-Edit `src/components/CookieConsent.tsx`:
+**`src/pages/QuizFunnelPage.tsx`**
+- After AI protocol resolves and `matchedProducts` is computed, auto-navigate:
+  - If `matchedProducts.length >= 2` → `navigate('/shop?stack=<id1,id2,...>&from=quiz')`
+  - If `matchedProducts.length === 1` → `navigate('/product/<slug>?from=quiz')`
+  - If `matchedProducts.length === 0` → `navigate('/shop?category=<derived-from-goal>&from=quiz')` (goal `fat-loss` → `GLP`, `recovery` → `Healing`, `both` → `GLP`).
+- Persist the protocol JSON to `localStorage` under `psa-quiz-result` first so the destination page can show a banner.
+- Add a small "View full protocol" link on the destination via a lightweight `QuizResultBanner` mounted in `ShopPage` / `ProductPage` when `?from=quiz` is present, reading from localStorage; non-blocking, dismissable.
 
-- Replace the centered modal-card with a slim bottom-left toast: max-width ~360px, single line of copy + two compact buttons (Accept / Decline), small "Privacy" text link.
-- Remove the cookie icon circle, the H3, and the "Cookie Settings" tertiary button.
-- Trigger delay 2.5s instead of 1.5s; dismiss on Escape.
-- Rename localStorage key `rtt-cookie-consent` → `psa-cookie-consent` (one-time migration: if old key exists, copy value then delete).
-- Tokens only (`bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `bg-primary`). No hardcoded colors.
+**`src/pages/ShopPage.tsx`**
+- Read `stack` query param → filter products to that id set, sort to match order, show "Your recommended stack" header + "Add all to cart" button (uses existing CartContext `addToCart` loop).
 
-## 3. Quiz: drive into the app with a pre-built stack
+## 4. Brand guard — broaden scan surface
 
-Edit `src/pages/HomePage.tsx` + `src/pages/QuizFunnelPage.tsx`:
-
-- Homepage: add a dedicated "Find My Protocol" band above the existing fold transition — headline "Not sure where to start?", 60-second promise, single primary CTA `Take the 60-second quiz →` linking `/quiz`. Replaces no existing section; inserted between hero and Featured Products.
-- Quiz result screen: after the AI protocol generates, show a **"Your recommended stack"** card with the matched products (already computed) and two CTAs:
-  1. `Add stack to cart` — calls `addToCart` for each matched product (uses existing CartContext), opens cart drawer, toasts "Stack added".
-  2. `View stack in shop` — links `/shop?stack=<ids>` (existing filter param).
-- Persist the quiz result to `localStorage` under `psa-quiz-result` so the StickyMobileCTA + Header can later surface "Resume your protocol" (header pill only if result exists; out of scope to wire elsewhere this round beyond the header pill).
-
-## 4. Tracker: primary nav + hero CTA
-
-- `src/components/Header.tsx`:
-  - Remove "Tracker" from the Explore dropdown.
-  - Add a dedicated top-level nav button **"Peptide Tracker"** (right side, before Cart) — styled as outline button, opens `https://ridethetide.info` in new tab, `rel="noopener"`, aria-label "Open Peptide Tracker (external)".
-  - Mobile menu: same item promoted to top of the list with an external-link icon.
-- `src/components/HeroShop.tsx` (the main hero): add a secondary CTA next to the existing primary "Shop" button — **"Open Peptide Tracker →"**, outline style, same external link.
-- Footer "Tracker →" stays as-is.
+**`scripts/security/scan-brand.mjs`**
+- Extend `TEXT_EXT` to include: `webp`, `js.map`, `css.map`, `lock`, `toml`, `env`, `env.*`, `properties`, `ini`, `conf`, `plist`.
+- Add explicit scan of `.env`, `.env.*`, `*.local`, plus `dist/**/*.{js,css,html,json,webmanifest,xml,txt,map}` (already covered by walk but ensure not ignored).
+- Add scan of bundled runtime env: parse `dist/**/*.js` for the literal string `import.meta.env` keys via regex `VITE_[A-Z0-9_]+\s*[:=]\s*['"][^'"]*ride[\s-]?the[\s-]?tide[^'"]*['"]` — fail if a `VITE_*` env value contains the legacy brand.
+- Add scan of `public/site.webmanifest`, `public/sitemap.xml`, `public/sitemap-meta.json`, `public/llms.txt`, `public/_headers`, `public/robots.txt` explicitly (loop them even if walk would catch them — guarantees coverage).
+- Add a second pass over `process.env` at scan time: iterate `process.env` keys starting with `VITE_` and fail if any value matches the legacy pattern (catches CI-injected env that ends up bundled).
+- Keep the `.info` negative-lookahead allowlist.
+- Update `.github/workflows/brand-guard.yml` to: (a) run `npm run build` before scan, (b) `env:` block passing through `VITE_*` vars so the env-scan sees them, (c) scan `.`, `dist`, and `process.env`.
 
 ## Technical notes
-
-- All copy uses "Peptide Tracker" (per locked memory rule).
+- No backend changes. All new query-param handling is client-side; CartContext API is unchanged.
+- Tracker URL constant `TRACKER_URL` extracted into `src/lib/contact.ts` for reuse by Hero, StickyMobileCTA, Header.
 - No new dependencies.
-- Existing `EcosystemSection` and `TrackerBridgeCard` already say "Peptide Tracker" — no change.
-- Brand-guard regex is case-insensitive and tolerates hyphen/space variants; the external `ridethetide.info` URL must be allowlisted by excluding the specific files that legitimately reference it (Header.tsx, HeroShop.tsx, EcosystemSection.tsx, TrackerBridgeCard.tsx, BlogCTA.tsx, Footer.tsx) OR by matching only the bare word without `.info` — preferred approach: regex `ride[\s-]?the[\s-]?tide(?!\.info)` so the external URL passes but any UI string fails.
 
-## Files touched
-
-- new: `.github/workflows/brand-guard.yml`, `scripts/security/scan-brand.mjs`
-- edit: `src/components/CookieConsent.tsx`, `src/components/Header.tsx`, `src/components/HeroShop.tsx`, `src/pages/HomePage.tsx`, `src/pages/QuizFunnelPage.tsx`
+## Files
+- Edit: `src/components/HeroShop.tsx`, `src/components/StickyMobileCTA.tsx`, `src/components/CookieConsent.tsx`, `src/pages/QuizFunnelPage.tsx`, `src/pages/ShopPage.tsx`, `src/pages/ProductPage.tsx`, `scripts/security/scan-brand.mjs`, `.github/workflows/brand-guard.yml`, `src/lib/contact.ts`.
+- New: `src/components/QuizResultBanner.tsx`.
