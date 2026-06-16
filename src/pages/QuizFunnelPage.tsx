@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   CheckCircle,
   ArrowRight,
@@ -18,10 +19,14 @@ import {
   Zap,
   Video,
   Bot,
+  ShoppingCart,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
+import { toast as sonnerToast } from "sonner";
 
 const WA_NUMBER = "491624747159";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -133,6 +138,39 @@ export default function QuizFunnelPage() {
   const [aiProtocol, setAiProtocol] = useState<AIProtocol | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart, setIsCartOpen } = useCart();
+
+  // Match AI-recommended peptides to actual shop products by fuzzy name match.
+  const matchedProducts = useMemo(() => {
+    if (!aiProtocol?.peptides?.length) return [];
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const seen = new Set<string>();
+    const out: typeof products = [];
+    for (const pep of aiProtocol.peptides) {
+      const target = norm(pep.name);
+      const hit = products.find((p) => {
+        const a = norm(p.name);
+        const b = norm(p.slug);
+        return a.includes(target) || target.includes(a) || b.includes(target) || target.includes(b);
+      });
+      if (hit && !seen.has(hit.id)) {
+        seen.add(hit.id);
+        out.push(hit);
+      }
+    }
+    return out;
+  }, [aiProtocol]);
+
+  const addStackToCart = () => {
+    matchedProducts.forEach((p) => {
+      const v = p.variants?.[0];
+      addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+    });
+    setIsCartOpen(true);
+    sonnerToast.success("Stack added to cart", {
+      description: `${matchedProducts.length} product${matchedProducts.length === 1 ? "" : "s"} from your protocol.`,
+    });
+  };
 
   const totalSteps = quizSteps.length;
   const isQuiz = step < totalSteps;
