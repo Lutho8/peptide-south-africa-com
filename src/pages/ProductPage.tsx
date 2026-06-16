@@ -160,6 +160,9 @@ export default function ProductPage() {
         { label: product.category, href: `${marketPath("/shop", market)}?category=${encodeURIComponent(product.category)}` },
         { label: product.name },
       ]} />
+      <QuizResultBanner />
+
+
 
       {/* Product Detail */}
       <section className="container pb-16">
