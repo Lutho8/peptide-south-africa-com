@@ -173,6 +173,44 @@ export default function QuizFunnelPage() {
     });
   };
 
+  // Deep-link: once the AI protocol resolves, persist it and route the user
+  // directly to the matched stack / product / category listing.
+  useEffect(() => {
+    if (!aiProtocol) return;
+    try {
+      localStorage.setItem(
+        "psa-quiz-result",
+        JSON.stringify({
+          protocolName: aiProtocol.protocolName,
+          subtitle: aiProtocol.subtitle,
+          peptides: aiProtocol.peptides?.map((p) => p.name) ?? [],
+          productIds: matchedProducts.map((p) => p.id),
+          ts: Date.now(),
+        }),
+      );
+    } catch { /* noop */ }
+
+    const goalToCategory: Record<string, string> = {
+      "fat-loss": "GLP",
+      recovery: "Healing",
+      both: "GLP",
+    };
+
+    let target: string | null = null;
+    if (matchedProducts.length >= 2) {
+      target = `/shop?stack=${matchedProducts.map((p) => p.id).join(",")}&from=quiz`;
+    } else if (matchedProducts.length === 1) {
+      target = `/product/${matchedProducts[0].slug}?from=quiz`;
+    } else if (answers.goal && goalToCategory[answers.goal]) {
+      target = `/shop?category=${goalToCategory[answers.goal]}&from=quiz`;
+    }
+    if (target) {
+      const t = setTimeout(() => navigate(target!), 1200);
+      return () => clearTimeout(t);
+    }
+  }, [aiProtocol, matchedProducts, answers.goal, navigate]);
+
+
   const totalSteps = quizSteps.length;
   const isQuiz = step < totalSteps;
   const isLeadCapture = step === totalSteps;
