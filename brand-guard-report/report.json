@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "generatedAt": "2026-06-20T15:40:03.404Z",
+  "scannedRoots": [
+    "src",
+    "public",
+    "index.html",
+    "."
+  ],
+  "scannedFiles": 476,
+  "matchCount": 0,
+  "matches": []
+}
