@@ -7,8 +7,11 @@
 //  - The external tracker URL "ridethetide.info" is intentional (separate,
 //    related product). The regex uses a negative lookahead to skip `.info`.
 //  - This file and the workflow itself are skipped.
-import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
-import { join, relative, basename } from "node:path";
+import { readdirSync, statSync, readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join, relative, basename, dirname } from "node:path";
+
+// Report directory is configurable so CI can upload it as an artifact.
+const REPORT_DIR = process.env.BRAND_GUARD_REPORT_DIR || "brand-guard-report";
 
 const ROOTS = process.argv.slice(2);
 if (ROOTS.length === 0) ROOTS.push(".");
