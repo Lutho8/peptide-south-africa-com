@@ -7,41 +7,19 @@ import { faqSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
 
 const faqs = [
-  { question: "What are peptides?", answer: "Peptides are short chains of amino acids that serve as building blocks for proteins. They play crucial roles in biological processes including fat metabolism, tissue repair, immune function, and hormone regulation. Common research peptides include Retatrutide (RT3), BPC-157, Tesamorelin, and GHK-Cu." },
-  { question: "How does a personalized peptide protocol work?", answer: "After completing our 2-minute assessment quiz, our system analyzes your goals, body composition, and health history to recommend a tailored protocol. This includes specific peptides, dosages, timing schedules, and weekly guidance — all reviewed against clinical research data." },
-  { question: "What makes Peptide South Africa different from other peptide suppliers?", answer: "We don't just sell peptides — we provide GP-led, structured protocols with German-certified compounds (≥99% purity). Every client gets personalized dosing, weekly check-ins, and a complete transformation system rather than standalone products." },
-  { question: "Are your peptides lab tested?", answer: "Yes, every batch is independently tested by third-party laboratories. Each order includes a Certificate of Analysis (COA) confirming ≥99% purity. Our compounds meet strict German pharmaceutical quality standards." },
-  { question: "How long does shipping take in South Africa?", answer: "Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri). Delivery is 1–3 business days to major metros (Cape Town, Johannesburg, Durban, Pretoria) and 2–5 business days to regional addresses, via Aramex / PEP Paxi. Free shipping on orders over R1,500." },
-  { question: "Do you ship outside South Africa?", answer: "We currently ship within South Africa only. Same-day dispatch from Cape Town on orders placed before 14:00 SAST (Mon–Fri). Contact support@peptide-south-africa.com if you'd like to be notified when other regions open." },
-  { question: "Which currency am I charged in?", answer: "All prices are displayed and charged in South African Rand (ZAR / R). PayFast handles the secure checkout in ZAR." },
-  { question: "What results can I expect from a fat loss protocol?", answer: "Clients on our fat loss protocols typically see 8–12 kg reduction over 6–12 weeks when following the structured program. Results vary based on adherence, starting point, and individual metabolism. Our GLP-1 agonist protocols (RT3, TZ-2) target visceral fat specifically." },
-  { question: "Can I book a consultation before starting?", answer: "Absolutely. After completing the quiz, you can book a free consultation via Zoom to discuss your results and protocol with our team. This helps ensure the recommended protocol aligns with your specific needs and health history." },
-  { question: "What payment methods do you accept?", answer: "We accept Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred and Masterpass — all processed securely through PayFast. PCI-DSS compliant and POPIA-aligned." },
-  { question: "How should peptides be stored?", answer: "Unreconstituted peptides should be stored in a cool, dry place. Once reconstituted, store refrigerated (2–8°C) and use within the recommended timeframe noted in the included protocol guide." },
-  { question: "Are research peptides legal to buy?", answer: "In South Africa, research peptides are legal to purchase for research and educational purposes by adults 18+. Our protocols are designed within these frameworks using pharmaceutical-grade compounds." },
+  { question: "Do you ship peptides to all of South Africa?", answer: "Yes — we ship discreetly to all 9 provinces via courier. Orders placed before 12pm ship the same day. Delivery takes 1–3 business days to major centres (Johannesburg, Cape Town, Durban, Pretoria) and 3–5 days to outlying areas." },
+  { question: "Are your peptides pharmaceutical grade?", answer: "All our peptides are HPLC-verified with a Certificate of Analysis (COA) from an independent third-party lab. We test for purity, identity, and bacterial endotoxins. COA documents are available on every product page." },
+  { question: "How do I pay in South African Rand (ZAR)?", answer: "We accept EFT/direct bank transfer, credit/debit cards, and instant EFT via PayFast. All prices are displayed in ZAR with no hidden import fees." },
+  { question: "What is the shelf life of your peptides?", answer: "Lyophilised (freeze-dried) peptides have a shelf life of 24 months when stored correctly at room temperature away from light and moisture. Once reconstituted with bacteriostatic water, use within 4 weeks and keep refrigerated at 2–8°C." },
+  { question: "Do you offer a Certificate of Analysis for every product?", answer: "Yes. Every batch is independently tested via HPLC and mass spectrometry. COA documents are linked on each product page and verified via our COA verification portal." },
+  { question: "What peptides do you stock for weight loss?", answer: "We stock semaglutide, tirzepatide (TZ2-Tirz), and retatrutide (RT3-Reta) — the three most clinically researched GLP-1 class peptides for weight management. We also carry MOTS-c for metabolic support." },
+  { question: "What is the difference between semaglutide and tirzepatide?", answer: "Semaglutide is a GLP-1 receptor agonist (same mechanism as Ozempic/Wegovy). Tirzepatide is a dual GLP-1/GIP agonist that typically produces greater weight loss. Retatrutide (triple agonist) is the newest and shows the highest weight loss in clinical trials at up to 24% body weight." },
+  { question: "How do I track my order?", answer: "Once your order ships you will receive a tracking number via email or SMS. You can track your parcel directly on our website at peptide-south-africa.com/track-order." },
+  { question: "What is your return and refund policy?", answer: "We accept returns for damaged or incorrect items within 7 days of delivery. Due to the nature of research peptides, opened vials cannot be returned. See our full refund policy at peptide-south-africa.com/refund." },
+  { question: "Do you offer peptide protocol advice?", answer: "We provide educational resources and a free protocol finder tool on our site. For personalised medical advice, consult a registered South African healthcare practitioner. Visit our Research section for guides on reconstitution, injection technique, and bloodwork." },
 ];
 
-// FAQ schema combines the visible FAQs with extra dual-market Q&A surfaced for search.
-const schemaFaqs: { question: string; answer: string }[] = [
-  ...faqs.map((f) => ({ question: f.question, answer: f.answer })),
-  {
-    question: "What purity are your peptides?",
-    answer: "All our peptides are ≥99% purity, verified by independent third-party HPLC testing. A Certificate of Analysis (COA) is provided with every batch.",
-  },
-  {
-    question: "Do you ship within South Africa?",
-    answer: "Yes, we offer local courier delivery across South Africa via The Courier Guy / Aramex. Delivery takes 1–3 business days. Free shipping on orders over R1,500.",
-  },
-  {
-    question: "Do you ship within South Africa?",
-    answer: "Yes, we offer local courier delivery across South Africa. Delivery takes 1–3 business days. Free shipping on orders over R1,500.",
-  },
-  {
-    question: "Are your peptides for human consumption?",
-    answer: "No. All products are strictly for research purposes only and not for human consumption. Every product is clearly labeled 'Research Only — Not for Human Consumption'.",
-  },
-];
-const faqsForSchema = schemaFaqs;
+const faqsForSchema = faqs;
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
