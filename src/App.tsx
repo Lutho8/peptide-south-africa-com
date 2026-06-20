@@ -39,6 +39,11 @@ import ResearchHubPage from "@/pages/ResearchHubPage";
 import BlogIndexPage from "@/pages/BlogIndexPage";
 import BlogPostPage from "@/pages/BlogPostPage";
 import AffiliatePage from "@/pages/AffiliatePage";
+import BuyRetatrutideSA from "@/pages/BuyRetatrutideSA";
+import BuyBpc157SA from "@/pages/BuyBpc157SA";
+import BuyTirzepatideSA from "@/pages/BuyTirzepatideSA";
+import BuyGhkCuSA from "@/pages/BuyGhkCuSA";
+import BuyTesamorelinSA from "@/pages/BuyTesamorelinSA";
 import TestingPage from "@/pages/TestingPage";
 import AccountPage from "@/pages/AccountPage";
 import CommunityJoinPage from "@/pages/CommunityJoinPage";
@@ -97,6 +102,11 @@ const App = () => (
                 <Route path="/blog" element={<BlogIndexPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
+                <Route path="/buy-retatrutide-south-africa" element={<BuyRetatrutideSA />} />
+                <Route path="/buy-bpc-157-south-africa" element={<BuyBpc157SA />} />
+                <Route path="/buy-tirzepatide-south-africa" element={<BuyTirzepatideSA />} />
+                <Route path="/buy-ghk-cu-south-africa" element={<BuyGhkCuSA />} />
+                <Route path="/buy-tesamorelin-south-africa" element={<BuyTesamorelinSA />} />
                 <Route path="/testing" element={<TestingPage />} />
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/community" element={<CommunityJoinPage />} />
