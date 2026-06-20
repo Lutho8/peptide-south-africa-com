@@ -14,9 +14,9 @@ export type QuizOutcomeCase = {
 
 export const QUIZ_OUTCOMES: QuizOutcomeCase[] = [
   {
-    name: "fat-loss stack (Reta + Tirz)",
+    name: "fat-loss stack (RT3 + TZ-2)",
     goal: "fat-loss",
-    peptides: ["Retatrutide", "Tirzepatide"],
+    peptides: ["RT3", "TZ-2"],
     expectedProductIds: ["1", "4"],
     expectedKind: "stack",
     expectedUrl: (ids) => `/shop?stack=${ids.join(",")}&from=quiz`,
