@@ -130,6 +130,7 @@ export function productSchema(product: {
       availability: product.inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/PreOrder",
+      areaServed: { "@type": "Country", name: "ZA" },
       seller: { "@id": `${SITE_URL}/#organization` },
       shippingDetails: [
         {
