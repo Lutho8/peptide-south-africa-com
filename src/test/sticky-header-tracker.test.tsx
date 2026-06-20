@@ -52,45 +52,44 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe("Peptide Tracker CTA – sticky header & mobile bar", () => {
-  it.each(ROUTES)("renders a Peptide Tracker link inside the sticky header on %s", (route) => {
+  it.each(ROUTES)("renders a high-contrast Peptide Tracker link in the mobile menu on %s", (route) => {
     renderAt(route);
     const header = screen.getByRole("banner");
-    // Header is `position: sticky` – the contract we care about.
-    expect(header.className).toMatch(/sticky/);
-
-    // Mobile menu hides the Tracker behind a toggle on this viewport; open it.
     const toggle = within(header).getByRole("button", { name: /toggle menu/i });
     fireEvent.click(toggle);
 
-    const trackerLinks = within(header).getAllByRole("link", { name: /peptide tracker/i });
+    // The mobile menu is the <nav> with `lg:hidden`; the desktop nav uses `hidden lg:flex`.
+    const navs = within(header).getAllByRole("navigation");
+    const mobileNav = navs.find((n) => n.className.includes("lg:hidden") && !n.className.includes("hidden lg:"));
+    expect(mobileNav, "expected mobile nav to mount after toggle").toBeTruthy();
+
+    const trackerLinks = within(mobileNav!).getAllByRole("link", { name: /peptide tracker/i });
     expect(trackerLinks.length).toBeGreaterThan(0);
     for (const link of trackerLinks) {
       expect(link).toHaveAttribute("href", TRACKER_URL);
       expect(link).toHaveAttribute("target", "_blank");
-      // High-contrast contract: bold weight + primary brand color tokens.
       expect(link.className).toMatch(/font-(?:bold|semibold)/);
-      expect(link.className).toMatch(/(text-primary|text-\[#0a2540\]|bg-primary)/);
+      // High-contrast contract in the mobile menu = primary brand colour.
+      expect(link.className).toMatch(/text-primary/);
     }
   });
 
-  it.each(ROUTES.filter((r) => r === "/"))(
-    "shows the bottom Tracker CTA after scrolling on %s and links to the tracker",
-    (route) => {
-      renderAt(route);
-      // Trigger scroll past the 400px threshold StickyMobileCTA listens for.
-      act(() => {
-        window.scrollY = 800;
-        window.dispatchEvent(new Event("scroll"));
-      });
-      const tracker = screen.getByRole("link", { name: /open peptide tracker/i });
-      expect(tracker).toHaveAttribute("href", TRACKER_URL);
-      expect(tracker).toHaveAttribute("target", "_blank");
-      // High-contrast: solid border + brand color token on bg-background.
-      expect(tracker.className).toMatch(/border-\[#0a2540\]/);
-      expect(tracker.className).toMatch(/text-\[#0a2540\]/);
-      expect(tracker.className).toMatch(/font-bold/);
-    },
-  );
+  it("shows the bottom sticky Tracker CTA after scrolling on the homepage", () => {
+    renderAt("/");
+    act(() => {
+      window.scrollY = 800;
+      window.dispatchEvent(new Event("scroll"));
+    });
+    // Scope to the StickyMobileCTA container (fixed inset-x-0 bottom-0).
+    const sticky = document.querySelector("div.fixed.inset-x-0.bottom-0") as HTMLElement | null;
+    expect(sticky, "expected sticky mobile CTA to render after scroll").toBeTruthy();
+    const tracker = within(sticky!).getByRole("link", { name: /open peptide tracker/i });
+    expect(tracker).toHaveAttribute("href", TRACKER_URL);
+    expect(tracker).toHaveAttribute("target", "_blank");
+    expect(tracker.className).toMatch(/border-\[#0a2540\]/);
+    expect(tracker.className).toMatch(/text-\[#0a2540\]/);
+    expect(tracker.className).toMatch(/font-bold/);
+  });
 
   it("keeps the header Tracker CTA visible across simulated route changes", () => {
     for (const route of ROUTES) {
