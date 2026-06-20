@@ -4,6 +4,9 @@ name: Brand guard
 # source, public assets, generated manifests, configs, env files, or built
 # output (including bundled VITE_* runtime env). The external tracker URL
 # `ridethetide.info` is allowlisted by the scanner's regex (negative lookahead).
+#
+# Both scan steps write a structured report to `brand-guard-report/` which is
+# uploaded as a workflow artifact (pass or fail) so failures are easy to debug.
 
 on:
   pull_request:
@@ -28,13 +31,29 @@ jobs:
           bun-version: latest
 
       - name: Scan source, public, configs, env
+        env:
+          BRAND_GUARD_REPORT_DIR: brand-guard-report/source
         run: node scripts/security/scan-brand.mjs src public index.html .
 
       - name: Install deps
+        if: always()
         run: bun install --frozen-lockfile
 
       - name: Build
+        if: always()
         run: bun run build
 
       - name: Scan built output (incl. bundled VITE_* env)
+        if: always()
+        env:
+          BRAND_GUARD_REPORT_DIR: brand-guard-report/dist
         run: node scripts/security/scan-brand.mjs dist
+
+      - name: Upload brand-guard report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brand-guard-report
+          path: brand-guard-report/
+          retention-days: 14
+          if-no-files-found: warn
