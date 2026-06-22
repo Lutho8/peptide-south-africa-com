@@ -1,43 +1,32 @@
-# Plan: South Africa Geo Tags + Product Schema
+# Fix: images not loading on peptide-south-africa.com
 
-## 1. `index.html` head additions
-Add three meta tags alongside existing meta:
-```html
-<meta name="geo.region" content="ZA" />
-<meta name="geo.placename" content="South Africa" />
-<meta property="og:locale" content="en_ZA" />
-```
+## Root cause
 
-## 2. Product JSON-LD on product pages
-Locate the product detail page component (e.g. `src/pages/ProductPage.tsx` or similar) and inject a `<Helmet>` JSON-LD script with:
+All broken images use Lovable's CDN asset path `/__l5e/assets-v1/...`. On the custom domain that path returns the SPA's `index.html` (content-type `text/html`) instead of the image binary — the asset CDN route is not wired up for custom domains. The same URLs work on `tide-shop-clone.lovable.app`.
 
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "<product name>",
-  "image": "<product image>",
-  "description": "<product description>",
-  "sku": "<sku>",
-  "brand": { "@type": "Brand", "name": "Peptide South Africa" },
-  "offers": {
-    "@type": "Offer",
-    "priceCurrency": "ZAR",
-    "price": "<price>",
-    "availability": "https://schema.org/InStock",
-    "areaServed": "ZA",
-    "url": "https://peptide-south-africa.com/products/<slug>"
-  }
-}
-```
+Affected assets (all currently CDN-only, no local copy):
+- `src/assets/logo-horizontal.png.asset.json`
+- `src/assets/logo-icon.png.asset.json`
+- `src/assets/vials/bpc.jpg.asset.json`
+- `src/assets/vials/ghk.jpg.asset.json`
+- `src/assets/vials/glow.jpg.asset.json`
+- `src/assets/vials/klow.jpg.asset.json`
+- `src/assets/vials/mots.jpg.asset.json`
+- `src/assets/vials/rt3.jpg.asset.json`
+- `src/assets/vials/tesa.jpg.asset.json`
+- `src/assets/vials/tz2.jpg.asset.json`
 
-Implementation:
-- Find product page route(s) and the product data shape.
-- Add a small helper or inline JSON-LD via `react-helmet-async`.
-- Use real product fields (name, image, price, slug). Fallback to InStock unless an explicit stock flag exists.
+## Fix
 
-## 3. Verify
-- Confirm `index.html` parses (no duplicated tags).
-- Confirm product page renders schema in DOM.
+Reverse the CDN migration for these 10 files so they ship in the Vite bundle and are served from the same origin as the HTML (works on any domain).
 
-No other files or behavior change.
+1. Download each binary from its working `/__l5e/...` URL via the `tide-shop-clone.lovable.app` host and write it back to its original path (e.g. `src/assets/vials/rt3.jpg`).
+2. Delete the matching `.asset.json` pointer files.
+3. Update every import site to import the binary directly (`import rt3 from "./vials/rt3.jpg"`) instead of the `.asset.json` pointer.
+4. Verify with the production build and a Playwright pass against the local preview — confirm `document.images` reports zero broken images.
+
+## Notes
+
+- No changes to layout, copy, or business logic.
+- This sidesteps the infra bug; if Lovable later fixes custom-domain CDN routing we can re-migrate, but bundling is the safer default for first-paint critical art (logos, product hero vials).
+- Total added repo weight ≈ ~1 MB (8 vial JPGs + 2 logo PNGs).
