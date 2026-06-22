@@ -4,8 +4,8 @@ import { useState, type MouseEvent } from "react";
 
 const TRACKER_URL = "https://ridethetide.info";
 import { useCart } from "@/context/CartContext";
-import logoIcon from "@/assets/logo-icon.png.asset.json";
-import logoHorizontal from "@/assets/logo-horizontal.png.asset.json";
+import logoIcon from "@/assets/logo-icon.png";
+import logoHorizontal from "@/assets/logo-horizontal.png";
 
 type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
 
