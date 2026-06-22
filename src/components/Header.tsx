@@ -92,8 +92,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 font-display text-xl font-bold text-foreground" aria-label="Peptide South Africa — home">
-          <img src={logoHorizontal.url} alt="Peptide South Africa" className="hidden h-9 w-auto md:block" />
-          <img src={logoIcon.url} alt="Peptide South Africa" className="h-9 w-9 md:hidden" />
+          <img src={logoHorizontal} alt="Peptide South Africa" className="hidden h-9 w-auto md:block" />
+          <img src={logoIcon} alt="Peptide South Africa" className="h-9 w-9 md:hidden" />
           <span className="sr-only">Peptide South Africa</span>
         </Link>
 
