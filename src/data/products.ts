@@ -6,6 +6,14 @@ import productMots from "@/assets/vials/mots.jpg";
 import productBpc from "@/assets/vials/bpc.jpg";
 import productGlow from "@/assets/vials/glow.jpg";
 import productKlow from "@/assets/vials/klow.jpg";
+import productKpv from "@/assets/vials/kpv.jpg";
+import productTha1 from "@/assets/vials/tha1.jpg";
+import productAra290 from "@/assets/vials/ara290.jpg";
+import productSs31 from "@/assets/vials/ss31.jpg";
+import productPinealon from "@/assets/vials/pinealon.jpg";
+import productEpitalon from "@/assets/vials/epitalon.jpg";
+import productSelank from "@/assets/vials/selank.jpg";
+import productSemax from "@/assets/vials/semax.jpg";
 
 // All prices are in ZAR. Single-market site (South Africa).
 
