@@ -1,50 +1,51 @@
-## Add 8 new peptide products to the catalog
+## Findings from investigation
 
-### Category updates (`src/data/products.ts`)
-Add a new **Recovery** category. Rename **Longevity** display label to **Wellness & Longevity** (internal value stays `Longevity` to avoid touching existing MOTS-C / KLOW80 records and URLs). Updated `categories` array:
-`["All", "GLP", "Growth Hormone", "Healing", "Recovery", "Skin & Hair", "Wellness & Longevity"]`
+Ran the live shop and PDP against the current code:
 
-### New products (all RUO track, ≥99% HPLC, ZAR)
-Pricing derived from directpeptides.com (USD × ~19 = ZAR, matching existing catalog markups). Where the compound isn't listed on directpeptides, I've used prevailing market rates from the same tier.
+- **Shop catalog renders 64 products.** Browse Compounds anchor (`#products`) works and Recovery + Wellness & Longevity buttons are already in the category filter row. No missing catalog bug reproduces in code.
+- **JSON-LD Product schema is already emitted on every PDP** via `productSchema()` in `src/lib/seo.ts` — it already sets `priceCurrency: "ZAR"`, `availability: InStock` (when `inStock: true`), and `areaServed: { Country: "ZA" }`. All 8 new peptides have `inStock: true`.
+- **ZAR prices computed correctly** — spot-checked Selank: base R740 → 3-Pack R2,042 (740×3×0.92), matches the visible PDP price and range.
 
-**Recovery**
-| Name | Size | Single vial (ZAR) | 3-Pack (−8%) | Source |
-|---|---|---|---|---|
-| KPV | 10 mg | R1,120 | R3,091 | directpeptides $59 |
-| Thymosin Alpha-1 | 5 mg | R1,500 | R4,140 | directpeptides $79 |
-| ARA-290 | 16 mg | R1,235 | R3,409 | market rate $65 |
+So the actual code work needed is small; most of it is verification and locking in the correctness with a test so it can't regress.
 
-**Wellness & Longevity**
-| Name | Size | Single vial (ZAR) | 3-Pack (−8%) | Source |
-|---|---|---|---|---|
-| SS-31 | 10 mg | R1,615 | R4,458 | market rate $85 |
-| Pinealon | 10 mg | R855 | R2,360 | market rate $45 |
-| Epitalon | 10 mg | R855 | R2,360 | market rate $45 |
-| Selank | 10 mg | R740 | R2,042 | directpeptides $39 |
-| Semax | 10 mg | R740 | R2,042 | directpeptides $39 |
+## Plan
 
-Each entry gets the full `Product` shape used today: `id`, `slug`, `shortDescription`, `description`, `image`, `category`, `purity: "≥99%"`, `storage`, `sku` (e.g. `RTT-KPV-10`), `casNumber`, `compoundClass`, `track: "RUO"`, `variants` via `buildPackVariants(...)`, `priceRange`, `benefits` (4), `whatsIncluded` (4), `whoItsFor` (3), `howItWorks` (4), `faqs` (1–2), `inStock: true`, `stock`.
+### 1. Lock ZAR pricing for the 8 new peptides with a unit test
+Add `src/test/new-peptides-pricing.test.ts` that asserts for KPV, Thymosin Alpha-1, ARA-290, SS-31, Pinealon, Epitalon, Selank, Semax:
+- `variants[0]` is 3-Pack with price `= round(base × 3 × 0.92)`
+- `variants[1]` is Single Vial with price `= base`
+- `priceRange` string matches `R{single} – R{3pack}` with `en-ZA` grouping
 
-CAS numbers used: KPV 67247-12-5 · TA-1 62304-98-7 · ARA-290 1208243-50-8 · SS-31 (Elamipretide) 736992-21-5 · Pinealon 1220646-64-1 · Epitalon 307297-39-8 · Selank 129954-34-3 · Semax 80714-61-0.
+Base prices under test (from `src/data/products.ts`):
 
-### Product vial images
-Generate 8 images matching the attached MOTS-C reference (silver-capped clear vial + navy box, teal accent band, white lyophilized powder, "Peptide South Africa" wordmark, compound name in large white sans-serif, spec strip: `{size} • ≥99% HPLC • LOT PSA-{code}-2026 • Store 2-8°C • Research Use Only – South Africa`). Premium quality tier for legible label text. Save to:
-- `src/assets/vials/kpv.jpg`
-- `src/assets/vials/tha1.jpg`
-- `src/assets/vials/ara290.jpg`
-- `src/assets/vials/ss31.jpg`
-- `src/assets/vials/pinealon.jpg`
-- `src/assets/vials/epitalon.jpg`
-- `src/assets/vials/selank.jpg`
-- `src/assets/vials/semax.jpg`
+```text
+KPV      1120  → 3092 / 1120
+THA1     1500  → 4140 / 1500
+ARA-290  1235  → 3409 / 1235
+SS-31    1615  → 4457 / 1615
+Pinealon  855  → 2360 /  855
+Epitalon  855  → 2360 /  855
+Selank    740  → 2042 /  740
+Semax     740  → 2042 /  740
+```
 
-Import each directly (no CDN pointer) so they ship in the Vite bundle — same pattern we fixed the other vials to after the custom-domain CDN issue.
+### 2. Lock JSON-LD Product schema shape with a unit test
+Add `src/test/new-peptides-jsonld.test.ts` that iterates the 8 new peptides through `productSchema()` and asserts:
+- `offers.priceCurrency === "ZAR"`
+- `offers.price` equals the single-vial price stored on the product (`Math.round(product.price)`)
+- `offers.availability === "https://schema.org/InStock"`
+- `offers.areaServed.name === "ZA"`
 
-### Files touched
-- `src/data/products.ts` — 8 new products, updated `categories`, 8 new image imports
-- `src/assets/vials/*.jpg` — 8 new generated images
+### 3. Lock catalog membership with a unit test
+Add `src/test/shop-catalog.test.ts`:
+- `getProductsByCategory("Recovery")` includes KPV, Thymosin Alpha-1, ARA-290 (slugs `kpv`, `thymosin-alpha-1`, `ara-290`)
+- `getProductsByCategory("Wellness & Longevity")` includes SS-31, Pinealon, Epitalon, Selank, Semax (plus existing MOTS-C / KLOW80)
+- `categories` array contains both "Recovery" and "Wellness & Longevity"
 
-No changes to `ShopPage`, filters, PDP, cart, schema, or routing — the existing category filter and product grid pick these up automatically.
+### 4. No production code changes required
+`ProductPage.tsx`, `ShopPage.tsx`, `src/lib/seo.ts`, and `src/data/products.ts` already satisfy the request. If any of the three tests above surface a mismatch when they run, fix the underlying data in `src/data/products.ts` (not the test) so the schema/price stays correct.
 
-### Out of scope
-- No new blog posts, no PDP copy variants, no bundle updates. Ask if you want related-content or bundle inclusion for any of these.
+### Out of scope (already verified working)
+- Adding a Recovery/Wellness filter button — already present in `src/pages/ShopPage.tsx`.
+- Adding `<JsonLd data={productSchema(product)} />` to PDPs — already emitted at line 138 of `src/pages/ProductPage.tsx`.
+- Currency conversion — site is single-currency ZAR (`src/context/CurrencyContext.tsx`), so displayed price = stored price by construction.
