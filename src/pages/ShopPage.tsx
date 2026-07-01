@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPin, Truck, ShoppingCart } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
