@@ -19,7 +19,7 @@ describe("new peptide ZAR pricing", () => {
     it(`${slug}: 3-Pack and Single Vial prices match base R${base}`, () => {
       const p = products.find((x) => x.slug === slug);
       expect(p, `product ${slug}`).toBeDefined();
-      const pack3 = Math.round(base * 3 * 0.92);
+      const pack3 = Math.round(base * 3 * 0.85);
       expect(p!.variants?.[0].label).toBe("3-Pack");
       expect(p!.variants?.[0].price).toBe(pack3);
       expect(p!.variants?.[1].label).toBe("Single Vial");
