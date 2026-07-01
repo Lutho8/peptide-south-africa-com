@@ -88,6 +88,13 @@ export default function ProductPage() {
     purchaseMode === "subscribe" && !isGPTrack
       ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
       : basePrice;
+  const selectedVariantMeta = product.variants?.[selectedVariant];
+  const singleVialPrice =
+    product.variants?.find((v) => v.pack === 1)?.price ?? product.price;
+  const selectedPackSavings =
+    selectedVariantMeta?.pack && selectedVariantMeta.pack > 1
+      ? singleVialPrice * selectedVariantMeta.pack - selectedVariantMeta.price
+      : undefined;
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
@@ -231,6 +238,11 @@ export default function ProductPage() {
                   ))}
                 </div>
                 <p className="mt-2 font-display text-xl font-bold text-foreground">{format(currentPrice)}</p>
+                {selectedPackSavings !== undefined && selectedPackSavings > 0 && (
+                  <p className="mt-0.5 text-sm font-semibold text-trust">
+                    You Save {format(selectedPackSavings)}
+                  </p>
+                )}
               </div>
             )}
 
