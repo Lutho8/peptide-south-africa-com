@@ -30,7 +30,7 @@ export interface Variant {
 
 /**
  * Build standard 3-pack and single-vial variants for a given peptide vial.
- * basePrice = ZAR price of a single vial. 3-pack volume discount: -8%.
+ * basePrice = ZAR price of a single vial. 3-pack volume discount: -15%.
  * 3-Pack is listed first so it becomes the default on the PDP.
  */
 function buildPackVariants(
@@ -40,7 +40,7 @@ function buildPackVariants(
 ): Variant[] {
   const round0 = (n: number) => Math.round(n);
   return [
-    { label: "3-Pack", price: round0(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "3-Pack", price: round0(basePrice * 3 * 0.85), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
     { label: "Single Vial", price: round0(basePrice), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
   ];
 }
