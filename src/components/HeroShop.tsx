@@ -140,7 +140,7 @@ export default function HeroShop() {
             className="mx-auto mt-5 flex w-full max-w-md flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center"
           >
             <Link
-              to="/shop"
+              to="/shop#products"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow active:scale-[0.98]"
             >
               <ShoppingCart className="h-5 w-5" /> Shop peptides
