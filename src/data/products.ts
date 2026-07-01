@@ -96,6 +96,15 @@ const motsVariants = buildPackVariants(485,  10, { p3: 2 });
 const bpcVariants  = buildPackVariants(955,  20, { p3: 2 });
 const glowVariants = buildPackVariants(1080, 70, { p3: 3 });
 const klowVariants = buildPackVariants(1260, 80, { p3: 2 });
+const kpvVariants      = buildPackVariants(1120, 10, { p3: 3 });
+const tha1Variants     = buildPackVariants(1500,  5, { p3: 2 });
+const ara290Variants   = buildPackVariants(1235, 16, { p3: 3 });
+const ss31Variants     = buildPackVariants(1615, 10, { p3: 2 });
+const pinealonVariants = buildPackVariants(855,  10, { p3: 3 });
+const epitalonVariants = buildPackVariants(855,  10, { p3: 3 });
+const selankVariants   = buildPackVariants(740,  10, { p3: 3 });
+const semaxVariants    = buildPackVariants(740,  10, { p3: 3 });
+
 
 export const products: Product[] = [
   {
