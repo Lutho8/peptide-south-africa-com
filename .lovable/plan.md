@@ -1,32 +1,50 @@
-# Fix: images not loading on peptide-south-africa.com
+## Add 8 new peptide products to the catalog
 
-## Root cause
+### Category updates (`src/data/products.ts`)
+Add a new **Recovery** category. Rename **Longevity** display label to **Wellness & Longevity** (internal value stays `Longevity` to avoid touching existing MOTS-C / KLOW80 records and URLs). Updated `categories` array:
+`["All", "GLP", "Growth Hormone", "Healing", "Recovery", "Skin & Hair", "Wellness & Longevity"]`
 
-All broken images use Lovable's CDN asset path `/__l5e/assets-v1/...`. On the custom domain that path returns the SPA's `index.html` (content-type `text/html`) instead of the image binary — the asset CDN route is not wired up for custom domains. The same URLs work on `tide-shop-clone.lovable.app`.
+### New products (all RUO track, ≥99% HPLC, ZAR)
+Pricing derived from directpeptides.com (USD × ~19 = ZAR, matching existing catalog markups). Where the compound isn't listed on directpeptides, I've used prevailing market rates from the same tier.
 
-Affected assets (all currently CDN-only, no local copy):
-- `src/assets/logo-horizontal.png.asset.json`
-- `src/assets/logo-icon.png.asset.json`
-- `src/assets/vials/bpc.jpg.asset.json`
-- `src/assets/vials/ghk.jpg.asset.json`
-- `src/assets/vials/glow.jpg.asset.json`
-- `src/assets/vials/klow.jpg.asset.json`
-- `src/assets/vials/mots.jpg.asset.json`
-- `src/assets/vials/rt3.jpg.asset.json`
-- `src/assets/vials/tesa.jpg.asset.json`
-- `src/assets/vials/tz2.jpg.asset.json`
+**Recovery**
+| Name | Size | Single vial (ZAR) | 3-Pack (−8%) | Source |
+|---|---|---|---|---|
+| KPV | 10 mg | R1,120 | R3,091 | directpeptides $59 |
+| Thymosin Alpha-1 | 5 mg | R1,500 | R4,140 | directpeptides $79 |
+| ARA-290 | 16 mg | R1,235 | R3,409 | market rate $65 |
 
-## Fix
+**Wellness & Longevity**
+| Name | Size | Single vial (ZAR) | 3-Pack (−8%) | Source |
+|---|---|---|---|---|
+| SS-31 | 10 mg | R1,615 | R4,458 | market rate $85 |
+| Pinealon | 10 mg | R855 | R2,360 | market rate $45 |
+| Epitalon | 10 mg | R855 | R2,360 | market rate $45 |
+| Selank | 10 mg | R740 | R2,042 | directpeptides $39 |
+| Semax | 10 mg | R740 | R2,042 | directpeptides $39 |
 
-Reverse the CDN migration for these 10 files so they ship in the Vite bundle and are served from the same origin as the HTML (works on any domain).
+Each entry gets the full `Product` shape used today: `id`, `slug`, `shortDescription`, `description`, `image`, `category`, `purity: "≥99%"`, `storage`, `sku` (e.g. `RTT-KPV-10`), `casNumber`, `compoundClass`, `track: "RUO"`, `variants` via `buildPackVariants(...)`, `priceRange`, `benefits` (4), `whatsIncluded` (4), `whoItsFor` (3), `howItWorks` (4), `faqs` (1–2), `inStock: true`, `stock`.
 
-1. Download each binary from its working `/__l5e/...` URL via the `tide-shop-clone.lovable.app` host and write it back to its original path (e.g. `src/assets/vials/rt3.jpg`).
-2. Delete the matching `.asset.json` pointer files.
-3. Update every import site to import the binary directly (`import rt3 from "./vials/rt3.jpg"`) instead of the `.asset.json` pointer.
-4. Verify with the production build and a Playwright pass against the local preview — confirm `document.images` reports zero broken images.
+CAS numbers used: KPV 67247-12-5 · TA-1 62304-98-7 · ARA-290 1208243-50-8 · SS-31 (Elamipretide) 736992-21-5 · Pinealon 1220646-64-1 · Epitalon 307297-39-8 · Selank 129954-34-3 · Semax 80714-61-0.
 
-## Notes
+### Product vial images
+Generate 8 images matching the attached MOTS-C reference (silver-capped clear vial + navy box, teal accent band, white lyophilized powder, "Peptide South Africa" wordmark, compound name in large white sans-serif, spec strip: `{size} • ≥99% HPLC • LOT PSA-{code}-2026 • Store 2-8°C • Research Use Only – South Africa`). Premium quality tier for legible label text. Save to:
+- `src/assets/vials/kpv.jpg`
+- `src/assets/vials/tha1.jpg`
+- `src/assets/vials/ara290.jpg`
+- `src/assets/vials/ss31.jpg`
+- `src/assets/vials/pinealon.jpg`
+- `src/assets/vials/epitalon.jpg`
+- `src/assets/vials/selank.jpg`
+- `src/assets/vials/semax.jpg`
 
-- No changes to layout, copy, or business logic.
-- This sidesteps the infra bug; if Lovable later fixes custom-domain CDN routing we can re-migrate, but bundling is the safer default for first-paint critical art (logos, product hero vials).
-- Total added repo weight ≈ ~1 MB (8 vial JPGs + 2 logo PNGs).
+Import each directly (no CDN pointer) so they ship in the Vite bundle — same pattern we fixed the other vials to after the custom-domain CDN issue.
+
+### Files touched
+- `src/data/products.ts` — 8 new products, updated `categories`, 8 new image imports
+- `src/assets/vials/*.jpg` — 8 new generated images
+
+No changes to `ShopPage`, filters, PDP, cart, schema, or routing — the existing category filter and product grid pick these up automatically.
+
+### Out of scope
+- No new blog posts, no PDP copy variants, no bundle updates. Ask if you want related-content or bundle inclusion for any of these.

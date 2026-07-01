@@ -6,6 +6,14 @@ import productMots from "@/assets/vials/mots.jpg";
 import productBpc from "@/assets/vials/bpc.jpg";
 import productGlow from "@/assets/vials/glow.jpg";
 import productKlow from "@/assets/vials/klow.jpg";
+import productKpv from "@/assets/vials/kpv.jpg";
+import productTha1 from "@/assets/vials/tha1.jpg";
+import productAra290 from "@/assets/vials/ara290.jpg";
+import productSs31 from "@/assets/vials/ss31.jpg";
+import productPinealon from "@/assets/vials/pinealon.jpg";
+import productEpitalon from "@/assets/vials/epitalon.jpg";
+import productSelank from "@/assets/vials/selank.jpg";
+import productSemax from "@/assets/vials/semax.jpg";
 
 // All prices are in ZAR. Single-market site (South Africa).
 
@@ -88,6 +96,15 @@ const motsVariants = buildPackVariants(485,  10, { p3: 2 });
 const bpcVariants  = buildPackVariants(955,  20, { p3: 2 });
 const glowVariants = buildPackVariants(1080, 70, { p3: 3 });
 const klowVariants = buildPackVariants(1260, 80, { p3: 2 });
+const kpvVariants      = buildPackVariants(1120, 10, { p3: 3 });
+const tha1Variants     = buildPackVariants(1500,  5, { p3: 2 });
+const ara290Variants   = buildPackVariants(1235, 16, { p3: 3 });
+const ss31Variants     = buildPackVariants(1615, 10, { p3: 2 });
+const pinealonVariants = buildPackVariants(855,  10, { p3: 3 });
+const epitalonVariants = buildPackVariants(855,  10, { p3: 3 });
+const selankVariants   = buildPackVariants(740,  10, { p3: 3 });
+const semaxVariants    = buildPackVariants(740,  10, { p3: 3 });
+
 
 export const products: Product[] = [
   {
@@ -209,7 +226,7 @@ export const products: Product[] = [
     price: 485,
     priceRange: rangeFromVariants(motsVariants),
     image: productMots,
-    category: "Longevity",
+    category: "Wellness & Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -289,7 +306,7 @@ export const products: Product[] = [
     price: 1260,
     priceRange: rangeFromVariants(klowVariants),
     image: productKlow,
-    category: "Longevity",
+    category: "Wellness & Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -306,6 +323,222 @@ export const products: Product[] = [
     ],
     inStock: false,
   },
+  {
+    id: "9",
+    name: "KPV",
+    slug: "kpv",
+    shortDescription: "α-MSH tripeptide fragment for gut inflammation and mucosal healing research.",
+    description: "KPV (Lysine-Proline-Valine) is the C-terminal tripeptide of α-MSH, studied for its anti-inflammatory effects on the gut and skin. Researchers use it to model mucosal healing, IBD pathways, and mast-cell modulation.",
+    price: 1120,
+    priceRange: rangeFromVariants(kpvVariants),
+    image: productKpv,
+    category: "Recovery",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution. Lyophilised vial stable 2–8°C.",
+    sku: "PSA-KPV-10",
+    casNumber: "67247-12-5",
+    compoundClass: "α-MSH tripeptide fragment",
+    track: "RUO",
+    variants: kpvVariants,
+    benefits: ["Mucosal inflammation research", "Gut barrier integrity models", "Mast-cell modulation studies", "Topical dermal research"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["GI research labs", "Dermatology researchers", "Inflammation pathway studies"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute with bacteriostatic water", "Follow institutional research protocol", "Monitor inflammatory markers"],
+    faqs: [
+      { question: "Is KPV shelf-stable during shipping?", answer: "Yes — lyophilised KPV is stable at ambient temperature for typical courier windows. Refrigerate on arrival." },
+    ],
+    inStock: true,
+    stock: 24,
+  },
+  {
+    id: "10",
+    name: "Thymosin Alpha-1",
+    slug: "thymosin-alpha-1",
+    shortDescription: "28-amino-acid thymic peptide for immune modulation and T-cell research.",
+    description: "Thymosin Alpha-1 (Tα1) is a 28-amino-acid peptide originally isolated from the thymus. It is studied for its role in T-cell maturation, innate immune signalling, and adjunctive immunology research protocols.",
+    price: 1500,
+    priceRange: rangeFromVariants(tha1Variants),
+    image: productTha1,
+    category: "Recovery",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-THA-5",
+    casNumber: "62304-98-7",
+    compoundClass: "Thymic peptide (28aa)",
+    track: "RUO",
+    variants: tha1Variants,
+    benefits: ["T-cell maturation studies", "Innate immunity research", "Chronic infection models", "Immuno-oncology adjunct research"],
+    whatsIncluded: ["1× 5mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Immunology labs", "Infectious disease researchers", "Translational research groups"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute with bacteriostatic water", "Aliquot per protocol", "Track immune biomarkers"],
+    faqs: [
+      { question: "Why is Tα1 dosed at 5mg per vial?", answer: "Tα1 is potent and typically studied at sub-milligram doses; 5mg per vial matches standard research aliquoting." },
+    ],
+    inStock: true,
+    stock: 18,
+  },
+  {
+    id: "11",
+    name: "ARA-290",
+    slug: "ara-290",
+    shortDescription: "11-amino-acid EPO-derived peptide for neuropathic pain and tissue repair research.",
+    description: "ARA-290 (Cibinetide) is an 11-amino-acid peptide derived from the tertiary structure of erythropoietin. It selectively activates the innate repair receptor and is studied in models of neuropathic pain, wound healing, and metabolic inflammation.",
+    price: 1235,
+    priceRange: rangeFromVariants(ara290Variants),
+    image: productAra290,
+    category: "Recovery",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-ARA-16",
+    casNumber: "1208243-50-8",
+    compoundClass: "EPO-derived peptide",
+    track: "RUO",
+    variants: ara290Variants,
+    benefits: ["Neuropathic pain models", "Innate repair receptor research", "Wound healing pathways", "Metabolic inflammation studies"],
+    whatsIncluded: ["1× 16mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Neuroscience labs", "Wound healing researchers", "Metabolic disease studies"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute per protocol", "Follow institutional research design", "Monitor recovery endpoints"],
+    faqs: [
+      { question: "Is ARA-290 an EPO analogue?", answer: "It is derived from EPO but does not stimulate erythropoiesis — it targets the innate repair receptor selectively." },
+    ],
+    inStock: true,
+    stock: 15,
+  },
+  {
+    id: "12",
+    name: "SS-31 (Elamipretide)",
+    slug: "ss-31",
+    shortDescription: "Mitochondrial-targeting tetrapeptide for cardiolipin and bioenergetics research.",
+    description: "SS-31 (Elamipretide) is a cell-permeable tetrapeptide that binds cardiolipin on the inner mitochondrial membrane. Researchers use it to study mitochondrial bioenergetics, oxidative stress, and age-related cellular decline.",
+    price: 1615,
+    priceRange: rangeFromVariants(ss31Variants),
+    image: productSs31,
+    category: "Wellness & Longevity",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-SS31-10",
+    casNumber: "736992-21-5",
+    compoundClass: "Mitochondria-targeted tetrapeptide",
+    track: "RUO",
+    variants: ss31Variants,
+    benefits: ["Cardiolipin binding studies", "Mitochondrial bioenergetics", "Oxidative stress research", "Age-related cellular decline"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Mitochondrial biology labs", "Cardiology researchers", "Longevity science groups"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute with bacteriostatic water", "Aliquot per protocol", "Monitor bioenergetic markers"],
+    faqs: [
+      { question: "Why the premium price on SS-31?", answer: "Elamipretide synthesis is complex and lower-yield than most peptides, which is reflected in market pricing." },
+    ],
+    inStock: true,
+    stock: 10,
+  },
+  {
+    id: "13",
+    name: "Pinealon",
+    slug: "pinealon",
+    shortDescription: "Short bioregulator tripeptide for neuroprotection and cognitive-aging research.",
+    description: "Pinealon is a synthetic tripeptide (Glu-Asp-Arg) from the Khavinson family of short bioregulators. It is studied for neuroprotective effects, cognitive resilience under stress, and pineal-axis regulation in aging models.",
+    price: 855,
+    priceRange: rangeFromVariants(pinealonVariants),
+    image: productPinealon,
+    category: "Wellness & Longevity",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-PIN-10",
+    casNumber: "1220646-64-1",
+    compoundClass: "Short peptide bioregulator",
+    track: "RUO",
+    variants: pinealonVariants,
+    benefits: ["Neuroprotection research", "Cognitive aging models", "Oxidative stress in CNS", "Chronobiology studies"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Neuroscience labs", "Longevity researchers", "Behavioural neuroscience groups"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute per protocol", "Follow institutional research design", "Track cognitive endpoints"],
+    faqs: [
+      { question: "How is Pinealon related to Epitalon?", answer: "Both are Khavinson short peptides; Pinealon targets neural tissue while Epitalon is studied for pineal telomere effects." },
+    ],
+    inStock: true,
+    stock: 20,
+  },
+  {
+    id: "14",
+    name: "Epitalon",
+    slug: "epitalon",
+    shortDescription: "Tetrapeptide bioregulator for telomerase and pineal-axis longevity research.",
+    description: "Epitalon (Ala-Glu-Asp-Gly) is a synthetic tetrapeptide developed by V. Khavinson, studied for its influence on telomerase activity, pineal function, and circadian regulation in aging research models.",
+    price: 855,
+    priceRange: rangeFromVariants(epitalonVariants),
+    image: productEpitalon,
+    category: "Wellness & Longevity",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-EPI-10",
+    casNumber: "307297-39-8",
+    compoundClass: "Short peptide bioregulator",
+    track: "RUO",
+    variants: epitalonVariants,
+    benefits: ["Telomerase activity research", "Pineal-axis studies", "Circadian rhythm models", "Biological aging endpoints"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Longevity researchers", "Chronobiology labs", "Cellular aging studies"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute per protocol", "Aliquot and freeze if required", "Track aging biomarkers"],
+    faqs: [
+      { question: "Is Epitalon typically cycled?", answer: "Most published research protocols run short cycles rather than continuous dosing — follow institutional design." },
+    ],
+    inStock: true,
+    stock: 22,
+  },
+  {
+    id: "15",
+    name: "Selank",
+    slug: "selank",
+    shortDescription: "Synthetic tuftsin analogue for anxiolytic and cognitive research models.",
+    description: "Selank is a synthetic heptapeptide analogue of the immunomodulator tuftsin, developed at the Russian Academy of Medical Sciences. Researchers study its anxiolytic profile, BDNF modulation, and cognitive performance under stress.",
+    price: 740,
+    priceRange: rangeFromVariants(selankVariants),
+    image: productSelank,
+    category: "Wellness & Longevity",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-SLK-10",
+    casNumber: "129954-34-3",
+    compoundClass: "Tuftsin analogue (heptapeptide)",
+    track: "RUO",
+    variants: selankVariants,
+    benefits: ["Anxiolytic pathway research", "BDNF expression studies", "Cognitive performance models", "Stress-response modulation"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Behavioural neuroscience labs", "Neuropharmacology researchers", "Cognitive science groups"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute with bacteriostatic water", "Follow institutional protocol", "Monitor behavioural endpoints"],
+    faqs: [
+      { question: "Is Selank commonly compared to Semax?", answer: "Yes — both are Russian-developed neuropeptides; Selank leans anxiolytic while Semax leans nootropic/attentional." },
+    ],
+    inStock: true,
+    stock: 26,
+  },
+  {
+    id: "16",
+    name: "Semax",
+    slug: "semax",
+    shortDescription: "Synthetic ACTH(4-10) analogue for nootropic and neuroprotection research.",
+    description: "Semax is a synthetic heptapeptide analogue of ACTH(4-10) developed at the Institute of Molecular Genetics, Moscow. It is studied for BDNF/NGF upregulation, cognitive performance, and neuroprotective effects in ischaemia models.",
+    price: 740,
+    priceRange: rangeFromVariants(semaxVariants),
+    image: productSemax,
+    category: "Wellness & Longevity",
+    purity: "≥99%",
+    storage: "Refrigerate after reconstitution.",
+    sku: "PSA-SMX-10",
+    casNumber: "80714-61-0",
+    compoundClass: "ACTH(4-10) analogue",
+    track: "RUO",
+    variants: semaxVariants,
+    benefits: ["Nootropic pathway research", "BDNF/NGF expression studies", "Neuroprotection models", "Attention & focus research"],
+    whatsIncluded: ["1× 10mg lyophilised vial", "Certificate of Analysis", "Batch/lot documentation", "Reconstitution guide"],
+    whoItsFor: ["Neuroscience labs", "Cognitive research groups", "Translational neurology studies"],
+    howItWorks: ["Store lyophilised at 2–8°C", "Reconstitute per protocol", "Follow institutional research design", "Track cognitive endpoints"],
+    faqs: [
+      { question: "How is Semax typically administered in research?", answer: "Most published protocols use intranasal delivery; institutional design should determine route and dose." },
+    ],
+    inStock: true,
+    stock: 24,
+  },
 ];
 
 export const categories = [
@@ -313,8 +546,9 @@ export const categories = [
   "GLP",
   "Growth Hormone",
   "Healing",
+  "Recovery",
   "Skin & Hair",
-  "Longevity",
+  "Wellness & Longevity",
 ];
 
 export const tracks: { value: "All" | ProductTrack; label: string; desc: string }[] = [
