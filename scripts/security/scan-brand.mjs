@@ -19,6 +19,12 @@ if (ROOTS.length === 0) ROOTS.push(".");
 const IGNORED_DIRS = new Set([
   "node_modules", ".git", "build", ".next", ".turbo",
   ".cache", "coverage", "playwright-report", "test-results",
+  // The scanner's own generated report (committed nowhere on purpose — see
+  // .gitignore) describes past scan results in prose, e.g. "No legacy ... 
+  // references found". When "." is passed as a scan root that prose gets
+  // re-scanned and self-matches the very pattern it's reporting the absence
+  // of. Always skip our own output dir to avoid that false positive.
+  "brand-guard-report",
 ]);
 // Note: "dist" intentionally NOT ignored — we WANT to scan built output when it's a root.
 const IGNORED_FILES = new Set([
