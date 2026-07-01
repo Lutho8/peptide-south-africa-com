@@ -24,6 +24,8 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const headlinePrice = singleVial?.price ?? product.price;
   const isGPTrack = product.track === "GP";
+  const threePackSavings =
+    threePack && singleVial ? singleVial.price * 3 - threePack.price : undefined;
 
   const handleAdd = () => {
     if (!product.inStock) {
@@ -109,9 +111,14 @@ export default function ProductCard({ product }: { product: Product }) {
             {threePack && (
               <Link
                 to={productUrl}
-                className="mt-0.5 inline-block font-mono text-[11px] font-medium text-trust hover:underline"
+                className="mt-0.5 flex flex-col font-mono text-[11px] font-medium text-trust hover:underline"
               >
-                or 3-Pack {format(threePack.price)} · save 8%
+                <span>or 3-Pack {format(threePack.price)} · save 15%</span>
+                {threePackSavings !== undefined && (
+                  <span className="text-[10px] font-semibold text-primary">
+                    You Save {format(threePackSavings)}
+                  </span>
+                )}
               </Link>
             )}
           </div>
