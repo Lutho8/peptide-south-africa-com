@@ -52,6 +52,19 @@ export default function ShopPage() {
   const { market, lang } = useMarket();
   const shopCopy = pageCopy("shop", market);
   const { addToCart, setIsCartOpen } = useCart();
+  const { hash } = useLocation();
+
+  // Honor #products / #cat-recovery hash — SPA nav doesn't auto-scroll to anchors.
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.slice(1);
+    // small delay so category sections have mounted
+    const t = setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => clearTimeout(t);
+  }, [hash]);
+
 
   // Deep-link stack from the quiz: /shop?stack=id1,id2&from=quiz
   const stackIds = useMemo(
