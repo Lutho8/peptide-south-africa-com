@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { ArrowRight, Flame, Activity, Sparkles, ShieldCheck, FlaskConical, MapPin, Truck, ShoppingCart } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -52,6 +52,19 @@ export default function ShopPage() {
   const { market, lang } = useMarket();
   const shopCopy = pageCopy("shop", market);
   const { addToCart, setIsCartOpen } = useCart();
+  const { hash } = useLocation();
+
+  // Honor #products / #cat-recovery hash — SPA nav doesn't auto-scroll to anchors.
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.slice(1);
+    // small delay so category sections have mounted
+    const t = setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => clearTimeout(t);
+  }, [hash]);
+
 
   // Deep-link stack from the quiz: /shop?stack=id1,id2&from=quiz
   const stackIds = useMemo(
@@ -323,12 +336,45 @@ export default function ShopPage() {
             ))}
           </div>
 
-          {/* Products Grid */}
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          {/* Products — grouped by category when "All" is active, so Recovery
+              and Wellness & Longevity render as visible sections instead of
+              being buried inside one long grid. */}
+          {activeCategory === "All" ? (
+            <div className="space-y-12">
+              {categories
+                .filter((c) => c !== "All")
+                .map((cat) => {
+                  const items = filtered.filter((p) => p.category === cat);
+                  if (items.length === 0) return null;
+                  return (
+                    <div key={cat}>
+                      <div className="mb-4 flex items-end justify-between gap-3">
+                        <h3 id={`cat-${cat.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and")}`} className="font-display text-xl font-bold text-foreground sm:text-2xl">
+                          {cat}
+                        </h3>
+                        <button
+                          onClick={() => handleCategory(cat)}
+                          className="text-xs font-semibold text-primary hover:underline"
+                        >
+                          View all {cat} →
+                        </button>
+                      </div>
+                      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {items.map((p) => (
+                          <ProductCard key={p.id} product={p} />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filtered.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
 
           {filtered.length === 0 && (
             <div className="py-20 text-center text-muted-foreground">
