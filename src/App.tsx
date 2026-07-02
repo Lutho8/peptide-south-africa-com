@@ -20,6 +20,7 @@ import AgeVerificationModal from "@/components/AgeVerificationModal";
 import DiscountPopup from "@/components/DiscountPopup";
 import HomePage from "@/pages/HomePage";
 import ShopPage from "@/pages/ShopPage";
+import BuildYourStackPage from "@/pages/BuildYourStackPage";
 import ProductPage from "@/pages/ProductPage";
 import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
@@ -83,6 +84,8 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/shop" element={<ShopPage />} />
+                <Route path="/build-your-stack" element={<BuildYourStackPage />} />
+                <Route path="/5-pack" element={<BuildYourStackPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
