@@ -4,7 +4,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Star,
-  Flame,
+  CheckCircle2,
+  Stethoscope,
   Sparkles,
   Truck,
   FlaskConical,
@@ -119,17 +120,17 @@ export default function HeroShop() {
             transition={{ duration: 0.6, delay: 0.05 }}
             className="mt-4 font-display text-[2.25rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl"
           >
-            Premium peptides.{" "}
-            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Shipped in 48 hours.</span>
+            South Africa's{" "}
+            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Best Peptide Prices</span>
           </motion.h1>
 
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-white/85 sm:mt-4 sm:text-lg"
+            className="mx-auto mt-3 max-w-2xl text-[15px] font-semibold leading-relaxed text-white/90 sm:mt-4 sm:text-lg"
           >
-            HPLC-verified · ZAR pricing · Discreet shipping across South Africa in 1–3 business days.
+            3-Pack at 15% Off <span className="text-white/50">|</span> 5-Pack Pick &amp; Mix at 20% Off <span className="text-white/50">|</span> 10-Pack at 30% Off
           </motion.p>
 
           {/* Primary CTAs — mobile-first, big tap targets */}
@@ -140,16 +141,16 @@ export default function HeroShop() {
             className="mx-auto mt-5 flex w-full max-w-md flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center"
           >
             <Link
-              to="/shop#products"
+              to="/build-your-stack"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-3.5 text-base font-bold text-primary-foreground shadow-glow active:scale-[0.98]"
             >
-              <ShoppingCart className="h-5 w-5" /> Shop peptides
+              <Sparkles className="h-5 w-5" /> Build Your Stack
             </Link>
             <Link
-              to="/quiz"
+              to="/shop#products"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-base font-semibold text-white backdrop-blur-md hover:bg-white/20"
             >
-              <Sparkles className="h-5 w-5" /> Find my protocol
+              <ShoppingCart className="h-5 w-5" /> Shop 3-Packs
             </Link>
           </motion.div>
 
@@ -185,10 +186,13 @@ export default function HeroShop() {
             className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] text-white/85 sm:text-xs"
           >
             <span className="inline-flex items-center gap-1 font-semibold text-white">
-              <Flame className="h-3.5 w-3.5 text-orange-400" /> 23 orders today
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#00d4aa]" /> Prices include VAT — what you see is what you pay
             </span>
-            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free SA R1,500+</span>
-            <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#00d4aa]" /> Lab-tested</span>
+            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free shipping over R1,500</span>
+            <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#00d4aa]" /> 99% HPLC tested by Janoshik</span>
+            <span className="inline-flex items-center gap-1">
+              <Stethoscope className="h-3.5 w-3.5" /> HPCSA-registered GP review on all orders
+            </span>
             <span className="inline-flex items-center gap-1">
               <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" /> 4.9 · 1,200+
             </span>

@@ -100,6 +100,9 @@ export default function Header() {
 
 
         <nav className="hidden items-center gap-1 lg:flex">
+          <Link to="/build-your-stack" className="px-3 py-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80">
+            Build Your Stack
+          </Link>
           <Link to="/shop" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             Shop
           </Link>
@@ -200,6 +203,7 @@ export default function Header() {
             </a>
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
             <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Shop</Link>
+            <Link to="/build-your-stack" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">Build Your Stack · save 20%</Link>
             {DROPDOWNS.map((d) => (
               <details key={d.label} className="rounded-lg border border-border">
                 <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-foreground">
