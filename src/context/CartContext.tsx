@@ -9,6 +9,21 @@ export interface CartItem {
   unitPrice: number;
   quantity: number;
   lineId: string;
+  /** Groups the per-vial lines of one Pick & Mix bundle. */
+  bundleId?: string;
+  /** e.g. "5-Pack Pick & Mix (20% Off)". */
+  bundleLabel?: string;
+  bundleDiscountPct?: number;
+  /** Undiscounted single-vial price — used to display "You Save". */
+  compareAtPrice?: number;
+}
+
+export interface BundleLineInput {
+  product: Product;
+  /** Discounted per-vial price (allocated so the bundle sums exactly). */
+  unitPrice: number;
+  /** Undiscounted single-vial price. */
+  compareAtPrice: number;
 }
 
 export interface AddToCartOptions {
@@ -21,6 +36,10 @@ export interface AddToCartOptions {
 interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product, opts?: AddToCartOptions) => void;
+  /** Adds a Pick & Mix bundle as grouped per-vial lines. Returns the bundleId. */
+  addBundleToCart: (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => string;
+  /** Removes every line belonging to a bundle. */
+  removeBundle: (bundleId: string) => void;
   removeFromCart: (lineId: string) => void;
   updateQuantity: (lineId: string, quantity: number) => void;
   clearCart: () => void;
@@ -73,6 +92,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = useCallback((lineId: string) => {
     setItems((prev) => prev.filter((i) => i.lineId !== lineId));
+  }, []);
+
+  const addBundleToCart = useCallback(
+    (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => {
+      const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      setItems((prev) => [
+        ...prev,
+        ...lines.map((l, idx) => ({
+          product: l.product,
+          variantLabel: meta.label,
+          unitPrice: l.unitPrice,
+          compareAtPrice: l.compareAtPrice,
+          quantity: 1,
+          lineId: `${bundleId}::${idx}`,
+          bundleId,
+          bundleLabel: meta.label,
+          bundleDiscountPct: meta.discountPct,
+        })),
+      ]);
+      setIsCartOpen(true);
+      return bundleId;
+    },
+    [],
+  );
+
+  const removeBundle = useCallback((bundleId: string) => {
+    setItems((prev) => prev.filter((i) => i.bundleId !== bundleId));
   }, []);
 
   const updateQuantity = useCallback((lineId: string, quantity: number) => {
@@ -139,7 +185,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items, addToCart, removeFromCart, updateQuantity, clearCart,
+        items, addToCart, addBundleToCart, removeBundle, removeFromCart, updateQuantity, clearCart,
         totalItems, subtotal, totalPrice, discountCode, discountAmount, isDiscountEligible,
         isCartOpen, setIsCartOpen,
       }}
