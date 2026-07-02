@@ -32,6 +32,11 @@ export default function ProductCard({ product }: { product: Product }) {
       navigate(productUrl);
       return;
     }
+    // Bundle-first: the card headlines the 3-Pack, so Add To Cart adds the 3-Pack.
+    if (threePack) {
+      addToCart(product, { variantLabel: threePack.label, unitPrice: threePack.price });
+      return;
+    }
     if (singleVial) {
       addToCart(product, { variantLabel: singleVial.label, unitPrice: singleVial.price });
       return;
@@ -102,24 +107,33 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-3 flex items-baseline justify-between">
           <div>
-            <p className="font-mono text-lg font-bold text-primary">
-              {format(headlinePrice)}
-              <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                / single vial
-              </span>
-            </p>
-            {threePack && (
-              <Link
-                to={productUrl}
-                className="mt-0.5 flex flex-col font-mono text-[11px] font-medium text-trust hover:underline"
-              >
-                <span>or 3-Pack {format(threePack.price)} · save 15%</span>
-                {threePackSavings !== undefined && (
-                  <span className="text-[10px] font-semibold text-primary">
-                    You Save {format(threePackSavings)}
+            {threePack ? (
+              <>
+                <p className="font-mono text-lg font-bold text-primary">
+                  From {format(threePack.price)}
+                  <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    / 3-Pack · 15% off
                   </span>
+                </p>
+                <p className="mt-0.5 font-mono text-[11px] font-medium text-muted-foreground">
+                  or {format(headlinePrice)}/vial
+                </p>
+                {threePackSavings !== undefined && (
+                  <Link
+                    to={productUrl}
+                    className="mt-0.5 inline-block font-mono text-[10px] font-semibold text-trust hover:underline"
+                  >
+                    Save {format(threePackSavings)} on 3-Pack
+                  </Link>
                 )}
-              </Link>
+              </>
+            ) : (
+              <p className="font-mono text-lg font-bold text-primary">
+                {format(headlinePrice)}
+                <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  / single vial
+                </span>
+              </p>
             )}
           </div>
         </div>
