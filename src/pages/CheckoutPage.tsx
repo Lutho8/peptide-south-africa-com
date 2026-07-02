@@ -20,6 +20,7 @@ import {
   amountToFreeShipping,
   getShippingCost,
 } from "@/lib/shipping";
+import { cartBundleSavings } from "@/lib/bundlePricing";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 
@@ -54,6 +55,12 @@ function postToPayFast(actionUrl: string, fields: Record<string, string>) {
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
+  // Bundle savings are already baked into unit prices; surfaced here for the
+  // Section-6 savings breakdown. Original = what the same vials cost as singles.
+  const bundleSavings = cartBundleSavings(items);
+  const originalSubtotal = subtotal + bundleSavings;
+  const totalSavings = Math.round((bundleSavings + discountAmount) * 100) / 100;
+  const totalSavingsPct = originalSubtotal > 0 ? Math.round((totalSavings / originalSubtotal) * 1000) / 10 : 0;
   const { user, refreshOrders } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -361,7 +368,17 @@ export default function CheckoutPage() {
               ))}
             </div>
             <div className="mt-4 border-t border-border pt-4">
-              <div className="flex justify-between text-sm text-muted-foreground"><span>{tCopy("subtotal")}</span><span>{formatZAR(subtotal)}</span></div>
+              {bundleSavings > 0 && (
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Single-vial value</span><span className="line-through">{formatZAR(originalSubtotal)}</span>
+                </div>
+              )}
+              {bundleSavings > 0 && (
+                <div className="mt-1 flex justify-between text-sm font-semibold text-trust" data-testid="checkout-bundle-savings">
+                  <span>Bundle discount</span><span>−{formatZAR(bundleSavings)}</span>
+                </div>
+              )}
+              <div className="mt-1 flex justify-between text-sm text-muted-foreground"><span>{tCopy("subtotal")}</span><span>{formatZAR(subtotal)}</span></div>
               {isDiscountEligible && (
                 <div className="mt-1 flex justify-between text-sm font-semibold text-trust"><span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span></div>
               )}
@@ -380,6 +397,12 @@ export default function CheckoutPage() {
                 <span>{tCopy("total")}</span>
                 <span data-testid="checkout-total">{formatZAR(shippingMath.grandTotal)}</span>
               </div>
+              {totalSavings > 0 && (
+                <div className="mt-3 rounded-lg bg-trust/10 px-3 py-2 text-center text-sm font-bold text-trust" data-testid="checkout-total-savings">
+                  You Save {formatZAR(totalSavings)} ({totalSavingsPct}% off) ✓
+                  {shippingMath.freeUnlocked && <span className="ml-1 font-semibold">· Free Shipping Applied ✓</span>}
+                </div>
+              )}
             </div>
           </div>
 

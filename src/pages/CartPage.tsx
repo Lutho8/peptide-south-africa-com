@@ -8,12 +8,28 @@ import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { COPY, trilingual } from "@/lib/copy";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { cartBundleSavings } from "@/lib/bundlePricing";
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
+  const { items, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
   const { format } = useCurrency();
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
+
+  const singles = items.filter((i) => !i.bundleId);
+  const bundleIds = [...new Set(items.filter((i) => i.bundleId).map((i) => i.bundleId as string))];
+  const bundles = bundleIds.map((id) => {
+    const lines = items.filter((i) => i.bundleId === id);
+    return {
+      id,
+      label: lines[0]?.bundleLabel ?? "Pick & Mix Bundle",
+      discountPct: lines[0]?.bundleDiscountPct ?? 0,
+      lines,
+      total: lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0),
+      savings: lines.reduce((s, l) => s + ((l.compareAtPrice ?? l.unitPrice) - l.unitPrice) * l.quantity, 0),
+    };
+  });
+  const bundleSavings = cartBundleSavings(items);
 
   if (items.length === 0) {
     return (
@@ -46,7 +62,44 @@ export default function CartPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="flex flex-col gap-4">
-            {items.map((item) => (
+            {bundles.map((b) => (
+              <div key={b.id} className="rounded-lg border border-primary/30 bg-primary/[0.03] p-4 shadow-card">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display font-bold text-foreground">{b.label}</h3>
+                    <p className="mt-0.5 text-sm">
+                      <span className="font-display font-bold text-primary">{format(b.total)}</span>
+                      {b.savings > 0 && (
+                        <span className="ml-2 text-xs font-semibold text-trust">You Save {format(b.savings)}</span>
+                      )}
+                    </p>
+                  </div>
+                  <button onClick={() => removeBundle(b.id)} className="text-destructive hover:text-destructive/80" aria-label="Remove bundle">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+                <ul className="mt-3 flex flex-col gap-2 border-t border-border/60 pt-3">
+                  {b.lines.map((item) => (
+                    <li key={item.lineId} className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
+                      <Link to={mp(`/product/${item.product.slug}`)} className="flex-1 truncate hover:text-primary">
+                        {item.product.name}
+                      </Link>
+                      <span className="font-mono text-xs">
+                        {item.compareAtPrice !== undefined && (
+                          <span className="mr-1.5 line-through opacity-60">{format(item.compareAtPrice)}</span>
+                        )}
+                        <span className="font-semibold text-foreground">{format(item.unitPrice)}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-[11px] font-medium text-muted-foreground">
+                  −{b.discountPct}% bundle discount shown per vial · free shipping applies automatically
+                </p>
+              </div>
+            ))}
+            {singles.map((item) => (
               <div key={item.lineId} className="flex gap-4 rounded-lg border border-border bg-card p-4 shadow-card">
                 <img src={item.product.image} alt={item.product.name} className="h-24 w-24 rounded-md object-cover" />
                 <div className="flex flex-1 flex-col">
@@ -88,6 +141,11 @@ export default function CartPage() {
             <div className="flex justify-between text-muted-foreground">
               <span>{COPY.subtotal.en} / {COPY.subtotal.de}</span><span data-testid="cart-subtotal">{format(subtotal)}</span>
             </div>
+            {bundleSavings > 0 && (
+              <div className="flex justify-between font-semibold text-trust">
+                <span>Bundle savings (applied)</span><span data-testid="cart-bundle-savings">−{format(bundleSavings)}</span>
+              </div>
+            )}
             {isDiscountEligible && (
               <div className="flex justify-between font-semibold text-trust">
                 <span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span>
