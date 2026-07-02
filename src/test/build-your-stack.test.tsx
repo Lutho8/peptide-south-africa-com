@@ -59,13 +59,21 @@ describe("BuildYourStackPage", () => {
     expect(probe.dataset.bundleLines).toBe("5");
   });
 
-  it("blocks add-to-cart while a selected vial is out of stock", () => {
+  it("quick-select curated stack fills all 5 slots and is immediately purchasable", () => {
     renderBuilder();
-    // klow80 is out of stock — options are disabled, so force via change event
-    // on an enabled selection set that includes it through the curated stack.
     fireEvent.click(screen.getByRole("button", { name: /Longevity Stack/ }));
+    const selects = screen.getAllByLabelText(/Vial \d+/) as HTMLSelectElement[];
+    expect(selects.map((s) => s.value)).toEqual([
+      "klow80",
+      "mots-c",
+      "ghk-cu-50mg",
+      "glow70",
+      "tesamorelin",
+    ]);
     const addButtons = screen.getAllByRole("button", { name: /Add 5-Pack/ });
-    expect((addButtons[0] as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getAllByText(/out of stock — swap/i).length).toBeGreaterThan(0);
+    expect((addButtons[0] as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(addButtons[0]);
+    const probe = screen.getByTestId("cart-probe");
+    expect(probe.dataset.bundleLines).toBe("5");
   });
 });

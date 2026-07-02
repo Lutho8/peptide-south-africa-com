@@ -215,7 +215,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Why is this marked Pre-Order?", answer: "TZ-2 is in high demand. Pre-orders guarantee your allocation from the next certified batch." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "5",
@@ -242,7 +242,7 @@ export const products: Product[] = [
     faqs: [
       { question: "What makes MOTS-C unique?", answer: "It's one of the few known mitochondrial-derived peptides with direct metabolic regulatory effects." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "6",
@@ -269,7 +269,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Why combine BPC-157 and TB-500?", answer: "Research suggests these peptides work synergistically, enhancing tissue repair outcomes beyond either compound alone." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "7",
@@ -321,7 +321,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Is KLOW80 available immediately?", answer: "KLOW80 is currently available for pre-order. You'll be notified when your batch ships." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "9",

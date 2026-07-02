@@ -97,6 +97,14 @@ describe("pre-curated stacks", () => {
     }
   });
 
+  it("every stack component is in stock — stacks are one-tap purchasable", () => {
+    for (const stack of CURATED_STACKS) {
+      for (const p of resolveStackProducts(stack)) {
+        expect(p?.inStock, `${stack.name}: ${p?.slug}`).toBe(true);
+      }
+    }
+  });
+
   it("Longevity Stack: R4,230 → R3,384 (save R846)", () => {
     const stack = CURATED_STACKS.find((s) => s.id === "longevity")!;
     const q = quoteMixBundle(resolveStackProducts(stack) as never, 5);
