@@ -16,7 +16,6 @@ import Footer from "@/components/Footer";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import CartDrawer from "@/components/CartDrawer";
 import PostAddUpsellModal from "@/components/PostAddUpsellModal";
-import AgeVerificationModal from "@/components/AgeVerificationModal";
 import DiscountPopup from "@/components/DiscountPopup";
 import HomePage from "@/pages/HomePage";
 import ShopPage from "@/pages/ShopPage";
@@ -74,7 +73,6 @@ const App = () => (
             <LastViewedProductProvider>
             <Toaster />
             <Sonner />
-            <AgeVerificationModal />
             <DiscountPopup />
             <AnnouncementBar />
             <Header />

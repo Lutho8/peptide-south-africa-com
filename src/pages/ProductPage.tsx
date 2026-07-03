@@ -19,6 +19,7 @@ import StockBadge from "@/components/StockBadge";
 import TrackBadge from "@/components/TrackBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
 import SEO from "@/components/SEO";
+import CoaBadge from "@/components/CoaBadge";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
@@ -142,7 +143,7 @@ export default function ProductPage() {
 
   return (
     <div>
-      <JsonLd data={productSchema(product)} />
+      <JsonLd data={productSchema({ ...product, variants: product.variants })} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -195,6 +196,8 @@ export default function ProductPage() {
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
               {product?.priceRange ?? display(currentPrice).primary}
             </p>
+
+            <CoaBadge purity={product.purity ?? "≥99% HPLC"} />
 
             {/* Monospace authenticity strip — lab-grade trust signals */}
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border border-border bg-muted/30 p-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">

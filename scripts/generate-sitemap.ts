@@ -3,7 +3,7 @@
 // extracted from src/data/products.ts. Avoids importing the products
 // module directly (it imports image assets that only resolve via Vite).
 
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { resolve } from "path";
 
 const BASE_URL = "https://www.peptide-south-africa.com";
@@ -18,6 +18,8 @@ interface SitemapEntry {
 const staticEntries: SitemapEntry[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
   { path: "/shop", changefreq: "daily", priority: "0.9" },
+  { path: "/build-your-stack", changefreq: "weekly", priority: "0.85" },
+  { path: "/blog", changefreq: "weekly", priority: "0.7" },
   { path: "/fat-loss-protocol", changefreq: "weekly", priority: "0.85" },
   { path: "/quiz", changefreq: "weekly", priority: "0.8" },
   { path: "/research", changefreq: "weekly", priority: "0.6" },
@@ -40,6 +42,23 @@ function extractProductSlugs(): string[] {
     slugs.add(match[1]);
   }
   return [...slugs];
+}
+
+/** Read every blog post file for its slug + updatedAt/publishedAt (for <lastmod>). */
+function extractBlogPosts(): { slug: string; lastmod?: string }[] {
+  const dir = resolve("src/data/blog/posts");
+  const out: { slug: string; lastmod?: string }[] = [];
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith(".ts")) continue;
+    const src = readFileSync(resolve(dir, file), "utf8");
+    const slug = src.match(/slug:\s*["']([^"']+)["']/)?.[1];
+    if (!slug) continue;
+    const lastmod =
+      src.match(/updatedAt:\s*["']([^"']+)["']/)?.[1] ??
+      src.match(/publishedAt:\s*["']([^"']+)["']/)?.[1];
+    out.push({ slug, lastmod });
+  }
+  return out;
 }
 
 function altLinks(genericPath: string): string[] {
@@ -71,7 +90,19 @@ const productEntries: (SitemapEntry & { genericPath?: string })[] = productSlugs
   return { path: generic, changefreq: "weekly", priority: "0.8", genericPath: generic };
 });
 
-const all = [...staticEntries.map((e) => ({ ...e, genericPath: e.path })), ...productEntries];
+const blogPosts = extractBlogPosts();
+const blogEntries: (SitemapEntry & { genericPath?: string; lastmod?: string })[] = blogPosts.map(
+  ({ slug, lastmod }) => {
+    const generic = `/blog/${slug}`;
+    return { path: generic, changefreq: "monthly", priority: "0.7", genericPath: generic, lastmod };
+  },
+);
+
+const all = [
+  ...staticEntries.map((e) => ({ ...e, genericPath: e.path })),
+  ...productEntries,
+  ...blogEntries,
+];
 
 const xml = [
   `<?xml version="1.0" encoding="UTF-8"?>`,
@@ -86,4 +117,6 @@ writeFileSync(
   resolve("public/sitemap-meta.json"),
   JSON.stringify({ generatedAt: new Date().toISOString(), urlCount: all.length }, null, 2) + "\n",
 );
-console.log(`sitemap.xml written (${all.length} entries, ${productEntries.length} products)`);
+console.log(
+  `sitemap.xml written (${all.length} entries, ${productEntries.length} products, ${blogEntries.length} blog posts)`,
+);
