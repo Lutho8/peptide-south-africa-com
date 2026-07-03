@@ -8,10 +8,27 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// During build-time prerender there is no browser localStorage. Fall back to a
+// no-op in-memory store so module import doesn't crash; in the browser the real
+// localStorage is used exactly as before.
+const isBrowser = typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+const memoryStore: Record<string, string> = {};
+const authStorage = isBrowser
+  ? window.localStorage
+  : {
+      getItem: (k: string) => (k in memoryStore ? memoryStore[k] : null),
+      setItem: (k: string, v: string) => {
+        memoryStore[k] = v;
+      },
+      removeItem: (k: string) => {
+        delete memoryStore[k];
+      },
+    };
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+    storage: authStorage,
+    persistSession: isBrowser,
+    autoRefreshToken: isBrowser,
   }
 });

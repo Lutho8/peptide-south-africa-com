@@ -3,28 +3,29 @@
 // contact page so Google sees CONSISTENT signals everywhere (NAP consistency
 // is a core local-SEO ranking factor — mismatches hurt more than omissions).
 //
-// ⚠️ ACTION REQUIRED: replace every FILL_ME value below with the real,
-// publicly-listed details, then set `PUBLISH_NAP = true`. Until then the
-// address/phone are omitted from schema and UI rather than shown as fake
-// data. Once live, keep these identical to your Google Business Profile.
+// Keep these identical to the Google Business Profile at all times.
+//
+// telephone is the South African (+27) primary public contact line — matches
+// the Google Business Profile. Keep in sync with GBP if it ever changes.
 
-export const PUBLISH_NAP = false; // ← set true once the values below are real
+export const PUBLISH_NAP = true;
 
 export const businessInfo = {
-  legalName: "Peptide South Africa", // FILL_ME if the registered entity differs
-  streetAddress: "FILL_ME — e.g. Unit 4, 12 Example Street",
-  addressLocality: "Cape Town",
+  legalName: "Peptide South Africa",
+  streetAddress: "De Buurt, Richwood",
+  addressLocality: "Milnerton",
   addressRegion: "Western Cape",
-  postalCode: "FILL_ME — e.g. 8001",
+  postalCode: "7441",
   addressCountry: "ZA",
-  // E.164 for schema/tel: links; South African mobile e.g. +27 82 123 4567
-  telephone: "FILL_ME — e.g. +27821234567",
+  // E.164 format for schema.org / tel: links.
+  telephone: "+27721790189",
+  telephoneDisplay: "+27 72 179 0189",
   email: "hello@peptide-south-africa.com", // FILL_ME if different
-  geo: { latitude: -33.9249, longitude: 18.4241 }, // Cape Town CBD; refine to real coords
+  geo: { latitude: -33.8686, longitude: 18.5426 }, // Richwood / Milnerton, Cape Town
   vatNumber: "", // optional, FILL_ME if VAT-registered
 };
 
-/** PostalAddress fragment for schema.org — only includes street/postcode/phone when published. */
+/** PostalAddress fragment for schema.org — full detail once published. */
 export function postalAddressSchema() {
   const base = {
     "@type": "PostalAddress",

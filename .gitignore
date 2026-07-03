@@ -26,3 +26,6 @@ dist-ssr
 # Generated brand-guard scan artifacts (uploaded as a CI artifact instead;
 # committing them risks the scanner re-flagging its own past report text).
 brand-guard-report/
+
+# Build-time prerender temp bundle
+.ssr-tmp/
