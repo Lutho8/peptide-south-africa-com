@@ -1,0 +1,20 @@
+# Gitleaks configuration — extends the default ruleset.
+#
+# The ONLY allowlisted item is the Supabase ANON (publishable) key for project
+# cveapedneuhgbxqydpjc. This key is public by design: it ships in the client
+# JS bundle on every page load and grants only the `anon` Postgres role, with
+# Row Level Security enforcing all access control (see the "Supabase DB
+# linter" job in .github/workflows/security.yml).
+#
+# The regex pins the JWT header + the exact payload prefix containing
+# `"role":"anon"` for this project ref, so a service_role key — or any other
+# JWT — would still be flagged.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Supabase publishable anon key (public by design; RLS enforces access)"
+regexes = [
+  '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2ZWFwZWRuZXVoZ2J4cXlkcGpjIiwicm9sZSI6ImFub24i[A-Za-z0-9_.\-]*''',
+]
