@@ -6,11 +6,12 @@ import { COPY } from "@/lib/copy";
 import CartCountdown from "@/components/CartCountdown";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath } from "@/hooks/useMarket";
+import { cartBundleSavings, shippingNudgeSuggestions, singleVialPrice } from "@/lib/bundlePricing";
 
 const FREE_SHIP_THRESHOLD = 1500; // ZAR
 
 export default function CartDrawer() {
-  const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
+  const { items, isCartOpen, setIsCartOpen, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
   const { format } = useCurrency();
   const { market } = useMarket();
   const mp = (p: string) => marketPath(p, market);
@@ -18,6 +19,25 @@ export default function CartDrawer() {
   const anchorSlug = items[0]?.product.slug;
   const shipProgress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
   const shipRemaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+
+  // Group Pick & Mix bundle lines; everything else renders as a normal line.
+  const singles = items.filter((i) => !i.bundleId);
+  const bundleIds = [...new Set(items.filter((i) => i.bundleId).map((i) => i.bundleId as string))];
+  const bundles = bundleIds.map((id) => {
+    const lines = items.filter((i) => i.bundleId === id);
+    const total = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
+    const savings = lines.reduce((s, l) => s + ((l.compareAtPrice ?? l.unitPrice) - l.unitPrice) * l.quantity, 0);
+    return {
+      id,
+      label: lines[0]?.bundleLabel ?? "Pick & Mix Bundle",
+      discountPct: lines[0]?.bundleDiscountPct ?? 0,
+      lines,
+      total,
+      savings,
+    };
+  });
+  const bundleSavings = cartBundleSavings(items);
+  const nudges = shippingNudgeSuggestions(2);
 
   if (!isCartOpen) return null;
 
@@ -47,7 +67,43 @@ export default function CartDrawer() {
           <>
             <div className="flex-1 overflow-y-auto p-4">
               <div className="flex flex-col gap-4">
-                {items.map((item) => (
+                {/* Pick & Mix bundles — one grouped block per bundle */}
+                {bundles.map((b) => (
+                  <div key={b.id} className="rounded-lg border border-primary/30 bg-primary/[0.03] p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="font-display text-sm font-bold text-foreground">{b.label}</h4>
+                        <span className="text-sm font-bold text-primary">{format(b.total)}</span>
+                        {b.savings > 0 && (
+                          <span className="ml-2 text-[11px] font-semibold text-trust">You Save {format(b.savings)}</span>
+                        )}
+                      </div>
+                      <button onClick={() => removeBundle(b.id)} className="shrink-0 text-xs text-destructive hover:underline">
+                        Remove
+                      </button>
+                    </div>
+                    <ul className="mt-2 flex flex-col gap-1.5 border-t border-border/60 pt-2">
+                      {b.lines.map((item) => (
+                        <li key={item.lineId} className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-8 w-8 shrink-0 rounded object-cover" />
+                          <span className="flex-1 truncate">{item.product.name}</span>
+                          <span className="font-mono">
+                            {item.compareAtPrice !== undefined && (
+                              <span className="mr-1.5 text-[10px] line-through opacity-60">{format(item.compareAtPrice)}</span>
+                            )}
+                            {format(item.unitPrice)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-[10px] font-medium text-muted-foreground">
+                      −{b.discountPct}% bundle discount applied per vial
+                    </p>
+                  </div>
+                ))}
+
+                {/* Standard lines */}
+                {singles.map((item) => (
                   <div key={item.lineId} className="flex gap-3 rounded-lg border border-border p-3">
                     <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-md object-cover" />
                     <div className="flex flex-1 flex-col">
@@ -80,11 +136,24 @@ export default function CartDrawer() {
                     Add <span className="font-bold text-foreground">{format(shipRemaining)}</span> more for <span className="font-semibold text-trust">free shipping</span>
                   </p>
                 ) : (
-                  <p className="text-xs font-semibold text-trust">✓ Free shipping unlocked</p>
+                  <p className="text-xs font-semibold text-trust">✓ You qualify for FREE shipping!</p>
                 )}
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
                   <div className="h-full bg-trust transition-all" style={{ width: `${shipProgress}%` }} />
                 </div>
+                {shipRemaining > 0 && nudges.length > 0 && (
+                  <p className="mt-2 text-[11px] text-muted-foreground">
+                    Customers also add:{" "}
+                    {nudges.map((n, i) => (
+                      <span key={n.slug}>
+                        {i > 0 && " or "}
+                        <Link to={mp(`/product/${n.slug}`)} onClick={() => setIsCartOpen(false)} className="font-semibold text-primary hover:underline">
+                          {n.name} ({format(singleVialPrice(n))})
+                        </Link>
+                      </span>
+                    ))}
+                  </p>
+                )}
               </div>
 
               {/* Frequently bought together */}
@@ -100,6 +169,11 @@ export default function CartDrawer() {
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">
                 <span>{COPY.subtotal.en} / {COPY.subtotal.de}</span><span>{format(subtotal)}</span>
               </div>
+              {bundleSavings > 0 && (
+                <div className="mb-1 flex justify-between text-sm font-semibold text-trust">
+                  <span>Bundle savings</span><span>−{format(bundleSavings)} already applied</span>
+                </div>
+              )}
               {isDiscountEligible && (
                 <div className="mb-1 flex justify-between text-sm font-semibold text-trust">
                   <span>{discountCode} (−10%)</span><span>−{format(discountAmount)}</span>

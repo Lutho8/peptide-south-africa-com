@@ -30,7 +30,7 @@ export interface Variant {
 
 /**
  * Build standard 3-pack and single-vial variants for a given peptide vial.
- * basePrice = ZAR price of a single vial. 3-pack volume discount: -8%.
+ * basePrice = ZAR price of a single vial. 3-pack volume discount: -15%.
  * 3-Pack is listed first so it becomes the default on the PDP.
  */
 function buildPackVariants(
@@ -40,7 +40,7 @@ function buildPackVariants(
 ): Variant[] {
   const round0 = (n: number) => Math.round(n);
   return [
-    { label: "3-Pack", price: round0(basePrice * 3 * 0.92), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "3-Pack", price: round0(basePrice * 3 * 0.85), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
     { label: "Single Vial", price: round0(basePrice), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
   ];
 }
@@ -215,7 +215,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Why is this marked Pre-Order?", answer: "TZ-2 is in high demand. Pre-orders guarantee your allocation from the next certified batch." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "5",
@@ -242,7 +242,7 @@ export const products: Product[] = [
     faqs: [
       { question: "What makes MOTS-C unique?", answer: "It's one of the few known mitochondrial-derived peptides with direct metabolic regulatory effects." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "6",
@@ -269,7 +269,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Why combine BPC-157 and TB-500?", answer: "Research suggests these peptides work synergistically, enhancing tissue repair outcomes beyond either compound alone." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "7",
@@ -321,7 +321,7 @@ export const products: Product[] = [
     faqs: [
       { question: "Is KLOW80 available immediately?", answer: "KLOW80 is currently available for pre-order. You'll be notified when your batch ships." },
     ],
-    inStock: false,
+    inStock: true,
   },
   {
     id: "9",

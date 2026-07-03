@@ -298,6 +298,31 @@ export default function ShopPage() {
             </div>
           </div>
 
+          {/* Bundle deals strip */}
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/[0.04] p-3">
+            <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-primary">
+              Bundles
+            </span>
+            <a
+              href="#products"
+              className="rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+            >
+              3-Pack Deals · 15% Off
+            </a>
+            <Link
+              to="/build-your-stack"
+              className="rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+            >
+              5-Pack Pick &amp; Mix · 20% Off
+            </Link>
+            <Link
+              to="/build-your-stack"
+              className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-glow hover:opacity-90"
+            >
+              Build Your Stack <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
           {/* Track filter — Research vs Clinical pathway */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">

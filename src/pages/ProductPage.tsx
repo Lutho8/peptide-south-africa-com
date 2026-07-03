@@ -88,6 +88,13 @@ export default function ProductPage() {
     purchaseMode === "subscribe" && !isGPTrack
       ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
       : basePrice;
+  const selectedVariantMeta = product.variants?.[selectedVariant];
+  const singleVialPrice =
+    product.variants?.find((v) => v.pack === 1)?.price ?? product.price;
+  const selectedPackSavings =
+    selectedVariantMeta?.pack && selectedVariantMeta.pack > 1
+      ? singleVialPrice * selectedVariantMeta.pack - selectedVariantMeta.price
+      : undefined;
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
@@ -211,26 +218,75 @@ export default function ProductPage() {
 
             <p className="mt-4 text-muted-foreground">{product.description}</p>
 
-            {/* Variant Selector */}
+            {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
             {product.variants && product.variants.length > 0 && (
               <div className="mt-6">
-                <label className="text-sm font-semibold text-foreground">MG</label>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {product.variants.map((v, i) => (
-                    <button
-                      key={v.label}
-                      onClick={() => setSelectedVariant(i)}
-                      className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
-                        selectedVariant === i
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-card text-muted-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      {v.label}
-                    </button>
-                  ))}
+                <label className="text-sm font-semibold text-foreground">Choose your pack</label>
+                <div className="mt-2 flex flex-col gap-2">
+                  {product.variants.map((v, i) => {
+                    const packSize = v.pack ?? 1;
+                    const save = packSize > 1 ? singleVialPrice * packSize - v.price : 0;
+                    return (
+                      <button
+                        key={v.label}
+                        onClick={() => setSelectedVariant(i)}
+                        className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm font-medium transition-all ${
+                          selectedVariant === i
+                            ? "border-primary bg-primary/5 ring-2 ring-primary"
+                            : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`flex h-4 w-4 items-center justify-center rounded-full border ${
+                              selectedVariant === i ? "border-primary" : "border-border"
+                            }`}
+                          >
+                            {selectedVariant === i && <span className="h-2 w-2 rounded-full bg-primary" />}
+                          </span>
+                          <span className="font-semibold text-foreground">
+                            {v.label}
+                            {packSize > 1 && (
+                              <span className="ml-1.5 rounded bg-trust/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
+                                Best value · 15% off
+                              </span>
+                            )}
+                          </span>
+                        </span>
+                        <span className="text-right">
+                          <span className="block font-mono font-bold text-foreground">{format(v.price)}</span>
+                          {save > 0 && (
+                            <span className="block text-[11px] font-semibold text-trust">Save {format(save)}</span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  {/* 5-Pack Pick & Mix — routes to the bundle builder with this product pre-filled */}
+                  <Link
+                    to={`/build-your-stack?prefill=${product.slug}`}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-primary/40 bg-primary/[0.03] px-4 py-3 text-left text-sm font-medium transition-all hover:border-primary hover:bg-primary/5"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full border border-border" />
+                      <span className="font-semibold text-foreground">
+                        5-Pack Pick &amp; Mix
+                        <span className="ml-1.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                          20% off
+                        </span>
+                      </span>
+                    </span>
+                    <span className="text-right text-[11px] font-semibold text-primary">
+                      Build a custom 5-pack →
+                    </span>
+                  </Link>
                 </div>
                 <p className="mt-2 font-display text-xl font-bold text-foreground">{format(currentPrice)}</p>
+                {selectedPackSavings !== undefined && selectedPackSavings > 0 && (
+                  <p className="mt-0.5 text-sm font-semibold text-trust">
+                    You Save {format(selectedPackSavings)}
+                  </p>
+                )}
               </div>
             )}
 
@@ -341,6 +397,7 @@ export default function ProductPage() {
                 <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
               </Link>
               <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
+              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Price includes VAT — what you see is what you pay</span>
             </div>
 
             {/* SKU / CAS / Class footer */}
