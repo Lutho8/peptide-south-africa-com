@@ -6,20 +6,17 @@ import { businessInfo, postalAddressSchema, PUBLISH_NAP } from "@/data/businessI
 /** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
-  "@type": "MedicalBusiness",
-  "additionalType": ["https://schema.org/OnlineStore", "https://schema.org/LocalBusiness"],
+  "@type": "LocalBusiness",
   "@id": `${SITE_URL}/#localbusiness`,
   name: businessInfo.legalName,
   url: SITE_URL,
   image: "https://peptide-south-africa.com/apple-touch-icon.png",
+  telephone: businessInfo.telephone,
   priceRange: "R500 - R4000",
   currenciesAccepted: "ZAR",
   paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
     "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
-  ...(PUBLISH_NAP && businessInfo.telephone && !businessInfo.telephone.startsWith("FILL")
-    ? { telephone: businessInfo.telephone }
-    : {}),
   ...(businessInfo.email ? { email: businessInfo.email } : {}),
   address: postalAddressSchema(),
   geo: {
@@ -28,10 +25,6 @@ export const localBusinessSchema = {
     longitude: businessInfo.geo.longitude,
   },
   areaServed: [{ "@type": "Country", name: "South Africa" }],
-  medicalSpecialty: [
-    { "@type": "MedicalSpecialty", name: "Endocrinology" },
-    { "@type": "MedicalSpecialty", name: "Sports medicine" },
-  ],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
