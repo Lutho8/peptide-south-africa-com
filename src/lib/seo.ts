@@ -11,7 +11,7 @@ export const localBusinessSchema = {
   "@id": `${SITE_URL}/#localbusiness`,
   name: businessInfo.legalName,
   url: SITE_URL,
-  image: `${SITE_URL}/apple-touch-icon.png`,
+  image: "https://peptide-south-africa.com/apple-touch-icon.png",
   priceRange: "R500 - R4000",
   currenciesAccepted: "ZAR",
   paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
