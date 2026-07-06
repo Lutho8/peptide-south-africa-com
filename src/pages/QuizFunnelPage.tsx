@@ -28,7 +28,7 @@ import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
 
-const WA_NUMBER = "491624747159";
+const WA_NUMBER = "27641344646";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
 const waLink = (msg: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;

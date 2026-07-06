@@ -6,7 +6,7 @@ import { ToastAction } from "@/components/ui/toast";
 
 const MAKE_WEBHOOK_URL =
   "https://hook.eu1.make.com/ypm5hnevcxlmc7j9tl68fhxiigl5yb8a";
-const WHATSAPP_URL = "https://wa.me/491624747159";
+const WHATSAPP_URL = "https://wa.me/27641344646";
 const COUNT_KEY = "rtd_waitlist_count";
 
 export default function WaitlistSection() {

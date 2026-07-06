@@ -22,7 +22,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-const WA_NUMBER = "491624747159";
+const WA_NUMBER = "27641344646";
 const waLink = (msg: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 

@@ -140,7 +140,7 @@ export default function ClinicianPage() {
                   Get a Personalized Protocol <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
-                  href="https://wa.me/491624747159"
+                  href="https://wa.me/27641344646"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-7 py-3.5 text-sm font-semibold text-foreground transition-all hover:bg-muted"
