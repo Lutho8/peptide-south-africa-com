@@ -18,8 +18,8 @@ export const businessInfo = {
   postalCode: "7441",
   addressCountry: "ZA",
   // E.164 format for schema.org / tel: links.
-  telephone: "+27721790189",
-  telephoneDisplay: "+27 72 179 0189",
+  telephone: "+27641344646",
+  telephoneDisplay: "+27 64 134 4646",
   email: "hello@peptide-south-africa.com", // FILL_ME if different
   geo: { latitude: -33.8686, longitude: 18.5426 }, // Richwood / Milnerton, Cape Town
   vatNumber: "", // optional, FILL_ME if VAT-registered
