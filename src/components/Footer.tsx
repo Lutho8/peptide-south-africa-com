@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Mail, Globe2 } from "lucide-react";
+import { Mail, Globe2, Phone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { captureLead } from "@/lib/nocobase";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
+import { businessInfo } from "@/data/businessInfo";
 
 const LEGAL_LINKS: { to: string; label: string }[] = [
   { to: "/impressum", label: "Impressum" },
@@ -86,7 +87,20 @@ export default function Footer() {
               <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
               <a href="https://ridethetide.info" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Tracker ↗</a>
               <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
-              <span className="mt-2 inline-flex items-center gap-1.5 text-xs"><Globe2 className="h-3.5 w-3.5" /> Cape Town, South Africa</span>
+              <address className="mt-2 flex flex-col gap-1 text-xs not-italic" itemScope itemType="https://schema.org/LocalBusiness">
+                <span className="inline-flex items-start gap-1.5" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+                  <Globe2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    <span itemProp="streetAddress">{businessInfo.streetAddress}</span>,{" "}
+                    <span itemProp="addressLocality">{businessInfo.addressLocality}</span>,{" "}
+                    <span itemProp="postalCode">{businessInfo.postalCode}</span>,{" "}
+                    <span itemProp="addressRegion">{businessInfo.addressRegion}</span>, South Africa
+                  </span>
+                </span>
+                <a href={`tel:${businessInfo.telephone}`} className="inline-flex items-center gap-1.5 hover:text-foreground" itemProp="telephone">
+                  <Phone className="h-3.5 w-3.5 shrink-0" /> {businessInfo.telephoneDisplay}
+                </a>
+              </address>
               <span className="text-xs">✓ Lab Tested · 99% Purity · Secure Checkout</span>
             </div>
           </div>

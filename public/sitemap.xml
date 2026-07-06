@@ -1,248 +1,435 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://peptide-south-africa.com/</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/shop</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/shop</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/shop" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/shop" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/shop" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/shop" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/shop" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/shop" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/fat-loss-protocol</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/build-your-stack</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/fat-loss-protocol" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/fat-loss-protocol" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/fat-loss-protocol" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/build-your-stack" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/build-your-stack" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/build-your-stack" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/quiz</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/blog</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/fat-loss-protocol</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/fat-loss-protocol" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/fat-loss-protocol" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/fat-loss-protocol" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/quiz</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/quiz" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/quiz" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/quiz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/quiz" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/research</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/research</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/research" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/research" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/research" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/research" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/research" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/research" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/impressum</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/impressum</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/impressum" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/impressum" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/impressum" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/impressum" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/impressum" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/impressum" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/faq</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/faq</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/faq" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/faq" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/faq" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/faq" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/track-order</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/track-order</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/track-order" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/track-order" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/track-order" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/track-order" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/track-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/track-order" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/shipping</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/shipping</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/shipping" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/shipping" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/shipping" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/shipping" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/shipping" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/shipping" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/refund</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/refund</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/refund" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/refund" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/refund" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/refund" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/refund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/refund" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/terms</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/terms</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/terms" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/terms" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/terms" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/terms" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/privacy</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/privacy</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/privacy" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/privacy" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/privacy" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/cart</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/cart</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/cart" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/cart" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/cart" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/cart" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/cart" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/cart" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/checkout</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/checkout</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/checkout" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/checkout" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/checkout" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/checkout" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/checkout" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/checkout" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/rt3-reta</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/rt3-reta</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/rt3-reta" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/rt3-reta" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/rt3-reta" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/rt3-reta" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/rt3-reta" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/rt3-reta" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/ghk-cu-50mg</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/ghk-cu-50mg</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/ghk-cu-50mg" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/ghk-cu-50mg" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/ghk-cu-50mg" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/ghk-cu-50mg" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/ghk-cu-50mg" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/ghk-cu-50mg" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/tesamorelin</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/tesamorelin</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/tesamorelin" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/tesamorelin" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/tesamorelin" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/tesamorelin" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/tesamorelin" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/tesamorelin" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/tz2-tirz</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/tz2-tirz</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/tz2-tirz" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/tz2-tirz" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/tz2-tirz" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/tz2-tirz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/tz2-tirz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/tz2-tirz" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/mots-c</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/mots-c</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/mots-c" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/mots-c" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/mots-c" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/mots-c" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/mots-c" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/mots-c" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/bpc-tb500-blend</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/bpc-tb500-blend</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/bpc-tb500-blend" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/bpc-tb500-blend" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/bpc-tb500-blend" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/glow70</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/glow70</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/glow70" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/glow70" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/glow70" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/glow70" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/glow70" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/glow70" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/product/klow80</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/klow80</loc>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/product/klow80" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/product/klow80" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/product/klow80" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/klow80" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/klow80" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/klow80" />
   </url>
-
-  <!-- Buy X South Africa Landing Pages -->
   <url>
-    <loc>https://peptide-south-africa.com/buy-retatrutide-south-africa</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/product/kpv</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/kpv" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/kpv" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/kpv" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/thymosin-alpha-1</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/thymosin-alpha-1" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/thymosin-alpha-1" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/thymosin-alpha-1" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/ara-290</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/ara-290" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/ara-290" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/ara-290" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/ss-31</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/ss-31" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/ss-31" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/ss-31" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/pinealon</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/pinealon" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/pinealon" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/pinealon" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/epitalon</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/epitalon" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/epitalon" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/epitalon" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/selank</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/selank" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/selank" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/selank" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/semax</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/semax" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/semax" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/semax" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/bpc-157-protocol-cape-town</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/buy-retatrutide-south-africa" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/buy-retatrutide-south-africa" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/buy-retatrutide-south-africa" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/bpc-157-protocol-cape-town" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/bpc-157-protocol-cape-town" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/bpc-157-protocol-cape-town" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/buy-bpc-157-south-africa</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/blog/bpc-157-south-africa</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/buy-bpc-157-south-africa" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/buy-bpc-157-south-africa" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/buy-bpc-157-south-africa" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/bpc-157-south-africa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/bpc-157-south-africa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/bpc-157-south-africa" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/buy-tirzepatide-south-africa</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/blog/bpc-157-tb-500-stack-guide</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/buy-tirzepatide-south-africa" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/buy-tirzepatide-south-africa" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/buy-tirzepatide-south-africa" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/bpc-157-tb-500-stack-guide" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/bpc-157-tb-500-stack-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/bpc-157-tb-500-stack-guide" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/buy-ghk-cu-south-africa</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/blog/buy-peptides-cape-town</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/buy-ghk-cu-south-africa" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/buy-ghk-cu-south-africa" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/buy-ghk-cu-south-africa" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/buy-peptides-cape-town" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/buy-peptides-cape-town" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/buy-peptides-cape-town" />
   </url>
   <url>
-    <loc>https://peptide-south-africa.com/buy-tesamorelin-south-africa</loc>
-    <lastmod>2026-06-20</lastmod>
+    <loc>https://www.peptide-south-africa.com/blog/cjc-1295-ipamorelin-protocol</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://peptide-south-africa.com/buy-tesamorelin-south-africa" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://peptide-south-africa.com/buy-tesamorelin-south-africa" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://peptide-south-africa.com/buy-tesamorelin-south-africa" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/cjc-1295-ipamorelin-protocol" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/cjc-1295-ipamorelin-protocol" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/cjc-1295-ipamorelin-protocol" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/how-to-track-peptide-cycles</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/how-to-track-peptide-cycles" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/how-to-track-peptide-cycles" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/how-to-track-peptide-cycles" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/longevity-biohacker-cape-town</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/longevity-biohacker-cape-town" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/longevity-biohacker-cape-town" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/longevity-biohacker-cape-town" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-bloodwork-markers-sa</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-bloodwork-markers-sa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-bloodwork-markers-sa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-bloodwork-markers-sa" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-community-south-africa</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-community-south-africa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-community-south-africa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-community-south-africa" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-dosage-calculator</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-dosage-calculator" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-dosage-calculator" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-dosage-calculator" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-protocol-tracker</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-protocol-tracker" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-protocol-tracker" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-protocol-tracker" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-tracker-app</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-tracker-app" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-tracker-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-tracker-app" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-workshop-cape-town</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-workshop-cape-town" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-workshop-cape-town" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-workshop-cape-town" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/research-peptides-cape-town</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/research-peptides-cape-town" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/research-peptides-cape-town" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/research-peptides-cape-town" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/retatrutide-triumph-1-phase-3-results</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/retatrutide-triumph-1-phase-3-results" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/retatrutide-triumph-1-phase-3-results" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/retatrutide-triumph-1-phase-3-results" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison" />
   </url>
 </urlset>

@@ -1,6 +1,8 @@
 const SITE_URL = "https://www.peptide-south-africa.com";
 const SITE_NAME = "Peptide South Africa";
 
+import { businessInfo, postalAddressSchema, PUBLISH_NAP } from "@/data/businessInfo";
+
 /** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
@@ -14,16 +16,15 @@ export const localBusinessSchema = {
   paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
     "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
-  address: {
-    "@type": "PostalAddress",
-    addressCountry: "ZA",
-    addressRegion: "Western Cape",
-    addressLocality: "Cape Town",
-  },
+  ...(PUBLISH_NAP && businessInfo.telephone && !businessInfo.telephone.startsWith("FILL")
+    ? { telephone: businessInfo.telephone }
+    : {}),
+  ...(businessInfo.email ? { email: businessInfo.email } : {}),
+  address: postalAddressSchema(),
   geo: {
     "@type": "GeoCoordinates",
-    latitude: -33.9249,
-    longitude: 18.4241,
+    latitude: businessInfo.geo.latitude,
+    longitude: businessInfo.geo.longitude,
   },
   areaServed: [{ "@type": "Country", name: "South Africa" }],
   medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
@@ -107,8 +108,35 @@ export function productSchema(product: {
   purity?: string;
   inStock: boolean;
   sku?: string;
+  variants?: { label: string; price: number; pack?: number }[];
 }) {
-  // Product prices are stored in ZAR.
+  // Prices are ZAR. The store sells packs; the lowest sellable price is the
+  // 3-Pack, so that (not the single-vial anchor) is the schema's headline price.
+  const purchasable = (product.variants ?? []).filter((v) => (v.pack ?? 1) > 1);
+  const packPrices = purchasable.map((v) => v.price);
+  const lowPrice = packPrices.length ? Math.min(...packPrices) : Math.round(product.price);
+  const highPrice = packPrices.length ? Math.max(...packPrices) : Math.round(product.price);
+  const validUntil = `${new Date().getFullYear() + 1}-12-31`;
+
+  const returnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "ZA",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/FreeReturn",
+  };
+  const shipping = {
+    "@type": "OfferShippingDetails",
+    shippingRate: { "@type": "MonetaryAmount", value: "89", currency: "ZAR" },
+    shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+      transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+    },
+  };
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -119,27 +147,36 @@ export function productSchema(product: {
     sku: product.sku || product.slug,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: product.category,
-    ...(product.purity ? { additionalProperty: { "@type": "PropertyValue", name: "Purity", value: product.purity } } : {}),
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/product/${product.slug}`,
-      priceCurrency: "ZAR",
-      price: Math.round(product.price),
-      priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
-      itemCondition: "https://schema.org/NewCondition",
-      availability: product.inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/PreOrder",
-      areaServed: { "@type": "Country", name: "ZA" },
-      seller: { "@id": `${SITE_URL}/#organization` },
-      shippingDetails: [
-        {
-          "@type": "OfferShippingDetails",
-          shippingRate: { "@type": "MonetaryAmount", value: "89", currency: "ZAR" },
-          shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
+    ...(product.purity
+      ? { additionalProperty: { "@type": "PropertyValue", name: "Purity", value: product.purity } }
+      : {}),
+    offers: purchasable.length > 1
+      ? {
+          "@type": "AggregateOffer",
+          priceCurrency: "ZAR",
+          lowPrice,
+          highPrice,
+          offerCount: purchasable.length,
+          availability: product.inStock
+            ? "https://schema.org/InStock"
+            : "https://schema.org/PreOrder",
+          seller: { "@id": `${SITE_URL}/#organization` },
+        }
+      : {
+          "@type": "Offer",
+          url: `${SITE_URL}/product/${product.slug}`,
+          priceCurrency: "ZAR",
+          price: lowPrice,
+          priceValidUntil: validUntil,
+          itemCondition: "https://schema.org/NewCondition",
+          availability: product.inStock
+            ? "https://schema.org/InStock"
+            : "https://schema.org/PreOrder",
+          areaServed: { "@type": "Country", name: "ZA" },
+          seller: { "@id": `${SITE_URL}/#organization` },
+          hasMerchantReturnPolicy: returnPolicy,
+          shippingDetails: shipping,
         },
-      ],
-    },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
