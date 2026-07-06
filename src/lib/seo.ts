@@ -6,7 +6,8 @@ import { businessInfo, postalAddressSchema, PUBLISH_NAP } from "@/data/businessI
 /** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
-  "@type": ["MedicalBusiness", "OnlineStore", "LocalBusiness"],
+  "@type": "MedicalBusiness",
+  "additionalType": ["https://schema.org/OnlineStore", "https://schema.org/LocalBusiness"],
   "@id": `${SITE_URL}/#localbusiness`,
   name: SITE_NAME,
   url: SITE_URL,
@@ -27,7 +28,10 @@ export const localBusinessSchema = {
     longitude: businessInfo.geo.longitude,
   },
   areaServed: [{ "@type": "Country", name: "South Africa" }],
-  medicalSpecialty: ["Endocrinology", "WeightLoss", "SportsMedicine"],
+  medicalSpecialty: [
+    { "@type": "MedicalSpecialty", name: "Endocrinology" },
+    { "@type": "MedicalSpecialty", name: "Sports medicine" },
+  ],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
