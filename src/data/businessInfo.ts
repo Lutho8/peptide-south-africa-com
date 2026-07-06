@@ -11,7 +11,7 @@
 export const PUBLISH_NAP = true;
 
 export const businessInfo = {
-  legalName: "Peptide South Africa",
+  legalName: "Peptide South Africa Pty Ltd",
   streetAddress: "De Buurt, Richwood",
   addressLocality: "Milnerton",
   addressRegion: "Western Cape",

@@ -9,10 +9,10 @@ export const localBusinessSchema = {
   "@type": "MedicalBusiness",
   "additionalType": ["https://schema.org/OnlineStore", "https://schema.org/LocalBusiness"],
   "@id": `${SITE_URL}/#localbusiness`,
-  name: SITE_NAME,
+  name: businessInfo.legalName,
   url: SITE_URL,
-  image: `${SITE_URL}/favicon.png`,
-  priceRange: "R450 – R5,000",
+  image: `${SITE_URL}/apple-touch-icon.png`,
+  priceRange: "R500 - R4000",
   currenciesAccepted: "ZAR",
   paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
   description:
