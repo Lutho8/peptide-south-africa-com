@@ -71,5 +71,5 @@ export const post: BlogPost = {
     { q: "Is this WADA-legal?", a: "No. TB-500 is on the WADA prohibited list. Competitive athletes subject to testing should not run this stack." },
   ],
   cta: "club",
-  related: ["bpc-157-protocol-cape-town", "bpc-157-south-africa", "peptide-bloodwork-markers-sa"],
+  related: ["bpc-157-protocol-cape-town", "peptides-ehlers-danlos-hypermobility-sa", "peptide-bloodwork-markers-sa"],
 };

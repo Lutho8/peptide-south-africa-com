@@ -73,5 +73,5 @@ export const post: BlogPost = {
     { q: "Can I stack it with TB-500?", a: "Yes — see our BPC-157 + TB-500 stack guide for dosing and timing." },
   ],
   cta: "club",
-  related: ["bpc-157-tb-500-stack-guide", "bpc-157-south-africa", "peptide-bloodwork-markers-sa"],
+  related: ["bpc-157-tb-500-stack-guide", "bpc-157-south-africa", "peptides-ehlers-danlos-hypermobility-sa"],
 };
