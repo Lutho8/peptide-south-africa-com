@@ -90,5 +90,5 @@ export const post: BlogPost = {
     { q: "What about home finger-prick kits?", a: "Useful for HbA1c and lipids as convenience checks, but venous draws at an accredited lab remain the standard for protocol decisions." },
   ],
   cta: "tracker",
-  related: ["peptide-protocol-tracker", "how-to-track-peptide-cycles", "bpc-157-protocol-cape-town"],
+  related: ["ara-290-south-africa", "bpc-157-protocol-cape-town", "peptides-ehlers-danlos-hypermobility-sa"],
 };

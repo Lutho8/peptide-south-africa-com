@@ -15,8 +15,10 @@ import { post as p13 } from "./posts/peptide-tracker-app";
 import { post as p14 } from "./posts/peptide-dosage-calculator";
 import { post as p15 } from "./posts/tirzepatide-vs-semaglutide-comparison";
 import { post as p16 } from "./posts/retatrutide-triumph-1-phase-3-results";
+import { post as p17 } from "./posts/ara-290-south-africa";
+import { post as p18 } from "./posts/peptides-ehlers-danlos-hypermobility-sa";
 
-export const posts: BlogPost[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16];
+export const posts: BlogPost[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18];
 
 
 export function getPost(slug: string): BlogPost | undefined {
