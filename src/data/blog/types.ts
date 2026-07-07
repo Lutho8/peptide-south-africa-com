@@ -18,7 +18,7 @@ export interface FAQ {
   a: string;
 }
 
-export type CTAVariant = "tracker" | "club" | "both";
+export type CTAVariant = "club";
 
 export interface BlogPost {
   slug: string;
