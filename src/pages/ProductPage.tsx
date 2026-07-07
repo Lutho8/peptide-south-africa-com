@@ -1,7 +1,7 @@
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap, Stethoscope } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
-import TrackerBridgeCard from "@/components/TrackerBridgeCard";
+
 import { getProductBySlug, products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
@@ -390,8 +390,6 @@ export default function ProductPage() {
                 <Stethoscope className="h-4 w-4" /> Prefer guidance? Start Clinician Consultation
               </Link>
             )}
-
-            <TrackerBridgeCard productName={product.name} productSlug={product.slug} />
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
