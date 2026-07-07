@@ -50,7 +50,6 @@ All compounds are supplied for research purposes. Therapeutic use is permitted o
 
 ## Blog
 
-- [Peptide Protocol Tracker](/blog/peptide-protocol-tracker): What to log and why structured tracking matters.
 - [BPC-157 Protocol Cape Town](/blog/bpc-157-protocol-cape-town): Practical GP-led BPC-157 protocol guide.
 - [How to Track Peptide Cycles](/blog/how-to-track-peptide-cycles): Cycle framework with hypothesis and exit criteria.
 - [Peptide Bloodwork Markers SA](/blog/peptide-bloodwork-markers-sa): Panels for Lancet/Ampath/PathCare.
@@ -62,5 +61,4 @@ All compounds are supplied for research purposes. Therapeutic use is permitted o
 - [Research Peptides Cape Town](/blog/research-peptides-cape-town): Sourcing standards and COA requirements.
 - [BPC-157 South Africa](/blog/bpc-157-south-africa): Legal status, sourcing, prescriptions.
 - [Buy Peptides Cape Town](/blog/buy-peptides-cape-town): Vetted suppliers, pricing, scam avoidance.
-- [Peptide Tracker App](/blog/peptide-tracker-app): Features comparison and privacy considerations.
 - [Peptide Dosage Calculator](/blog/peptide-dosage-calculator): Reconstitution math with worked examples.

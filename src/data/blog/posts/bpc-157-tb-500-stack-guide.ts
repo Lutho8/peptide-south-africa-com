@@ -70,6 +70,6 @@ export const post: BlogPost = {
     { q: "How long until I notice something?", a: "For a defined injury, most users report directional improvement by week 2–3. If you see nothing by week 4, the protocol is not working for you." },
     { q: "Is this WADA-legal?", a: "No. TB-500 is on the WADA prohibited list. Competitive athletes subject to testing should not run this stack." },
   ],
-  cta: "tracker",
+  cta: "club",
   related: ["bpc-157-protocol-cape-town", "peptides-ehlers-danlos-hypermobility-sa", "peptide-bloodwork-markers-sa"],
 };

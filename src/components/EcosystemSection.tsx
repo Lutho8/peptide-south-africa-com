@@ -14,18 +14,6 @@ const CARDS = [
     current: false,
   },
   {
-    key: "tracker",
-    title: "Peptide Tracker",
-    eyebrow: "THE TRACKER",
-    body:
-      "Free tracking for every protocol. Bloodwork integration. Monthly Q&As. No paywalls. Ever.",
-    cta: "Track Free",
-    href: "https://ridethetide.info",
-    border: "#06b6d4",
-    highlighted: true,
-    current: false,
-  },
-  {
     key: "store",
     title: "Peptide South Africa",
     eyebrow: "THE STORE",
@@ -48,11 +36,11 @@ export default function EcosystemSection() {
             The Peptide SA Ecosystem
           </span>
           <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-            One Ecosystem. Three Properties.
+            One Ecosystem. Two Properties.
           </h2>
         </div>
 
-        <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
           {CARDS.map((c) => (
             <div
               key={c.key}

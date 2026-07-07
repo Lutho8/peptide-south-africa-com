@@ -11,10 +11,8 @@ import {
   FlaskConical,
   ShoppingCart,
   Tag,
-  LineChart,
 } from "lucide-react";
 
-import { TRACKER_URL } from "@/lib/contact";
 import { products } from "@/data/products";
 
 const HERO_VIDEO_SRC =
@@ -153,31 +151,6 @@ export default function HeroShop() {
               <ShoppingCart className="h-5 w-5" /> Shop 3-Packs
             </Link>
           </motion.div>
-
-          {/* Peptide Tracker — dedicated high-contrast band */}
-          <motion.a
-            href={TRACKER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open Peptide Tracker (external)"
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="group mx-auto mt-3 flex w-full max-w-md items-center justify-between gap-3 rounded-2xl border-2 border-white bg-white px-4 py-3 text-left text-[#0a2540] shadow-glow hover:bg-white/95 sm:max-w-2xl sm:px-5"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0a2540] text-white">
-                <LineChart className="h-5 w-5" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-display text-sm font-bold leading-tight sm:text-base">Track your peptide cycles</p>
-                <p className="truncate text-[11px] text-[#0a2540]/70 sm:text-xs">Doses, bloods, body comp — free, mobile-ready</p>
-              </div>
-            </div>
-            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#0a2540] px-3 py-2 text-xs font-bold text-white sm:text-sm">
-              Open Tracker <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </motion.a>
 
           <motion.div
             initial={reduce ? false : { opacity: 0 }}

@@ -85,7 +85,7 @@ export default function Footer() {
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
               <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
               <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
-              <a href="https://ridethetide.info" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Tracker ↗</a>
+              
               <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
               <address className="mt-2 flex flex-col gap-1 text-xs not-italic" itemScope itemType="https://schema.org/PostalAddress">
                 <span className="inline-flex items-start gap-1.5">

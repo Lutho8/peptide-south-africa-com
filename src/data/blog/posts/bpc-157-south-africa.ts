@@ -87,6 +87,6 @@ export const post: BlogPost = {
     { q: "What's the typical cost per vial?", a: "Roughly R650–R950 for compounded 5mg vials in 2026; R450–R700 for research-use vials. A standard 4–6 week cycle uses 2–4 vials." },
     { q: "Can my regular GP write the script?", a: "If they're comfortable with it, yes. If not, the Peptide South Africa network can refer you to clinicians familiar with peptide protocols." },
   ],
-  cta: "both",
+  cta: "club",
   related: ["bpc-157-protocol-cape-town", "buy-peptides-cape-town", "research-peptides-cape-town"],
 };

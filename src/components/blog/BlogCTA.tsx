@@ -1,33 +1,21 @@
 import { ArrowRight } from "lucide-react";
 import type { CTAVariant } from "@/data/blog/types";
 
-const TRACKER_URL = "https://ridethetide.info";
 const CLUB_URL = "https://www.capetownpeptideclub.co.za/";
 
-export default function BlogCTA({ variant }: { variant: CTAVariant }) {
-  const cards: { href: string; eyebrow: string; title: string; body: string; cta: string }[] = [];
-
-  if (variant === "tracker" || variant === "both") {
-    cards.push({
-      href: TRACKER_URL,
-      eyebrow: "Free tool",
-      title: "Track your peptide protocol",
-      body: "Log doses, cycles, bloodwork and side effects in one place. Built for South African researchers.",
-      cta: "Open the tracker",
-    });
-  }
-  if (variant === "club" || variant === "both") {
-    cards.push({
+export default function BlogCTA({ variant: _variant }: { variant: CTAVariant }) {
+  const cards = [
+    {
       href: CLUB_URL,
       eyebrow: "Join the community",
       title: "Cape Town Peptide Club",
       body: "Workshops, GP-led Q&A and a vetted peer network for longevity-focused biohackers in SA.",
       cta: "Visit the Club",
-    });
-  }
+    },
+  ];
 
   return (
-    <section className={`mt-12 grid gap-5 ${cards.length > 1 ? "md:grid-cols-2" : ""}`}>
+    <section className="mt-12 grid gap-5">
       {cards.map((c) => (
         <a
           key={c.href}

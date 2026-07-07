@@ -196,7 +196,7 @@ export const post: BlogPost = {
       a: "The class profile is similar. In SURPASS-2, GI side effects were marginally higher with tirzepatide but treatment-discontinuation rates were comparable (~6% both arms). Tolerability is driven more by titration speed than by drug choice.",
     },
   ],
-  cta: "tracker",
+  cta: "club",
   related: [
     "fat-loss-protocol-page",
     "peptide-bloodwork-markers-sa",

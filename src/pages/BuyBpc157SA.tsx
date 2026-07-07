@@ -135,7 +135,6 @@ export default function BuyBpc157SA() {
               <p><strong className="text-foreground">ZAR pricing.</strong> International suppliers quote in USD or EUR. With rand weakness, that adds 20–30% to your cost before shipping. We price entirely in ZAR with local payment methods.</p>
               <p><strong className="text-foreground">No customs delays.</strong> Importing peptides from overseas introduces SAHPRA customs exposure and unpredictable delays. Our stock ships domestically from Cape Town.</p>
               <p><strong className="text-foreground">Local support.</strong> Reconstitution guidance, dosing FAQs, and storage advice from a team that understands the South African climate and regulatory context.</p>
-              <p><strong className="text-foreground">Research tracker included.</strong> Every order comes with access to our companion research tracker at <a href="https://peptide-south-africa.co.za" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">peptide-south-africa.co.za</a> — protocol logging, reconstitution guides, and bloodwork markers.</p>
             </div>
           </div>
 

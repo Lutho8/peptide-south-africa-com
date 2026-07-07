@@ -114,6 +114,6 @@ export const post: BlogPost = {
     { q: "Can I use saline instead of bacteriostatic water?", a: "Yes for single-use; for multi-dose vials use bacteriostatic water (contains 0.9% benzyl alcohol preservative) for safety across the 2–4 week in-solution window." },
     { q: "How do I draw exactly 10 units accurately?", a: "Use a 0.5 mL (50-unit) insulin syringe rather than a 1 mL syringe — the markings are wider and more precise at small volumes." },
   ],
-  cta: "tracker",
-  related: ["peptide-tracker-app", "how-to-track-peptide-cycles", "cjc-1295-ipamorelin-protocol"],
+  related: [],
+  cta: "club",
 };

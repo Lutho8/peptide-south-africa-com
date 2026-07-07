@@ -72,6 +72,6 @@ export const post: BlogPost = {
     { q: "Do I need to cycle off?", a: "Most experienced users do — typically 4–6 weeks on, 2–4 weeks off — though there's no definitive evidence on optimal cycling. Conservative cycling is reasonable while the data matures." },
     { q: "Can I stack it with TB-500?", a: "Yes — see our BPC-157 + TB-500 stack guide for dosing and timing." },
   ],
-  cta: "both",
+  cta: "club",
   related: ["bpc-157-tb-500-stack-guide", "bpc-157-south-africa", "peptides-ehlers-danlos-hypermobility-sa"],
 };

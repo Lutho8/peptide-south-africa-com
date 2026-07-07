@@ -58,9 +58,9 @@ const ALWAYS_SCAN = [
   "public/_redirects",
 ];
 
-// Match "ridethetide" / "ride the tide" / "ride-the-tide" — but NOT
-// "ridethetide.info" (the legitimate external tracker URL).
-const PATTERN = /ride[\s-]?the[\s-]?tide(?!\.info)/i;
+// Match "ridethetide" / "ride the tide" / "ride-the-tide" — no allowlist.
+// The external tracker product has been removed from this site entirely.
+const PATTERN = /ride[\s-]?the[\s-]?tide/i;
 // Stricter pattern for bundled VITE_* env values inside dist/*.js.
 const BUNDLED_ENV_PATTERN = /VITE_[A-Z0-9_]+\s*[:=]\s*["'`][^"'`]*ride[\s-]?the[\s-]?tide[^"'`]*["'`]/i;
 
