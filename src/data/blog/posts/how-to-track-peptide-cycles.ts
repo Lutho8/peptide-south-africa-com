@@ -69,6 +69,5 @@ export const post: BlogPost = {
     { q: "What if I miss a dose?", a: "Log it. Don't double-dose. A missed dose is data, not a failure." },
     { q: "Do I need to repeat bloodwork every cycle?", a: "Baseline + end-of-washout, yes. If you're running back-to-back cycles of the same peptide at the same dose, you can extend the interval to every second cycle." },
   ],
-  cta: "tracker",
-  related: ["peptide-protocol-tracker", "peptide-bloodwork-markers-sa", "peptide-dosage-calculator"],
+  cta: "club",
 };

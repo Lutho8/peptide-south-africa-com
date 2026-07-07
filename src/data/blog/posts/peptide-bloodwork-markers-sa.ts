@@ -89,6 +89,5 @@ export const post: BlogPost = {
     { q: "Is medical aid likely to cover this?", a: "Some markers yes, some no. Your GP can code the request to maximise legitimate reimbursement." },
     { q: "What about home finger-prick kits?", a: "Useful for HbA1c and lipids as convenience checks, but venous draws at an accredited lab remain the standard for protocol decisions." },
   ],
-  cta: "tracker",
-  related: ["peptide-protocol-tracker", "how-to-track-peptide-cycles", "bpc-157-protocol-cape-town"],
+  cta: "club",
 };

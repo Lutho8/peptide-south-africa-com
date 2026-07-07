@@ -139,7 +139,7 @@ export const post: BlogPost = {
       a: "TRIUMPH-2 (obesity + T2D) and TRIUMPH-3 (obesity + established CVD) are expected later in 2026, along with the TRIUMPH-1 basket data for knee OA pain and moderate-to-severe OSA, and full peer-reviewed publication.",
     },
   ],
-  cta: "tracker",
+  cta: "club",
   related: [
     "tirzepatide-vs-semaglutide-comparison",
     "fat-loss-protocol-page",

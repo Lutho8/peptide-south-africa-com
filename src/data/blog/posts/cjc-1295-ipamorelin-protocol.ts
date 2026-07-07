@@ -87,6 +87,6 @@ export const post: BlogPost = {
     { q: "How long is the washout?", a: "4 weeks minimum. Some users go longer between cycles. Continuous use is not recommended given the receptor down-regulation concern." },
     { q: "Will my own GH production crash?", a: "Cleanly-run pulsatile protocols don't appear to suppress endogenous GH meaningfully. DAC versions used continuously are a different conversation." },
   ],
-  cta: "tracker",
+  cta: "club",
   related: ["peptide-bloodwork-markers-sa", "how-to-track-peptide-cycles", "peptide-dosage-calculator"],
 };
