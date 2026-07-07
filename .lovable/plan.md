@@ -1,51 +1,32 @@
-## Findings from investigation
+## Goal
+Strip all Shopify integration and all `ridethetide` (Peptide Tracker) references from the site.
 
-Ran the live shop and PDP against the current code:
+## Scope
 
-- **Shop catalog renders 64 products.** Browse Compounds anchor (`#products`) works and Recovery + Wellness & Longevity buttons are already in the category filter row. No missing catalog bug reproduces in code.
-- **JSON-LD Product schema is already emitted on every PDP** via `productSchema()` in `src/lib/seo.ts` — it already sets `priceCurrency: "ZAR"`, `availability: InStock` (when `inStock: true`), and `areaServed: { Country: "ZA" }`. All 8 new peptides have `inStock: true`.
-- **ZAR prices computed correctly** — spot-checked Selank: base R740 → 3-Pack R2,042 (740×3×0.92), matches the visible PDP price and range.
+### 1. Remove Shopify
+- Search for any Shopify imports, SDK calls, checkout links, or product-sync code across `src/`, `supabase/functions/`, and configs.
+- Based on current codebase scan, checkout uses PayFast (not Shopify), so likely no runtime Shopify code exists. Any stray mentions in copy, docs, or `.lovable/` memory will be removed.
+- If a Shopify store is connected via the integration, call `shopify--disconnect_store` (build mode) so the project is no longer linked.
 
-So the actual code work needed is small; most of it is verification and locking in the correctness with a test so it can't regress.
+### 2. Remove ridethetide (Peptide Tracker) references
+Delete UI, links, and copy pointing to `ridethetide.info` / "Peptide Tracker":
 
-## Plan
+- `src/lib/contact.ts` — remove `TRACKER_URL` export.
+- `src/components/StickyMobileCTA.tsx` — remove the Tracker button, keep Shop CTA full-width.
+- `src/components/TrackerBridgeCard.tsx` — delete file; remove all imports/usages (likely `ProductPage.tsx`).
+- `src/components/blog/BlogCTA.tsx` — drop the `tracker` and `both` variants; keep only Club CTA. Update `CTAVariant` type in `src/data/blog/types.ts` and any blog posts that set `cta: "tracker"` or `"both"` → change to `"club"`.
+- `src/components/Footer.tsx` — remove the "Tracker ↗" external link.
+- Blog posts under `src/data/blog/posts/` that promote the tracker (e.g. `peptide-tracker-app.ts`, `peptide-protocol-tracker.ts`, `how-to-track-peptide-cycles.ts`) — remove tracker links/CTAs from bodies; keep the articles themselves unless the user wants them deleted (see question below).
+- `src/test/sticky-header-tracker.test.tsx` — update or remove test asserting tracker button presence.
+- `public/llms.txt`, `public/sitemap*.xml`, `scripts/generate-sitemap.ts` — remove any tracker URLs.
+- `.github/workflows/brand-guard.yml` + `scripts/security/scan-brand.mjs` — the current allowlist explicitly permits `ridethetide.info`. Tighten the regex to fail on any `ridethetide` occurrence so it can't be reintroduced.
+- `.lovable/memory/` and `.lovable/plan.md` — scrub tracker mentions.
 
-### 1. Lock ZAR pricing for the 8 new peptides with a unit test
-Add `src/test/new-peptides-pricing.test.ts` that asserts for KPV, Thymosin Alpha-1, ARA-290, SS-31, Pinealon, Epitalon, Selank, Semax:
-- `variants[0]` is 3-Pack with price `= round(base × 3 × 0.92)`
-- `variants[1]` is Single Vial with price `= base`
-- `priceRange` string matches `R{single} – R{3pack}` with `en-ZA` grouping
+### 3. Verify
+- Run `bun test` (unit tests) and the brand-guard scanner to confirm zero remaining matches.
+- Grep for `ridethetide`, `Tracker`, `shopify` (case-insensitive) → should return only the tightened guard rule.
 
-Base prices under test (from `src/data/products.ts`):
+## Open questions
 
-```text
-KPV      1120  → 3092 / 1120
-THA1     1500  → 4140 / 1500
-ARA-290  1235  → 3409 / 1235
-SS-31    1615  → 4457 / 1615
-Pinealon  855  → 2360 /  855
-Epitalon  855  → 2360 /  855
-Selank    740  → 2042 /  740
-Semax     740  → 2042 /  740
-```
-
-### 2. Lock JSON-LD Product schema shape with a unit test
-Add `src/test/new-peptides-jsonld.test.ts` that iterates the 8 new peptides through `productSchema()` and asserts:
-- `offers.priceCurrency === "ZAR"`
-- `offers.price` equals the single-vial price stored on the product (`Math.round(product.price)`)
-- `offers.availability === "https://schema.org/InStock"`
-- `offers.areaServed.name === "ZA"`
-
-### 3. Lock catalog membership with a unit test
-Add `src/test/shop-catalog.test.ts`:
-- `getProductsByCategory("Recovery")` includes KPV, Thymosin Alpha-1, ARA-290 (slugs `kpv`, `thymosin-alpha-1`, `ara-290`)
-- `getProductsByCategory("Wellness & Longevity")` includes SS-31, Pinealon, Epitalon, Selank, Semax (plus existing MOTS-C / KLOW80)
-- `categories` array contains both "Recovery" and "Wellness & Longevity"
-
-### 4. No production code changes required
-`ProductPage.tsx`, `ShopPage.tsx`, `src/lib/seo.ts`, and `src/data/products.ts` already satisfy the request. If any of the three tests above surface a mismatch when they run, fix the underlying data in `src/data/products.ts` (not the test) so the schema/price stays correct.
-
-### Out of scope (already verified working)
-- Adding a Recovery/Wellness filter button — already present in `src/pages/ShopPage.tsx`.
-- Adding `<JsonLd data={productSchema(product)} />` to PDPs — already emitted at line 138 of `src/pages/ProductPage.tsx`.
-- Currency conversion — site is single-currency ZAR (`src/context/CurrencyContext.tsx`), so displayed price = stored price by construction.
+1. **Blog posts specifically about the tracker** (`peptide-tracker-app.ts`, `peptide-protocol-tracker.ts`, `how-to-track-peptide-cycles.ts`) — delete them entirely, or keep the articles and just strip the outbound tracker links/CTAs?
+2. **Shopify integration** — should I also call `shopify--disconnect_store` to sever the backend connection, or only remove code/copy references?
