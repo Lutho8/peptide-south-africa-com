@@ -3,10 +3,9 @@
 // anywhere in source, public assets, build output, generated manifests,
 // JSON/config, or VITE_* runtime env that gets bundled into the SPA.
 //
-// Allowlist:
-//  - The external tracker URL "ridethetide.info" is intentional (separate,
-//    related product). The regex uses a negative lookahead to skip `.info`.
-//  - This file and the workflow itself are skipped.
+// No allowlist: the legacy tracker brand and its domains are fully retired,
+// so ANY match fails the build to prevent re-introduction. Only this file and
+// the workflow itself are skipped (they must name the pattern to match it).
 import { readdirSync, statSync, readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative, basename, dirname } from "node:path";
 
