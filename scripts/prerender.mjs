@@ -104,7 +104,14 @@ async function main() {
         .filter(Boolean)
         .join("\n    ");
       if (headTags) {
+        // Strip the static template <title> and the static (non-Helmet)
+        // canonical/og:url/description so only the per-route Helmet tags
+        // remain. Otherwise every page also carries the homepage canonical +
+        // og:url, and crawlers may honour that first (homepage) tag.
         page = page.replace(/<title>.*?<\/title>/s, "");
+        page = page.replace(/\n?\s*<link rel="canonical"[^>]*>/i, "");
+        page = page.replace(/\n?\s*<meta property="og:url"[^>]*>/i, "");
+        page = page.replace(/\n?\s*<meta name="description"[^>]*>/i, "");
         page = page.replace("</head>", `    ${headTags}\n  </head>`);
       }
 
