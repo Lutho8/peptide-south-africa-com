@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import Avatar from "@/components/Avatar";
+import { TESTIMONIAL_CLIPS, type TestimonialClip } from "@/data/testimonialClips";
 
 interface Testimonial {
   id: string;
@@ -12,9 +12,56 @@ interface Testimonial {
   photo_url: string | null;
 }
 
+function ClipTile({ clip, eager = false }: { clip: TestimonialClip; eager?: boolean }) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (eager && !el.src) {
+      el.src = el.dataset.src ?? "";
+      el.play().catch(() => {});
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) {
+            if (!v.src) v.src = v.dataset.src ?? "";
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [eager]);
+
+  return (
+    <div className="relative aspect-[4/5] w-[180px] flex-shrink-0 overflow-hidden rounded-2xl bg-muted shadow-card md:w-auto">
+      <video
+        ref={ref}
+        data-src={clip.src}
+        muted
+        loop
+        playsInline
+        autoPlay
+        preload={eager ? "auto" : "metadata"}
+        className="h-full w-full object-cover"
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
+      <span className="absolute left-2.5 top-2.5 rounded-full bg-white/90 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-foreground backdrop-blur">
+        {clip.tag}
+      </span>
+    </div>
+  );
+}
+
 export default function CustomerProofStrip() {
-  const [items, setItems] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [featured, setFeatured] = useState<Testimonial | null>(null);
 
   useEffect(() => {
     supabase
@@ -22,33 +69,19 @@ export default function CustomerProofStrip() {
       .select("id, name, location, quote, rating, photo_url")
       .eq("is_published", true)
       .order("display_order", { ascending: true })
-      .limit(5)
+      .limit(1)
       .then(({ data }) => {
-        setItems(data ?? []);
-        setLoading(false);
+        setFeatured(data?.[0] ?? null);
       });
   }, []);
-
-  const featured = items[0];
-  const portraits = items.slice(0, 5);
 
   return (
     <section className="bg-background py-12 md:py-16">
       <div className="container px-4">
         <div className="relative">
           <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:gap-4 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
-            {(loading ? Array(5).fill(null) : portraits).map((p, i) => (
-              <div
-                key={p?.id ?? i}
-                className="relative aspect-[4/5] w-[180px] flex-shrink-0 overflow-hidden rounded-2xl bg-muted shadow-card md:w-auto"
-              >
-                <Avatar
-                  name={p?.name ?? "Customer"}
-                  src={p?.photo_url ?? undefined}
-                  alt={p ? `Customer testimonial — ${p.name}` : "Customer"}
-                  className="h-full w-full transition-transform duration-700 hover:scale-105"
-                />
-              </div>
+            {TESTIMONIAL_CLIPS.map((c, i) => (
+              <ClipTile key={c.id} clip={c} eager={i === 0} />
             ))}
           </div>
 
