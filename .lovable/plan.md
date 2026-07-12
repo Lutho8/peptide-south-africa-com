@@ -1,32 +1,23 @@
 ## Goal
-Strip all Shopify integration and all `ridethetide` (Peptide Tracker) references from the site.
+Replace the blank avatar tiles in `CustomerProofStrip` with the same autoplaying testimonial video clips used in `SupportVideosSection`, so the "customer proof" band above the featured quote feels alive instead of empty.
 
-## Scope
+## Changes
 
-### 1. Remove Shopify
-- Search for any Shopify imports, SDK calls, checkout links, or product-sync code across `src/`, `supabase/functions/`, and configs.
-- Based on current codebase scan, checkout uses PayFast (not Shopify), so likely no runtime Shopify code exists. Any stray mentions in copy, docs, or `.lovable/` memory will be removed.
-- If a Shopify store is connected via the integration, call `shopify--disconnect_store` (build mode) so the project is no longer linked.
+### `src/components/CustomerProofStrip.tsx`
+- Reuse the 5 Vimeo clips already defined in `SupportVideosSection` (Recovery, Longevity, Weight loss, Performance, Sleep) — extract them into a shared `src/data/testimonialClips.ts` so both components pull from one source.
+- Replace each `Avatar` tile with a muted, looped, autoplaying `<video>` (playsInline, `preload="metadata"`, lazy-loaded via IntersectionObserver, first tile eager) mirroring the pattern in `SupportVideosSection`.
+- Keep the existing responsive layout (horizontal scroll on mobile, 5-col grid on md+) and the featured quote overlay from Supabase testimonials — only the tile media changes.
+- Add a small tag chip (e.g. "Recovery") on each tile so the proof strip reads as themed clips, not decorative loops.
+- Keep aspect ratio at `4/5` (matches current grid) rather than `9/16` to avoid layout shift.
+- Preserve loading skeleton state for the featured-quote card only.
 
-### 2. Remove ridethetide (Peptide Tracker) references
-Delete UI, links, and copy pointing to `ridethetide.info` / "Peptide Tracker":
+### `src/data/testimonialClips.ts` (new)
+- Export the `CLIPS` array (`id`, `src`, `tag`, `caption`) so `SupportVideosSection` and `CustomerProofStrip` share one list.
 
-- `src/lib/contact.ts` — remove `TRACKER_URL` export.
-- `src/components/StickyMobileCTA.tsx` — remove the Tracker button, keep Shop CTA full-width.
-- `src/components/TrackerBridgeCard.tsx` — delete file; remove all imports/usages (likely `ProductPage.tsx`).
-- `src/components/blog/BlogCTA.tsx` — drop the `tracker` and `both` variants; keep only Club CTA. Update `CTAVariant` type in `src/data/blog/types.ts` and any blog posts that set `cta: "tracker"` or `"both"` → change to `"club"`.
-- `src/components/Footer.tsx` — remove the "Tracker ↗" external link.
-- Blog posts under `src/data/blog/posts/` that promote the tracker (e.g. `peptide-tracker-app.ts`, `peptide-protocol-tracker.ts`, `how-to-track-peptide-cycles.ts`) — remove tracker links/CTAs from bodies; keep the articles themselves unless the user wants them deleted (see question below).
-- `src/test/sticky-header-tracker.test.tsx` — update or remove test asserting tracker button presence.
-- `public/llms.txt`, `public/sitemap*.xml`, `scripts/generate-sitemap.ts` — remove any tracker URLs.
-- `.github/workflows/brand-guard.yml` + `scripts/security/scan-brand.mjs` — the current allowlist explicitly permits `ridethetide.info`. Tighten the regex to fail on any `ridethetide` occurrence so it can't be reintroduced.
-- `.lovable/memory/` and `.lovable/plan.md` — scrub tracker mentions.
+### `src/components/SupportVideosSection.tsx`
+- Import `CLIPS` from the new shared file instead of the inline constant. No visual change.
 
-### 3. Verify
-- Run `bun test` (unit tests) and the brand-guard scanner to confirm zero remaining matches.
-- Grep for `ridethetide`, `Tracker`, `shopify` (case-insensitive) → should return only the tightened guard rule.
-
-## Open questions
-
-1. **Blog posts specifically about the tracker** (`peptide-tracker-app.ts`, `peptide-protocol-tracker.ts`, `how-to-track-peptide-cycles.ts`) — delete them entirely, or keep the articles and just strip the outbound tracker links/CTAs?
-2. **Shopify integration** — should I also call `shopify--disconnect_store` to sever the backend connection, or only remove code/copy references?
+## Out of scope
+- No audio/unmute controls on the proof strip (kept muted always to avoid competing with `SupportVideosSection`'s single-audio rule).
+- No changes to Supabase `testimonials` data — the featured quote overlay still comes from the DB.
+- No new videos sourced.
