@@ -156,7 +156,12 @@ export default function CartPage() {
               </div>
             )}
             <div className="flex justify-between text-muted-foreground">
-              <span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+              <span>{COPY.shipping.en} / {COPY.shipping.de}</span>
+              {shippingCost === 0 ? (
+                <span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+              ) : (
+                <span data-testid="cart-shipping">{format(shippingCost)}</span>
+              )}
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>{COPY.tax.en} / {COPY.tax.de}</span><span>{format(0)}</span>
@@ -168,7 +173,8 @@ export default function CartPage() {
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(totalPrice)}</span>
+            <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(grandTotal)}</span>
+
           </div>
           <Link
             to={mp("/checkout")}
