@@ -9,12 +9,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { COPY, trilingual } from "@/lib/copy";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { getShippingCost } from "@/lib/shipping";
 
 export default function CartPage() {
   const { items, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
   const { format } = useCurrency();
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
+  const shippingCost = getShippingCost(totalPrice, "South Africa") ?? 0;
+  const grandTotal = totalPrice + shippingCost;
+
 
   const singles = items.filter((i) => !i.bundleId);
   const bundleIds = [...new Set(items.filter((i) => i.bundleId).map((i) => i.bundleId as string))];
@@ -152,7 +156,12 @@ export default function CartPage() {
               </div>
             )}
             <div className="flex justify-between text-muted-foreground">
-              <span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+              <span>{COPY.shipping.en} / {COPY.shipping.de}</span>
+              {shippingCost === 0 ? (
+                <span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+              ) : (
+                <span data-testid="cart-shipping">{format(shippingCost)}</span>
+              )}
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>{COPY.tax.en} / {COPY.tax.de}</span><span>{format(0)}</span>
@@ -164,7 +173,8 @@ export default function CartPage() {
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4 flex justify-between font-display text-lg font-bold text-foreground">
-            <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(totalPrice)}</span>
+            <span>{COPY.total.en} / {COPY.total.de}</span><span data-testid="cart-total">{format(grandTotal)}</span>
+
           </div>
           <Link
             to={mp("/checkout")}
