@@ -189,14 +189,20 @@ export default function CartDrawer() {
                 </Link>
               )}
               <div className="mb-1 flex justify-between text-sm text-muted-foreground">
-                <span>{COPY.shipping.en} / {COPY.shipping.de}</span><span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+                <span>{COPY.shipping.en} / {COPY.shipping.de}</span>
+                {shippingCost === 0 ? (
+                  <span className="font-semibold text-trust">{COPY.free.en} · {COPY.free.de}</span>
+                ) : (
+                  <span>{format(shippingCost)}</span>
+                )}
               </div>
               <div className="mb-4 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>{COPY.total.en} / {COPY.total.de}</span><span>{format(totalPrice)}</span>
+                <span>{COPY.total.en} / {COPY.total.de}</span><span>{format(grandTotal)}</span>
               </div>
               <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Cart → Shipping → Pay
               </p>
+
               <Link
                 to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
