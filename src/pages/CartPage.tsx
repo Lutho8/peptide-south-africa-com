@@ -9,12 +9,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { COPY, trilingual } from "@/lib/copy";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { getShippingCost } from "@/lib/shipping";
 
 export default function CartPage() {
   const { items, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
   const { format } = useCurrency();
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
+  const shippingCost = getShippingCost(totalPrice, "South Africa") ?? 0;
+  const grandTotal = totalPrice + shippingCost;
+
 
   const singles = items.filter((i) => !i.bundleId);
   const bundleIds = [...new Set(items.filter((i) => i.bundleId).map((i) => i.bundleId as string))];
