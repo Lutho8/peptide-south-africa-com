@@ -7,8 +7,9 @@ import CartCountdown from "@/components/CartCountdown";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings, shippingNudgeSuggestions, singleVialPrice } from "@/lib/bundlePricing";
+import { getShippingCost, SHIPPING_RULES } from "@/lib/shipping";
 
-const FREE_SHIP_THRESHOLD = 1500; // ZAR
+const FREE_SHIP_THRESHOLD = SHIPPING_RULES["South Africa"].freeOver; // ZAR
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, totalItems } = useCart();
@@ -17,8 +18,11 @@ export default function CartDrawer() {
   const mp = (p: string) => marketPath(p, market);
 
   const anchorSlug = items[0]?.product.slug;
-  const shipProgress = Math.min(100, (subtotal / FREE_SHIP_THRESHOLD) * 100);
-  const shipRemaining = Math.max(0, FREE_SHIP_THRESHOLD - subtotal);
+  const shipProgress = Math.min(100, (totalPrice / FREE_SHIP_THRESHOLD) * 100);
+  const shipRemaining = Math.max(0, FREE_SHIP_THRESHOLD - totalPrice);
+  const shippingCost = getShippingCost(totalPrice, "South Africa") ?? 0;
+  const grandTotal = totalPrice + shippingCost;
+
 
   // Group Pick & Mix bundle lines; everything else renders as a normal line.
   const singles = items.filter((i) => !i.bundleId);
