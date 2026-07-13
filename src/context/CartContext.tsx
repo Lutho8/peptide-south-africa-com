@@ -69,10 +69,45 @@ function computeSignature(items: CartItem[]): string {
     .join("|");
 }
 
+const CART_STORAGE_KEY = "psa.cart.v1";
+
+function loadPersistedItems(): CartItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Basic shape validation to avoid crashes if the schema drifts.
+    return parsed.filter(
+      (i): i is CartItem =>
+        !!i && typeof i === "object" && !!i.product && typeof i.lineId === "string" && typeof i.quantity === "number",
+    );
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user, hasFirstOrder } = useAuth();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => loadPersistedItems());
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Mirror items to localStorage so refreshes, tab closes, and /auth navigation
+  // don't wipe the cart. Runs on every change; JSON.stringify is cheap here.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (items.length === 0) {
+        window.localStorage.removeItem(CART_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      }
+    } catch {
+      // storage full / disabled — silently ignore, cart still works in-memory
+    }
+  }, [items]);
+
 
   const addToCart = useCallback((product: Product, opts: AddToCartOptions = {}) => {
     const variantLabel = opts.variantLabel;
