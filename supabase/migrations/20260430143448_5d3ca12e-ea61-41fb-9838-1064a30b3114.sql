@@ -3,8 +3,8 @@ SELECT cron.schedule(
   '0 * * * *',
   $$
     SELECT net.http_post(
-      url:='https://cveapedneuhgbxqydpjc.supabase.co/functions/v1/nocobase-abandoned-cart',
-      headers:='{"Content-Type": "application/json", "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2ZWFwZWRuZXVoZ2J4cXlkcGpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMzA1MzEsImV4cCI6MjA5MDgwNjUzMX0.76qqZ59_X_-C-mVW_7VrzLcAIM44xuZ6Y14LPuL1j-A"}'::jsonb,
+      url:='https://eutszmrsukoqqeilzrbv.supabase.co/functions/v1/nocobase-abandoned-cart',
+      headers:='{"Content-Type": "application/json", "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1dHN6bXJzdWtvcXFlaWx6cmJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDE4MzQsImV4cCI6MjA5NjY3NzgzNH0.dbqlf7l8ViMMODYxw2Hpsz44g9w3ecMvu5qQXnm82ng"}'::jsonb,
       body:='{}'::jsonb
     );
   $$
