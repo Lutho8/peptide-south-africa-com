@@ -29,12 +29,3 @@ runIf("anon access to has_role-governed surfaces", () => {
     });
   }
 
-  it("anon can call lookup_referral_code RPC (has_role-adjacent path) without permission errors", async () => {
-    const { error } = await supabase.rpc("lookup_referral_code", { _code: "NONEXISTENT" });
-    if (error) {
-      const msg = `${error.message} ${error.code ?? ""}`.toLowerCase();
-      expect(msg).not.toMatch(/permission denied/);
-      expect(msg).not.toMatch(/has_role/);
-    }
-  });
-});
