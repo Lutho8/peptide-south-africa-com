@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTimeout(async () => {
       const [{ data: roleData }, { count }] = await Promise.all([
         supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
-        supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", uid),
       ]);
       setIsAdmin(!!roleData);
       setHasFirstOrder((count ?? 0) > 0);
