@@ -90,10 +90,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshOrders = async () => {
     if (!user) return;
     const { count } = await supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
-    setHasFirstOrder((count ?? 0) > 0);
+    const has = (count ?? 0) > 0;
+    setHasFirstOrder(has);
+    try { window.localStorage.setItem(cacheKey(user.id), String(has)); } catch { /* ignore */ }
   };
 
   const signOut = async () => {
+    try {
+      if (user) window.localStorage.removeItem(cacheKey(user.id));
+    } catch { /* ignore */ }
     await supabase.auth.signOut();
   };
 
