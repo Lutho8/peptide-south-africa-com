@@ -21,20 +21,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasFirstOrder, setHasFirstOrder] = useState<boolean | null>(null);
 
+  const cacheKey = (uid: string) => `psa_has_first_order_${uid}`;
+
   const checkRoleAndOrders = async (uid: string | undefined) => {
     if (!uid) {
       setIsAdmin(false);
       setHasFirstOrder(null);
       return;
     }
+    // Hydrate from cache immediately to avoid re-querying on every auth event.
+    try {
+      const cached = typeof window !== "undefined" ? window.localStorage.getItem(cacheKey(uid)) : null;
+      if (cached === "true" || cached === "false") {
+        setHasFirstOrder(cached === "true");
+      }
+    } catch { /* ignore */ }
+
     // Defer queries with setTimeout to avoid deadlock with onAuthStateChange
     setTimeout(async () => {
-      const [{ data: roleData }, { count }] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", uid),
-      ]);
+      const { data: roleData } = await supabase
+        .from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
       setIsAdmin(!!roleData);
-      setHasFirstOrder((count ?? 0) > 0);
+
+      // Only query orders once per user; cached answer is reused across auth events.
+      const cached = typeof window !== "undefined" ? window.localStorage.getItem(cacheKey(uid)) : null;
+      if (cached === "true" || cached === "false") return;
+
+      const { count, error } = await supabase
+        .from("orders").select("id", { count: "exact", head: true }).eq("user_id", uid);
+      if (error) return;
+      const has = (count ?? 0) > 0;
+      setHasFirstOrder(has);
+      try { window.localStorage.setItem(cacheKey(uid), String(has)); } catch { /* ignore */ }
     }, 0);
   };
 
