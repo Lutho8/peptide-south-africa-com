@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshOrders = async () => {
     if (!user) return;
-    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id);
+    const { count } = await supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
     setHasFirstOrder((count ?? 0) > 0);
   };
 
