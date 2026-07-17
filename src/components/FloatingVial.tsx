@@ -56,30 +56,30 @@ export default function FloatingVial() {
         />
         {/* Vial body */}
         <div
-          className="absolute left-1/2 top-12 h-56 w-24 -translate-x-1/2 overflow-hidden rounded-2xl border border-white/30"
+          className="absolute left-1/2 top-12 h-56 w-24 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200"
           style={{
             background:
-              "linear-gradient(135deg, hsl(var(--primary) / 0.25), hsl(var(--accent) / 0.35))",
+              "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(184,221,217,0.35))",
             backdropFilter: "blur(4px)",
             boxShadow:
-              "inset 4px 0 12px rgba(255,255,255,0.25), inset -6px 0 14px rgba(0,0,0,0.18), 0 20px 40px -10px hsl(var(--primary) / 0.4)",
+              "inset 4px 0 12px rgba(255,255,255,0.6), inset -6px 0 14px rgba(15,23,42,0.08), 0 20px 40px -10px rgba(15,23,42,0.25)",
           }}
         >
-          {/* Liquid */}
+          {/* Liquid (clear with light teal tint) */}
           <div
             className="absolute inset-x-0 bottom-0 h-2/3"
             style={{
               background:
-                "linear-gradient(180deg, hsl(var(--accent) / 0.85), hsl(var(--primary) / 0.95))",
+                "linear-gradient(180deg, rgba(184,221,217,0.5), rgba(184,221,217,0.8))",
             }}
           />
           {/* Highlight */}
-          <div className="absolute left-2 top-4 h-44 w-1.5 rounded-full bg-white/40" />
+          <div className="absolute left-2 top-4 h-44 w-1.5 rounded-full bg-white/70" />
           {/* Label */}
-          <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-card/80 px-1 py-2 text-center backdrop-blur">
-            <div className="text-[7px] font-bold tracking-widest text-foreground">PEPTIDE SOUTH AFRICA</div>
-            <div className="mt-0.5 font-display text-[10px] font-bold text-primary">RT3</div>
-            <div className="text-[6px] text-muted-foreground">≥99% HPLC</div>
+          <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-white px-1 py-2 text-center shadow-sm">
+            <div className="text-[7px] font-bold tracking-widest text-[#0a2540]">PEPTIDE SOUTH AFRICA</div>
+            <div className="mt-0.5 font-display text-[10px] font-bold text-[#0a2540]">RT3</div>
+            <div className="text-[6px] text-slate-500">≥99% HPLC</div>
           </div>
         </div>
       </div>
