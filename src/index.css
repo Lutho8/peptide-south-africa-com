@@ -57,6 +57,20 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217 91% 60%;
+
+    /* Vial branding — white + light-teal medical/luxury palette. */
+    --vial-surface: 0 0% 100%;
+    --vial-surface-tint: 174 45% 96%;
+    --vial-accent: 174 40% 78%;
+    --vial-accent-strong: 174 55% 55%;
+    --vial-label-ink: 215 70% 14%;
+    --vial-border: 210 25% 90%;
+    --vial-radius: 0.75rem;
+    --gradient-vial-box: linear-gradient(90deg, hsl(var(--vial-surface)) 0%, hsl(var(--vial-surface)) 88%, hsl(var(--vial-accent)) 88%, hsl(var(--vial-accent)) 100%);
+    --gradient-vial-glass: linear-gradient(135deg, rgba(255,255,255,0.92), hsl(var(--vial-surface-tint) / 0.6));
+    --gradient-vial-liquid: linear-gradient(180deg, hsl(var(--vial-accent) / 0.55), hsl(var(--vial-accent-strong) / 0.75));
+    --gradient-vial-cap: linear-gradient(180deg, hsl(210 15% 88%) 0%, hsl(210 10% 62%) 55%, hsl(210 12% 48%) 100%);
+    --shadow-vial: 0 24px 48px -24px hsl(var(--vial-label-ink) / 0.25), 0 4px 12px -6px hsl(var(--vial-label-ink) / 0.08);
   }
 
   .dark {

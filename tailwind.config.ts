@@ -60,6 +60,14 @@ export default {
           DEFAULT: "hsl(var(--badge-yellow))",
           foreground: "hsl(var(--badge-yellow-foreground))",
         },
+        vial: {
+          surface: "hsl(var(--vial-surface))",
+          "surface-tint": "hsl(var(--vial-surface-tint))",
+          accent: "hsl(var(--vial-accent))",
+          "accent-strong": "hsl(var(--vial-accent-strong))",
+          ink: "hsl(var(--vial-label-ink))",
+          border: "hsl(var(--vial-border))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
