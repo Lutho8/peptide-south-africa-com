@@ -84,6 +84,15 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        vial: "var(--shadow-vial)",
+      },
+      backgroundImage: {
+        "vial-box": "var(--gradient-vial-box)",
+        "vial-glass": "var(--gradient-vial-glass)",
+        "vial-liquid": "var(--gradient-vial-liquid)",
+        "vial-cap": "var(--gradient-vial-cap)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

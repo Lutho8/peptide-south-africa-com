@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 /**
  * Pure-CSS scroll-driven 3D vial. Hidden on mobile + reduced-motion.
- * No Three.js — keeps bundle lean.
+ * All styling flows from the shared `--vial-*` tokens in `src/index.css`
+ * so the white + light-teal medical/luxury look stays consistent across
+ * the site (product cards, PDP gallery, this 3D mock).
  */
 export default function FloatingVial() {
   const [scrollY, setScrollY] = useState(0);
@@ -24,6 +26,7 @@ export default function FloatingVial() {
   return (
     <div
       aria-hidden
+      data-testid="floating-vial"
       className="pointer-events-none absolute right-4 top-12 z-10 hidden lg:block"
       style={{
         perspective: "1000px",
@@ -40,45 +43,28 @@ export default function FloatingVial() {
           animation: "vial-float 6s ease-in-out infinite",
         }}
       >
-        {/* Vial cap */}
+        {/* Silver crimp cap */}
         <div
-          className="absolute left-1/2 top-0 h-10 w-20 -translate-x-1/2 rounded-t-md"
-          style={{
-            background:
-              "linear-gradient(180deg, hsl(var(--foreground)) 0%, hsl(var(--muted-foreground)) 100%)",
-            boxShadow: "inset 0 -4px 8px rgba(0,0,0,0.3)",
-          }}
+          className="absolute left-1/2 top-0 h-10 w-20 -translate-x-1/2 rounded-t-md bg-vial-cap"
+          style={{ boxShadow: "inset 0 -4px 8px rgba(0,0,0,0.25)" }}
         />
-        {/* Vial neck */}
+        {/* Neck */}
+        <div className="absolute left-1/2 top-9 h-3 w-16 -translate-x-1/2 bg-vial-cap opacity-70" />
+        {/* Glass body */}
         <div
-          className="absolute left-1/2 top-9 h-3 w-16 -translate-x-1/2"
-          style={{ background: "hsl(var(--muted-foreground) / 0.4)" }}
-        />
-        {/* Vial body */}
-        <div
-          className="absolute left-1/2 top-12 h-56 w-24 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(184,221,217,0.35))",
-            backdropFilter: "blur(4px)",
-            boxShadow:
-              "inset 4px 0 12px rgba(255,255,255,0.6), inset -6px 0 14px rgba(15,23,42,0.08), 0 20px 40px -10px rgba(15,23,42,0.25)",
-          }}
+          className="absolute left-1/2 top-12 h-56 w-24 -translate-x-1/2 overflow-hidden rounded-2xl border border-vial-border bg-vial-glass shadow-vial"
         >
-          {/* Liquid (clear with light teal tint) */}
-          <div
-            className="absolute inset-x-0 bottom-0 h-2/3"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(184,221,217,0.5), rgba(184,221,217,0.8))",
-            }}
-          />
-          {/* Highlight */}
+          {/* Teal-tinted liquid */}
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-vial-liquid" />
+          {/* Glass highlight */}
           <div className="absolute left-2 top-4 h-44 w-1.5 rounded-full bg-white/70" />
-          {/* Label */}
-          <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-white px-1 py-2 text-center shadow-sm">
-            <div className="text-[7px] font-bold tracking-widest text-[#0a2540]">PEPTIDE SOUTH AFRICA</div>
-            <div className="mt-0.5 font-display text-[10px] font-bold text-[#0a2540]">RT3</div>
+          {/* Label — white plate with navy ink + thin teal rule */}
+          <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-vial-surface px-1 py-2 text-center shadow-sm">
+            <div className="text-[7px] font-bold tracking-widest text-vial-ink">
+              PEPTIDE SOUTH AFRICA
+            </div>
+            <div className="mx-auto mt-1 h-px w-8 bg-vial-accent-strong" />
+            <div className="mt-1 font-display text-[10px] font-bold text-vial-ink">RT3</div>
             <div className="text-[6px] text-slate-500">≥99% HPLC</div>
           </div>
         </div>

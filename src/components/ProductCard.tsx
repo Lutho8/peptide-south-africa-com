@@ -50,7 +50,14 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
-      <Link to={productUrl} className="relative aspect-square overflow-hidden bg-muted">
+      <Link
+        to={productUrl}
+        className="relative aspect-square overflow-hidden rounded-t-lg bg-vial-surface shadow-vial ring-1 ring-vial-border"
+        data-testid="vial-frame"
+      >
+        {/* Teal accent band on the right edge — echoes the physical box */}
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-2 bg-vial-accent" />
+        <span aria-hidden className="pointer-events-none absolute right-1 top-3 h-1.5 w-1.5 rounded-full bg-vial-accent-strong" />
         <img
           src={product.image}
           alt={product.name}
