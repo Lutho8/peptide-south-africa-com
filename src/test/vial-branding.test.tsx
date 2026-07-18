@@ -6,6 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import ProductImageZoom from "@/components/ProductImageZoom";
 import { CartProvider } from "@/context/CartContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
+import { AuthProvider } from "@/hooks/useAuth";
 import { products } from "@/data/products";
 
 // Force FloatingVial into its enabled branch (skip reduced-motion guard).
@@ -26,9 +27,11 @@ Object.defineProperty(window, "matchMedia", {
 function withProviders(children: React.ReactNode) {
   return (
     <MemoryRouter>
-      <CurrencyProvider>
-        <CartProvider>{children}</CartProvider>
-      </CurrencyProvider>
+      <AuthProvider>
+        <CurrencyProvider>
+          <CartProvider>{children}</CartProvider>
+        </CurrencyProvider>
+      </AuthProvider>
     </MemoryRouter>
   );
 }
