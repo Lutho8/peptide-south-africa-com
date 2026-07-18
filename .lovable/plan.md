@@ -1,34 +1,46 @@
 ## Goal
 
-Regenerate every product vial image so the vial, box, and background all follow one consistent white + light-teal medical/luxury look (as in the uploaded reference), while preserving each compound's logo, label text, dose, and Peptide South Africa branding.
+Lock in the white + light-teal "medical luxury" vial aesthetic everywhere a vial appears — shop cards, product detail page, 3D `FloatingVial` mock — via shared design tokens, and guard it with snapshot tests so a stray gradient can't regress the look.
 
-## Visual direction (applied identically to every product)
+## Scope
 
-- Background: soft white / very pale grey studio surface with gentle shadow.
-- Box: matte white carton with a light-teal (#B8DDD9 / ~hsl(174 30% 80%)) accent band on the right edge and a small teal dot marker, echoing the reference image.
-- Vial: clear glass with silver/aluminum crimp cap, subtle liquid meniscus, white label with navy typography.
-- Label: keeps existing "PEPTIDE SOUTH AFRICA" wordmark, compound name, dose, ≥99% HPLC line, lot placeholder. No colour on the label except navy text + a thin teal rule — no navy body, no dark backgrounds.
-- Composition: vial front-left, box back-right, soft directional light, long soft shadow — matches reference framing for every SKU so the shop grid reads as one product family.
+1. **Shared vial design tokens** (`src/index.css` + `tailwind.config.ts`)
+   - Add semantic CSS variables under `:root`:
+     - `--vial-surface` (white studio bg), `--vial-surface-tint` (very pale teal), `--vial-accent` (light teal ~ `174 40% 78%`), `--vial-accent-strong` (deeper teal for the box band/dot), `--vial-label-ink` (brand navy for label text), `--vial-cap` (silver/aluminum gradient stops), `--vial-glass` (clear-glass tint), `--vial-liquid` (teal-tinted meniscus).
+     - `--vial-shadow` (soft directional studio shadow), `--vial-border` (hairline slate), `--vial-radius`.
+     - `--gradient-vial-box`, `--gradient-vial-glass`, `--gradient-vial-liquid`, `--gradient-vial-cap`.
+   - Expose in `tailwind.config.ts` as `colors.vial.*`, `boxShadow.vial`, `backgroundImage['vial-box' | 'vial-glass' | 'vial-liquid' | 'vial-cap']` so components consume tokens, not hex.
+   - No changes to the site's navy/teal chrome tokens — vial tokens are additive.
 
-## Scope — products to regenerate
+2. **`FloatingVial` refresh** (`src/components/FloatingVial.tsx`)
+   - Replace inline `linear-gradient(...)` / `rgba(...)` values with the new tokens.
+   - Tighten the cap (silver crimp, subtle inner shadow), thin teal rule under the wordmark, deeper teal meniscus, softer studio shadow — matches the reference framing.
+   - Keep the existing scroll-driven transform, reduced-motion guard, and desktop-only visibility.
 
-All vial hero images referenced from `src/data/products.ts`, including but not limited to:
-- Retatrutide, Tirzepatide (TZ-2), Semaglutide, BPC-157, TB-500, GHK-Cu, Tesamorelin, CJC-1295/Ipamorelin
-- KPV, Thymosin Alpha-1, ARA-290, SS-31, Pinealon, Epitalon, Selank, Semax
-- Any bundle hero images that show a vial render
+3. **Product card vial framing** (`src/components/ProductCard.tsx`)
+   - Wrap the `<img>` in a token-driven "studio plate": `bg-vial-surface`, subtle teal accent bar on the right edge of the image container, `shadow-vial`, hairline border.
+   - Image itself is unchanged (already regenerated last turn) — the frame is what unifies cards whose renders vary slightly in framing.
+   - No layout/spacing changes elsewhere on the card.
 
-Each image is regenerated at the same dimensions and saved over the current asset path so imports in `src/data/products.ts`, product pages, bundles, and OG cards pick up the new art with no code path changes.
+4. **Product detail page** (`src/pages/ProductPage.tsx` + `src/components/ProductImageZoom.tsx`)
+   - Apply the same studio-plate treatment to the media gallery hero and thumbnails.
+   - Restyle any vial-adjacent callouts (purity chip, COA chip, batch/lot line) to sit on the white/teal plate using vial tokens where they overlap the image, keeping typography and copy intact.
+   - Zoom lens border + backdrop use `--vial-accent` instead of hard-coded colors.
 
-## Implementation steps
-
-1. Read `src/data/products.ts` and `src/data/bundles.ts` to enumerate every vial asset path and the exact label text (name, dose, category) per product.
-2. For each product, generate a new image with `imagegen` using one shared prompt template — only the compound name, dose, and category line vary. Preset: premium quality, transparent_background off, white studio background baked in.
-3. Overwrite the existing asset files in `src/assets/` at their current paths (same filenames) so no import changes are needed.
-4. Update `src/components/FloatingVial.tsx` label preview + any hard-coded navy vial gradients so the on-page 3D vial mock matches the new white/teal palette (label stays navy text on white, body becomes clear glass with teal liquid tint).
-5. Spot-check shop grid, product page hero, cart drawer thumbnails, and OG images visually via a Playwright screenshot on `/shop` and one product page.
+5. **Snapshot / visual regression coverage** (`src/test/`)
+   - Add `src/test/vial-branding.test.tsx`:
+     - Renders `FloatingVial` (forcing `enabled=true` by stubbing `matchMedia`) → serializer snapshot of the DOM + inline styles. Asserts key token class/style fragments are present (`bg-vial-surface`, `shadow-vial`, `PEPTIDE SOUTH AFRICA` label, teal rule).
+     - Renders `ProductCard` with a fixture product → snapshot of the image frame subtree, plus explicit `expect(...).toHaveClass('bg-vial-surface')` / `shadow-vial` assertions so a regression to raw hex fails loudly.
+   - Uses the existing Vitest + Testing Library setup (`src/test/setup.ts`, `vitest.config.ts`) — no new deps.
 
 ## Out of scope
 
-- No changes to product copy, pricing, SKUs, categories, or navy/teal site chrome.
-- No changes to the site's primary navy brand colour — only the product renders and the FloatingVial mock shift to the white/light-teal presentation.
-- Label logo and wordmark stay identical; only the surrounding box/vial/background art changes.
+- No changes to product copy, pricing, SKUs, categories, cart, checkout, auth, or ERP.
+- No re-generation of the 16 vial JPGs — last turn's renders stay; this pass unifies the *frame* around them and the 3D mock.
+- No change to global navy/teal brand tokens or site chrome.
+
+## Technical notes
+
+- All new tokens live in `@layer base :root` in `src/index.css` (HSL triplets), mirrored into `tailwind.config.ts` under `theme.extend`. Components consume via Tailwind utilities (`bg-vial-surface`, `shadow-vial`, `bg-vial-box`) — no inline hex.
+- `FloatingVial` keeps its pure-CSS 3D approach; only style values swap to `hsl(var(--vial-*))` / `var(--gradient-vial-*)`.
+- Snapshot files land under `src/test/__snapshots__/` (Vitest default). Failing snapshots surface in the existing `bunx vitest run` pipeline.
