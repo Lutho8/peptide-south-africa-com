@@ -37,11 +37,14 @@ export default function ProductImageZoom({ src, alt }: Props) {
     return (
       <>
         <div
-          className="group relative cursor-pointer overflow-hidden rounded-xl border border-border bg-muted"
+          className="group relative cursor-pointer overflow-hidden rounded-xl border border-vial-border bg-vial-surface shadow-vial"
           onClick={() => setLightboxOpen(true)}
+          data-testid="vial-frame"
         >
+          <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-2.5 bg-vial-accent" />
+          <span aria-hidden className="pointer-events-none absolute right-1.5 top-4 h-2 w-2 rounded-full bg-vial-accent-strong" />
           <img src={src} alt={alt} className="h-full w-full object-cover" />
-          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm">
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-vial-surface/90 px-3 py-1.5 text-xs font-medium text-vial-ink backdrop-blur-sm">
             <ZoomIn className="h-3.5 w-3.5" /> Tap to zoom
           </div>
         </div>
@@ -86,11 +89,14 @@ export default function ProductImageZoom({ src, alt }: Props) {
   return (
     <div
       ref={containerRef}
-      className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-border bg-muted"
+      className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-vial-border bg-vial-surface shadow-vial"
       onMouseEnter={() => setZoomed(true)}
       onMouseLeave={() => setZoomed(false)}
       onMouseMove={handleMouseMove}
+      data-testid="vial-frame"
     >
+      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-2.5 bg-vial-accent" />
+      <span aria-hidden className="pointer-events-none absolute right-1.5 top-4 z-10 h-2 w-2 rounded-full bg-vial-accent-strong" />
       <img
         src={src}
         alt={alt}
@@ -101,7 +107,7 @@ export default function ProductImageZoom({ src, alt }: Props) {
         }}
       />
       {!zoomed && (
-        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground backdrop-blur-sm animate-fade-in">
+        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-vial-surface/90 px-3 py-1.5 text-xs font-medium text-vial-ink backdrop-blur-sm animate-fade-in">
           <ZoomIn className="h-3.5 w-3.5" /> Hover to zoom
         </div>
       )}

@@ -60,6 +60,14 @@ export default {
           DEFAULT: "hsl(var(--badge-yellow))",
           foreground: "hsl(var(--badge-yellow-foreground))",
         },
+        vial: {
+          surface: "hsl(var(--vial-surface))",
+          "surface-tint": "hsl(var(--vial-surface-tint))",
+          accent: "hsl(var(--vial-accent))",
+          "accent-strong": "hsl(var(--vial-accent-strong))",
+          ink: "hsl(var(--vial-label-ink))",
+          border: "hsl(var(--vial-border))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -75,6 +83,15 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        vial: "var(--shadow-vial)",
+      },
+      backgroundImage: {
+        "vial-box": "var(--gradient-vial-box)",
+        "vial-glass": "var(--gradient-vial-glass)",
+        "vial-liquid": "var(--gradient-vial-liquid)",
+        "vial-cap": "var(--gradient-vial-cap)",
       },
       keyframes: {
         "accordion-down": {
