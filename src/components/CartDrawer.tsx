@@ -8,6 +8,7 @@ import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings, shippingNudgeSuggestions, singleVialPrice } from "@/lib/bundlePricing";
 import { getShippingCost, SHIPPING_RULES } from "@/lib/shipping";
+import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 const FREE_SHIP_THRESHOLD = SHIPPING_RULES["South Africa"].freeOver; // ZAR
 
