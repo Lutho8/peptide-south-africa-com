@@ -114,7 +114,7 @@ export default function ProductImageZoom({ src, alt }: Props) {
         }}
       />
       {!zoomed && (
-        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-vial-surface/90 px-3 py-1.5 text-xs font-medium text-vial-ink backdrop-blur-sm animate-fade-in">
+        <div className={`${vialZoomChipClasses} animate-fade-in`}>
           <ZoomIn className="h-3.5 w-3.5" /> Hover to zoom
         </div>
       )}
