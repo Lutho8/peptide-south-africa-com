@@ -8,6 +8,7 @@ import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings, shippingNudgeSuggestions, singleVialPrice } from "@/lib/bundlePricing";
 import { getShippingCost, SHIPPING_RULES } from "@/lib/shipping";
+import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 const FREE_SHIP_THRESHOLD = SHIPPING_RULES["South Africa"].freeOver; // ZAR
 
@@ -89,7 +90,10 @@ export default function CartDrawer() {
                     <ul className="mt-2 flex flex-col gap-1.5 border-t border-border/60 pt-2">
                       {b.lines.map((item) => (
                         <li key={item.lineId} className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-8 w-8 shrink-0 rounded object-cover" />
+                          <span className={`${vialTileFrameClasses} block h-8 w-8 shrink-0`} data-testid={VIAL_TEST_ID}>
+                            <span aria-hidden className={vialAccentBarSmClasses} />
+                            <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
+                          </span>
                           <span className="flex-1 truncate">{item.product.name}</span>
                           <span className="font-mono">
                             {item.compareAtPrice !== undefined && (
@@ -109,7 +113,10 @@ export default function CartDrawer() {
                 {/* Standard lines */}
                 {singles.map((item) => (
                   <div key={item.lineId} className="flex gap-3 rounded-lg border border-border p-3">
-                    <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-md object-cover" />
+                    <span className={`${vialTileFrameClasses} block h-20 w-20 shrink-0`} data-testid={VIAL_TEST_ID}>
+                      <span aria-hidden className={vialAccentBarSmClasses} />
+                      <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
+                    </span>
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
                       {item.variantLabel && (
