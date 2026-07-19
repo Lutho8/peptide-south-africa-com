@@ -10,6 +10,7 @@ import { COPY, trilingual } from "@/lib/copy";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { getShippingCost } from "@/lib/shipping";
+import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 export default function CartPage() {
   const { items, removeFromCart, removeBundle, updateQuantity, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible } = useCart();
