@@ -206,14 +206,14 @@ export default function CheckoutPage() {
     <>
     <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
     <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
-    <div className="container py-6 md:py-12">
+    <div className="container py-6 pb-28 md:py-12 lg:pb-12">
       <CheckoutStepper current="details" className="mb-6" />
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl">Checkout</h1>
         <CartCountdown variant="compact" />
       </div>
       <div className="grid gap-8 lg:grid-cols-3">
-        <form onSubmit={handlePay} className="lg:col-span-2 flex flex-col gap-6">
+        <form id="checkout-form" onSubmit={handlePay} className="lg:col-span-2 flex flex-col gap-6">
 
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
@@ -348,6 +348,24 @@ export default function CheckoutPage() {
             <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {tCopy("secure_checkout")}</span>
           </div>
         </form>
+
+        {/* Mobile sticky pay bar — total + pay CTA always in view on small screens */}
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[11px] text-muted-foreground">{tCopy("total")}</p>
+              <p className="font-display text-lg font-bold leading-tight text-foreground">{formatZAR(shippingMath.grandTotal)}</p>
+            </div>
+            <button type="submit" form="checkout-form" disabled={busy}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
+              {busy ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> {tCopy("processing_payment")}</>
+              ) : (
+                <>{tCopy("pay_now")} →</>
+              )}
+            </button>
+          </div>
+        </div>
 
         <div className="flex flex-col gap-4">
           <div className="rounded-lg border border-border bg-card p-6 h-fit">

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { products } from "@/data/products";
+import ShaderBackdrop from "@/components/ShaderBackdrop";
 
 const HERO_VIDEO_SRC =
   "https://player.vimeo.com/progressive_redirect/playback/1197576794/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&signature=17601266ee7e2cb1ad78cd417676683352bfc62cb32be03b087f5ee446fd2484";
@@ -54,6 +55,7 @@ export default function HeroShop() {
     <section className="relative isolate overflow-hidden">
       {/* Hero background video — full bleed, dark scrim for legibility on mobile */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#0a2540]">
+        <ShaderBackdrop variant="dark" className="opacity-80" />
         <video
           src={HERO_VIDEO_SRC}
           poster={HERO_VIDEO_POSTER}
@@ -118,8 +120,9 @@ export default function HeroShop() {
             transition={{ duration: 0.6, delay: 0.05 }}
             className="mt-4 font-display text-[2.25rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl"
           >
-            South Africa's{" "}
-            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Best Peptide Prices</span>
+            Your bloodwork first.{" "}
+            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Your protocol second.</span>{" "}
+            Products last.
           </motion.h1>
 
           <motion.p
@@ -128,7 +131,7 @@ export default function HeroShop() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mx-auto mt-3 max-w-2xl text-[15px] font-semibold leading-relaxed text-white/90 sm:mt-4 sm:text-lg"
           >
-            3-Pack at 15% Off <span className="text-white/50">|</span> 5-Pack Pick &amp; Mix at 20% Off <span className="text-white/50">|</span> 10-Pack at 30% Off
+            Peptide protocols reviewed by an HPCSA-registered GP, ≥99% HPLC-verified with the Certificate of Analysis in your box — and progress tracked in the PSA app. Value packs from 15–30% off when you're ready.
           </motion.p>
 
           {/* Primary CTAs — mobile-first, big tap targets */}
