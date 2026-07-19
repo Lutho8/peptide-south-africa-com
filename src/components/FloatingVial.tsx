@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { vialLabelPlateClasses } from "@/lib/vialDesign";
+
 
 /**
  * Pure-CSS scroll-driven 3D vial. Hidden on mobile + reduced-motion.
