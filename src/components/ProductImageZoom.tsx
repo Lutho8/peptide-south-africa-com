@@ -1,6 +1,13 @@
 import { useState, useRef } from "react";
 import { ZoomIn, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  VIAL_TEST_ID,
+  vialZoomFrameClasses,
+  vialAccentBarLgClasses,
+  vialAccentDotLgClasses,
+  vialZoomChipClasses,
+} from "@/lib/vialDesign";
 
 interface Props {
   src: string;
