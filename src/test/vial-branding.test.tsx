@@ -77,5 +77,28 @@ describe("vial branding — white + light-teal medical/luxury tokens", () => {
     expect(frame).toHaveClass("shadow-vial");
     expect(frame).toHaveClass("border-vial-border");
     expect(frame.querySelector(".bg-vial-accent")).not.toBeNull();
+    expect(frame.querySelector(".bg-vial-accent-strong")).not.toBeNull();
+    expect(frame).toMatchSnapshot();
+  });
+
+  it("shared vialDesign module exposes stable token strings", async () => {
+    const mod = await import("@/lib/vialDesign");
+    // Every frame variant carries the studio-plate essentials.
+    for (const cls of [mod.vialCardFrameClasses, mod.vialZoomFrameClasses, mod.vialTileFrameClasses]) {
+      expect(cls).toMatch(/bg-vial-surface/);
+      expect(cls).toMatch(/shadow-vial/);
+    }
+    expect(mod.vialAccentBarClasses).toMatch(/bg-vial-accent(?!-strong)/);
+    expect(mod.vialAccentDotClasses).toMatch(/bg-vial-accent-strong/);
+    expect(mod.vialZoomChipClasses).toMatch(/text-vial-ink/);
+    expect(mod.vialLabelPlateClasses).toMatch(/bg-vial-surface/);
+    expect(mod.VIAL_TEST_ID).toBe("vial-frame");
+    // vialFrame() helper returns the three-part bundle.
+    const md = mod.vialFrame("md");
+    expect(md).toEqual({
+      frame: mod.vialCardFrameClasses,
+      bar: mod.vialAccentBarClasses,
+      dot: mod.vialAccentDotClasses,
+    });
   });
 });
