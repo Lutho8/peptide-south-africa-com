@@ -23,6 +23,7 @@ import {
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
+import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 const FORM_KEY = "rtt_checkout_form";
 const emptyForm: CheckoutForm = {
