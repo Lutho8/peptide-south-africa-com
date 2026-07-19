@@ -109,7 +109,10 @@ export default function CartPage() {
             ))}
             {singles.map((item) => (
               <div key={item.lineId} className="flex gap-4 rounded-lg border border-border bg-card p-4 shadow-card">
-                <img src={item.product.image} alt={item.product.name} className="h-24 w-24 rounded-md object-cover" />
+                <span className={`${vialTileFrameClasses} block h-24 w-24 shrink-0`} data-testid={VIAL_TEST_ID}>
+                  <span aria-hidden className={vialAccentBarSmClasses} />
+                  <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
+                </span>
                 <div className="flex flex-1 flex-col">
                   <Link to={mp(`/product/${item.product.slug}`)} className="font-display font-semibold text-foreground hover:text-primary">
                     {item.product.name}
