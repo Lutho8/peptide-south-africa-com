@@ -56,7 +56,7 @@ export default function CartPage() {
     <>
     <SEO title="Your Cart" description="Review your selected peptides before checkout." path={mp("/cart")} lang={lang} alternates={buildAlternates("/cart")} noindex />
     <Breadcrumbs crumbs={[{ label: "Home", href: mp("/") }, { label: "Cart" }]} />
-    <div className="container py-12">
+    <div className="container py-12 pb-28 lg:pb-12">
       <Link to={mp("/shop")} className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Continue Shopping
       </Link>
@@ -123,17 +123,17 @@ export default function CartPage() {
                   </span>
                   <div className="mt-auto flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} className="rounded-md border border-border p-1.5 hover:bg-muted">
-                        <Minus className="h-3 w-3" />
+                      <button onClick={() => updateQuantity(item.lineId, item.quantity - 1)} className="rounded-md border border-border p-2.5 hover:bg-muted" aria-label="Decrease quantity">
+                        <Minus className="h-4 w-4" />
                       </button>
                       <span className="min-w-[2ch] text-center font-medium">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.lineId, item.quantity + 1)} className="rounded-md border border-border p-1.5 hover:bg-muted">
-                        <Plus className="h-3 w-3" />
+                      <button onClick={() => updateQuantity(item.lineId, item.quantity + 1)} className="rounded-md border border-border p-2.5 hover:bg-muted" aria-label="Increase quantity">
+                        <Plus className="h-4 w-4" />
                       </button>
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="font-display font-bold text-foreground">{format(item.unitPrice * item.quantity)}</span>
-                      <button onClick={() => removeFromCart(item.lineId)} className="text-destructive hover:text-destructive/80">
+                      <button onClick={() => removeFromCart(item.lineId)} className="p-2 -m-2 text-destructive hover:text-destructive/80" aria-label="Remove item">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -190,6 +190,22 @@ export default function CartPage() {
             Proceed to Checkout
           </Link>
           <p className="mt-4 text-center text-xs text-muted-foreground">🔒 {trilingual("secure_checkout")}</p>
+        </div>
+      </div>
+
+      {/* Mobile sticky checkout bar — keeps the CTA in thumb reach while scrolling items */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] text-muted-foreground">{COPY.total.en}</p>
+            <p className="font-display text-lg font-bold leading-tight text-foreground">{format(grandTotal)}</p>
+          </div>
+          <Link
+            to={mp("/checkout")}
+            className="rounded-lg bg-hero-gradient px-6 py-3 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+          >
+            Checkout →
+          </Link>
         </div>
       </div>
     </div>

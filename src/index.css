@@ -179,3 +179,125 @@
     .marquee, [style*="vial-float"] { animation: none !important; }
   }
 }
+
+/* ============================================================
+   PSA 2026 LAYER — modern CSS, progressive enhancement only.
+   Nothing here restyles existing components; it only adds
+   opt-in utilities used by the upgraded funnel / surfaces.
+   ============================================================ */
+
+/* Animatable gradient angle (CSS Houdini @property) */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@layer utilities {
+  /* Rotating conic hairline border */
+  .glow-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--angle),
+      transparent 0%,
+      hsl(174 72% 56%) 14%,
+      hsl(217 91% 60%) 30%,
+      transparent 46%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: angle-spin 6s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Native scroll-driven reveal (Chrome/Edge/Safari 26+) */
+  @supports (animation-timeline: view()) {
+    .reveal-view {
+      animation: reveal-view-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 8% entry 42%;
+    }
+  }
+
+  /* Frosted clinical glass */
+  .glass-panel {
+    background: color-mix(in oklab, hsl(0 0% 100%) 78%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid color-mix(in oklab, hsl(214 32% 91%) 70%, transparent);
+  }
+
+  /* Balanced display copy */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle film grain for depth on flat surfaces */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.028;
+    mix-blend-mode: multiply;
+  }
+
+  /* Shimmer sweep for personalization-theater stages */
+  .stage-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      hsl(174 72% 56% / 0.18) 50%,
+      transparent 80%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-sweep 1.6s linear infinite;
+  }
+}
+
+@keyframes angle-spin {
+  to { --angle: 360deg; }
+}
+
+@keyframes reveal-view-rise {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@layer base {
+  ::selection {
+    background: hsl(174 72% 56% / 0.35);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(174 55% 55%);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow-border::before,
+    .stage-shimmer {
+      animation: none !important;
+    }
+  }
+}

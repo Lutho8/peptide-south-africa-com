@@ -11,6 +11,16 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // Pre-transform the entry chain at server start so the first browser
+    // load doesn't pay the full cold-compile waterfall (large app graph).
+    warmup: {
+      clientFiles: [
+        "./src/main.tsx",
+        "./src/AppShell.tsx",
+        "./src/pages/HomePage.tsx",
+        "./src/pages/QuizFunnelPage.tsx",
+      ],
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
