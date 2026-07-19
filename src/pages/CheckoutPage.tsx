@@ -356,7 +356,10 @@ export default function CheckoutPage() {
             <div className="mt-4 flex flex-col gap-3">
               {items.map((item) => (
                 <div key={item.lineId} className="flex items-center gap-3">
-                  <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
+                  <span className={`${vialTileFrameClasses} block h-12 w-12 shrink-0`} data-testid={VIAL_TEST_ID}>
+                    <span aria-hidden className={vialAccentBarSmClasses} />
+                    <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
+                  </span>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground">
                       {item.product.name}
