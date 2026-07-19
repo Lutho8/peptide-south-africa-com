@@ -113,7 +113,10 @@ export default function CartDrawer() {
                 {/* Standard lines */}
                 {singles.map((item) => (
                   <div key={item.lineId} className="flex gap-3 rounded-lg border border-border p-3">
-                    <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-md object-cover" />
+                    <span className={`${vialTileFrameClasses} block h-20 w-20 shrink-0`} data-testid={VIAL_TEST_ID}>
+                      <span aria-hidden className={vialAccentBarSmClasses} />
+                      <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
+                    </span>
                     <div className="flex flex-1 flex-col">
                       <h4 className="font-display text-sm font-semibold text-foreground">{item.product.name}</h4>
                       {item.variantLabel && (
