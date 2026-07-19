@@ -61,7 +61,7 @@ export default function FloatingVial() {
           {/* Glass highlight */}
           <div className="absolute left-2 top-4 h-44 w-1.5 rounded-full bg-white/70" />
           {/* Label — white plate with navy ink + thin teal rule */}
-          <div className="absolute left-1/2 top-1/2 w-20 -translate-x-1/2 -translate-y-1/2 rounded bg-vial-surface px-1 py-2 text-center shadow-sm">
+          <div className={vialLabelPlateClasses}>
             <div className="text-[7px] font-bold tracking-widest text-vial-ink">
               PEPTIDE SOUTH AFRICA
             </div>
