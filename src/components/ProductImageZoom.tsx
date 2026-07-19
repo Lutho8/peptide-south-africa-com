@@ -96,14 +96,14 @@ export default function ProductImageZoom({ src, alt }: Props) {
   return (
     <div
       ref={containerRef}
-      className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-vial-border bg-vial-surface shadow-vial"
+      className={`${vialZoomFrameClasses} cursor-zoom-in`}
       onMouseEnter={() => setZoomed(true)}
       onMouseLeave={() => setZoomed(false)}
       onMouseMove={handleMouseMove}
-      data-testid="vial-frame"
+      data-testid={VIAL_TEST_ID}
     >
-      <span aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-2.5 bg-vial-accent" />
-      <span aria-hidden className="pointer-events-none absolute right-1.5 top-4 z-10 h-2 w-2 rounded-full bg-vial-accent-strong" />
+      <span aria-hidden className={`${vialAccentBarLgClasses} z-10`} />
+      <span aria-hidden className={`${vialAccentDotLgClasses} z-10`} />
       <img
         src={src}
         alt={alt}
