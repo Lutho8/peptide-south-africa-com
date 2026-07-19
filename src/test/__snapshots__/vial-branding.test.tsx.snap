@@ -56,7 +56,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > FloatingVi
 
 exports[`vial branding — white + light-teal medical/luxury tokens > ProductCard wraps the vial image in the shared studio plate 1`] = `
 <a
-  class="relative aspect-square overflow-hidden rounded-t-lg bg-vial-surface shadow-vial ring-1 ring-vial-border"
+  class="relative overflow-hidden bg-vial-surface shadow-vial aspect-square rounded-t-lg ring-1 ring-vial-border"
   data-testid="vial-frame"
   href="/product/rt3-reta"
 >
