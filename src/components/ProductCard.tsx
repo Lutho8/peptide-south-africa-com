@@ -6,6 +6,7 @@ import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
 import TrackBadge from "@/components/TrackBadge";
+import { VIAL_TEST_ID, vialFrame } from "@/lib/vialDesign";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
