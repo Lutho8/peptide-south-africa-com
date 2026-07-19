@@ -86,7 +86,10 @@ export default function CartPage() {
                 <ul className="mt-3 flex flex-col gap-2 border-t border-border/60 pt-3">
                   {b.lines.map((item) => (
                     <li key={item.lineId} className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <img src={item.product.image} alt={item.product.name} className="h-12 w-12 rounded-md object-cover" />
+                      <span className={`${vialTileFrameClasses} block h-12 w-12 shrink-0`} data-testid={VIAL_TEST_ID}>
+                        <span aria-hidden className={vialAccentBarSmClasses} />
+                        <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
+                      </span>
                       <Link to={mp(`/product/${item.product.slug}`)} className="flex-1 truncate hover:text-primary">
                         {item.product.name}
                       </Link>
