@@ -90,7 +90,10 @@ export default function CartDrawer() {
                     <ul className="mt-2 flex flex-col gap-1.5 border-t border-border/60 pt-2">
                       {b.lines.map((item) => (
                         <li key={item.lineId} className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-8 w-8 shrink-0 rounded object-cover" />
+                          <span className={`${vialTileFrameClasses} block h-8 w-8 shrink-0`} data-testid={VIAL_TEST_ID}>
+                            <span aria-hidden className={vialAccentBarSmClasses} />
+                            <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
+                          </span>
                           <span className="flex-1 truncate">{item.product.name}</span>
                           <span className="font-mono">
                             {item.compareAtPrice !== undefined && (
