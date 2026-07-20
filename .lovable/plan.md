@@ -1,79 +1,43 @@
 ## Goal
 
-Centralize the white + light-teal "medical luxury" vial styling into a single shared module, extend it to cart/checkout tiles, and lock the look with Playwright visual regression + expanded snapshots so no future edit can silently regress the branding.
+Lock in the shared `src/lib/vialDesign.ts` tokens so vial styling can't regress — both by static analysis (build fails on hardcoded classes in the three canonical components) and by pixel-level Playwright snapshots covering the PDP gallery and cart/checkout tiles.
 
-## Scope
+## 1. Guardrail: fail the build on hardcoded vial styling
 
-### 1. Shared vial-design tokens module (`src/lib/vialDesign.ts`)
+Add a Vitest guard at `src/test/vial-tokens-guard.test.ts` that reads the source of the three components and asserts:
 
-A single TS module every vial-adjacent component imports from. Tokens still resolve to the existing CSS variables in `src/index.css` (no new hex/hsl values), so runtime theming stays in one place.
+- Each file imports from `@/lib/vialDesign`.
+- Each file contains no raw vial class literals — regex bans of `bg-vial-*`, `shadow-vial`, `ring-vial-*`, `border-vial-*`, `text-vial-*`, `bg-vial-accent*`, `bg-vial-liquid`, `bg-vial-glass`, `bg-vial-cap` appearing outside an `import` line.
+- Any `data-testid="vial-frame"` uses the `VIAL_TEST_ID` constant, not a string literal.
 
-Exports:
-- `vialFrameClasses` — the canonical Tailwind class string for the studio-plate frame (`relative overflow-hidden rounded-xl border border-vial-border bg-vial-surface shadow-vial`).
-- `vialAccentBarClasses` / `vialAccentDotClasses` — the right-edge teal band + dot used on cards / PDP / cart tiles.
-- `vialZoomChipClasses` — the "Hover to zoom" / "Tap to zoom" pill styling.
-- `vialLabelClasses` — the white label plate used inside `FloatingVial`.
-- `VIAL_TEST_ID = 'vial-frame'` — one constant reused by every component + every visual test.
-- Small typed helper `vialFrame({ interactive?: boolean })` returning a class string for the two card variants (static vs. `cursor-zoom-in`).
+Files inspected: `src/components/FloatingVial.tsx`, `src/components/ProductCard.tsx`, `src/components/ProductImageZoom.tsx`. `FloatingVial` legitimately uses raw `bg-vial-*` classes inside its 3D markup, so the guard scopes the ban to the two flat components and only enforces the "must import from vialDesign" + "must use VIAL_TEST_ID constant" rules on `FloatingVial`.
 
-No changes to `tailwind.config.ts` or `src/index.css` — this module is a thin wrapper over the tokens already shipped.
+Runs under the existing `vitest` command, so CI already picks it up — no new workflow needed.
 
-### 2. Refactor consumers to import from the module
+## 2. Playwright visual snapshots
 
-- `src/components/FloatingVial.tsx` — replace hard-coded label / frame class strings with `vialLabelClasses` and shared tokens. No visual change.
-- `src/components/ProductCard.tsx` — replace inline frame classes with `vialFrame()` + `vialAccentBarClasses` + `vialAccentDotClasses`; set `data-testid={VIAL_TEST_ID}` for tests.
-- `src/components/ProductImageZoom.tsx` — same refactor for mobile lightbox trigger and desktop zoom container; keeps existing `data-testid="vial-frame"`.
+Add `tests/vial-visual.spec.ts` running against the local dev server (already wired via `playwright.config.ts` / `lovable-agent-playwright-config`). Uses `toHaveScreenshot()` with a small `maxDiffPixelRatio` to avoid font-rendering flake.
 
-### 3. Cart + checkout tile refresh
+Coverage:
 
-Apply the studio-plate treatment to the product thumbnail inside cart tiles so the vial keeps its premium framing all the way to payment.
+1. **PDP media gallery + vial callouts** — navigate to a stable product slug (first product in `src/data/products.ts`), dismiss age gate via `tests/_utils.ts` helpers, snapshot the gallery region locator (the `[data-testid="vial-frame"]` and its surrounding callouts).
+2. **Cart drawer tile** — add first product to cart via existing `addFirstProductToCart` helper, open the drawer, snapshot the line-item tile locator.
+3. **Cart page tile** — navigate to `/cart` with the item present, snapshot the line-item tile.
+4. **Checkout order summary tile** — navigate to `/checkout`, snapshot the summary thumbnail row.
 
-- `src/components/CartDrawer.tsx` — wrap each line-item thumbnail in the shared frame (smaller variant: `rounded-lg`, no zoom chip, thinner accent bar). Preserve current layout, quantity controls, and remove button.
-- `src/pages/CartPage.tsx` — same treatment on the full-page cart list.
-- `src/pages/CheckoutPage.tsx` — apply to the order-summary line items.
+Each snapshot targets the tile locator (not full page) to keep baselines small and stable. Baselines commit under `tests/vial-visual.spec.ts-snapshots/`.
 
-Only the image wrapper changes; pricing, quantity, and copy are untouched.
+## 3. CI wiring
 
-### 4. Playwright visual regression in CI
+Playwright already runs in CI via the shared config; the new spec picks up automatically. Add a short note in the spec file header explaining how to update baselines (`bunx playwright test --update-snapshots`) so future contributors know the workflow.
 
-New spec `tests/vial-branding.visual.spec.ts` (uses the existing `playwright.config.ts` + `playwright-fixture.ts`):
+## Files touched
 
-- **FloatingVial** — navigate to `/`, wait for `[data-testid="floating-vial"]`, `expect(locator).toHaveScreenshot('floating-vial.png')` with `maxDiffPixelRatio: 0.01`.
-- **ProductCard** — navigate to `/shop`, snapshot the first `[data-testid="vial-frame"]` on a card.
-- **PDP media gallery** — navigate to a stable product route (`/product/ghk-cu-50mg`), snapshot the gallery region (frame + accent bar + purity/COA/batch callouts) as one composed screenshot.
-- **Cart tile** — programmatically add one item via `window.dispatchEvent` (or navigate to `/cart` with a seeded item using the existing cart context/localStorage), snapshot the first cart line-item frame.
-
-CI wiring:
-- Add `.github/workflows/visual-regression.yml` that installs deps, runs `bun run build && bun run preview` (or the existing dev script the Playwright config already targets), executes `bunx playwright test tests/vial-branding.visual.spec.ts`, and uploads `playwright-report/` + `test-results/` as artifacts on failure.
-- Baselines committed under `tests/vial-branding.visual.spec.ts-snapshots/`. First run in build mode will generate them.
-
-### 5. Expanded Vitest snapshot coverage for the PDP
-
-Extend `src/test/vial-branding.test.tsx`:
-
-- Render `ProductPage` for a fixture product inside `MemoryRouter` + required providers (Cart, Currency, Auth mock).
-- Serializer snapshot of the media-gallery subtree (image frame, accent bar/dot, zoom chip, purity chip, COA chip, batch/lot line).
-- Explicit `toHaveClass('bg-vial-surface')` / `shadow-vial` assertions on the gallery root so a regression to raw hex fails loudly at unit-test time — before the slower Playwright job runs.
+- `src/test/vial-tokens-guard.test.ts` (new)
+- `tests/vial-visual.spec.ts` (new)
+- `tests/vial-visual.spec.ts-snapshots/*.png` (generated on first run)
 
 ## Out of scope
 
-- No new product renders, no changes to product copy/pricing/SKUs.
-- No changes to global navy/teal chrome tokens, cart pricing/shipping logic, checkout flow, or auth.
-- No changes to `src/index.css` or `tailwind.config.ts` (tokens already exist from the previous turn).
-
-## Technical notes
-
-```text
-src/lib/vialDesign.ts
-  └── consumed by ──▶ FloatingVial, ProductCard, ProductImageZoom,
-                      CartDrawer, CartPage (line item), CheckoutPage (summary)
-
-tests/
-  └── vial-branding.visual.spec.ts   ← Playwright, runs in new CI workflow
-src/test/
-  └── vial-branding.test.tsx         ← extended with PDP gallery snapshot
-```
-
-- The shared module exports **strings**, not React components, so tree-shaking and existing markup stay intact — only class attributes change at the call sites.
-- Playwright baselines are OS-sensitive; the workflow pins `ubuntu-latest` and uses the pre-installed Chromium from `lovable-agent-playwright-config` to keep diffs stable.
-- The `mask` option on `toHaveScreenshot` will hide the scroll-driven transform on `FloatingVial` (screenshot taken at `scrollY=0`, animation disabled via `prefers-reduced-motion` emulation in Playwright context).
+- No changes to `vialDesign.ts` or the three components — they already import correctly.
+- No new ESLint rule; the Vitest guard is simpler and runs in the same test pass.
