@@ -66,15 +66,13 @@ describe("vial design tokens guardrail", () => {
     },
   );
 
-  it("ProductCard contains no raw vial class literals outside imports", () => {
-    const body = stripImportLines(read(TARGETS.productCard));
-    const matches = body.match(RAW_VIAL_CLASS) ?? [];
-    expect(matches, `Found raw vial classes: ${matches.join(", ")}`).toEqual([]);
-  });
-
-  it("ProductImageZoom contains no raw vial class literals outside imports", () => {
-    const body = stripImportLines(read(TARGETS.productImageZoom));
-    const matches = body.match(RAW_VIAL_CLASS) ?? [];
-    expect(matches, `Found raw vial classes: ${matches.join(", ")}`).toEqual([]);
-  });
+  it.each(FLAT_TARGETS)(
+    "%s contains no raw vial class literals outside imports",
+    (_name, path) => {
+      const body = stripImportLines(read(path));
+      const matches = body.match(RAW_VIAL_CLASS) ?? [];
+      expect(matches, `Found raw vial classes in ${path}: ${matches.join(", ")}`).toEqual([]);
+    },
+  );
 });
+
