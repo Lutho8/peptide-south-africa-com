@@ -22,7 +22,21 @@ const TARGETS = {
   floatingVial: "src/components/FloatingVial.tsx",
   productCard: "src/components/ProductCard.tsx",
   productImageZoom: "src/components/ProductImageZoom.tsx",
+  cartDrawer: "src/components/CartDrawer.tsx",
+  cartPage: "src/pages/CartPage.tsx",
+  checkoutPage: "src/pages/CheckoutPage.tsx",
 } as const;
+
+// Flat consumers must never inline raw vial class literals — all styling
+// flows through `@/lib/vialDesign`. FloatingVial is exempt (see file header).
+const FLAT_TARGETS: Array<[string, string]> = [
+  ["productCard", TARGETS.productCard],
+  ["productImageZoom", TARGETS.productImageZoom],
+  ["cartDrawer", TARGETS.cartDrawer],
+  ["cartPage", TARGETS.cartPage],
+  ["checkoutPage", TARGETS.checkoutPage],
+];
+
 
 const RAW_VIAL_CLASS = /(?<![\w-])(?:bg-vial-[\w-]+|shadow-vial|ring-vial-[\w-]+|border-vial-[\w-]+|text-vial-[\w-]+)/g;
 
