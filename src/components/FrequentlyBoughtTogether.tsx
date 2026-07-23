@@ -3,7 +3,7 @@ import { Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { products, type Product } from "@/data/products";
-import { BUNDLE_MAP } from "@/data/bundles";
+import { BUNDLE_MAP, POST_ADD_ACCESSORIES, type BundleHint } from "@/data/bundles";
 
 interface Props {
   /** Slug of the anchor/primary product. */
@@ -20,11 +20,20 @@ interface Props {
 export default function FrequentlyBoughtTogether({ slug, variant = "default" }: Props) {
   const { addToCart } = useCart();
   const { format } = useCurrency();
-  const hints = BUNDLE_MAP[slug] ?? [];
-  const picks: Product[] = hints
+  // Merge curated peptide pairings with universal reconstitution accessories
+  // so BAC water / swabs always show up even if a specific slug has no map entry.
+  const seen = new Set<string>([slug]);
+  const merged: BundleHint[] = [];
+  for (const h of [...(BUNDLE_MAP[slug] ?? []), ...POST_ADD_ACCESSORIES]) {
+    if (seen.has(h.slug)) continue;
+    seen.add(h.slug);
+    merged.push(h);
+  }
+  const picks: Product[] = merged
     .map((h) => products.find((p) => p.slug === h.slug))
     .filter((p): p is Product => !!p && p.inStock)
     .slice(0, 2);
+  const hints = merged;
 
   if (picks.length === 0) return null;
 
