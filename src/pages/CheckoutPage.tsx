@@ -369,6 +369,7 @@ export default function CheckoutPage() {
         </div>
 
         <div className="flex flex-col gap-4">
+          <CheckoutSuppliesRail />
           <div className="rounded-lg border border-border bg-card p-6 h-fit">
             <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
             <div className="mt-4 flex flex-col gap-3">
