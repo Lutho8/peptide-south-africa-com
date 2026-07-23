@@ -14,6 +14,11 @@ import productPinealon from "@/assets/vials/pinealon.jpg";
 import productEpitalon from "@/assets/vials/epitalon.jpg";
 import productSelank from "@/assets/vials/selank.jpg";
 import productSemax from "@/assets/vials/semax.jpg";
+import productBacWater from "@/assets/vials/bac-water.jpg";
+import productAlcoholSwabs from "@/assets/accessories/alcohol-swabs.jpg";
+import productGlassCartridge from "@/assets/accessories/glass-cartridge.jpg";
+import productPenNeedles from "@/assets/accessories/pen-needles.jpg";
+import productInsulinSyringes from "@/assets/accessories/insulin-syringes.jpg";
 
 // All prices are in ZAR. Single-market site (South Africa).
 
