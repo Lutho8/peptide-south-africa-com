@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CheckoutStepper from "@/components/CheckoutStepper";
+import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
 import { useToast } from "@/hooks/use-toast";
 import { COPY, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
