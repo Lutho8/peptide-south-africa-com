@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CheckoutStepper from "@/components/CheckoutStepper";
+import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
 import { useToast } from "@/hooks/use-toast";
 import { COPY, t as tCopy, type CopyKey } from "@/lib/copy";
 import {
@@ -369,6 +370,7 @@ export default function CheckoutPage() {
         </div>
 
         <div className="flex flex-col gap-4">
+          <CheckoutSuppliesRail />
           <div className="rounded-lg border border-border bg-card p-6 h-fit">
             <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
             <div className="mt-4 flex flex-col gap-3">
