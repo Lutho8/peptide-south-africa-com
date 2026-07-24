@@ -39,6 +39,45 @@ export function SupplyTile({ product }: { product: Product }) {
 }
 ```
 
+## Example: Accessory upsell tile
+
+`CheckoutSuppliesRail.tsx` is the canonical reference for an accessory tile
+with inline variant + quantity controls. Every accessory tile MUST follow
+the same three-piece frame markup — anything else fails the vial guard.
+
+```tsx
+import { Plus } from "lucide-react";
+import { VIAL_TEST_ID, vialFrame } from "@/lib/vialDesign";
+import type { Product } from "@/data/products";
+
+export function AccessoryTile({ product }: { product: Product }) {
+  // Small frame for cart, checkout, and any dense upsell rail.
+  const { frame, bar } = vialFrame("sm");
+
+  return (
+    <li className="flex items-center gap-3">
+      {/* 1. Frame — token-driven, stamps VIAL_TEST_ID */}
+      <span className={`${frame} block h-12 w-12 shrink-0`} data-testid={VIAL_TEST_ID}>
+        {/* 2. Teal accent bar — token-driven */}
+        <span aria-hidden className={bar} />
+        {/* 3. Product image */}
+        <img src={product.image} alt="" className="h-full w-full object-cover" loading="lazy" />
+      </span>
+      <span className="flex-1 text-xs font-semibold">{product.name}</span>
+      <button type="button" className="rounded-md border border-border px-2 py-1.5 text-[11px] text-primary">
+        <Plus className="h-3 w-3" />
+      </button>
+    </li>
+  );
+}
+```
+
+**Forbidden in accessory tiles** (same rule as every other consumer):
+
+- Any raw `bg-vial-*`, `shadow-vial`, `ring-vial-*`, `border-vial-*`, or `text-vial-*` class.
+- `data-testid="vial-frame"` as a string literal — always import `VIAL_TEST_ID`.
+- Redeclaring frame/bar Tailwind strings locally. Use `vialFrame("sm")` (or `"md"`/`"lg"`).
+
 ## Guards that will fail your build
 
 - `src/test/vial-tokens-guard.test.ts` — Vitest static-analysis guard. Fails the build if any of the tracked components inline raw `bg-vial-*` / `shadow-vial` / `ring-vial-*` / `border-vial-*` / `text-vial-*` classes, or use `data-testid="vial-frame"` as a string literal instead of the `VIAL_TEST_ID` constant.
