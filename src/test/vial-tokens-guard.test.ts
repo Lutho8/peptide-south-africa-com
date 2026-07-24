@@ -25,6 +25,7 @@ const TARGETS = {
   cartDrawer: "src/components/CartDrawer.tsx",
   cartPage: "src/pages/CartPage.tsx",
   checkoutPage: "src/pages/CheckoutPage.tsx",
+  checkoutSuppliesRail: "src/components/CheckoutSuppliesRail.tsx",
 } as const;
 
 // Flat consumers must never inline raw vial class literals — all styling
@@ -35,6 +36,7 @@ const FLAT_TARGETS: Array<[string, string]> = [
   ["cartDrawer", TARGETS.cartDrawer],
   ["cartPage", TARGETS.cartPage],
   ["checkoutPage", TARGETS.checkoutPage],
+  ["checkoutSuppliesRail", TARGETS.checkoutSuppliesRail],
 ];
 
 
