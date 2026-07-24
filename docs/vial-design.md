@@ -93,7 +93,7 @@ bunx playwright test tests/vial-visual.spec.ts --update-snapshots
 
 1. Import from `@/lib/vialDesign` — never redeclare classes.
 2. Stamp `data-testid={VIAL_TEST_ID}` on the frame element.
-3. Register the file path in `TARGETS` (and, if it's a flat consumer, `FLAT_TARGETS`) inside `src/test/vial-tokens-guard.test.ts`.
+3. Register the file path in `TARGETS` (and, if it's a flat consumer, `FLAT_TARGETS`) inside `src/test/vial-tokens-guard.test.ts`. `CheckoutSuppliesRail.tsx` is already registered; new accessory tile components must follow suit.
 4. Add a Playwright locator + snapshot to `tests/vial-visual.spec.ts` if the surface is user-visible.
 
 ## Source of truth
