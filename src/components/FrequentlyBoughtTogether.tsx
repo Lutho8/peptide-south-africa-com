@@ -8,8 +8,8 @@ import { BUNDLE_MAP, POST_ADD_ACCESSORIES, type BundleHint } from "@/data/bundle
 interface Props {
   /** Slug of the anchor/primary product. */
   slug: string;
-  /** Compact mode used inside cart drawer. */
-  variant?: "default" | "compact";
+  /** Compact mode used inside cart drawer. `single` = one-tile Keeps-style recommend. */
+  variant?: "default" | "compact" | "single";
 }
 
 /**
@@ -48,6 +48,34 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
   };
 
   const addBundle = () => picks.forEach(addOne);
+
+  if (variant === "single") {
+    const p = picks[0];
+    return (
+      <div className="rounded-lg border border-border bg-card p-4">
+        <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          We also recommend
+        </p>
+        <div className="flex items-center gap-3">
+          <img src={typeof p.image === "string" ? p.image : ""} alt="" className="h-16 w-16 rounded-md object-cover" loading="lazy" />
+          <div className="min-w-0 flex-1">
+            <Link to={`/product/${p.slug}`} className="block truncate text-sm font-semibold text-foreground hover:underline">
+              {p.name}
+            </Link>
+            <span className="text-xs text-muted-foreground">{p.category}</span>
+            <p className="mt-0.5 text-sm font-bold text-foreground">{format(p.variants?.[0]?.price ?? p.price)}</p>
+          </div>
+          <button
+            onClick={() => addOne(p)}
+            aria-label={`Add ${p.name} to cart`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "compact") {
     return (
