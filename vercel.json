@@ -3,6 +3,8 @@
   "outputDirectory": "dist",
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/pets", "destination": "https://pets.peptide-south-africa.com/" },
+    { "source": "/pets/:path*", "destination": "https://pets.peptide-south-africa.com/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
