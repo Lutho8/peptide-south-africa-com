@@ -1,67 +1,87 @@
-## Goal
 
-Turn `CheckoutSuppliesRail` into a full inline upsell surface (quantity + variant controls, not just one-tap add), document the exact token pattern for accessory tiles, add Playwright visual coverage for the rail's states, and extend the vial-token guard to enforce token usage in the rail.
+# Simplify Cart & Checkout — Keeps-Inspired
 
-## 1. Interactive controls on `CheckoutSuppliesRail.tsx`
+Goal: strip visual/textual clutter; keep only what drives conversion. Match the calm, whitespace-heavy, single-column feel of keeps.com/express while preserving our navy/teal medical-luxury tokens and ZAR + PayFast flow.
 
-Today the rail is one-tap add + "Added" disabled state. Upgrade to:
+## Principles (borrowed from Keeps)
+- One column, generous whitespace, one primary CTA per screen.
+- No bilingual EN/DE labels, no countdown timers, no marketing chrome inside the cart.
+- Discounts shown as a single "Special Offer −Rxx" line, not a promo card.
+- Subtotal only; "Shipping & taxes calculated at checkout".
+- One "We also recommend" upsell — a single tile with a "+" add button, not a full FBT grid.
+- Checkout: contact + address in one card, payment trust as a small line, one big Pay button.
 
-- **Variant selector** for products with multiple variants (BAC Water has 3ml / 10ml). Render a small segmented pill (`3ml` / `10ml`) above the price; selecting a variant updates the displayed unit price. Uses local `useState` keyed by product slug.
-- **Quantity stepper** replacing the single Add button once the item is in the cart:
-  - Not in cart → `+ Add` button (primary teal, matches existing styling).
-  - In cart → `− [qty] +` compact stepper. Uses `updateQuantity(itemId, qty)` / `removeItem` from `CartContext`. Reads current qty by matching product slug + selected variant label from `items`.
-- **Line total** shows to the right of the stepper (`format(unit * qty)`), muted.
-- Preserve existing `silent: true` add so the post-add modal doesn't retrigger during checkout.
-- Keep the `vialFrame("sm")` tile, `VIAL_TEST_ID`, and layout — controls are added inside the existing row.
-- No new state stores; everything derives from `CartContext.items`.
+## Cart Drawer (`src/components/CartDrawer.tsx`)
+Keep: line items with vial tile (unchanged tokens), qty stepper, remove, subtotal, checkout CTA.
 
-## 2. `docs/vial-design.md` — concrete accessory tile example
+Remove:
+- `CartCountdown` banner
+- Bilingual EN/DE labels — English only
+- Free-shipping progress bar block + "Customers also add" nudge line
+- "Sign in to auto-apply PEPTIDESA10" upsell card
+- Discount line duplication — collapse into single "Special Offer −Rxx"
+- "Cart → Shipping → Pay" micro-stepper text
+- `FrequentlyBoughtTogether` full grid
+- Separate "View Cart" secondary button
 
-Add a new section **"Example: Accessory upsell tile"** after the existing minimal example. Show the exact pattern used by `CheckoutSuppliesRail`:
+Add / replace:
+- Header: "My Cart" centered, close (X) top right (like Keeps).
+- Single "Special Offer" red line when any discount/bundle savings apply (sum of bundleSavings + discountAmount).
+- Subtotal + one line: "Shipping & taxes calculated at checkout".
+- Single black "CHECKOUT" CTA (still using our `bg-hero-gradient` token — no hardcoded colors).
+- One compact "We also recommend" tile below CTA: pick top FBT suggestion, image + name + price + circular "+" add. Reuses `FrequentlyBoughtTogether` data source but new compact single-item render (`variant="single"`), or inline map of first suggestion.
 
-- Required imports: `VIAL_TEST_ID`, `vialFrame` from `@/lib/vialDesign`.
-- Destructure `const { frame, bar } = vialFrame("sm")`.
-- The three required DOM pieces: outer `<span className={`${frame} block h-12 w-12`} data-testid={VIAL_TEST_ID}>`, the accent `<span aria-hidden className={bar} />`, and the product image.
-- Callout that raw `bg-vial-*` / `shadow-vial` classes are forbidden in accessory tiles (same rule as other consumers).
-- Link to `CheckoutSuppliesRail.tsx` as the canonical reference implementation.
+## Cart Page (`src/pages/CartPage.tsx`)
+Same treatment as drawer:
+- Remove `CartCountdown`, `FreeShippingBar`, bilingual copy, PEPTIDESA10 upsell card, secure-checkout tagline duplication, mobile sticky bar (drawer + main CTA already suffice).
+- Summary shows: Subtotal, Special Offer (if any), "Shipping & taxes calculated at checkout", Total omitted until checkout (Keeps pattern) OR keep Total but drop shipping/tax rows.
+- Keep one "We also recommend" tile below summary.
 
-Also add `CheckoutSuppliesRail.tsx` and any future accessory tile paths to the "Adding a new vial-branded consumer" checklist section.
+## Checkout Page (`src/pages/CheckoutPage.tsx`)
+Consolidate the six card stack into a tight, single-column form:
 
-## 3. Playwright visual coverage — `tests/vial-visual.spec.ts`
+Remove:
+- `CheckoutStepper` header
+- `CartCountdown` compact timer
+- Standalone "Shipping" info card (rule + method text)
+- `FreeShippingBar`
+- `DeliveryReturnsAccordion` (move to footer link only)
+- Discount Code card (auto-applied is invisible; show as inline "Special Offer" row in summary)
+- Payment card's long paragraph + method chip list + PayFast blurb
+- `CheckoutTrustBar`, `SecurityChecklist`, `PaymentMethodsBanner` (keep a single small "🔒 Secure checkout · PayFast · ZAR" line under the CTA)
+- Bilingual COPY strings — English only
 
-Add three new tests to the existing `describe`:
+Keep / restructure into 2 cards:
+1. **Contact** — email only first (Keeps pattern), then first/last name.
+2. **Shipping address** — address, city, province, postal code (country locked ZA, rendered as small caption not an input).
 
-- **`Checkout supplies rail — loaded`**: navigate `/checkout` with a peptide in cart, wait for the rail (locate by its "Add reconstitution supplies" label → `getByText`, then screenshot the parent `.rounded-lg.border` container). Covers default state (no supplies in cart yet, all "Add" buttons visible).
-- **`Checkout supplies rail — variant switched`**: click the `10ml` variant pill on the BAC Water row, screenshot the rail. Locks in the variant-selected visual.
-- **`Checkout supplies rail — items added`**: click Add on BAC water + swabs so the row switches to the qty stepper, screenshot the rail. Locks in the in-cart quantity-stepper visual.
-- **`Checkout supplies rail — empty`**: temporarily mock all supplies as `inStock: false` isn't practical from Playwright. Instead, cover this state with a lightweight Vitest render test in `src/test/checkout-supplies-rail.test.tsx` asserting the component returns `null` when `CHECKOUT_SUPPLIES_SLUGS` resolves to no in-stock products (mocked via `vi.mock` of `@/data/products`). Documented in the plan under this section because the user asked for an "empty" state — Playwright is the wrong tool for a conditional-null render.
+Order summary (right column on desktop, collapsible on mobile above CTA):
+- Line items with vial tile, qty, unit total.
+- Special Offer −Rxx (single row combining bundleSavings + discountAmount).
+- Subtotal, Shipping (Free if unlocked else R89), Total.
+- Keep `CheckoutSuppliesRail` (it's already the "we recommend" pattern) — but tighten copy: "Add reconstitution supplies" only, remove "Inline add" chip.
 
-All Playwright snapshots use the same `SNAPSHOT_OPTS` (`maxDiffPixelRatio: 0.02`, animations disabled) as existing tests. Baselines regenerate with the documented `--update-snapshots` command.
+CTA:
+- Single full-width "Pay Rxx" button (existing gradient token).
+- Below: one line "🔒 SSL · PayFast · ZAR" — no trust grid, no accordion.
 
-## 4. Extend `src/test/vial-tokens-guard.test.ts`
-
-- Add `checkoutSuppliesRail: "src/components/CheckoutSuppliesRail.tsx"` to the `TARGETS` map.
-- Add `["checkoutSuppliesRail", TARGETS.checkoutSuppliesRail]` to `FLAT_TARGETS` so it is scanned for raw `bg-vial-*` / `shadow-vial` / `ring-vial-*` / `border-vial-*` / `text-vial-*` literals and any raw `data-testid="vial-frame"` string.
-- No changes to the regex or the FloatingVial exemption — the rail already conforms, so the guard should pass on first run and lock the file down going forward.
-- If future accessory tiles land as new components, the same two lines must be added (documented in the README section referenced above).
-
-## Technical details
-
-- No schema/DB changes. No new context or state store.
-- `useCart` already exposes `addToCart`, `updateQuantity`, `removeItem`, `items` — sufficient for the stepper.
-- Variant matching: cart items are keyed by `product.slug + variantLabel`; the stepper looks up the matching line via `items.find(i => i.product.slug === slug && i.variantLabel === selectedLabel)`.
-- Styling stays within existing Tailwind tokens (`text-primary`, `border-border`, `bg-background`) — no new colours.
+## Trust/compliance elsewhere
+Not removed from product/home pages — only stripped from cart+checkout surfaces where they hurt conversion. The medical-luxury trust architecture stays on PDP and homepage sections.
 
 ## Files touched
+- `src/components/CartDrawer.tsx` — rewrite body per above.
+- `src/pages/CartPage.tsx` — rewrite summary + remove sticky bar + bilingual.
+- `src/pages/CheckoutPage.tsx` — collapse to 2 form cards + summary + single CTA; drop trust/timer/stepper/accordion imports.
+- `src/components/FrequentlyBoughtTogether.tsx` — add `variant="single"` render mode (image + name + price + "+" button), used inside cart drawer/page.
+- No changes to `vialDesign.ts` tokens, PayFast function, schema, or data.
 
-- `src/components/CheckoutSuppliesRail.tsx` (add variant selector + qty stepper)
-- `docs/vial-design.md` (accessory tile example + checklist entry)
-- `tests/vial-visual.spec.ts` (3 new snapshot tests)
-- `src/test/checkout-supplies-rail.test.tsx` (new — empty-state render test)
-- `src/test/vial-tokens-guard.test.ts` (add CheckoutSuppliesRail to TARGETS + FLAT_TARGETS)
+## Guardrails
+- All vial tiles keep `VIAL_TEST_ID` + `vialTileFrameClasses` (vial-tokens-guard test stays green).
+- No hardcoded colors introduced — reuse existing semantic tokens (`bg-hero-gradient`, `text-trust`, `text-destructive` for "Special Offer" red).
+- Brand Guard: no new copy referencing removed brand terms.
+- Existing Vitest suites (`checkout-supplies-rail`, `vial-branding`, `vial-tokens-guard`) continue to pass; adjust `CartPage`/`CartDrawer` selectors only if tests reference removed nodes (none currently do per repo search).
 
 ## Out of scope
-
-- No changes to `vialDesign.ts`, `CartContext`, `products.ts`, or `bundles.ts`.
-- No new products, no additional accessories from kronen.
-- No changes to `PostAddUpsellModal` or `FrequentlyBoughtTogether` — they already handle their own upsell paths.
+- ERP/inventory/SMS retention work (tracked in earlier multi-phase plan).
+- Payment provider changes.
+- Redesigning PDP or homepage.
