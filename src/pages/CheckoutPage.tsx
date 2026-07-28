@@ -134,79 +134,111 @@ export default function CheckoutPage() {
     <>
       <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
-      <div className="container max-w-5xl py-8 pb-28 md:py-12 lg:pb-12">
-        <h1 className="mb-8 text-center font-display text-3xl font-bold text-foreground">Checkout</h1>
+
+      {/* Sticky mobile order summary */}
+      <div className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur-md lg:hidden">
+        <MobileOrderSummaryBar
+          subtotal={subtotal}
+          specialOffer={specialOffer}
+          shipping={shippingMath.ship}
+          freeShipping={shippingMath.freeUnlocked}
+          total={shippingMath.grandTotal}
+        />
+      </div>
+
+      <div className="container max-w-5xl py-8 pb-32 md:py-12 lg:pb-12">
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-3xl font-bold text-foreground">Almost there</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Two quick steps and your order ships from Cape Town.
+          </p>
+        </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
-          <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
-            <section className="rounded-lg border border-border bg-card p-6">
-              <h2 className="font-display text-base font-semibold text-foreground">Contact</h2>
-              <div className="mt-4 flex flex-col gap-3">
-                <div>
-                  <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
-                    aria-invalid={!!errors.email} className={inputCls} />
-                  {errors.email && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <input required placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
-                      aria-invalid={!!errors.firstName} className={inputCls} />
-                    {errors.firstName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
-                  </div>
-                  <div>
-                    <input required placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
-                      aria-invalid={!!errors.lastName} className={inputCls} />
-                    {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
-                  </div>
-                </div>
+          <div className="flex flex-col gap-6">
+            <div>
+              <ExpressCheckoutButton />
+              <div className="mt-5 flex items-center gap-3">
+                <span className="h-px flex-1 bg-border" />
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or enter details manually</span>
+                <span className="h-px flex-1 bg-border" />
               </div>
-            </section>
+            </div>
 
-            <section className="rounded-lg border border-border bg-card p-6">
-              <h2 className="font-display text-base font-semibold text-foreground">Shipping address</h2>
-              <p className="mt-1 text-xs text-muted-foreground">Delivered in South Africa · 1–3 business days</p>
-              <div className="mt-4 flex flex-col gap-3">
-                <div>
-                  <input required placeholder="Address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
-                    aria-invalid={!!errors.address1} className={inputCls} />
-                  {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
+            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
+              <section className="rounded-lg border border-border bg-card p-6">
+                <h2 className="font-display text-base font-semibold text-foreground">
+                  1. Where should we send your confirmation?
+                </h2>
+                <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <input required placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
-                      aria-invalid={!!errors.city} className={inputCls} />
-                    {errors.city && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
+                    <input required type="email" autoComplete="email" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
+                      aria-invalid={!!errors.email} className={inputCls} />
+                    {errors.email && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <input required autoComplete="given-name" placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
+                        aria-invalid={!!errors.firstName} className={inputCls} />
+                      {errors.firstName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
+                    </div>
+                    <div>
+                      <input required autoComplete="family-name" placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
+                        aria-invalid={!!errors.lastName} className={inputCls} />
+                      {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="mt-8 font-display text-base font-semibold text-foreground">
+                  2. Where should we deliver?
+                </h2>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div>
+                    <input required autoComplete="street-address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
+                      aria-invalid={!!errors.address1} className={inputCls} />
+                    {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <input required autoComplete="address-level2" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
+                        aria-invalid={!!errors.city} className={inputCls} />
+                      {errors.city && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
+                    </div>
+                    <div>
+                      <select required value={form.region} onChange={(e) => setField("region", e.target.value)}
+                        aria-invalid={!!errors.region} className={inputCls}>
+                        <option value="">Province</option>
+                        {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                      {errors.region && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
+                    </div>
                   </div>
                   <div>
-                    <select required value={form.region} onChange={(e) => setField("region", e.target.value)}
-                      aria-invalid={!!errors.region} className={inputCls}>
-                      <option value="">Province</option>
-                      {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                    {errors.region && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
+                    <input required inputMode="numeric" autoComplete="postal-code" placeholder="Postal code" value={form.postalCode}
+                      onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
+                    {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
                   </div>
+                  <p className="text-xs text-muted-foreground">Delivered across South Africa in 1–3 business days.</p>
                 </div>
-                <div>
-                  <input required inputMode="numeric" placeholder="Postal code" value={form.postalCode}
-                    onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
-                  {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
-                </div>
-              </div>
-            </section>
+              </section>
 
-            <button type="submit" disabled={busy}
-              className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-              data-testid="pay-now-button">
-              {busy ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>) : (<>Pay {formatZAR(shippingMath.grandTotal)}</>)}
-            </button>
-            <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" /> Secure checkout · PayFast · ZAR
-            </p>
-          </form>
+              <button type="submit" disabled={busy}
+                className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                data-testid="pay-now-button">
+                {busy
+                  ? (<><Loader2 className="h-4 w-4 animate-spin" /> Taking you to payment…</>)
+                  : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
+              </button>
+              <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                <Lock className="h-3.5 w-3.5" /> Secure payment · PayFast · ZAR
+              </p>
+            </form>
+          </div>
 
           <aside className="flex flex-col gap-4">
             <div className="rounded-lg border border-border bg-card p-6">
-              <h2 className="font-display text-base font-semibold text-foreground">Order</h2>
+              <h2 className="font-display text-base font-semibold text-foreground">Your order</h2>
               <div className="mt-4 flex flex-col gap-3">
                 {items.map((item) => (
                   <div key={item.lineId} className="flex items-center gap-3">
@@ -253,13 +285,16 @@ export default function CheckoutPage() {
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
           <button type="submit" form="checkout-form" disabled={busy}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
-            {busy ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>) : (<>Pay {formatZAR(shippingMath.grandTotal)}</>)}
+            {busy
+              ? (<><Loader2 className="h-4 w-4 animate-spin" /> Taking you to payment…</>)
+              : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
           </button>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Lock className="h-3 w-3" /> Secure · PayFast · ZAR
+            <Lock className="h-3 w-3" /> Secure payment · PayFast · ZAR
           </p>
         </div>
       </div>
+
     </>
   );
 }
