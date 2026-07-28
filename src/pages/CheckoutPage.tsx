@@ -74,11 +74,10 @@ export default function CheckoutPage() {
 
   const errText = (key?: string) => (key ? errCopy[key] ?? key : undefined);
 
-  const shippingMath = useMemo(() => {
-    const rule = SHIPPING_RULES["South Africa"];
-    const ship = getShippingCost(totalPrice, "South Africa") ?? 0;
-    return { rule, ship, grandTotal: totalPrice + ship, freeUnlocked: ship === 0, remaining: amountToFreeShipping(totalPrice) };
-  }, [totalPrice]);
+  const shippingMath = useMemo(
+    () => ({ ...checkoutTotals(totalPrice), remaining: amountToFreeShipping(totalPrice) }),
+    [totalPrice],
+  );
 
   if (items.length === 0) {
     return (
@@ -94,7 +93,7 @@ export default function CheckoutPage() {
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
-      toast({ title: "Check your details", description: "Please fix the highlighted fields.", variant: "destructive" });
+      toast({ title: "Almost there", description: "Check the highlighted fields.", variant: "destructive" });
       requestAnimationFrame(() => {
         const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
         el?.focus();
@@ -103,71 +102,33 @@ export default function CheckoutPage() {
       return;
     }
     if (!user) {
-      toast({ title: "Please sign in", description: "Sign in to complete checkout.", variant: "destructive" });
-      navigate("/auth");
+      toast({ title: "Sign in to finish", description: "One quick step before payment.", variant: "destructive" });
+      navigate("/auth?next=/checkout");
       return;
     }
     setBusy(true);
     try {
-      const description = items
-        .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
-        .join(", ")
-        .slice(0, 500);
-
-      const { data: orderRow, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          total: Math.round(shippingMath.grandTotal * 100) / 100,
-          discount_code: null,
-          status: "pending",
-          currency: "ZAR",
-          order_description: description,
-          shipping_country: "South Africa",
-          shipping_method: shippingMath.rule.method,
-          shipping_cost: Math.round(shippingMath.ship * 100) / 100,
-          shipping_currency: "ZAR",
-          free_shipping_applied: shippingMath.freeUnlocked,
-        })
-        .select("id")
-        .single();
-      if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
-
-      const origin = window.location.origin;
-      const amount = Math.round(shippingMath.grandTotal * 100) / 100;
-
-      const { data, error: fnErr } = await supabase.functions.invoke("payfast-create-payment", {
-        body: {
-          orderId: orderRow.id,
-          amount,
-          itemName: description.slice(0, 100) || "Peptide South Africa order",
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
+      await startPayfastCheckout({
+        userId: user.id,
+        items,
+        totalPrice,
+        form,
+        onBeforeRedirect: async () => {
+          await refreshOrders();
+          await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+          clearCart();
         },
       });
-      if (fnErr) throw new Error(fnErr.message);
-      if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
-      if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
-
-      await refreshOrders();
-      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-      clearCart();
-      postToPayFast(data.actionUrl, data.fields);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Payment could not be started";
       toast({
         title: "Payment unavailable",
-        description: msg.includes("not configured") || msg.includes("503")
-          ? "Payment is temporarily unavailable. Please try again shortly."
-          : msg,
+        description: paymentErrorMessage(err),
         variant: "destructive",
       });
       setBusy(false);
     }
   };
+
 
   return (
     <>
