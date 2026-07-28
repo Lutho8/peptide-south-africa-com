@@ -4,30 +4,24 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock, Loader2 } from "lucide-react";
 import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
+import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
-import {
-  SHIPPING_RULES,
-  amountToFreeShipping,
-  getShippingCost,
-} from "@/lib/shipping";
+import { amountToFreeShipping } from "@/lib/shipping";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
-
-const FORM_KEY = "rtt_checkout_form";
-const emptyForm: CheckoutForm = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  address1: "",
-  city: "",
-  region: "",
-  postalCode: "",
-};
+import {
+  CHECKOUT_FORM_KEY as FORM_KEY,
+  checkoutTotals,
+  emptyCheckoutForm as emptyForm,
+  paymentErrorMessage,
+  startPayfastCheckout,
+} from "@/lib/startPayfastCheckout";
 
 const errCopy: Record<string, string> = {
   err_name_chars: "Please enter a valid name",
@@ -38,26 +32,9 @@ const errCopy: Record<string, string> = {
   err_region_sa: "Select a province",
 };
 
-/** Build & auto-submit an HTML form to PayFast. */
-function postToPayFast(actionUrl: string, fields: Record<string, string>) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = actionUrl;
-  form.style.display = "none";
-  for (const [k, v] of Object.entries(fields)) {
-    if (v === undefined || v === null || v === "") continue;
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = k;
-    input.value = String(v);
-    form.appendChild(input);
-  }
-  document.body.appendChild(form);
-  form.submit();
-}
-
 const inputCls =
   "w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive";
+
 
 export default function CheckoutPage() {
   const { items, subtotal, totalPrice, discountAmount, clearCart } = useCart();
