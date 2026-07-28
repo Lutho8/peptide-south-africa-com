@@ -40,13 +40,16 @@ Set these in the `peptide-south-africa-com` Vercel project for **Production** an
 
 ## Rollout order
 
-1. **Open PR** from `chore/repoint-supabase` to `main`.
-2. **Preview deploy** — Vercel builds the branch.
-3. **Verify Preview** — app loads, auth works, product/data reads work, PayFast sandbox checkout succeeds.
-4. **Confirm bundle** — no `OLD_LOVABLE_PROJECT_REF` references in the built JS.
-5. **Merge to main** — only after steps 3–4 pass and the target DB is fully populated.
-6. **Post-deploy live check** — verify production references target and login/checkout work.
-7. **Decouple Lovable** — only after production is stable (see Phase D instructions).
+- [x] **Open PR** from `chore/repoint-supabase` to `main` → PR #9.
+- [x] **Set Vercel env vars** for Production and Preview.
+- [ ] **Preview deploy** — Vercel builds the branch with the new env vars.
+- [ ] **Verify Preview** — app loads, auth works, product/data reads work, PayFast sandbox checkout succeeds.
+- [ ] **Confirm bundle** — no `OLD_LOVABLE_PROJECT_REF` references in the built JS.
+- [ ] **Merge to main** — only after the verification steps pass and the target DB is fully populated.
+- [ ] **Post-deploy live check** — verify production references target and login/checkout work.
+- [ ] **Decouple Lovable** — only after production is stable (see Phase D instructions).
+
+> The Vercel Preview deployment is protected by SSO. Verification must be performed in a browser authenticated with the `lutho8s-projects` Vercel team.
 
 ## Rollback
 
