@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
+import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
