@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
+import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
@@ -141,13 +143,16 @@ export default function CartDrawer() {
               </div>
               <p className="mb-4 text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
 
+              <ExpressCheckoutButton onNavigate={() => setIsCartOpen(false)} className="mb-3" />
+
               <Link
                 to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full rounded-lg bg-hero-gradient py-4 text-center text-base font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.99]"
+                className="block w-full rounded-lg border border-border py-3.5 text-center text-sm font-bold uppercase tracking-wide text-foreground transition-colors hover:bg-muted"
               >
-                Checkout
+                Checkout with details
               </Link>
+
 
               {anchorSlug && (
                 <div className="mt-4">

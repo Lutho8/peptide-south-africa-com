@@ -1,87 +1,38 @@
+## 1. Checkout copy and CTA labels
 
-# Simplify Cart & Checkout — Keeps-Inspired
+`src/pages/CheckoutPage.tsx`
 
-Goal: strip visual/textual clutter; keep only what drives conversion. Match the calm, whitespace-heavy, single-column feel of keeps.com/express while preserving our navy/teal medical-luxury tokens and ZAR + PayFast flow.
+- Heading: "Checkout" → "Almost there" with a one-line subhead "Two quick steps and your order ships from Cape Town."
+- Section headings become next-step language: "Contact" → "1. Where should we send your confirmation?", "Shipping address" → "2. Where should we deliver?"
+- One primary button only per viewport (desktop inline, mobile sticky — never both visible). Label: `Place order · R X,XXX`, busy state `Taking you to payment…`.
+- Trust line under the CTA condensed to a single line: "Secure payment · PayFast · ZAR".
+- Error toast copy: "Almost — check the highlighted fields."
 
-## Principles (borrowed from Keeps)
-- One column, generous whitespace, one primary CTA per screen.
-- No bilingual EN/DE labels, no countdown timers, no marketing chrome inside the cart.
-- Discounts shown as a single "Special Offer −Rxx" line, not a promo card.
-- Subtotal only; "Shipping & taxes calculated at checkout".
-- One "We also recommend" upsell — a single tile with a "+" add button, not a full FBT grid.
-- Checkout: contact + address in one card, payment trust as a small line, one big Pay button.
+## 2. Sticky mobile Order Summary bar
 
-## Cart Drawer (`src/components/CartDrawer.tsx`)
-Keep: line items with vial tile (unchanged tokens), qty stepper, remove, subtotal, checkout CTA.
+New `src/components/MobileOrderSummaryBar.tsx`, used on the checkout page (mobile only):
 
-Remove:
-- `CartCountdown` banner
-- Bilingual EN/DE labels — English only
-- Free-shipping progress bar block + "Customers also add" nudge line
-- "Sign in to auto-apply PEPTIDESA10" upsell card
-- Discount line duplication — collapse into single "Special Offer −Rxx"
-- "Cart → Shipping → Pay" micro-stepper text
-- `FrequentlyBoughtTogether` full grid
-- Separate "View Cart" secondary button
+- Single collapsed line pinned above the sticky pay button: `Total R X,XXX` on the right, `Subtotal · Discount` condensed on the left, plus a chevron.
+- Tapping expands a small sheet showing Subtotal, Special Offer, Shipping, Total.
+- Stays visible while scrolling; safe-area padding respected; hidden at `lg` where the sidebar summary already shows.
 
-Add / replace:
-- Header: "My Cart" centered, close (X) top right (like Keeps).
-- Single "Special Offer" red line when any discount/bundle savings apply (sum of bundleSavings + discountAmount).
-- Subtotal + one line: "Shipping & taxes calculated at checkout".
-- Single black "CHECKOUT" CTA (still using our `bg-hero-gradient` token — no hardcoded colors).
-- One compact "We also recommend" tile below CTA: pick top FBT suggestion, image + name + price + circular "+" add. Reuses `FrequentlyBoughtTogether` data source but new compact single-item render (`variant="single"`), or inline map of first suggestion.
+## 3. Trim the checkout form
 
-## Cart Page (`src/pages/CartPage.tsx`)
-Same treatment as drawer:
-- Remove `CartCountdown`, `FreeShippingBar`, bilingual copy, PEPTIDESA10 upsell card, secure-checkout tagline duplication, mobile sticky bar (drawer + main CTA already suffice).
-- Summary shows: Subtotal, Special Offer (if any), "Shipping & taxes calculated at checkout", Total omitted until checkout (Keeps pattern) OR keep Total but drop shipping/tax rows.
-- Keep one "We also recommend" tile below summary.
+Keep only: email, first name, last name, address, city, province, postal code. Remove any non-essential inputs and inline helper paragraphs that add height (e.g. the delivery blurb moves into the province row as small text). Fields collapse into a single card so the page is one short column on mobile instead of two stacked cards.
 
-## Checkout Page (`src/pages/CheckoutPage.tsx`)
-Consolidate the six card stack into a tight, single-column form:
+## 4. Express checkout (PayFast fast lane)
 
-Remove:
-- `CheckoutStepper` header
-- `CartCountdown` compact timer
-- Standalone "Shipping" info card (rule + method text)
-- `FreeShippingBar`
-- `DeliveryReturnsAccordion` (move to footer link only)
-- Discount Code card (auto-applied is invisible; show as inline "Special Offer" row in summary)
-- Payment card's long paragraph + method chip list + PayFast blurb
-- `CheckoutTrustBar`, `SecurityChecklist`, `PaymentMethodsBanner` (keep a single small "🔒 Secure checkout · PayFast · ZAR" line under the CTA)
-- Bilingual COPY strings — English only
+- New `src/components/ExpressCheckoutButton.tsx`: a dark, full-width "Express checkout" button with a small wallet/lock glyph row and the caption "Apple Pay, Capitec Pay, instant EFT & card on the next screen".
+- Behaviour: if the shopper is signed in and has a saved profile with name/email/address, it creates the order and posts straight to PayFast — skipping the form entirely. If details are missing or they are signed out, it routes to `/auth` (or `/checkout` with fields focused) instead of failing.
+- Placement: top of the cart drawer above the standard CHECKOUT button, and top of the checkout page above the form, with a "or enter details manually" divider.
+- The order-creation + PayFast invoke logic currently inline in `CheckoutPage` gets extracted into a shared `src/lib/startPayfastCheckout.ts` so the drawer and page use the same path. No changes to the edge function.
 
-Keep / restructure into 2 cards:
-1. **Contact** — email only first (Keeps pattern), then first/last name.
-2. **Shipping address** — address, city, province, postal code (country locked ZA, rendered as small caption not an input).
+## 5. Homepage EcosystemSection
 
-Order summary (right column on desktop, collapsible on mobile above CTA):
-- Line items with vial tile, qty, unit total.
-- Special Offer −Rxx (single row combining bundleSavings + discountAmount).
-- Subtotal, Shipping (Free if unlocked else R89), Total.
-- Keep `CheckoutSuppliesRail` (it's already the "we recommend" pattern) — but tighten copy: "Add reconstitution supplies" only, remove "Inline add" chip.
+`src/components/EcosystemSection.tsx` already carries the "One Ecosystem. Three Properties." heading and the three cards (Cape Town Peptide Club, the highlighted Peptides4Pets card with the PSA PETS eyebrow and pet-waitlist link, Peptide South Africa). I will verify the copy matches your text exactly and correct any drift; no structural change expected.
 
-CTA:
-- Single full-width "Pay Rxx" button (existing gradient token).
-- Below: one line "🔒 SSL · PayFast · ZAR" — no trust grid, no accordion.
+## Technical notes
 
-## Trust/compliance elsewhere
-Not removed from product/home pages — only stripped from cart+checkout surfaces where they hurt conversion. The medical-luxury trust architecture stays on PDP and homepage sections.
-
-## Files touched
-- `src/components/CartDrawer.tsx` — rewrite body per above.
-- `src/pages/CartPage.tsx` — rewrite summary + remove sticky bar + bilingual.
-- `src/pages/CheckoutPage.tsx` — collapse to 2 form cards + summary + single CTA; drop trust/timer/stepper/accordion imports.
-- `src/components/FrequentlyBoughtTogether.tsx` — add `variant="single"` render mode (image + name + price + "+" button), used inside cart drawer/page.
-- No changes to `vialDesign.ts` tokens, PayFast function, schema, or data.
-
-## Guardrails
-- All vial tiles keep `VIAL_TEST_ID` + `vialTileFrameClasses` (vial-tokens-guard test stays green).
-- No hardcoded colors introduced — reuse existing semantic tokens (`bg-hero-gradient`, `text-trust`, `text-destructive` for "Special Offer" red).
-- Brand Guard: no new copy referencing removed brand terms.
-- Existing Vitest suites (`checkout-supplies-rail`, `vial-branding`, `vial-tokens-guard`) continue to pass; adjust `CartPage`/`CartDrawer` selectors only if tests reference removed nodes (none currently do per repo search).
-
-## Out of scope
-- ERP/inventory/SMS retention work (tracked in earlier multi-phase plan).
-- Payment provider changes.
-- Redesigning PDP or homepage.
+- No new dependencies, no processor change: express checkout is a fast lane into the existing PayFast hosted page, which surfaces Apple Pay and other wallets itself.
+- Vial thumbnails in the summary keep using the `vialDesign.ts` tokens so the token guard test keeps passing.
+- Existing `data-testid` hooks (`pay-now-button`, `checkout-total`, `checkout-shipping`) are preserved for the Playwright and vitest suites.
