@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Lock, ArrowRight, Github } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
 
 export default function AuthPage() {
@@ -47,18 +46,18 @@ export default function AuthPage() {
     }
   };
 
-  const handleOAuth = async (provider: "google" | "github") => {
+  const handleGoogle = async () => {
     setBusy(true);
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: { redirectTo: `${window.location.origin}/auth` },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
     } catch (err: any) {
       toast({
-        title: `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in failed`,
+        title: "Google sign-in failed",
         description: err.message || "Please try again or use email.",
         variant: "destructive",
       });
@@ -82,7 +81,7 @@ export default function AuthPage() {
         </p>
 
         <button
-          onClick={() => handleOAuth("google")}
+          onClick={handleGoogle}
           disabled={busy}
           aria-label="Continue with Google to sign in to Peptide South Africa"
           className="mt-6 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-60"
@@ -91,18 +90,8 @@ export default function AuthPage() {
           Continue with Google
         </button>
 
-        <button
-          onClick={() => handleOAuth("github")}
-          disabled={busy}
-          aria-label="Continue with GitHub to sign in to Peptide South Africa"
-          className="mt-3 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-60"
-        >
-          <Github className="h-4 w-4" />
-          Continue with GitHub
-        </button>
-
         <p className="mt-2 text-center text-[11px] leading-snug text-muted-foreground">
-          You'll be redirected to Google or GitHub to authorize <span className="font-medium text-foreground">Peptide South Africa</span>.
+          You'll be redirected to Google to authorize <span className="font-medium text-foreground">Peptide South Africa</span>.
         </p>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
