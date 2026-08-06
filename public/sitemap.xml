@@ -594,4 +594,13 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/tirzepatide-vs-semaglutide-comparison" />
   </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/what-are-peptides-complete-guide</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/what-are-peptides-complete-guide" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/what-are-peptides-complete-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/what-are-peptides-complete-guide" />
+  </url>
 </urlset>

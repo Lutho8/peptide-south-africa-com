@@ -233,6 +233,7 @@ export const entityClusters = {
   trust: {
     title: "Trust & Transparency",
     links: [
+      { label: "What Are Peptides? Complete Guide", href: "/blog/what-are-peptides-complete-guide", description: "The fundamentals — what peptides are, the main research categories, and sourcing standards." },
       { label: "About Us", href: "/about", description: "Our mission, team, and pharmaceutical-grade sourcing standards." },
       { label: "FAQ", href: "/faq", description: "Common questions about peptides, shipping, and protocols." },
       { label: "Research Hub", href: "/research", description: "Evidence-based research tools and peptide database." },
