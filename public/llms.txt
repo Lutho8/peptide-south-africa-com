@@ -69,4 +69,5 @@ All compounds are supplied for research purposes. Therapeutic use is permitted o
 - [Retatrutide vs Tirzepatide](/blog/retatrutide-vs-tirzepatide-comparison): What the separate trial data shows, and why they haven't been compared head-to-head yet.
 - [What Are Peptides? Complete Guide](/blog/what-are-peptides-complete-guide): Peptide fundamentals, research categories, and SA sourcing standards.
 - [Why GP-Supervised Protocols Matter](/blog/why-gp-supervised-peptide-protocols-matter): What separates clinical oversight from pure e-commerce peptide sourcing.
+- [Peptide Injection Site Rotation Guide](/blog/peptide-injection-site-rotation-guide): Where to inject, how to rotate sites, and preventing lipohypertrophy.
 - [Tirzepatide Shelf Life Unreconstituted](/blog/tirzepatide-shelf-life-unreconstituted): Is unmixed tirzepatide still good after months in storage?
