@@ -1,0 +1,47 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "kpv-perimenopause-inflammation",
+  title: "KPV and Perimenopause: The Anti-Inflammatory Peptide Worth Knowing About",
+  metaTitle: "KPV Peptide for Perimenopause — Inflammation, Gut Health & Research",
+  metaDescription: "Perimenopause isn't just hormones — chronic low-grade inflammation plays a bigger role than most women realize. Here's what the research says about KPV.",
+  keyword: "KPV perimenopause",
+  publishedAt: "2026-08-06",
+  updatedAt: "2026-08-06",
+  readingMinutes: 6,
+  category: "Clinical Research",
+  hero: {
+    eyebrow: "Women's health",
+    summary: "Weight gain, bloating, joint aches, brain fog and fatigue during perimenopause often trace back to one overlooked driver: chronic low-grade inflammation.",
+  },
+  body: [
+    { type: "p", text: "Ask most women what perimenopause feels like and \"inflamed\" isn't usually the first word that comes up. Hot flashes, mood swings, irregular cycles — yes. But underneath a lot of what gets chalked up to \"just hormones,\" there's often something quieter going on: chronic, low-grade inflammation." },
+    { type: "p", text: "It doesn't show up as a fever or a joint you can point to. It shows up as things that are easy to dismiss individually — stubborn weight gain that won't respond to what used to work, bloating and gut discomfort, aching joints without an obvious injury, brain fog, and a fatigue that sleep doesn't fully fix. As estrogen declines through the perimenopausal transition, the body loses some of the natural anti-inflammatory protection that hormone provided, and inflammatory markers tend to drift upward." },
+    { type: "h2", text: "What KPV actually is" },
+    { type: "p", text: "KPV — short for the amino acid sequence Lysine–Proline–Valine — is a tripeptide fragment of alpha-melanocyte-stimulating hormone (alpha-MSH). Researchers found that this specific three-amino-acid tail end carries potent anti-inflammatory activity on its own, without the pigmentation or appetite effects tied to the rest of the hormone.<sup>1</sup>" },
+    { type: "h2", text: "The Emory research: your gut pulls it in when it needs it" },
+    { type: "p", text: "The foundational study came out of Emory University School of Medicine, published in Gastroenterology in 2008.<sup>2</sup> Researchers found that KPV is carried into intestinal cells by a transporter called PepT1 — and that PepT1 activity increases in inflamed gut tissue. Put simply: the more inflamed the gut, the more of this transporter shows up, and the more KPV gets pulled inside the cells that need it." },
+    { type: "p", text: "Once inside, KPV reduced activation of two major inflammatory signaling pathways — NF-kB and MAP kinase — and lowered pro-inflammatory cytokine release. In colitis models, this translated into less inflammatory damage and faster recovery." },
+    { type: "callout", title: "What the evidence does and doesn't show", text: "This research is grounded in cell and animal models. There isn't yet a completed large-scale human clinical trial establishing KPV as a standalone treatment, and none specific to perimenopausal women. The mechanistic case is strong; the direct human evidence for this exact use case is still emerging." },
+    { type: "h2", text: "It doesn't stop at the gut" },
+    { type: "p", text: "KPV's anti-inflammatory action isn't confined to the intestines — the signaling pathways it affects are active throughout the body. That matters for perimenopause specifically, because the inflammation driving symptoms usually isn't confined to one organ. A peptide addressing both the local gut piece (bloating, digestive discomfort) and the broader systemic piece (joint aches, fatigue, brain fog) at once is working on the mechanism connecting those symptoms, rather than treating each in isolation." },
+    { type: "h2", text: "A live regulatory moment" },
+    { type: "p", text: "In late July 2026, the FDA's Pharmacy Compounding Advisory Committee (PCAC) reviewed KPV alongside several other peptides and voted to recommend it for inclusion on the 503A Bulk Drug Substances List — the list governing which substances U.S. compounding pharmacies can legally work with. Semax, BPC-157, TB-500, MOTS-c, and Epitalon also received favorable votes in that same session.<sup>3</sup>" },
+    { type: "p", text: "It's worth being precise about what that vote means: it's an advisory recommendation, not an approval, and formal FDA rulemaking is still required before anything changes for compounding pharmacies. But it does signal that a body of regulators and clinicians looked at the accumulated research on KPV and didn't dismiss it." },
+    { type: "h2", text: "Why this matters for the women in your life" },
+    { type: "p", text: "If your wife, your mum, your sister, or a friend is in the middle of this transition and describing that cluster of symptoms — weight that won't budge, bloating, joint aches, fog, fatigue — inflammation is worth knowing about as part of the picture. Talk to a healthcare provider familiar with peptide therapy before starting any protocol; they can weigh your specific symptoms, history, and goals rather than applying a one-size-fits-all approach." },
+  ],
+  citations: [
+    { id: "1", label: "Brzoska T, Luger TA, Maaser C, Abels C, Böhm M. Alpha-MSH and its receptors: from disease markers to novel target structures for therapeutic intervention. Endocr Rev. 2008.", url: "https://pubmed.ncbi.nlm.nih.gov/18664616/" },
+    { id: "2", label: "Dalmasso G, Charrier-Hisamuddin L, Nguyen HT, et al. PepT1-mediated tripeptide KPV uptake reduces intestinal inflammation. Gastroenterology. 2008.", url: "https://pubmed.ncbi.nlm.nih.gov/18061177/" },
+    { id: "3", label: "FDA Pharmacy Compounding Advisory Committee, meeting July 23-24 2026, 503A Bulks List votes.", url: "https://www.fda.gov/media/193711/download" },
+  ],
+  faqs: [
+    { q: "Is KPV the same as alpha-MSH?", a: "No. KPV is a small fragment — three amino acids — clipped from the tail end of alpha-MSH. It retains the anti-inflammatory signaling of the parent hormone without the pigmentation or appetite effects of alpha-MSH more broadly." },
+    { q: "Is KPV FDA-approved?", a: "No. It's not an FDA-approved drug. As of August 2026 it has a favorable, non-binding PCAC recommendation for the 503A Bulks List, but formal rulemaking hasn't occurred yet." },
+    { q: "How is KPV connected to perimenopause specifically?", a: "As estrogen declines, the body loses some anti-inflammatory protection and systemic inflammation markers tend to rise. KPV is researched for reducing inflammatory signaling both in the gut and systemically, which overlaps with symptoms common in this transition — though direct trial evidence in perimenopausal women doesn't yet exist." },
+    { q: "Where can I read the original research?", a: "Dalmasso G, et al., \"PepT1-mediated tripeptide KPV uptake reduces intestinal inflammation,\" Gastroenterology, 2008 (PMID: 18061177)." },
+  ],
+  cta: "club",
+  related: ["research-peptides-cape-town", "peptide-vial-shelf-life-storage", "buy-peptides-cape-town"],
+};
