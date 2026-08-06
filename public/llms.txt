@@ -66,4 +66,5 @@ All compounds are supplied for research purposes. Therapeutic use is permitted o
 - [Brain Peptides Explained](/blog/brain-peptides-cognitive-health): Cerebrolysin, Semax, Selank, Dihexa, P21 and FGL — what the research actually shows.
 - [Peptide Vial Shelf Life](/blog/peptide-vial-shelf-life-storage): Powder vs. reconstituted storage, and why the 28-day rule is about the vial, not the peptide.
 - [MOTS-C Mitochondrial Peptide](/blog/mots-c-mitochondrial-peptide-south-africa): What the exercise-mimetic research on MOTS-C actually shows.
+- [Retatrutide vs Tirzepatide](/blog/retatrutide-vs-tirzepatide-comparison): What the separate trial data shows, and why they haven't been compared head-to-head yet.
 - [Tirzepatide Shelf Life Unreconstituted](/blog/tirzepatide-shelf-life-unreconstituted): Is unmixed tirzepatide still good after months in storage?

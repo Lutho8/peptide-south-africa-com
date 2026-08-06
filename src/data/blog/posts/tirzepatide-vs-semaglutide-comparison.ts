@@ -198,8 +198,8 @@ export const post: BlogPost = {
   ],
   cta: "club",
   related: [
+    "retatrutide-vs-tirzepatide-comparison",
     "tirzepatide-shelf-life-unreconstituted",
     "peptide-bloodwork-markers-sa",
-    "peptide-dosage-calculator",
   ],
 };

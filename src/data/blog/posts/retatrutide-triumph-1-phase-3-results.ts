@@ -141,7 +141,7 @@ export const post: BlogPost = {
   ],
   cta: "club",
   related: [
-    "tirzepatide-vs-semaglutide-comparison",
+    "retatrutide-vs-tirzepatide-comparison",
     "tirzepatide-shelf-life-unreconstituted",
     "peptide-bloodwork-markers-sa",
   ],
