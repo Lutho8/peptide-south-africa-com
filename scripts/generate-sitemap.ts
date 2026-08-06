@@ -28,6 +28,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/buy-bpc-157-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/buy-ghk-cu-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/buy-tesamorelin-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-mots-c-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/impressum", changefreq: "yearly", priority: "0.4" },
   { path: "/faq", changefreq: "monthly", priority: "0.7" },
   { path: "/track-order", changefreq: "monthly", priority: "0.5" },

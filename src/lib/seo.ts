@@ -225,6 +225,7 @@ export const entityClusters = {
     links: [
       { label: "Tesamorelin", href: "/product/tesamorelin", description: "GHRH analog for growth hormone secretion studies." },
       { label: "MOTS-C", href: "/product/mots-c", description: "Mitochondrial peptide for metabolic and exercise research." },
+      { label: "Buy MOTS-C in South Africa", href: "/buy-mots-c-south-africa", description: "ZAR pricing, HPLC-tested mitochondrial peptide, local Cape Town dispatch." },
       { label: "Buy Tesamorelin in South Africa", href: "/buy-tesamorelin-south-africa", description: "ZAR pricing, HPLC-tested GHRH analog, local Cape Town dispatch." },
       { label: "About Our Protocols", href: "/about", description: "Learn about our evidence-based, GP-led approach." },
     ],
