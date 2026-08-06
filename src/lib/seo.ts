@@ -205,6 +205,8 @@ export const entityClusters = {
       { label: "Fat Loss Protocol", href: "/fat-loss-protocol", description: "Our structured fat loss program using GLP-1 agonists and metabolic peptides." },
       { label: "RT3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
       { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist for metabolic research." },
+      { label: "Buy Retatrutide in South Africa", href: "/buy-retatrutide-south-africa", description: "ZAR pricing, HPLC-tested RT3, local Cape Town dispatch." },
+      { label: "Buy Tirzepatide in South Africa", href: "/buy-tirzepatide-south-africa", description: "ZAR pricing, HPLC-tested TZ-2, local Cape Town dispatch." },
       { label: "Take the Quiz", href: "/quiz", description: "Get a personalized protocol recommendation based on your goals." },
     ],
   },
@@ -213,6 +215,8 @@ export const entityClusters = {
     links: [
       { label: "BPC-157", href: "/product/bpc-157", description: "Body Protection Compound for tissue repair and gut healing research." },
       { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Copper peptide for wound healing and collagen synthesis." },
+      { label: "Buy BPC-157 in South Africa", href: "/buy-bpc-157-south-africa", description: "ZAR pricing, HPLC-tested BPC/TB-500 blend, local dispatch." },
+      { label: "Buy GHK-Cu in South Africa", href: "/buy-ghk-cu-south-africa", description: "ZAR pricing, HPLC-tested 50mg copper peptide vials." },
       { label: "Research Hub", href: "/research", description: "Access 500+ citations and clinical data on healing peptides." },
     ],
   },
@@ -221,6 +225,7 @@ export const entityClusters = {
     links: [
       { label: "Tesamorelin", href: "/product/tesamorelin", description: "GHRH analog for growth hormone secretion studies." },
       { label: "MOTS-C", href: "/product/mots-c", description: "Mitochondrial peptide for metabolic and exercise research." },
+      { label: "Buy Tesamorelin in South Africa", href: "/buy-tesamorelin-south-africa", description: "ZAR pricing, HPLC-tested GHRH analog, local Cape Town dispatch." },
       { label: "About Our Protocols", href: "/about", description: "Learn about our evidence-based, GP-led approach." },
     ],
   },

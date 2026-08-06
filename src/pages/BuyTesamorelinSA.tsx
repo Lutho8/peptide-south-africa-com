@@ -156,7 +156,7 @@ export default function BuyTesamorelinSA() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Do I need BAC water?</h3>
-                <p className="text-sm text-muted-foreground">Yes — all lyophilised peptides require bacteriostatic water for reconstitution. BAC water is available from most compounding pharmacies in South Africa. See our <a href="https://peptide-south-africa.co.za" className="text-primary hover:underline">reconstitution guide</a> for step-by-step instructions.</p>
+                <p className="text-sm text-muted-foreground">Yes — all lyophilised peptides require bacteriostatic water for reconstitution. BAC water is available from most compounding pharmacies in South Africa. See our <Link to="/blog/peptide-vial-shelf-life-storage" className="text-primary hover:underline">reconstitution guide</Link> for step-by-step instructions.</p>
               </div>
             </div>
           </div>

@@ -142,7 +142,7 @@ export const post: BlogPost = {
   cta: "club",
   related: [
     "tirzepatide-vs-semaglutide-comparison",
-    "fat-loss-protocol-page",
+    "tirzepatide-shelf-life-unreconstituted",
     "peptide-bloodwork-markers-sa",
   ],
 };

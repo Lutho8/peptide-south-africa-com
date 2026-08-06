@@ -1,4 +1,5 @@
 import { ExternalLink, FlaskConical, BookOpen, Calculator, Layers, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import SEO from "@/components/SEO";
@@ -30,6 +31,28 @@ const researchHubSchema = {
   ],
 };
 
+const researchHubFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Is peptide research legal in South Africa?",
+      acceptedAnswer: { "@type": "Answer", text: "Research peptides are sold for research purposes and are not scheduled medicines under SAHPRA when used in that context. See our shop for our full HPLC-tested range." },
+    },
+    {
+      "@type": "Question",
+      name: "Where do the citations in the Research Hub come from?",
+      acceptedAnswer: { "@type": "Answer", text: "Peer-reviewed clinical trials and Cochrane reviews, cross-referenced against PubMed. Our blog breaks several of these down in plain language, including our brain peptides research overview." },
+    },
+    {
+      "@type": "Question",
+      name: "How long do peptide vials last once I have them?",
+      acceptedAnswer: { "@type": "Answer", text: "It depends on whether the vial is still lyophilised powder or already reconstituted. Our full peptide shelf life guide covers both cases in detail." },
+    },
+  ],
+};
+
 const tools = [
   { icon: Search, title: "Browse 98+ Peptides", desc: "Search and filter our complete research-grade peptide database.", color: "bg-accent/10 text-accent" },
   { icon: FlaskConical, title: "Peptide Blends", desc: "Explore pre-formulated blends with full dosage protocols and references.", color: "bg-primary/10 text-primary" },
@@ -41,9 +64,10 @@ const tools = [
 export default function ResearchHubPage() {
   return (
     <>
-      <SEO title="Peptide Research Hub | Clinical Studies & Protocols" description="Access our peptide research database with clinical studies, dosing protocols, and scientific literature. Free resource for the research community." path="/research" />
+      <SEO title="Peptide Research Hub South Africa | Clinical Studies & Protocols" description="Access our South African peptide research database with clinical studies, dosing protocols, and scientific literature. Free resource for the research community." path="/research" />
       <div className="flex flex-col">
       <JsonLd data={researchHubSchema} />
+      <JsonLd data={researchHubFaqSchema} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Research Hub", href: "/research" }]} />
       {/* Hero */}
       <section className="bg-hero-gradient py-16 sm:py-20">
@@ -126,6 +150,29 @@ export default function ResearchHubPage() {
             >
               Open in full screen <ExternalLink className="h-3.5 w-3.5" />
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-border bg-background py-16 sm:py-20">
+        <div className="container px-4 max-w-3xl">
+          <h2 className="text-center font-display text-2xl font-bold text-foreground sm:text-3xl mb-8">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Is peptide research legal in South Africa?</h3>
+              <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes and are not scheduled medicines under SAHPRA when used in that context. See our <Link to="/shop" className="text-primary hover:underline">full HPLC-tested range</Link> for what's currently in stock.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Where do the citations in the Research Hub come from?</h3>
+              <p className="text-sm text-muted-foreground">Peer-reviewed clinical trials and Cochrane reviews, cross-referenced against PubMed. Our blog breaks several of these down in plain language, including our <Link to="/blog/brain-peptides-cognitive-health" className="text-primary hover:underline">brain peptides research overview</Link>.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">How long do peptide vials last once I have them?</h3>
+              <p className="text-sm text-muted-foreground">It depends on whether the vial is still lyophilised powder or already reconstituted. Our <Link to="/blog/peptide-vial-shelf-life-storage" className="text-primary hover:underline">full peptide shelf life guide</Link> covers both cases in detail.</p>
+            </div>
           </div>
         </div>
       </section>

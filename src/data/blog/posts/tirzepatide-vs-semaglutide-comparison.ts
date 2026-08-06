@@ -198,7 +198,7 @@ export const post: BlogPost = {
   ],
   cta: "club",
   related: [
-    "fat-loss-protocol-page",
+    "tirzepatide-shelf-life-unreconstituted",
     "peptide-bloodwork-markers-sa",
     "peptide-dosage-calculator",
   ],
