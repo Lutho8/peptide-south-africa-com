@@ -154,7 +154,7 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={`${product.name} | Research Peptide | Peptide South Africa`}
+        title={`${product.name} South Africa | Research Peptide Supplier`}
         description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}

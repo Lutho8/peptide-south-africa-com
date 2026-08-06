@@ -1,0 +1,45 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "retatrutide-vs-tirzepatide-comparison",
+  title: "Retatrutide vs. Tirzepatide: What the Trial Data Actually Shows",
+  metaTitle: "Retatrutide vs Tirzepatide South Africa | Trial Data Compared",
+  metaDescription: "Retatrutide is a triple GLP-1/GIP/glucagon agonist, tirzepatide a dual GLP-1/GIP agonist. Here's what their separate trial data shows — and why they haven't actually been compared head-to-head yet.",
+  keyword: "retatrutide vs tirzepatide",
+  publishedAt: "2026-08-07",
+  updatedAt: "2026-08-07",
+  readingMinutes: 6,
+  category: "Comparison Guide",
+  hero: {
+    eyebrow: "GLP-1 research",
+    summary: "Both are Eli Lilly incretin compounds constantly compared to each other. The honest answer is more nuanced than 'X beats Y' — starting with the fact that a true head-to-head trial doesn't exist yet.",
+  },
+  body: [
+    { type: "p", text: "Retatrutide and tirzepatide are two of the most-discussed compounds in metabolic research right now, both developed by Eli Lilly, and both frequently pitted against each other in comparisons that quote a single number from each side's trial data. That framing skips the most important caveat: the two have never actually been tested against each other in the same trial." },
+    { type: "h2", text: "The mechanism difference" },
+    { type: "p", text: "Tirzepatide is a dual agonist, activating GLP-1 and GIP receptors. Retatrutide goes a step further as a triple agonist, adding glucagon receptor activation on top of GLP-1 and GIP. That third pathway is the entire premise behind retatrutide's development — glucagon receptor activity is associated with increased energy expenditure, which is a mechanism the dual-agonist approach doesn't directly engage." },
+    { type: "h2", text: "What each trial actually found" },
+    { type: "p", text: "Tirzepatide's pivotal weight-loss trials (the SURMOUNT program) reported average weight loss up to approximately 20.9% over 72 weeks.<sup>1</sup> Retatrutide's Phase 2 trial, published in the New England Journal of Medicine in 2023, reported a mean weight reduction of 24.2% at 48 weeks with the 12mg dose — and notably, the weight-loss curve had not yet plateaued when the 48-week treatment period ended, meaning the trial ended before participants stopped losing weight.<sup>2</sup> Participants with a BMI of 35 or higher saw even larger reductions, around 26.4–26.5%." },
+    { type: "callout", title: "The comparison everyone skips", text: "Retatrutide has not been compared to tirzepatide within a single randomized trial. Every 'retatrutide beats tirzepatide' claim you'll see is a cross-trial comparison — different trials, different participant populations, different durations. A dedicated head-to-head trial (TRIUMPH-5) is underway specifically to answer this properly. Until it reports, treat the percentage gap as suggestive, not settled." },
+    { type: "h2", text: "Regulatory status" },
+    { type: "p", text: "Tirzepatide is an approved medicine in several markets — as Mounjaro (type 2 diabetes, since 2022) and Zepbound (weight loss since 2023, obstructive sleep apnea since 2024) in the US, for example. Retatrutide remains investigational everywhere; it's still in Phase 3 trials and isn't approved as a therapeutic drug in any market yet." },
+    { type: "p", text: "In South Africa specifically, both compounds sit in the same practical bucket for most people: neither is a SAHPRA-registered finished medicine, and both are accessed through the research-peptide or GP-led compounding pathway rather than a standard pharmacy prescription. Tirzepatide's overseas approval status doesn't change how it's currently accessed locally." },
+    { type: "h2", text: "Side effects" },
+    { type: "p", text: "Both compounds share a broadly similar side-effect profile, predominantly gastrointestinal — nausea, vomiting, diarrhea, and constipation, typically dose-dependent and most pronounced during dose escalation. Neither has shown a materially different safety signal from the other in their respective trials so far." },
+    { type: "h2", text: "So which one should you research?" },
+    { type: "p", text: "This isn't a question with a single right answer, and it isn't one we're going to answer for you in the abstract. Tirzepatide has a substantially larger body of trial data and real-world use behind it. Retatrutide's early numbers are genuinely higher, but they come from a smaller, shorter, Phase 2 dataset — Phase 3 data and, eventually, the direct head-to-head trial will matter more than the numbers currently circulating." },
+    { type: "p", text: "If you're weighing the two, the conversation is better had with a GP who can review your specific health history against both compounds' current evidence — not settled by whichever percentage looks bigger in a comparison article, including this one." },
+  ],
+  citations: [
+    { id: "1", label: "Jastreboff AM, Aronne LJ, Ahmad NN, et al. Tirzepatide Once Weekly for the Treatment of Obesity (SURMOUNT-1). N Engl J Med. 2022.", url: "https://pubmed.ncbi.nlm.nih.gov/35658024/" },
+    { id: "2", label: "Jastreboff AM, Kaplan LM, Frías JP, et al. Triple–Hormone-Receptor Agonist Retatrutide for Obesity — A Phase 2 Trial. N Engl J Med. 2023.", url: "https://www.nejm.org/doi/full/10.1056/NEJMoa2301972" },
+  ],
+  faqs: [
+    { q: "Has retatrutide been directly compared to tirzepatide in a trial?", a: "Not yet reported. The two have only been evaluated in separate trials with different populations and durations. A dedicated head-to-head trial, TRIUMPH-5, is underway specifically to make a direct comparison possible." },
+    { q: "Is retatrutide approved anywhere?", a: "No. As of this writing, retatrutide remains investigational and is still in Phase 3 trials. Tirzepatide is approved in several markets under the brand names Mounjaro and Zepbound." },
+    { q: "Why does retatrutide show higher weight-loss numbers in some articles?", a: "Its Phase 2 trial reported 24.2% mean weight loss at 48 weeks without the curve plateauing, versus tirzepatide's ~20.9% over 72 weeks in its pivotal trials. These come from separate trials, not a head-to-head comparison, so the gap should be read as suggestive rather than conclusive." },
+    { q: "Are the side effects different between the two?", a: "Not meaningfully — both show a similar gastrointestinal side-effect profile (nausea, vomiting, diarrhea, constipation), typically tied to dose escalation." },
+  ],
+  cta: "club",
+  related: ["tirzepatide-vs-semaglutide-comparison", "retatrutide-triumph-1-phase-3-results", "tirzepatide-shelf-life-unreconstituted"],
+};

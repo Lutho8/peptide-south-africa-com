@@ -42,6 +42,7 @@ import BuyBpc157SA from "@/pages/BuyBpc157SA";
 import BuyTirzepatideSA from "@/pages/BuyTirzepatideSA";
 import BuyGhkCuSA from "@/pages/BuyGhkCuSA";
 import BuyTesamorelinSA from "@/pages/BuyTesamorelinSA";
+import BuyMotsCSA from "@/pages/BuyMotsCSA";
 import TestingPage from "@/pages/TestingPage";
 import AccountPage from "@/pages/AccountPage";
 import CommunityJoinPage from "@/pages/CommunityJoinPage";
@@ -106,6 +107,7 @@ export default function AppShell() {
                 <Route path="/buy-tirzepatide-south-africa" element={<BuyTirzepatideSA />} />
                 <Route path="/buy-ghk-cu-south-africa" element={<BuyGhkCuSA />} />
                 <Route path="/buy-tesamorelin-south-africa" element={<BuyTesamorelinSA />} />
+                <Route path="/buy-mots-c-south-africa" element={<BuyMotsCSA />} />
                 <Route path="/testing" element={<TestingPage />} />
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/community" element={<CommunityJoinPage />} />

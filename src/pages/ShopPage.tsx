@@ -16,6 +16,28 @@ import { toast as sonnerToast } from "sonner";
 
 const SITE_URL = "https://www.peptide-south-africa.com";
 
+const shopFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What's the difference between the compound categories in your shop?",
+      acceptedAnswer: { "@type": "Answer", text: "Metabolic/GLP-1 compounds, healing peptides, growth-hormone secretagogues, and longevity/mitochondrial peptides each work through different pathways. See our full breakdown in what are peptides for an overview of every category before choosing." },
+    },
+    {
+      "@type": "Question",
+      name: "Is buying research peptides in South Africa legal?",
+      acceptedAnswer: { "@type": "Answer", text: "Research peptides are sold for research purposes and are not SAHPRA-registered finished medicines. They're typically accessed via a GP-led protocol pathway or direct research-use purchase rather than a standard pharmacy prescription." },
+    },
+    {
+      "@type": "Question",
+      name: "Should I buy from a pure e-commerce supplier or a GP-supervised one?",
+      acceptedAnswer: { "@type": "Answer", text: "Purity testing and a Certificate of Analysis are essential but don't cover contraindication screening, individualized dosing, or bloodwork monitoring. See why GP-supervised protocols matter for the fuller picture." },
+    },
+  ],
+};
+
 const protocols = [
   {
     title: "Fat Loss Protocol",
@@ -135,6 +157,7 @@ export default function ShopPage() {
       <JsonLd data={itemListSchema} />
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
+      <JsonLd data={shopFaqSchema} />
       <Breadcrumbs
         crumbs={[
           { label: "Home", href: "/" },
@@ -406,6 +429,29 @@ export default function ShopPage() {
               No products found in this category.
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="border-t border-border bg-background py-16 sm:py-20">
+        <div className="container px-4 max-w-3xl">
+          <h2 className="text-center font-display text-2xl font-bold text-foreground sm:text-3xl mb-8">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">What's the difference between the compound categories in your shop?</h3>
+              <p className="text-sm text-muted-foreground">Metabolic/GLP-1 compounds, healing peptides, growth-hormone secretagogues, and longevity/mitochondrial peptides each work through different pathways. See our full breakdown in <Link to="/blog/what-are-peptides-complete-guide" className="text-primary hover:underline">what are peptides</Link> for an overview of every category before choosing.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Is buying research peptides in South Africa legal?</h3>
+              <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes and are not SAHPRA-registered finished medicines. They're typically accessed via a GP-led protocol pathway or direct research-use purchase rather than a standard pharmacy prescription.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Should I buy from a pure e-commerce supplier or a GP-supervised one?</h3>
+              <p className="text-sm text-muted-foreground">Purity testing and a Certificate of Analysis are essential but don't cover contraindication screening, individualized dosing, or bloodwork monitoring. See <Link to="/blog/why-gp-supervised-peptide-protocols-matter" className="text-primary hover:underline">why GP-supervised protocols matter</Link> for the fuller picture.</p>
+            </div>
+          </div>
         </div>
       </section>
 

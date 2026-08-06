@@ -1,0 +1,87 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "peptide-vial-shelf-life-storage",
+  title: "Peptide Vial Shelf Life: Powder vs. Reconstituted, and the 28-Day Rule Explained",
+  metaTitle: "Peptide Shelf Life — Powder vs Mixed Vials & the 28-Day Rule",
+  metaDescription: "How long does a peptide vial last before and after mixing? A practical guide to powder vs. reconstituted shelf life, why the 28-day rule exists, and exceptions like GHK-Cu.",
+  keyword: "peptide vial shelf life",
+  publishedAt: "2026-08-06",
+  updatedAt: "2026-08-06",
+  readingMinutes: 6,
+  category: "Protocols",
+  hero: {
+    eyebrow: "Storage & handling",
+    summary: "Powder and liquid peptides degrade on very different timelines — and the widely-quoted '28 days' isn't actually about the peptide breaking down.",
+  },
+  body: [
+    { type: "p", text: "One of the most common questions we get is simple: how long does a vial actually last? The honest answer depends on two separate things — whether it's still powder or already mixed, and whether you're asking about chemical potency or contamination risk. Those are two different clocks, and mixing them up is where most of the confusion comes from." },
+    { type: "h2", text: "The general rule of thumb" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Powder, room temperature:</strong> roughly 6 months before meaningful degradation",
+        "<strong>Powder, refrigerated (2–8°C):</strong> extends out to roughly 2 years",
+        "<strong>Reconstituted (liquid), room temperature:</strong> starts breaking down within about a week",
+        "<strong>Reconstituted (liquid), refrigerated:</strong> can extend to roughly 6 weeks",
+      ],
+    },
+    { type: "p", text: "These figures track with third-party HPLC stability testing across most common research peptides, and they're a reasonable planning baseline. But two things sit underneath that baseline that are worth understanding properly: the difference between chemical degradation and contamination risk, and the fact that not every peptide behaves identically." },
+    { type: "h2", text: "Why you'll also see \"28 days\" everywhere — and why that's a different number" },
+    { type: "p", text: "If you've read other storage guides, you've probably seen 28 days quoted as the reconstituted shelf life. That number isn't wrong, but it's answering a different question than HPLC stability testing answers." },
+    { type: "p", text: "The 28-day figure comes from USP &lt;797&gt; guidance on multi-dose vials once punctured — it's a <strong>sterility and beyond-use-dating limit</strong>, not a statement about when the peptide molecule itself chemically degrades. Every time a needle goes through the stopper, there's a small but real risk of introducing microbes. If you're reconstituting with bacteriostatic water, the 0.9% benzyl alcohol preservative it contains is what's actually rated for about 28 days of antimicrobial protection — after that, the preservative's effectiveness against contamination is no longer assured, independent of how the peptide itself is holding up chemically." },
+    { type: "callout", title: "Two different limits, easy to confuse", text: "HPLC testing tells you when the peptide starts to chemically break down. The 28-day USP rule tells you when a punctured multi-dose vial stops being considered safe from a contamination standpoint. A peptide can be chemically stable well past 28 days and still be past its safe-use window because of the vial, not the molecule." },
+    { type: "p", text: "In practice, that means a well-stored, refrigerated, bacteriostatic-water vial can often remain chemically potent longer than 28 days — but the contamination clock is the more conservative one, and it's the one we'd default to for anything intended for injection." },
+    { type: "h2", text: "The water matters as much as the peptide" },
+    { type: "p", text: "Reconstitution diluent changes the whole picture:" },
+    {
+      type: "ul",
+      items: [
+        "<strong>Bacteriostatic water</strong> (contains 0.9% benzyl alcohol as a preservative) — supports roughly the 28-day multi-dose window discussed above.",
+        "<strong>Sterile water</strong> (no preservative) — has no antimicrobial protection at all, and should be treated as good for roughly 24–48 hours only, then discarded regardless of how the peptide looks.",
+      ],
+    },
+    { type: "p", text: "If you're not sure which diluent a vial was mixed with, treat it as the shorter window until you can confirm." },
+    { type: "h2", text: "Not every peptide plays by the same rules" },
+    { type: "p", text: "The ranges above are a sensible default, but individual peptides vary — sometimes significantly — based on their amino acid sequence, formulation, and what's actually in the vial." },
+    { type: "p", text: "<strong>GHK-Cu</strong> is a useful example. Because it's a copper-binding peptide, a properly mixed solution has a visible blue tint from the copper ion itself — this isn't a defect, it's expected. That color also gives you an extra visual check that colorless peptides don't offer: a solution that's turned notably darker, cloudy, or has developed visible precipitate is telling you something a clear peptide solution can't. That said, color stability and chemical stability aren't the same thing — a solution can still look normal after its practical use-by window, and equally, transient color shifts don't always mean the peptide has degraded. If you're running a higher-concentration vial (for example, a 100mg GHK-Cu vial being used down over 5–7 weeks) and you can't find a specific HPLC-confirmed stability window for that exact concentration and formulation, the safer approach is to default to the shorter of the general reconstituted-liquid guidance and the 28-day contamination window — not to assume the visible color means it's still good." },
+    { type: "p", text: "<strong>5-Amino-1MQ</strong> is another compound worth flagging for the same reason — solutions typically show an orange to yellow tint, which again serves as a rough visual reference point rather than a precise stability indicator." },
+    { type: "p", text: "For peptides without any visible color, you're relying on clarity (no cloudiness, no particulates) and smell as your only at-home checks — which is exactly why the conservative, contamination-based window matters more for those than for GHK-Cu or 5-Amino-1MQ, where you at least have a secondary visual signal." },
+    { type: "h2", text: "Signs a vial should be discarded" },
+    {
+      type: "ul",
+      items: [
+        "Cloudiness or visible particulates in a solution that should be clear",
+        "A color change beyond what's expected for that specific peptide (e.g. GHK-Cu turning notably darker or murky, not just its normal blue)",
+        "Any vial that's been frozen and thawed after reconstitution — freeze-thaw cycles damage peptide bonds directly and shouldn't be used regardless of how the solution looks",
+        "Any vial past its diluent's contamination window (28 days for bacteriostatic water, 24–48 hours for sterile water), even if it still looks fine",
+      ],
+    },
+    { type: "callout", title: "When in doubt, don't guess", text: "If a vial's exact stability data isn't available for its specific concentration and formulation, default to the more conservative window rather than assuming a longer one because the peptide happens to still look normal. A fresh vial is cheap. A contamination issue isn't." },
+    { type: "h2", text: "Quick reference" },
+    {
+      type: "ol",
+      items: [
+        "Store unopened powder refrigerated (2–8°C) as the practical default; freezer for long-term stock",
+        "Reconstitute only when you're ready to start using a vial",
+        "Refrigerate immediately after mixing — don't leave it at room temperature",
+        "Use within 28 days if mixed with bacteriostatic water; within 24–48 hours if mixed with sterile water",
+        "Never freeze a reconstituted vial",
+        "For colored peptides (GHK-Cu, 5-Amino-1MQ), use color as a secondary check — not a replacement for the contamination-window rule",
+      ],
+    },
+  ],
+  citations: [
+    { id: "1", label: "USP General Chapter <797>, Pharmaceutical Compounding — Sterile Preparations, beyond-use dating for multi-dose containers.", url: "https://www.usp.org/compounding/general-chapter-797" },
+    { id: "2", label: "Manning MC, Chou DK, Murphy BM, Payne RW, Katayama DS. Stability of Protein Pharmaceuticals: An Update. Pharm Res. 2010;27(4):544-575.", url: "https://pubmed.ncbi.nlm.nih.gov/20143256/" },
+    { id: "3", label: "Janoshik Analytical. Peptide purity and stability testing reports.", url: "https://www.janoshik.com/" },
+  ],
+  faqs: [
+    { q: "Is the 28-day rule about the peptide going bad?", a: "Not directly. It's a USP <797>-based beyond-use limit tied to sterility risk in a punctured multi-dose vial and to bacteriostatic water's preservative window — not a direct measurement of when the peptide molecule itself chemically degrades. Many peptides remain chemically stable beyond 28 days when refrigerated, but the contamination risk is the more conservative limit to plan around." },
+    { q: "Does GHK-Cu's blue color mean it's degrading?", a: "No — GHK-Cu solutions are expected to have a blue tint from the copper ion itself. That's normal, not a sign of spoilage. A shift to noticeably darker, murky, or cloudy is the actual warning sign, not the baseline blue color." },
+    { q: "Can I use sterile water instead of bacteriostatic water?", a: "You can, but the shelf life drops sharply — to roughly 24–48 hours — because sterile water has no antimicrobial preservative. Bacteriostatic water's benzyl alcohol content is what supports the longer ~28-day window." },
+    { q: "Can I freeze a vial after I've already mixed it?", a: "This isn't recommended. Freeze-thaw cycles physically damage peptide bonds, independent of how the solution looks afterward. If you need long-term storage, keep it as powder and only reconstitute what you're about to use." },
+  ],
+  cta: "club",
+  related: ["peptide-dosage-calculator", "research-peptides-cape-town", "how-to-track-peptide-cycles", "bpc-157-south-africa"],
+};

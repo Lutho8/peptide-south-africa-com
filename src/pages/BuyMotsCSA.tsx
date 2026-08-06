@@ -5,8 +5,8 @@ import { Shield, CheckCircle, Truck, MapPin, FlaskConical, ArrowRight } from "lu
 const PRODUCT_LD = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "Tesamorelin",
-  "description": "Buy Tesamorelin in South Africa. GHRH analog for GH secretion research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier.",
+  "name": "MOTS-C",
+  "description": "Buy MOTS-C in South Africa. Mitochondrial-derived peptide for metabolic and longevity research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier.",
   "brand": {
     "@type": "Brand",
     "name": "Peptide South Africa"
@@ -14,8 +14,8 @@ const PRODUCT_LD = {
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "ZAR",
-    "lowPrice": "775",
-    "highPrice": "2141",
+    "lowPrice": "485",
+    "highPrice": "1237",
     "availability": "https://schema.org/InStock",
     "areaServed": {
       "@type": "Country",
@@ -29,7 +29,7 @@ const PRODUCT_LD = {
   },
   "additionalProperty": [
     { "@type": "PropertyValue", "name": "Purity", "value": "≥99%" },
-    { "@type": "PropertyValue", "name": "Category", "value": "GHRH analog" },
+    { "@type": "PropertyValue", "name": "Category", "value": "Mitochondrial-derived peptide" },
     { "@type": "PropertyValue", "name": "Testing", "value": "Third-party HPLC tested at Janoshik Analytical" }
   ]
 };
@@ -40,19 +40,19 @@ const BREADCRUMB_LD = {
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://peptide-south-africa.com" },
     { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://peptide-south-africa.com/shop" },
-    { "@type": "ListItem", "position": 3, "name": "Buy Tesamorelin in South Africa" }
+    { "@type": "ListItem", "position": 3, "name": "Buy MOTS-C in South Africa" }
   ]
 };
 
-export default function BuyTesamorelinSA() {
+export default function BuyMotsCSA() {
   return (
     <>
       <SEO
-        title="Buy Tesamorelin in South Africa | GHRH Analog Research Peptide"
-        description="Buy Tesamorelin in South Africa. GHRH analog for GH secretion research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier."
-        path="/buy-tesamorelin-south-africa"
+        title="Buy MOTS-C in South Africa | Mitochondrial Peptide Research"
+        description="Buy MOTS-C in South Africa. Mitochondrial-derived peptide for metabolic and longevity research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier."
+        path="/buy-mots-c-south-africa"
         type="product"
-        keywords="buy tesamorelin south africa, tesamorelin SA, GHRH peptide south africa, tesamorelin ZAR, growth hormone peptide SA"
+        keywords="buy mots-c south africa, mots-c SA, mots-c peptide south africa price, mitochondrial peptide south africa, longevity peptide SA"
         jsonLd={[PRODUCT_LD, BREADCRUMB_LD]}
       />
 
@@ -65,7 +65,7 @@ export default function BuyTesamorelinSA() {
             <span className="mx-2">/</span>
             <Link to="/shop" className="hover:text-foreground">Shop</Link>
             <span className="mx-2">/</span>
-            <span className="text-foreground">Buy Tesamorelin in South Africa</span>
+            <span className="text-foreground">Buy MOTS-C in South Africa</span>
           </nav>
 
           {/* Hero */}
@@ -73,8 +73,8 @@ export default function BuyTesamorelinSA() {
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4">
               <MapPin className="w-3 h-3" /> Cape Town, South Africa
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy Tesamorelin in South Africa</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for GH production stimulation and visceral adipose tissue reduction. HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy MOTS-C in South Africa</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl">MOTS-C is a mitochondrial-derived peptide studied for its role in metabolic homeostasis, insulin sensitivity, and exercise physiology research. HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
           </div>
 
           {/* Trust bar */}
@@ -96,11 +96,11 @@ export default function BuyTesamorelinSA() {
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-card">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-foreground mb-1">Tesamorelin</h2>
-                <p className="text-sm text-muted-foreground">GHRH analog</p>
+                <h2 className="text-xl font-bold text-foreground mb-1">MOTS-C</h2>
+                <p className="text-sm text-muted-foreground">Mitochondrial-derived peptide</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">R775</p>
+                <p className="text-2xl font-bold text-foreground">R485</p>
                 <p className="text-xs text-muted-foreground">ZAR · single vial</p>
               </div>
             </div>
@@ -121,10 +121,10 @@ export default function BuyTesamorelinSA() {
             </ul>
 
             <Link
-              to="/product/tesamorelin"
+              to="/product/mots-c"
               className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground font-semibold py-3 px-6 rounded-xl hover:bg-primary/90 transition-colors"
             >
-              View Tesamorelin Product Page <ArrowRight className="w-4 h-4" />
+              View MOTS-C Product Page <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -143,7 +143,7 @@ export default function BuyTesamorelinSA() {
             <h2 className="text-xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-foreground mb-1">Is Tesamorelin legal in South Africa?</h3>
+                <h3 className="font-semibold text-foreground mb-1">Is MOTS-C legal in South Africa?</h3>
                 <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes only and are not scheduled medicines under SAHPRA when used in a research context. They are not approved for therapeutic use without a practitioner.</p>
               </div>
               <div>
@@ -151,8 +151,8 @@ export default function BuyTesamorelinSA() {
                 <p className="text-sm text-muted-foreground">≥99% purity — every batch is third-party HPLC tested at Janoshik Analytical. The Certificate of Analysis is downloadable directly from the product page.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-foreground mb-1">How do you ship in South Africa?</h3>
-                <p className="text-sm text-muted-foreground">We dispatch from Cape Town via overnight courier. Cold-pack included for temperature-sensitive shipments. ZAR shipping fees — no international surcharges.</p>
+                <h3 className="font-semibold text-foreground mb-1">What is MOTS-C typically researched for?</h3>
+                <p className="text-sm text-muted-foreground">It's studied for its role in mitochondrial function, metabolic homeostasis, insulin sensitivity, and fatty acid oxidation. See our <Link to="/blog/mots-c-mitochondrial-peptide-south-africa" className="text-primary hover:underline">full MOTS-C research overview</Link> for the underlying studies.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Do I need BAC water?</h3>
@@ -164,10 +164,10 @@ export default function BuyTesamorelinSA() {
           {/* CTA footer */}
           <div className="text-center">
             <Link
-              to="/product/tesamorelin"
+              to="/product/mots-c"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-semibold py-3 px-8 rounded-xl hover:bg-primary/90 transition-colors"
             >
-              Order Tesamorelin <ArrowRight className="w-4 h-4" />
+              Order MOTS-C <ArrowRight className="w-4 h-4" />
             </Link>
             <p className="text-xs text-muted-foreground mt-3">For research purposes only. Not for human therapeutic use.</p>
           </div>

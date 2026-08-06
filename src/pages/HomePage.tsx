@@ -411,7 +411,9 @@ export default function HomePage() {
         title="Explore By Goal"
         links={[
           ...entityClusters.fatLoss.links.slice(0, 2),
+          entityClusters.fatLoss.links.find(l => l.href === "/buy-retatrutide-south-africa")!,
           ...entityClusters.healing.links.slice(0, 1),
+          entityClusters.healing.links.find(l => l.href === "/buy-bpc-157-south-africa")!,
           ...entityClusters.growthHormone.links.slice(0, 1),
           ...entityClusters.trust.links.slice(0, 2),
         ]}
