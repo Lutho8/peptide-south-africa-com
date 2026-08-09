@@ -6,7 +6,12 @@ import { useCart } from "@/context/CartContext";
 import logoIcon from "@/assets/logo-icon.png";
 import logoHorizontal from "@/assets/logo-horizontal.png";
 
-type Dropdown = { label: string; items: { label: string; to: string; external?: boolean; desc?: string }[] };
+type Dropdown = {
+  label: string;
+  href?: string;
+  external?: boolean;
+  items?: { label: string; to: string; external?: boolean; desc?: string }[];
+};
 
 const DROPDOWNS: Dropdown[] = [
   {
@@ -34,6 +39,11 @@ const DROPDOWNS: Dropdown[] = [
       { label: "Tesamorelin", to: "/product/tesamorelin", desc: "GH releasing" },
       { label: "Shop all Recovery", to: "/shop?category=Healing" },
     ],
+  },
+  {
+    label: "Pets",
+    href: "https://pets.peptide-south-africa.com/",
+    external: true,
   },
   {
     label: "Explore",
@@ -106,49 +116,61 @@ export default function Header() {
             Shop
           </Link>
 
-          {DROPDOWNS.map((d, idx) => (
-            <div
-              key={d.label}
-              className="relative"
-              onMouseEnter={() => setOpenIdx(idx)}
-              onMouseLeave={() => setOpenIdx(null)}
-            >
-              <button
+          {DROPDOWNS.map((d, idx) =>
+            d.href ? (
+              <a
+                key={d.label}
+                href={d.href}
+                target={d.external ? "_blank" : undefined}
+                rel={d.external ? "noopener noreferrer" : undefined}
                 className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
               >
-                {d.label} <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-              {openIdx === idx && (
-                <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-border bg-card p-2 shadow-card-hover">
-                  {d.items.map((it) =>
-                    it.external ? (
-                      <a
-                        key={it.label}
-                        href={it.to}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block rounded-lg px-3 py-2 text-sm hover:bg-muted"
-                      >
-                        <div className="font-medium text-foreground">{it.label} ↗</div>
-                        {it.desc && <div className="text-xs text-muted-foreground">{it.desc}</div>}
-                      </a>
-                    ) : (
-                      <Link
-                        key={it.label}
-                        to={it.to}
-                        onClick={() => setOpenIdx(null)}
-                        className="block rounded-lg px-3 py-2 text-sm hover:bg-muted"
-                      >
-                        <div className="font-medium text-foreground">{it.label}</div>
-                        {it.desc && <div className="text-xs text-muted-foreground">{it.desc}</div>}
-                      </Link>
-                    )
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+                {d.label}{d.external ? " ↗" : ""}
+              </a>
+            ) : (
+              <div
+                key={d.label}
+                className="relative"
+                onMouseEnter={() => setOpenIdx(idx)}
+                onMouseLeave={() => setOpenIdx(null)}
+              >
+                <button
+                  className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
+                >
+                  {d.label} <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                {openIdx === idx && (
+                  <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-border bg-card p-2 shadow-card-hover">
+                    {d.items?.map((it) =>
+                      it.external ? (
+                        <a
+                          key={it.label}
+                          href={it.to}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block rounded-lg px-3 py-2 text-sm hover:bg-muted"
+                        >
+                          <div className="font-medium text-foreground">{it.label} ↗</div>
+                          {it.desc && <div className="text-xs text-muted-foreground">{it.desc}</div>}
+                        </a>
+                      ) : (
+                        <Link
+                          key={it.label}
+                          to={it.to}
+                          onClick={() => setOpenIdx(null)}
+                          className="block rounded-lg px-3 py-2 text-sm hover:bg-muted"
+                        >
+                          <div className="font-medium text-foreground">{it.label}</div>
+                          {it.desc && <div className="text-xs text-muted-foreground">{it.desc}</div>}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          )}
 
           <Link to="/affiliate" className="px-3 py-2 text-sm font-semibold text-primary hover:underline">
             Affiliate
@@ -186,26 +208,39 @@ export default function Header() {
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
             <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Shop</Link>
             <Link to="/build-your-stack" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">Build Your Stack · save 20%</Link>
-            {DROPDOWNS.map((d) => (
-              <details key={d.label} className="rounded-lg border border-border">
-                <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-foreground">
-                  {d.label}
-                </summary>
-                <div className="flex flex-col gap-1 border-t border-border px-3 py-2">
-                  {d.items.map((it) =>
-                    it.external ? (
-                      <a key={it.label} href={it.to} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="py-1.5 text-sm text-muted-foreground">
-                        {it.label} ↗
-                      </a>
-                    ) : (
-                      <Link key={it.label} to={it.to} onClick={() => setMobileOpen(false)} className="py-1.5 text-sm text-muted-foreground">
-                        {it.label}
-                      </Link>
-                    )
-                  )}
-                </div>
-              </details>
-            ))}
+            {DROPDOWNS.map((d) =>
+              d.href ? (
+                <a
+                  key={d.label}
+                  href={d.href}
+                  target={d.external ? "_blank" : undefined}
+                  rel={d.external ? "noopener noreferrer" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-2 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                >
+                  {d.label}{d.external ? " ↗" : ""}
+                </a>
+              ) : (
+                <details key={d.label} className="rounded-lg border border-border">
+                  <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-foreground">
+                    {d.label}
+                  </summary>
+                  <div className="flex flex-col gap-1 border-t border-border px-3 py-2">
+                    {d.items?.map((it) =>
+                      it.external ? (
+                        <a key={it.label} href={it.to} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="py-1.5 text-sm text-muted-foreground">
+                          {it.label} ↗
+                        </a>
+                      ) : (
+                        <Link key={it.label} to={it.to} onClick={() => setMobileOpen(false)} className="py-1.5 text-sm text-muted-foreground">
+                          {it.label}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                </details>
+              )
+            )}
             <Link to="/affiliate" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">
               Affiliate Program
             </Link>

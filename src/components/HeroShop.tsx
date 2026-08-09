@@ -120,9 +120,9 @@ export default function HeroShop() {
             transition={{ duration: 0.6, delay: 0.05 }}
             className="mt-4 font-display text-[2.25rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl"
           >
-            Your bloodwork first.{" "}
-            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">Your protocol second.</span>{" "}
-            Products last.
+            South Africa&rsquo;s{" "}
+            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">peptide-first telehealth</span>{" "}
+            platform.
           </motion.h1>
 
           <motion.p
@@ -131,7 +131,7 @@ export default function HeroShop() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mx-auto mt-3 max-w-2xl text-[15px] font-semibold leading-relaxed text-white/90 sm:mt-4 sm:text-lg"
           >
-            Peptide protocols reviewed by an HPCSA-registered GP, ≥99% HPLC-verified with the Certificate of Analysis in your box — and progress tracked in the PSA app. Value packs from 15–30% off when you're ready.
+            We focus on getting you results through clinician-guided pathways.
           </motion.p>
 
           {/* Primary CTAs — mobile-first, big tap targets */}
@@ -254,21 +254,35 @@ export default function HeroShop() {
         </div>
 
         {/* Category banners */}
-        <div className="mt-10 grid gap-3 sm:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {[
             { label: "Weight Loss", href: "/shop?category=GLP" },
             { label: "Wellness & Longevity", href: "/shop?category=Longevity" },
             { label: "Recovery", href: "/shop?category=Healing" },
-          ].map((c) => (
-            <Link
-              key={c.label}
-              to={c.href}
-              className="group flex items-center justify-between rounded-2xl border border-border bg-card/80 px-5 py-4 backdrop-blur transition-all hover:bg-card"
-            >
-              <span className="font-display text-sm font-bold uppercase tracking-wider text-foreground">{c.label}</span>
-              <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
-            </Link>
-          ))}
+            { label: "Pets", href: "https://pets.peptide-south-africa.com/", external: true },
+          ].map((c) =>
+            c.external ? (
+              <a
+                key={c.label}
+                href={c.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between rounded-2xl border border-border bg-card/80 px-5 py-4 backdrop-blur transition-all hover:bg-card"
+              >
+                <span className="font-display text-sm font-bold uppercase tracking-wider text-foreground">{c.label} ↗</span>
+                <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+              </a>
+            ) : (
+              <Link
+                key={c.label}
+                to={c.href}
+                className="group flex items-center justify-between rounded-2xl border border-border bg-card/80 px-5 py-4 backdrop-blur transition-all hover:bg-card"
+              >
+                <span className="font-display text-sm font-bold uppercase tracking-wider text-foreground">{c.label}</span>
+                <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+              </Link>
+            )
+          )}
         </div>
       </div>
     </section>
