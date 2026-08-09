@@ -41,9 +41,13 @@ const DROPDOWNS: Dropdown[] = [
     ],
   },
   {
-    label: "Pets",
-    href: "https://pets.peptide-south-africa.com/",
-    external: true,
+    label: "Ecosystem",
+    items: [
+      { label: "Health · Telehealth", to: "/", desc: "Personalised, clinician-guided care" },
+      { label: "Partner · Clinicians", to: "/clinician", desc: "Verified products + referral pathway" },
+      { label: "Research · Labs & COAs", to: "/research", desc: "Lot purity, COAs & traceability" },
+      { label: "Pets · Animal wellness", to: "https://pets.peptide-south-africa.com/", external: true, desc: "Vet-guided peptide care" },
+    ],
   },
   {
     label: "Explore",
