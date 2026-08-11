@@ -107,24 +107,25 @@ export default function BlogPostPage() {
           )}
 
           <BlogFAQ faqs={post.faqs} />
-          <BlogCTA variant={post.cta} />
+          {post.cta !== "none" && <BlogCTA variant={post.cta} />}
 
-          <aside className="mt-12 border-t border-border pt-10">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Keep reading
-            </p>
-            <div className="grid gap-5 md:grid-cols-3">
-              {related.map((r) => (
-                <BlogCard key={r.slug} post={r} />
-              ))}
-            </div>
-          </aside>
+          {related.length > 0 && (
+            <aside className="mt-12 border-t border-border pt-10">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Keep reading
+              </p>
+              <div className="grid gap-5 md:grid-cols-3">
+                {related.map((r) => (
+                  <BlogCard key={r.slug} post={r} />
+                ))}
+              </div>
+            </aside>
+          )}
 
           <p className="mt-10 rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
-            <strong>Disclaimer:</strong> Content is for educational and research purposes only and
-            does not constitute medical advice. Peptides discussed are not registered medicines in
-            South Africa for the indications mentioned; consult a registered medical practitioner
-            before starting any protocol.
+            <strong>Disclaimer:</strong>{" "}
+            {post.disclaimer ??
+              "Content is for educational and research purposes only and does not constitute medical advice. Peptides discussed are not registered medicines in South Africa for the indications mentioned; consult a registered medical practitioner before starting any protocol."}
           </p>
         </div>
       </article>
