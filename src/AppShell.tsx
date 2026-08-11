@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -45,6 +45,9 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
 import NotFound from "@/pages/NotFound";
 
+const RESEARCH_EDUCATION_ARTICLE =
+  "/blog/retatrutide-heart-rate-clinical-trial-evidence";
+
 // Lazy-loaded: none of these routes are part of scripts/prerender.mjs's
 // route list, so they're never rendered during the SSR/prerender build
 // step — safe to code-split without any risk to SEO-critical prerendered
@@ -80,6 +83,39 @@ function RouteLoadingFallback() {
 }
 
 export default function AppShell() {
+  const { pathname } = useLocation();
+
+  if (pathname === RESEARCH_EDUCATION_ARTICLE) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="border-b border-border bg-background">
+          <div className="container flex max-w-3xl items-center justify-between gap-6 px-4 py-5">
+            <img
+              src="/logo-horizontal.png"
+              alt="Peptide South Africa"
+              className="h-9 w-auto"
+            />
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              Research education
+            </span>
+          </div>
+        </header>
+        <main className="min-h-screen">
+          <Routes>
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+          </Routes>
+        </main>
+        <footer className="border-t border-border bg-background">
+          <div className="container max-w-3xl px-4 py-8 text-xs leading-relaxed text-muted-foreground">
+            Independent evidence summary for research education. No products,
+            services, protocols or treatment pathways are offered on this page.
+          </div>
+        </footer>
+        <Analytics />
+      </div>
+    );
+  }
+
   return (
     <CurrencyProvider>
       <AuthProvider>

@@ -16,6 +16,7 @@ export default function BlogPostPage() {
 
   const related = getRelated(post.related);
   const url = `${SITE}/blog/${post.slug}`;
+  const isResearchEducation = post.cta === "none";
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -62,11 +63,18 @@ export default function BlogPostPage() {
       <article className="bg-background">
         <header className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-14">
           <div className="container max-w-3xl px-4">
-            <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground">
-              <Link to="/" className="hover:text-foreground">Home</Link> <span className="px-1">/</span>
-              <Link to="/blog" className="hover:text-foreground">Blog</Link> <span className="px-1">/</span>
-              <span className="text-foreground">{post.category}</span>
-            </nav>
+            {isResearchEducation ? (
+              <p className="mb-4 text-sm text-muted-foreground">
+                Research education <span className="px-1">/</span>{" "}
+                <span className="text-foreground">{post.category}</span>
+              </p>
+            ) : (
+              <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground">
+                <Link to="/" className="hover:text-foreground">Home</Link> <span className="px-1">/</span>
+                <Link to="/blog" className="hover:text-foreground">Blog</Link> <span className="px-1">/</span>
+                <span className="text-foreground">{post.category}</span>
+              </nav>
+            )}
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
               {post.hero.eyebrow}
             </p>
