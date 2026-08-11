@@ -81,11 +81,14 @@ export default function Footer() {
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Learn</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/research" className="hover:text-foreground">Research Hub</Link>
+              <Link to="/testing" className="hover:text-foreground">Lab Testing &amp; COAs</Link>
               <Link to="/blog" className="hover:text-foreground">Blog</Link>
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
               <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
+              <Link to="/community" className="hover:text-foreground">WhatsApp Community</Link>
+              <Link to="/clinician" className="hover:text-foreground">For Clinicians</Link>
               <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
-              
+
               <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
               <address className="mt-2 flex flex-col gap-1 text-xs not-italic" itemScope itemType="https://schema.org/PostalAddress">
                 <span className="inline-flex items-start gap-1.5">

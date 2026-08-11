@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart, User } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 
 import { useCart } from "@/context/CartContext";
@@ -14,6 +14,14 @@ type Dropdown = {
 };
 
 const DROPDOWNS: Dropdown[] = [
+  {
+    label: "Shop",
+    items: [
+      { label: "Build Your Stack", to: "/build-your-stack", desc: "Design your own · save 20%" },
+      { label: "All products", to: "/shop", desc: "Browse the full range" },
+      { label: "Shop 3-Packs", to: "/shop#products", desc: "Value packs · 15–30% off" },
+    ],
+  },
   {
     label: "Weight Loss",
     items: [
@@ -41,25 +49,9 @@ const DROPDOWNS: Dropdown[] = [
     ],
   },
   {
-    label: "Ecosystem",
-    items: [
-      { label: "Health · Telehealth", to: "/", desc: "Personalised, clinician-guided care" },
-      { label: "Partner · Clinicians", to: "/clinician", desc: "Verified products + referral pathway" },
-      { label: "Research · Labs & COAs", to: "/research", desc: "Lot purity, COAs & traceability" },
-      { label: "Pets · Animal wellness", to: "https://pets.peptide-south-africa.com/", external: true, desc: "Vet-guided peptide care" },
-    ],
-  },
-  {
-    label: "Explore",
-    items: [
-      { label: "Lab Testing & COAs", to: "/testing", desc: "Janoshik-verified · per-batch reports" },
-      { label: "Research Hub", to: "/research", desc: "Protocols & studies" },
-      { label: "Blog", to: "/blog", desc: "Guides & deep dives" },
-      { label: "FAQ", to: "/faq", desc: "Common questions" },
-      { label: "Find My Protocol (Quiz)", to: "/quiz", desc: "60-second match" },
-      { label: "Join WhatsApp Community", to: "/community", desc: "Free · 2,000-member cap" },
-      { label: "Cape Town Peptide Club", to: "https://capetownpeptideclub.co.za", external: true },
-    ],
+    label: "Peptides4Pets",
+    href: "https://pets.peptide-south-africa.com/",
+    external: true,
   },
 ];
 
@@ -113,13 +105,6 @@ export default function Header() {
 
 
         <nav className="hidden items-center gap-1 lg:flex">
-          <Link to="/build-your-stack" className="px-3 py-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80">
-            Build Your Stack
-          </Link>
-          <Link to="/shop" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Shop
-          </Link>
-
           {DROPDOWNS.map((d, idx) =>
             d.href ? (
               <a
@@ -176,21 +161,20 @@ export default function Header() {
             )
           )}
 
-          <Link to="/affiliate" className="px-3 py-2 text-sm font-semibold text-primary hover:underline">
-            Affiliate
+          <Link
+            to="/account"
+            aria-label="Account"
+            className="ml-1 inline-flex items-center justify-center rounded-lg border border-border p-2 text-foreground transition-colors hover:bg-muted"
+          >
+            <User className="h-5 w-5" />
           </Link>
-          <Link to="/account" className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Account
-          </Link>
-
-
           <Link
             to="/quiz?intent=consult"
-            className="ml-1 inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
             Book Consult
           </Link>
-          <CartButton className="ml-2" />
+          <CartButton />
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -210,8 +194,6 @@ export default function Header() {
         <nav className="border-t border-border bg-card p-4 lg:hidden">
           <div className="flex flex-col gap-2">
             <Link to="/" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Home</Link>
-            <Link to="/shop" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">Shop</Link>
-            <Link to="/build-your-stack" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">Build Your Stack · save 20%</Link>
             {DROPDOWNS.map((d) =>
               d.href ? (
                 <a
@@ -245,11 +227,15 @@ export default function Header() {
                 </details>
               )
             )}
-            <Link to="/affiliate" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-muted">
-              Affiliate Program
-            </Link>
             <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
               My Account
+            </Link>
+            <Link
+              to="/quiz?intent=consult"
+              onClick={() => setMobileOpen(false)}
+              className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow"
+            >
+              Book Consult
             </Link>
           </div>
         </nav>
