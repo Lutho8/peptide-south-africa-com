@@ -16,6 +16,7 @@ export default function BlogPostPage() {
 
   const related = getRelated(post.related);
   const url = `${SITE}/blog/${post.slug}`;
+  const isResearchEducation = post.cta === "none";
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -62,11 +63,18 @@ export default function BlogPostPage() {
       <article className="bg-background">
         <header className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-14">
           <div className="container max-w-3xl px-4">
-            <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground">
-              <Link to="/" className="hover:text-foreground">Home</Link> <span className="px-1">/</span>
-              <Link to="/blog" className="hover:text-foreground">Blog</Link> <span className="px-1">/</span>
-              <span className="text-foreground">{post.category}</span>
-            </nav>
+            {isResearchEducation ? (
+              <p className="mb-4 text-sm text-muted-foreground">
+                Research education <span className="px-1">/</span>{" "}
+                <span className="text-foreground">{post.category}</span>
+              </p>
+            ) : (
+              <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground">
+                <Link to="/" className="hover:text-foreground">Home</Link> <span className="px-1">/</span>
+                <Link to="/blog" className="hover:text-foreground">Blog</Link> <span className="px-1">/</span>
+                <span className="text-foreground">{post.category}</span>
+              </nav>
+            )}
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
               {post.hero.eyebrow}
             </p>
@@ -107,24 +115,25 @@ export default function BlogPostPage() {
           )}
 
           <BlogFAQ faqs={post.faqs} />
-          <BlogCTA variant={post.cta} />
+          {post.cta !== "none" && <BlogCTA variant={post.cta} />}
 
-          <aside className="mt-12 border-t border-border pt-10">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Keep reading
-            </p>
-            <div className="grid gap-5 md:grid-cols-3">
-              {related.map((r) => (
-                <BlogCard key={r.slug} post={r} />
-              ))}
-            </div>
-          </aside>
+          {related.length > 0 && (
+            <aside className="mt-12 border-t border-border pt-10">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Keep reading
+              </p>
+              <div className="grid gap-5 md:grid-cols-3">
+                {related.map((r) => (
+                  <BlogCard key={r.slug} post={r} />
+                ))}
+              </div>
+            </aside>
+          )}
 
           <p className="mt-10 rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
-            <strong>Disclaimer:</strong> Content is for educational and research purposes only and
-            does not constitute medical advice. Peptides discussed are not registered medicines in
-            South Africa for the indications mentioned; consult a registered medical practitioner
-            before starting any protocol.
+            <strong>Disclaimer:</strong>{" "}
+            {post.disclaimer ??
+              "Content is for educational and research purposes only and does not constitute medical advice. Peptides discussed are not registered medicines in South Africa for the indications mentioned; consult a registered medical practitioner before starting any protocol."}
           </p>
         </div>
       </article>

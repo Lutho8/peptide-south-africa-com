@@ -22,6 +22,33 @@ import { pathToFileURL } from "url";
 
 const DIST = resolve("dist");
 const TMP = resolve(".ssr-tmp");
+const RESEARCH_EDUCATION_ARTICLE =
+  "/blog/retatrutide-heart-rate-clinical-trial-evidence";
+
+function researchEducationTemplate(template) {
+  return template
+    .replace(/ https:\/\/api\.nowpayments\.io/g, "")
+    .replace(/ https:\/\/(?:www\.|sandbox\.)payfast\.co\.za/g, "")
+    .replace(/\n?\s*<meta name="keywords"[^>]*>/i, "")
+    .replace(/\n?\s*<link rel="alternate"[^>]*>/gi, "")
+    .replace(/\n?\s*<link rel="preconnect" href="https:\/\/api\.nowpayments\.io"[^>]*>/i, "")
+    .replace(/\n?\s*<link rel="dns-prefetch" href="https:\/\/api\.nowpayments\.io"[^>]*>/i, "")
+    .replace(/\n?\s*<link rel="preload"[^>]*Rectangle%2022682[^>]*>/i, "")
+    .replace(/\n?\s*<meta property="og:[^"]+"[^>]*>/gi, "")
+    .replace(/\n?\s*<meta name="twitter:[^"]+"[^>]*>/gi, "")
+    .replace(/\s*<!-- Sitewide Organization schema -->.*?<\/script>/s, "")
+    .replace(/\s*<!-- Sitewide WebSite schema with site-search action -->.*?<\/script>/s, "")
+    .replace(
+      /\s*<noscript>.*?<\/noscript>/s,
+      `
+    <noscript>
+      <div style="max-width:640px;margin:2rem auto;padding:1rem;font-family:system-ui,sans-serif;line-height:1.6">
+        <h1>Peptide South Africa Research Education</h1>
+        <p>This evidence summary is educational. It offers no products, services, protocols or treatment pathways.</p>
+      </div>
+    </noscript>`,
+    );
+}
 
 // ---- Static SEO routes (no params) -----------------------------------------
 const staticRoutes = [
@@ -95,7 +122,10 @@ async function main() {
   for (const route of routes) {
     try {
       const { html, head } = render(route);
-      let page = template;
+      let page =
+        route === RESEARCH_EDUCATION_ARTICLE
+          ? researchEducationTemplate(template)
+          : template;
 
       // Inject SSR markup into the root div.
       page = page.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
