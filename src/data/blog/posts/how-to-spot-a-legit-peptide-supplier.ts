@@ -1,0 +1,68 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "how-to-spot-a-legit-peptide-supplier",
+  title: "How to Spot a Legit Peptide Supplier: A 5-Point COA Checklist",
+  metaTitle: "How to Spot a Legit Peptide Supplier | COA Checklist",
+  metaDescription: "Use this five-point checklist to assess peptide documentation: batch-specific COAs, HPLC purity, mass-spectrometry identity, lot matching, sterility and endotoxin tests.",
+  keyword: "how to spot a legit peptide supplier",
+  publishedAt: "2026-08-15",
+  updatedAt: "2026-08-15",
+  readingMinutes: 5,
+  category: "Sourcing",
+  hero: {
+    eyebrow: "Quality checklist",
+    summary: "Save this: a polished vial proves nothing. The evidence must identify the molecule, trace the exact batch and separate chemical purity from microbiological quality.",
+  },
+  body: [
+    { type: "p", text: "A professional website, a clean label and a high purity claim are not enough to establish what is inside a vial. The quickest way to screen a peptide supplier is to follow the documentation from the physical vial back to the exact analytical results for that batch." },
+    { type: "h2", text: "1. Get a batch-specific Certificate of Analysis" },
+    { type: "p", text: "Ask for a Certificate of Analysis (COA) tied to the exact lot number supplied. A generic report with no lot number, an edited screenshot, or the same COA reused across every order does not establish that your vial was tested." },
+    { type: "callout", title: "First red flag", text: "No batch-specific COA — or a report that cannot be linked to the vial in hand — means the most basic chain of evidence is missing." },
+    { type: "h2", text: "2. Check both purity and identity" },
+    { type: "p", text: "HPLC and mass spectrometry answer different questions. HPLC estimates the relative purity of the tested sample; mass spectrometry checks whether the measured molecular mass is consistent with the claimed molecule. A report showing 98%+ HPLC purity is useful only when identity has also been confirmed. A highly pure sample of the wrong compound is still the wrong compound." },
+    { type: "p", text: "Read the methods and results rather than trusting a large headline percentage. The report should name the sample, state the lot, show the test date and identify the laboratory. Purity and identity testing do not, by themselves, prove dose accuracy, sterility, lawful supply or suitability for human use." },
+    { type: "h2", text: "3. Match the batch number" },
+    { type: "p", text: "The lot printed on the vial should match the lot on the COA and any associated invoice or batch record. If the identifiers differ, the analytical result is not traceable to that vial. A QR code is convenient, but the underlying report and matching lot number are what matter." },
+    { type: "h2", text: "4. Separate chemistry from microbiology" },
+    { type: "p", text: "For any product represented as sterile or parenteral, look for separate sterility and bacterial-endotoxin results for the same batch. HPLC and mass spectrometry cannot establish either. Sterility testing checks for viable microbial contamination; bacterial-endotoxin testing addresses pyrogens that can cause serious febrile reactions." },
+    {
+      type: "ul",
+      items: [
+        "<strong>Identity:</strong> does the analytical profile match the claimed molecule?",
+        "<strong>Purity:</strong> what proportion of the detected material is the main compound?",
+        "<strong>Sterility:</strong> did the validated test detect viable contaminating organisms?",
+        "<strong>Endotoxins:</strong> is the measured bacterial-endotoxin level within the stated specification?",
+      ],
+    },
+    { type: "h2", text: "5. Verify independently" },
+    { type: "p", text: "The strongest check is independent testing of an unopened sample from the same lot through a qualified laboratory. Record the lot number, keep the sample sealed until dispatch and retain the original laboratory report. Independent testing can verify the submitted sample; it still does not automatically validate every vial, the storage history or the supplier's regulatory claims." },
+    { type: "h2", text: "The save-this checklist" },
+    {
+      type: "ol",
+      items: [
+        "Get a COA for the exact lot number.",
+        "Confirm HPLC purity and mass-spectrometry identity.",
+        "Match the vial, COA and transaction records by batch.",
+        "Require separate sterility and endotoxin evidence for products represented as sterile or parenteral.",
+        "Use an independent laboratory when certainty matters.",
+      ],
+    },
+    { type: "callout", title: "What a COA cannot prove", text: "A COA is evidence about a tested sample, not a substitute for regulatory approval, validated manufacturing controls, an intact cold chain or clinical safety evidence." },
+    { type: "p", text: "Peptides sold as research compounds may be unapproved and carry real risks. This checklist is an analytical reference, not medical advice." },
+  ],
+  citations: [
+    { id: "1", label: "SAHPRA. Peptide Products — Public Information.", url: "https://www.sahpra.org.za/peptide-products-public-information/" },
+    { id: "2", label: "United States Pharmacopeia. General Chapter <85>, Bacterial Endotoxins Test.", url: "https://www.usp.org/harmonization-standards/pdg/general-methods/bacterial-endotoxins" },
+    { id: "3", label: "U.S. FDA. Bacterial Endotoxins/Pyrogens inspection guidance.", url: "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-technical-guides/bacterial-endotoxinspyrogens" },
+    { id: "4", label: "U.S. FDA. CGMP Questions and Answers: Control of Components and Drug Product Containers and Closures.", url: "https://www.fda.gov/drugs/guidances-drugs/questions-and-answers-current-good-manufacturing-practice-requirements-control-components-and-drug" },
+  ],
+  faqs: [
+    { q: "What is a batch-specific COA?", a: "It is a Certificate of Analysis that identifies and reports results for the same lot number printed on the supplied vial. A generic or mismatched report is not traceable to your sample." },
+    { q: "Is HPLC the same as mass spectrometry?", a: "No. HPLC is commonly used to estimate relative purity and separate components, while mass spectrometry checks measured molecular mass against the claimed identity. The two results complement one another." },
+    { q: "Does a 99% purity result prove a vial is sterile?", a: "No. Chemical purity, sterility and bacterial endotoxins are separate attributes requiring different methods. A high HPLC result does not answer the microbiological questions." },
+    { q: "Does a COA prove that a product is approved or safe to use?", a: "No. It reports selected tests on a submitted sample. It does not establish regulatory approval, clinical safety, manufacturing compliance or the history of every vial." },
+  ],
+  cta: "club",
+  related: ["research-peptides-cape-town", "buy-peptides-cape-town", "peptide-vial-shelf-life-storage", "what-are-peptides-complete-guide"],
+};
