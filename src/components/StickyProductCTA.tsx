@@ -12,7 +12,13 @@ interface Props {
 export default function StickyProductCTA({ product, variantLabel, price, added, onAdd }: Props) {
   const { display } = useCurrency();
   const priceDisplay = display(price);
-  const cta = !product.inStock ? "Pre-Order" : added ? "✓ Added" : "Buy now";
+  const cta = !product.inStock
+    ? "Pre-Order"
+    : product.track === "GP"
+      ? "Start Quiz"
+      : added
+        ? "✓ Added"
+        : "Buy now";
 
   return (
     <div

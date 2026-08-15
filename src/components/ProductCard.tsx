@@ -33,6 +33,10 @@ export default function ProductCard({ product }: { product: Product }) {
       navigate(productUrl);
       return;
     }
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
+      return;
+    }
     // Bundle-first: the card headlines the 3-Pack, so Add To Cart adds the 3-Pack.
     if (threePack) {
       addToCart(product, { variantLabel: threePack.label, unitPrice: threePack.price });
@@ -159,7 +163,7 @@ export default function ProductCard({ product }: { product: Product }) {
             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            {!product.inStock ? "Notify Me" : "Add To Cart"}
+            {!product.inStock ? "Notify Me" : isGPTrack ? "Start Quiz" : "Add To Cart"}
           </button>
         </div>
         {isGPTrack && product.inStock && (
@@ -167,7 +171,7 @@ export default function ProductCard({ product }: { product: Product }) {
             to={`/quiz?product=${product.slug}`}
             className="mt-2 block text-center text-[11px] font-medium text-muted-foreground hover:text-primary hover:underline"
           >
-            or book a clinician consult →
+            Clinician review is required before fulfilment →
           </Link>
         )}
       </div>
