@@ -99,6 +99,10 @@ export default function ProductPage() {
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
+      return;
+    }
     if (purchaseMode === "subscribe") {
       if (!user) {
         navigate(`/auth?redirect=/product/${product.slug}`);
@@ -142,7 +146,13 @@ export default function ProductPage() {
 
   return (
     <div>
-      <JsonLd data={productSchema({ ...product, variants: product.variants })} />
+      <JsonLd data={productSchema({
+        ...product,
+        description: isGPTrack
+          ? `${product.name} is available through a clinician-guided pathway with eligibility review before prescription or fulfilment.`
+          : product.description,
+        variants: product.variants,
+      })} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -153,8 +163,12 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={`${product.name} South Africa | Research Peptide Supplier`}
-        description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
+        title={isGPTrack
+          ? `${product.name} South Africa | Clinician-Guided Pathway`
+          : `${product.name} South Africa | Research Peptide Supplier`}
+        description={isGPTrack
+          ? `${product.name} clinician-guided pathway with eligibility review before prescription or fulfilment. Per-batch COA and South African delivery.`
+          : `${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
@@ -190,7 +204,7 @@ export default function ProductPage() {
                   <Star key={i} className="h-4 w-4 fill-badge text-badge" />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">(47 reviews)</span>
+              <span className="text-sm text-muted-foreground">Customer reviews</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
               {display(currentPrice).primary}
@@ -218,7 +232,11 @@ export default function ProductPage() {
               </p>
             )}
 
-            <p className="mt-4 text-muted-foreground">{product.description}</p>
+            <p className="mt-4 text-muted-foreground">
+              {isGPTrack
+                ? `${product.name} is offered through a clinician-guided pathway. A registered clinician reviews suitability before any prescription or fulfilment.`
+                : product.description}
+            </p>
 
             {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
             {product.variants && product.variants.length > 0 && (
@@ -382,22 +400,14 @@ export default function ProductPage() {
                 "Pre-Order"
               ) : purchaseMode === "subscribe" ? (
                 subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
+              ) : isGPTrack ? (
+                <><Stethoscope className="h-4 w-4" /> Start Medical Quiz</>
               ) : added ? (
                 "✓ Added to Cart!"
               ) : (
                 "Add to Cart"
               )}
             </button>
-
-            {/* Secondary CTA — Clinician consult for GP-track */}
-            {isGPTrack && product.inStock && (
-              <Link
-                to={`/quiz?product=${product.slug}`}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/10"
-              >
-                <Stethoscope className="h-4 w-4" /> Prefer guidance? Start Clinician Consultation
-              </Link>
-            )}
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
@@ -432,14 +442,18 @@ export default function ProductPage() {
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Beginner information</p>
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground">New to this product? Start here.</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              A quick overview of what is included, who normally researches it and how the order process works.
+              {isGPTrack
+                ? "A clear overview of the clinician-review pathway and what happens before fulfilment."
+                : "A quick overview of what is included, who normally researches it and how the order process works."}
             </p>
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
                 <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
                 <ul className="mt-3 flex flex-col gap-2">
-                  {product.whatsIncluded.map((item, i) => (
+                  {(isGPTrack
+                    ? ["Clinician eligibility review", "Eligible prescribed product after approval", "Batch Certificate of Analysis", "Storage and delivery guidance"]
+                    : product.whatsIncluded).map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
                     </li>
@@ -449,7 +463,9 @@ export default function ProductPage() {
               <div>
                 <h3 className="font-display text-base font-semibold text-foreground">Who It's For</h3>
                 <ul className="mt-3 flex flex-col gap-2">
-                  {product.whoItsFor.map((item, i) => (
+                  {(isGPTrack
+                    ? ["Customers seeking a clinician-reviewed pathway", "People who understand approval is not guaranteed", "Customers prepared to disclose relevant medical information securely"]
+                    : product.whoItsFor).map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
                     </li>
@@ -461,7 +477,9 @@ export default function ProductPage() {
             <div className="mt-6 border-t border-border pt-5">
               <h3 className="font-display text-base font-semibold text-foreground">How It Works</h3>
               <ol className="mt-3 grid gap-2">
-                {product.howItWorks.map((item, i) => (
+                {(isGPTrack
+                  ? ["Complete the medical quiz", "A registered clinician reviews eligibility", "Eligible orders proceed with a valid prescription", "Use the tracker and follow-up pathway"]
+                  : product.howItWorks).map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
                     {item}
@@ -522,7 +540,9 @@ export default function ProductPage() {
       <section className="border-t border-border py-8">
         <div className="container">
           <p className="text-center text-xs text-muted-foreground">
-            For research purposes only. Not for human use or consumption.
+            {isGPTrack
+              ? "Available only through clinician review. Supply is subject to clinical eligibility and a valid prescription; no medical outcome is guaranteed."
+              : "For research purposes only. Not for human use or consumption."}
           </p>
         </div>
       </section>
