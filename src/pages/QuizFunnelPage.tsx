@@ -29,10 +29,11 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ShaderBackdrop from "@/components/ShaderBackdrop";
-import ProtocolPlans, { type PlanChoice } from "@/components/ProtocolPlans";
+import ProtocolPlans, { buildProductPlans, type PlanChoice } from "@/components/ProtocolPlans";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
+import { buildFallbackProtocol, type AIProtocol } from "@/lib/quizProtocolFallback";
 
 const WA_NUMBER = "27721242377";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -54,22 +55,6 @@ interface LeadInfo {
   name: string;
   email: string;
   whatsapp: string;
-}
-
-interface AIProtocol {
-  protocolName: string;
-  subtitle: string;
-  duration: string;
-  whyFits: string;
-  timeline: string;
-  monthlyPrice: string;
-  fullPrice: string;
-  savings: string;
-  peptides: { name: string; dose: string; frequency: string; purpose: string }[];
-  expectedResults: { icon: string; label: string }[];
-  included: string[];
-  weeklySchedule: string;
-  warnings: string[];
 }
 
 type Opt = { value: string; label: string; icon: string; desc: string };
@@ -233,11 +218,33 @@ export default function QuizFunnelPage() {
     return out;
   }, [aiProtocol]);
 
+  const exactPlans = useMemo(() => {
+    if (matchedProducts.length === 0) return undefined;
+    const singleTotal = matchedProducts.reduce((sum, product) => {
+      const single = product.variants?.find((variant) => variant.pack === 1);
+      return sum + (single?.price ?? product.price);
+    }, 0);
+    const threePackTotal = matchedProducts.reduce((sum, product) => {
+      const pack = product.variants?.find((variant) => variant.pack === 3);
+      return sum + (pack?.price ?? product.price * 3);
+    }, 0);
+    return buildProductPlans(singleTotal, threePackTotal);
+  }, [matchedProducts]);
+
   const handleChoosePlan = (plan: PlanChoice) => {
     setPlanChosen(plan);
     matchedProducts.forEach((p) => {
-      const v = p.variants?.[0];
-      addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+      const desiredPack = plan.months === 1 ? 1 : 3;
+      const variant = p.variants?.find((candidate) => candidate.pack === desiredPack) ?? p.variants?.[0];
+      const repeats = plan.months === 6 ? 2 : 1;
+      for (let index = 0; index < repeats; index += 1) {
+        addToCart(
+          p,
+          variant
+            ? { variantLabel: variant.label, unitPrice: variant.price, silent: true }
+            : { silent: true },
+        );
+      }
     });
     setIsCartOpen(true);
     sonnerToast.success(`${plan.months}-month cycle started`, {
@@ -310,9 +317,12 @@ export default function QuizFunnelPage() {
         if (!data?.protocol) throw new Error("No protocol received");
         protocolRef.current = data.protocol as AIProtocol;
 
+        // Preserve the existing CRM sync for signed-in visitors. Anonymous
+        // lead forwarding remains disabled until its data destination is
+        // explicitly approved.
         import("@/lib/nocobase").then(({ captureLead }) => {
           const goalTag = answers.goal ? [`goal:${answers.goal}`] : [];
-          captureLead({
+          void captureLead({
             source: "quiz",
             email: lead.email,
             extraTags: goalTag,
@@ -327,7 +337,10 @@ export default function QuizFunnelPage() {
       })
       .catch((err) => {
         console.error("Protocol generation error:", err);
-        errorRef.current = err instanceof Error ? err.message : "Failed to generate your protocol. Please try again.";
+        // Conversion-safe fallback: the visitor always receives a useful,
+        // catalog-matched result even when Supabase is unavailable.
+        protocolRef.current = buildFallbackProtocol(answers, lead.name);
+        errorRef.current = null;
       });
   };
 
@@ -364,14 +377,18 @@ export default function QuizFunnelPage() {
         setTimeout(() => {
           clearInterval(hold);
           if (!protocolRef.current && !errorRef.current) {
-            setError("This is taking longer than usual. Please try again.");
+            const fallback = buildFallbackProtocol(answers, lead.name);
+            protocolRef.current = fallback;
+            setAiProtocol(fallback);
+            setPhase("results");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }
         }, 15000);
       }
     };
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [phase]);
+  }, [answers, lead.name, phase]);
 
   const activeStage = Math.min(
     theaterStages.length - 1,
@@ -787,6 +804,21 @@ export default function QuizFunnelPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">{aiProtocol.whyFits}</p>
           </div>
 
+          {/* Conversion-first plan choice: exact cart prices, above the detail. */}
+          <div id="choose-cycle" className="reveal-view mb-8 scroll-mt-24 rounded-3xl border border-border bg-card/90 p-5 shadow-card-hover backdrop-blur-sm sm:p-8">
+            <ProtocolPlans
+              monthlyPrice={aiProtocol.monthlyPrice}
+              budget={answers.budget}
+              exactPlans={exactPlans}
+              onChoose={handleChoosePlan}
+            />
+            {planChosen && (
+              <p className="mt-3 text-center text-xs font-semibold text-trust">
+                {planChosen.months}-month cycle selected — your exact pack quantities are in the cart.
+              </p>
+            )}
+          </div>
+
           {/* Peptide Stack */}
           {aiProtocol.peptides && aiProtocol.peptides.length > 0 && (
             <div className="reveal-view mb-8">
@@ -906,20 +938,6 @@ export default function QuizFunnelPage() {
               </ul>
             </div>
           )}
-
-          {/* ===================== PLAN ENGINEERING (Keeps model) ===================== */}
-          <div className="reveal-view mb-8 rounded-3xl border border-border bg-card/90 p-5 shadow-card-hover backdrop-blur-sm sm:p-8">
-            <ProtocolPlans
-              monthlyPrice={aiProtocol.monthlyPrice}
-              budget={answers.budget}
-              onChoose={handleChoosePlan}
-            />
-            {planChosen && (
-              <p className="mt-3 text-center text-xs font-semibold text-trust">
-                {planChosen.months}-month cycle selected — your stack is in the cart.
-              </p>
-            )}
-          </div>
 
           {/* Zoom Consultation Booking */}
           <div className="reveal-view mb-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 text-center sm:p-6">

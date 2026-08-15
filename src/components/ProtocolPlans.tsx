@@ -26,6 +26,17 @@ export function buildPlans(monthly: number): PlanChoice[] {
   ];
 }
 
+/** Build plan prices from the exact pack totals that will be added to cart. */
+export function buildProductPlans(singleVialsTotal: number, threePacksTotal: number): PlanChoice[] {
+  const single = Math.max(0, singleVialsTotal);
+  const three = Math.max(0, threePacksTotal);
+  return [
+    { id: "monthly", label: "1 Month — Single Vials", months: 1, perMonth: single, total: single },
+    { id: "starter", label: "3 Months — 3-Pack Cycle", months: 3, perMonth: three / 3, total: three },
+    { id: "commitment", label: "6 Months — 2× 3-Pack Cycle", months: 6, perMonth: (three * 2) / 6, total: three * 2 },
+  ];
+}
+
 export function parseMonthly(price?: string | null): number {
   if (!price) return 1999;
   const n = Number(String(price).replace(/[^0-9.]/g, ""));
@@ -37,17 +48,20 @@ export default function ProtocolPlans({
   budget,
   onChoose,
   choosing,
+  exactPlans,
 }: {
   monthlyPrice?: string | null;
   budget?: string;
   onChoose: (plan: PlanChoice) => void;
   choosing?: boolean;
+  exactPlans?: PlanChoice[];
 }) {
   const monthly = useMemo(() => parseMonthly(monthlyPrice), [monthlyPrice]);
-  const plans = useMemo(() => buildPlans(monthly), [monthly]);
+  const plans = useMemo(() => exactPlans?.length === 3 ? exactPlans : buildPlans(monthly), [exactPlans, monthly]);
   const [selected, setSelected] = useState<PlanChoice>(plans[1]); // 3-month default — the Keeps move
+  const anchorMonthly = plans[0]?.perMonth ?? monthly;
 
-  const saveVsMonthly = (p: PlanChoice) => Math.max(0, monthly * p.months - p.total);
+  const saveVsMonthly = (p: PlanChoice) => Math.max(0, anchorMonthly * p.months - p.total);
 
   return (
     <div>
@@ -102,7 +116,7 @@ export default function ProtocolPlans({
                 <span className="text-sm font-normal text-muted-foreground">/mo</span>
               </span>
               <span className="mt-0.5 text-xs text-muted-foreground">
-                {p.months > 1 ? `${zar(p.total)} billed per cycle` : "Billed monthly, cancel anytime"}
+                {p.months > 1 ? `${zar(p.total)} paid for this cycle` : "One-time starter purchase"}
               </span>
 
               {save > 0 ? (
@@ -151,7 +165,7 @@ export default function ProtocolPlans({
         Start the {selected.months}-month cycle — {zar(selected.total)} <ArrowRight className="h-5 w-5" />
       </button>
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        Reviewed by an HPCSA-registered GP before anything ships. Prefer month-to-month? The 1-month plan has no lock-in.
+        Exact cart pricing, with no automatic renewal. Eligible prescription pathways are reviewed by an HPCSA-registered GP before fulfilment.
       </p>
     </div>
   );
