@@ -308,7 +308,7 @@ export default function BuildYourStackPage() {
             <span className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-trust" /> Free shipping — every pack clears the R1,500 threshold</span>
             <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> Prices include VAT — what you see is what you pay</span>
             <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> 99%+ HPLC tested by Janoshik — COA on every batch</span>
-            <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> First order? PEPTIDESA10 stacks another 10% on top</span>
+            <a href="https://peptide-south-africa.co.za/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary"><CheckCircle className="h-3.5 w-3.5 text-trust" /> Free Peptide Tracker included with every pack</a>
           </div>
           <p className="mt-4 text-[10px] text-muted-foreground">
             For research purposes only. Not for human use or consumption.{" "}
