@@ -28,7 +28,7 @@ describe("new peptide JSON-LD Product schema", () => {
         purity: p!.purity,
         inStock: p!.inStock,
         sku: p!.sku,
-      }) as any;
+      }) as { offers: { priceCurrency: string; price: number; availability: string; areaServed: { name: string } } };
       expect(schema.offers.priceCurrency).toBe("ZAR");
       expect(schema.offers.price).toBe(Math.round(p!.price));
       expect(schema.offers.availability).toBe("https://schema.org/InStock");

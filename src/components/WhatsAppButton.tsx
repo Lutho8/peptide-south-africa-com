@@ -4,7 +4,7 @@ import { buildWhatsAppUrl } from "@/lib/contact";
 
 export default function WhatsAppButton() {
   const { pathname } = useLocation();
-  const aboveMobilePurchaseBar = pathname.startsWith("/product/");
+  const aboveMobilePurchaseBar = pathname.startsWith("/product/") || pathname === "/quiz";
 
   return (
     <a

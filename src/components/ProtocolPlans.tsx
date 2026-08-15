@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ArrowRight, Stethoscope, Truck, Sparkles } from "lucide-react";
+import { Check, ArrowRight, ShoppingCart } from "lucide-react";
 
 /**
  * ProtocolPlans — commitment engineering for telehealth.
@@ -84,7 +84,7 @@ export default function ProtocolPlans({
           const isSel = selected.id === p.id;
           const save = saveVsMonthly(p);
           const isDefault = p.id === "starter";
-          const isBest = p.id === "commitment";
+          const isLongest = p.id === "commitment";
           return (
             <button
               key={p.id}
@@ -97,13 +97,13 @@ export default function ProtocolPlans({
                   : "border-border bg-card shadow-card hover:border-primary/40"
               }`}
             >
-              {(isDefault || isBest) && (
+              {(isDefault || isLongest) && (
                 <span
                   className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground ${
-                    isBest ? "bg-trust" : "bg-hero-gradient"
+                    isLongest ? "bg-trust" : "bg-hero-gradient"
                   }`}
                 >
-                  {isBest ? "Best results" : "Most popular"}
+                  {isLongest ? "Longest cycle" : "Most popular"}
                 </span>
               )}
 
@@ -129,16 +129,16 @@ export default function ProtocolPlans({
                 </span>
               )}
 
-              {isBest && (
+              {isLongest && (
                 <ul className="mt-3 space-y-1.5 border-t border-border pt-3 text-[11px] text-muted-foreground">
-                  <li className="flex items-center gap-1.5"><Stethoscope className="h-3 w-3 text-primary" /> Priority GP consult</li>
-                  <li className="flex items-center gap-1.5"><Truck className="h-3 w-3 text-primary" /> Free cold-chain shipping</li>
-                  <li className="flex items-center gap-1.5"><Sparkles className="h-3 w-3 text-primary" /> Tracker app premium</li>
+                  <li className="flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Two complete 3-pack cycles</li>
+                  <li className="flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Exact pack pricing shown upfront</li>
+                  <li className="flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Free tracker included</li>
                 </ul>
               )}
               {isDefault && (
                 <p className="mt-3 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                  The minimum clinically meaningful cycle — where most members see the turning point.
+                  One checkout for a three-month supply at the displayed pack pricing.
                 </p>
               )}
 
@@ -167,6 +167,20 @@ export default function ProtocolPlans({
       <p className="mt-3 text-center text-xs text-muted-foreground">
         Exact cart pricing, with no automatic renewal. Eligible prescription pathways are reviewed by an HPCSA-registered GP before fulfilment.
       </p>
+
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-lg md:hidden"
+        role="region"
+        aria-label="Selected quiz plan"
+      >
+        <button
+          onClick={() => onChoose(selected)}
+          disabled={choosing}
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-3 text-sm font-bold text-primary-foreground shadow-glow disabled:opacity-60"
+        >
+          <ShoppingCart className="h-4 w-4" /> Start {selected.months}-month cycle · {zar(selected.total)}
+        </button>
+      </div>
     </div>
   );
 }

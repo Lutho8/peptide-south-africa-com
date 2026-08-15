@@ -35,6 +35,7 @@ import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
 import { buildFallbackProtocol, type AIProtocol } from "@/lib/quizProtocolFallback";
 import { matchProtocolProducts } from "@/lib/quizProductMatching";
+import { useAuth } from "@/hooks/useAuth";
 
 const WA_NUMBER = "27721242377";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -186,7 +187,8 @@ export default function QuizFunnelPage() {
   const [error, setError] = useState<string | null>(null);
   const [theaterPct, setTheaterPct] = useState(0);
   const [planChosen, setPlanChosen] = useState<PlanChoice | null>(null);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { replaceCartGroup, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const protocolRef = useRef<AIProtocol | null>(null);
   const errorRef = useRef<string | null>(null);
 
@@ -219,19 +221,18 @@ export default function QuizFunnelPage() {
 
   const handleChoosePlan = (plan: PlanChoice) => {
     setPlanChosen(plan);
-    matchedProducts.forEach((p) => {
+    const lines = matchedProducts.map((p) => {
       const desiredPack = plan.months === 1 ? 1 : 3;
       const variant = p.variants?.find((candidate) => candidate.pack === desiredPack) ?? p.variants?.[0];
       const repeats = plan.months === 6 ? 2 : 1;
-      for (let index = 0; index < repeats; index += 1) {
-        addToCart(
-          p,
-          variant
-            ? { variantLabel: variant.label, unitPrice: variant.price, silent: true }
-            : { silent: true },
-        );
-      }
+      return {
+        product: p,
+        variantLabel: variant?.label,
+        unitPrice: variant?.price ?? p.price,
+        quantity: repeats,
+      };
     });
+    replaceCartGroup("quiz-protocol", lines);
     setIsCartOpen(true);
     sonnerToast.success(`${plan.months}-month cycle started`, {
       description: `${matchedProducts.length} product${matchedProducts.length === 1 ? "" : "s"} from your protocol are in your cart.`,
@@ -306,7 +307,7 @@ export default function QuizFunnelPage() {
         // Preserve the existing CRM sync for signed-in visitors. Anonymous
         // lead forwarding remains disabled until its data destination is
         // explicitly approved.
-        import("@/lib/nocobase").then(({ captureLead }) => {
+        if (user) import("@/lib/nocobase").then(({ captureLead }) => {
           const goalTag = answers.goal ? [`goal:${answers.goal}`] : [];
           void captureLead({
             source: "quiz",
@@ -385,7 +386,7 @@ export default function QuizFunnelPage() {
   const ProgressChrome = ({ label }: { label: string }) => (
     <div className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="container flex items-center gap-4 px-4 py-4">
-        {(flowIndex > 0 || phase === "lead") && phase === phase && (
+        {(flowIndex > 0 || phase === "lead") && (
           <button
             onClick={goBack}
             className="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -597,6 +598,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="text"
+                  aria-label="Full name"
                   required
                   placeholder="Your full name"
                   value={lead.name}
@@ -610,6 +612,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="email"
+                  aria-label="Email address"
                   required
                   placeholder="you@example.com"
                   value={lead.email}
@@ -624,6 +627,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="tel"
+                  aria-label="WhatsApp number"
                   placeholder="+27 XX XXX XXXX"
                   value={lead.whatsapp}
                   onChange={(e) => setLead((p) => ({ ...p, whatsapp: e.target.value }))}
@@ -764,7 +768,7 @@ export default function QuizFunnelPage() {
         </div>
       </div>
 
-      <div className="container px-4 py-10 md:py-16">
+      <div className="container px-4 py-10 pb-28 md:py-16">
         <div className="mx-auto max-w-3xl">
           {/* Header — physician frame, not AI gimmick */}
           <div className="mb-8 text-center">
@@ -816,10 +820,9 @@ export default function QuizFunnelPage() {
                   <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-card">
                     <p className="font-display text-sm font-bold text-primary">{p.name}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{p.purpose}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.dose}</span>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.frequency}</span>
-                    </div>
+                    <p className="mt-2 text-[11px] font-medium text-muted-foreground">
+                      Exact dosing and frequency are confirmed during clinician review.
+                    </p>
                   </div>
                 ))}
               </div>
@@ -862,7 +865,7 @@ export default function QuizFunnelPage() {
           {aiProtocol.expectedResults && aiProtocol.expectedResults.length > 0 && (
             <div className="reveal-view mb-8">
               <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
-                What to expect
+                What happens next
               </h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {aiProtocol.expectedResults.map((r, i) => {
@@ -884,11 +887,11 @@ export default function QuizFunnelPage() {
             </div>
           )}
 
-          {/* Weekly Schedule */}
+          {/* Clinician review schedule */}
           {aiProtocol.weeklySchedule && (
             <div className="reveal-view mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
               <h3 className="mb-2 font-display text-base font-semibold text-foreground sm:text-lg">
-                Your week, mapped
+                Schedule confirmation
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{aiProtocol.weeklySchedule}</p>
             </div>
