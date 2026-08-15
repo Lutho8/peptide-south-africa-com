@@ -34,6 +34,7 @@ import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
 import { buildFallbackProtocol, type AIProtocol } from "@/lib/quizProtocolFallback";
+import { matchProtocolProducts } from "@/lib/quizProductMatching";
 
 const WA_NUMBER = "27721242377";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -200,22 +201,7 @@ export default function QuizFunnelPage() {
   // Match AI-recommended peptides to actual shop products by fuzzy name match.
   const matchedProducts = useMemo(() => {
     if (!aiProtocol?.peptides?.length) return [];
-    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const seen = new Set<string>();
-    const out: typeof products = [];
-    for (const pep of aiProtocol.peptides) {
-      const target = norm(pep.name);
-      const hit = products.find((p) => {
-        const a = norm(p.name);
-        const b = norm(p.slug);
-        return a.includes(target) || target.includes(a) || b.includes(target) || target.includes(b);
-      });
-      if (hit && !seen.has(hit.id)) {
-        seen.add(hit.id);
-        out.push(hit);
-      }
-    }
-    return out;
+    return matchProtocolProducts(aiProtocol.peptides, products);
   }, [aiProtocol]);
 
   const exactPlans = useMemo(() => {
