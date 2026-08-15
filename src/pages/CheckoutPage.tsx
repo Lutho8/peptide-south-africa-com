@@ -172,18 +172,18 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <input required type="email" autoComplete="email" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
+                    <input required type="email" autoComplete="email" aria-label="Email address" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
                       aria-invalid={!!errors.email} className={inputCls} />
                     {errors.email && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <input required autoComplete="given-name" placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
+                      <input required autoComplete="given-name" aria-label="First name" placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
                         aria-invalid={!!errors.firstName} className={inputCls} />
                       {errors.firstName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
                     </div>
                     <div>
-                      <input required autoComplete="family-name" placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
+                      <input required autoComplete="family-name" aria-label="Last name" placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
                         aria-invalid={!!errors.lastName} className={inputCls} />
                       {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
                     </div>
@@ -195,18 +195,18 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <input required autoComplete="street-address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
+                    <input required autoComplete="street-address" aria-label="Street address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
                       aria-invalid={!!errors.address1} className={inputCls} />
                     {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <input required autoComplete="address-level2" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
+                      <input required autoComplete="address-level2" aria-label="City" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
                         aria-invalid={!!errors.city} className={inputCls} />
                       {errors.city && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
                     </div>
                     <div>
-                      <select required value={form.region} onChange={(e) => setField("region", e.target.value)}
+                      <select required aria-label="Province" value={form.region} onChange={(e) => setField("region", e.target.value)}
                         aria-invalid={!!errors.region} className={inputCls}>
                         <option value="">Province</option>
                         {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
@@ -215,7 +215,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div>
-                    <input required inputMode="numeric" autoComplete="postal-code" placeholder="Postal code" value={form.postalCode}
+                    <input required inputMode="numeric" autoComplete="postal-code" aria-label="Postal code" placeholder="Postal code" value={form.postalCode}
                       onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
                     {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
                   </div>

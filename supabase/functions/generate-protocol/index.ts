@@ -49,6 +49,39 @@ interface Protocol {
   warnings: string[];
 }
 
+function stripControlCharacters(value: string): string {
+  return [...value]
+    .filter((character) => {
+      const code = character.charCodeAt(0);
+      return code >= 32 && code !== 127;
+    })
+    .join("");
+}
+
+function applyPublicSafetyCopy(protocol: Protocol): Protocol {
+  return {
+    ...protocol,
+    timeline: "Your clinician will confirm an appropriate review timeline. Use the tracker to record baseline, adherence and any changes for discussion.",
+    peptides: protocol.peptides.map((peptide) => ({
+      ...peptide,
+      dose: "Pending clinician review",
+      frequency: "Confirmed after clinician review",
+    })),
+    expectedResults: [
+      { icon: "shield", label: "Clinician-reviewed pathway" },
+      { icon: "sparkles", label: "Progress tracked over time" },
+      { icon: "heart", label: "Response monitored individually" },
+      { icon: "zap", label: "Adjustments based on review" },
+    ],
+    weeklySchedule: "No dosing schedule is issued by the public quiz. The final schedule, if appropriate, is confirmed only after clinician review.",
+    warnings: [
+      "Do not begin or change a protocol before clinician review.",
+      "Disclose medications, allergies and relevant health conditions during review.",
+      "Seek medical care promptly for serious or unexpected symptoms.",
+    ],
+  };
+}
+
 function buildProtocol(
   goal: string | undefined,
   issues: string | undefined,
@@ -57,7 +90,7 @@ function buildProtocol(
   budget: string | undefined,
   leadName: string
 ): Protocol {
-  const name = leadName?.trim().slice(0, 80).replace(/[\u0000-\u001F\u007F]/g, "") || "Your";
+  const name = stripControlCharacters(leadName?.trim().slice(0, 80) ?? "") || "Your";
 
   // ── Goal routing ──
   const isFatLoss = goal === "fat-loss" || goal === "both";
@@ -388,18 +421,18 @@ serve(async (req) => {
 
     const rawLeadName = (body as { leadName?: unknown }).leadName;
     const leadName = typeof rawLeadName === "string"
-      ? rawLeadName.replace(/[\u0000-\u001F\u007F]/g, "").replace(/[^\p{L}\p{N}\s'-]/gu, "").slice(0, 80)
+      ? stripControlCharacters(rawLeadName).replace(/[^\p{L}\p{N}\s'-]/gu, "").slice(0, 80)
       : "";
 
     // v2: deterministic protocol engine — no external AI call
-    const protocol = buildProtocol(
+    const protocol = applyPublicSafetyCopy(buildProtocol(
       answers.goal,
       answers.issues,
       answers.lifestyle,
       answers.experience,
       answers.budget,
       leadName,
-    );
+    ));
 
     return new Response(JSON.stringify({ protocol }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

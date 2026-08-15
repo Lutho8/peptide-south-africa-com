@@ -87,6 +87,7 @@ export default function CommunityJoinForm({
         </label>
         <input
           type="text"
+          aria-label="Full name"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -121,6 +122,7 @@ export default function CommunityJoinForm({
           03 / Interest Area
         </label>
         <select
+          aria-label="Interest area"
           value={interest}
           onChange={(e) => setInterest(e.target.value)}
           className="w-full rounded-lg border border-input bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"

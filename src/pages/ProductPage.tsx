@@ -105,15 +105,14 @@ export default function ProductPage() {
         return;
       }
       setSubBusy(true);
-      const next = new Date();
-      next.setDate(next.getDate() + intervalWeeks * 7);
       const { error } = await supabase.from("subscriptions").insert({
         user_id: user.id,
         product_slug: product.slug,
         variant_label: variantLabel ?? null,
         interval_weeks: intervalWeeks,
         discount_pct: subDiscountPct,
-        next_charge_at: next.toISOString(),
+        next_charge_at: null,
+        status: "pending",
       });
       setSubBusy(false);
       if (error) {
@@ -121,8 +120,8 @@ export default function ProductPage() {
         return;
       }
       toast({
-        title: "Subscription saved",
-        description: "Manage it anytime in your account. Billing activation is in final review.",
+        title: "Subscription request saved",
+        description: "We'll confirm billing and the first delivery before activating it. You have not been charged.",
       });
       navigate("/account");
       return;
@@ -194,7 +193,7 @@ export default function ProductPage() {
               <span className="text-sm text-muted-foreground">(47 reviews)</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product?.priceRange ?? display(currentPrice).primary}
+              {display(currentPrice).primary}
             </p>
 
             <CoaBadge purity={product.purity ?? "≥99% HPLC"} />
@@ -313,11 +312,11 @@ export default function ProductPage() {
             </div>
 
             {/* Purchase mode — Subscribe & save */}
-            {product.inStock && (
+            {product.inStock && !isGPTrack && (
               <div className="mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-card shadow-card">
                 <div className="flex items-center justify-between bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary">
-                  <span>Subscription option</span>
-                  <span>Save {subDiscountPct}% every delivery</span>
+                  <span>Subscription request</span>
+                  <span>Save {subDiscountPct}% after activation</span>
                 </div>
                 <div className="grid grid-cols-2">
                   <button
@@ -338,7 +337,7 @@ export default function ProductPage() {
                     }`}
                   >
                     <span className="flex items-center gap-2 text-sm font-bold text-primary">
-                      <Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%
+                      <Repeat className="h-4 w-4" /> Subscribe &amp; save {subDiscountPct}%
                     </span>
                     <span className="font-display text-base font-bold text-foreground">
                       {format(Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100)}
@@ -348,7 +347,7 @@ export default function ProductPage() {
                 {purchaseMode === "subscribe" && (
                   <div className="border-t border-border bg-background/50 px-4 py-3">
                     <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Reorder every
+                      Preferred delivery frequency
                     </label>
                     <div className="mt-2 flex gap-2">
                       {[4, 8, 12].map((w) => (
@@ -366,7 +365,7 @@ export default function ProductPage() {
                       ))}
                     </div>
                     <p className="mt-2 text-[11px] text-muted-foreground">
-                      Pause, skip, or cancel anytime from your account.
+                      No charge now. We confirm the first delivery before activation; cancel anytime from your account.
                     </p>
                   </div>
                 )}
@@ -382,7 +381,7 @@ export default function ProductPage() {
               {!product.inStock ? (
                 "Pre-Order"
               ) : purchaseMode === "subscribe" ? (
-                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%</>
+                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
               ) : added ? (
                 "✓ Added to Cart!"
               ) : (

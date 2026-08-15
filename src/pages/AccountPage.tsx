@@ -273,6 +273,7 @@ export default function AccountPage() {
                     const isActive = s.status === "active";
                     const isPaused = s.status === "paused";
                     const isCancelled = s.status === "cancelled";
+                    const isPending = s.status === "pending";
                     return (
                       <div key={s.id} className="rounded-2xl border border-border bg-card p-4">
                         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -286,6 +287,11 @@ export default function AccountPage() {
                             {s.next_charge_at && isActive && (
                               <p className="mt-0.5 text-xs text-trust">
                                 Next charge {new Date(s.next_charge_at).toLocaleDateString()}
+                              </p>
+                            )}
+                            {isPending && (
+                              <p className="mt-0.5 text-xs font-semibold text-primary">
+                                Pending activation · no charge scheduled
                               </p>
                             )}
                           </div>

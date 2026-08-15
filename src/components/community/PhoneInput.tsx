@@ -56,6 +56,7 @@ export default function PhoneInput({
       </select>
       <input
         type="tel"
+        aria-label="WhatsApp number"
         inputMode="tel"
         autoComplete="tel-national"
         placeholder="82 123 4567"

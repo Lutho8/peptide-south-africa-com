@@ -16,6 +16,8 @@ export interface CartItem {
   bundleDiscountPct?: number;
   /** Undiscounted single-vial price — used to display "You Save". */
   compareAtPrice?: number;
+  /** Stable source group for atomic replacement (for example quiz plans). */
+  groupId?: string;
 }
 
 export interface BundleLineInput {
@@ -24,6 +26,13 @@ export interface BundleLineInput {
   unitPrice: number;
   /** Undiscounted single-vial price. */
   compareAtPrice: number;
+}
+
+export interface CartGroupLineInput {
+  product: Product;
+  variantLabel?: string;
+  unitPrice: number;
+  quantity: number;
 }
 
 export interface AddToCartOptions {
@@ -38,6 +47,8 @@ interface CartContextType {
   addToCart: (product: Product, opts?: AddToCartOptions) => void;
   /** Adds a Pick & Mix bundle as grouped per-vial lines. Returns the bundleId. */
   addBundleToCart: (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => string;
+  /** Replaces only lines created by the same guided flow, preserving manual cart items. */
+  replaceCartGroup: (groupId: string, lines: CartGroupLineInput[]) => void;
   /** Removes every line belonging to a bundle. */
   removeBundle: (bundleId: string) => void;
   removeFromCart: (lineId: string) => void;
@@ -150,6 +161,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => i.bundleId !== bundleId));
   }, []);
 
+  const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
+    setItems((prev) => [
+      ...prev.filter((item) => item.groupId !== groupId),
+      ...lines.map((line) => ({
+        ...line,
+        groupId,
+        lineId: `${groupId}::${line.product.id}::${line.variantLabel ?? "default"}`,
+      })),
+    ]);
+  }, []);
+
   const updateQuantity = useCallback((lineId: string, quantity: number) => {
     if (quantity <= 0) {
       setItems((prev) => prev.filter((i) => i.lineId !== lineId));
@@ -211,7 +233,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items, addToCart, addBundleToCart, removeBundle, removeFromCart, updateQuantity, clearCart,
+        items, addToCart, addBundleToCart, replaceCartGroup, removeBundle, removeFromCart, updateQuantity, clearCart,
         totalItems, subtotal, totalPrice,
         isCartOpen, setIsCartOpen,
       }}
