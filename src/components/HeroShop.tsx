@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  ShieldCheck,
   Star,
   CheckCircle2,
   Stethoscope,
@@ -122,7 +121,6 @@ export default function HeroShop() {
               <CheckCircle2 className="h-3.5 w-3.5 text-[#00d4aa]" /> Prices include VAT — what you see is what you pay
             </span>
             <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free shipping over R1,500</span>
-            <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#00d4aa]" /> 99% HPLC tested by Janoshik</span>
             <span className="inline-flex items-center gap-1">
               <Stethoscope className="h-3.5 w-3.5" /> HPCSA-registered GP review on all orders
             </span>
@@ -245,4 +243,3 @@ export default function HeroShop() {
     </section>
   );
 }
-
