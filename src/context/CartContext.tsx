@@ -46,9 +46,6 @@ interface CartContextType {
   totalItems: number;
   subtotal: number;
   totalPrice: number;
-  discountCode: string | null;
-  discountAmount: number;
-  isDiscountEligible: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
 }
@@ -168,10 +165,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  const isDiscountEligible = false;
-  const discountAmount = 0;
   const totalPrice = subtotal;
-  const discountCode = null;
 
   const signature = useMemo(() => computeSignature(items), [items]);
 
@@ -218,7 +212,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider
       value={{
         items, addToCart, addBundleToCart, removeBundle, removeFromCart, updateQuantity, clearCart,
-        totalItems, subtotal, totalPrice, discountCode, discountAmount, isDiscountEligible,
+        totalItems, subtotal, totalPrice,
         isCartOpen, setIsCartOpen,
       }}
     >
