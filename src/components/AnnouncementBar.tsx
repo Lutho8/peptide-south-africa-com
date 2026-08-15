@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Truck, ShieldCheck, X } from "lucide-react";
 
-const STORAGE_KEY = "psa_announcement_dismissed_v3";
+const ANNOUNCEMENT_STATE = "psa_announcement_dismissed_v3";
 
 const messages = [
   {
@@ -19,7 +19,7 @@ export default function AnnouncementBar() {
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    setDismissed(localStorage.getItem(STORAGE_KEY) === "true");
+    setDismissed(localStorage.getItem(ANNOUNCEMENT_STATE) === "true");
   }, []);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function AnnouncementBar() {
       <button
         type="button"
         onClick={() => {
-          localStorage.setItem(STORAGE_KEY, "true");
+          localStorage.setItem(ANNOUNCEMENT_STATE, "true");
           setDismissed(true);
         }}
         aria-label="Dismiss announcement"
