@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { buildProductPlans } from "@/components/ProtocolPlans";
 import { products } from "@/data/products";
 import { buildFallbackProtocol } from "@/lib/quizProtocolFallback";
+import { matchProtocolProducts } from "@/lib/quizProductMatching";
 
 const completeAnswers = {
   issues: "stubborn-fat",
@@ -39,6 +40,23 @@ describe("quiz resilience", () => {
       { id: "monthly", label: "1 Month — Single Vials", months: 1, perMonth: 1_000, total: 1_000 },
       { id: "starter", label: "3 Months — 3-Pack Cycle", months: 3, perMonth: 850, total: 2_550 },
       { id: "commitment", label: "6 Months — 2× 3-Pack Cycle", months: 6, perMonth: 850, total: 5_100 },
+    ]);
+  });
+
+  it("maps clinical protocol aliases to the exact catalog products", () => {
+    const matched = matchProtocolProducts(
+      [
+        { name: "Tirzepatide (TZ-2)" },
+        { name: "BPC-157 / TB-500 Stack" },
+        { name: "GHK-Cu" },
+      ],
+      products,
+    );
+
+    expect(matched.map((product) => product.slug)).toEqual([
+      "tz2-tirz",
+      "bpc-tb500-blend",
+      "ghk-cu-50mg",
     ]);
   });
 
