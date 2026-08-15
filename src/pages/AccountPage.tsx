@@ -33,6 +33,7 @@ export default function AccountPage() {
   const [redemptions, setRedemptions] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("orders");
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth?redirect=/account");
@@ -152,24 +153,45 @@ export default function AccountPage() {
               </div>
             </div>
             {nextDelivery && (
-              <a href="#subscriptions" className="text-sm font-semibold text-primary hover:underline">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("subs");
+                  document.getElementById("account-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="text-sm font-semibold text-primary hover:underline"
+              >
                 Manage subscription
-              </a>
+              </button>
             )}
           </div>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <a href="#orders" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("orders");
+              document.getElementById("account-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
+          >
             <RefreshCw className="h-5 w-5 text-primary" />
             <p className="mt-3 font-semibold text-foreground">Reorder</p>
             <p className="mt-1 text-xs text-muted-foreground">Repeat a paid order in one tap.</p>
-          </a>
-          <a href="#subscriptions" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("subs");
+              document.getElementById("account-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
+          >
             <Repeat className="h-5 w-5 text-primary" />
             <p className="mt-3 font-semibold text-foreground">Manage subscription</p>
             <p className="mt-1 text-xs text-muted-foreground">Pause, resume or cancel deliveries.</p>
-          </a>
+          </button>
           <Link to="/testing" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
             <FileCheck2 className="h-5 w-5 text-primary" />
             <p className="mt-3 font-semibold text-foreground">Open your batch COA</p>
@@ -223,8 +245,8 @@ export default function AccountPage() {
         </div>
 
         {/* Tabbed sections: Orders · Subscriptions · Profile */}
-        <div className="mt-8">
-          <Tabs defaultValue="orders" className="w-full">
+        <div id="account-tabs" className="mt-8 scroll-mt-28">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:inline-grid">
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="subs">Subscriptions</TabsTrigger>
