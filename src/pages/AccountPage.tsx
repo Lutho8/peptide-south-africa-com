@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Copy, CheckCircle2, Share2, Gift, Repeat, Coins, Pause, Play, X, ArrowRight, LogOut } from "lucide-react";
+import { Copy, CheckCircle2, Share2, Gift, Repeat, Coins, Pause, Play, X, ArrowRight, LogOut, FileCheck2, Activity, CalendarClock, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,6 +84,10 @@ export default function AccountPage() {
     setBusy(null);
   };
 
+  const nextDelivery = subs
+    .filter((s) => s.status === "active" && s.next_charge_at)
+    .sort((a, b) => new Date(a.next_charge_at!).getTime() - new Date(b.next_charge_at!).getTime())[0];
+
   return (
     <>
       <SEO title="My Account · Peptide South Africa" description="Manage your subscriptions, referrals, and loyalty balance." path="/account" />
@@ -130,6 +134,52 @@ export default function AccountPage() {
             </p>
             <p className="mt-1 text-xs text-muted-foreground">Auto-reorder is paused-able anytime</p>
           </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-primary/25 bg-primary/5 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <CalendarClock className="h-5 w-5 text-primary" />
+              </span>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Next delivery</p>
+                <p className="font-display text-lg font-bold text-foreground">
+                  {nextDelivery?.next_charge_at
+                    ? new Date(nextDelivery.next_charge_at).toLocaleDateString("en-ZA", { dateStyle: "long" })
+                    : "No active delivery scheduled"}
+                </p>
+              </div>
+            </div>
+            {nextDelivery && (
+              <a href="#subscriptions" className="text-sm font-semibold text-primary hover:underline">
+                Manage subscription
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <a href="#orders" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            <RefreshCw className="h-5 w-5 text-primary" />
+            <p className="mt-3 font-semibold text-foreground">Reorder</p>
+            <p className="mt-1 text-xs text-muted-foreground">Repeat a paid order in one tap.</p>
+          </a>
+          <a href="#subscriptions" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            <Repeat className="h-5 w-5 text-primary" />
+            <p className="mt-3 font-semibold text-foreground">Manage subscription</p>
+            <p className="mt-1 text-xs text-muted-foreground">Pause, resume or cancel deliveries.</p>
+          </a>
+          <Link to="/testing" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            <FileCheck2 className="h-5 w-5 text-primary" />
+            <p className="mt-3 font-semibold text-foreground">Open your batch COA</p>
+            <p className="mt-1 text-xs text-muted-foreground">Match the lot on your vial.</p>
+          </Link>
+          <a href="https://peptide-south-africa.co.za/" target="_blank" rel="noopener noreferrer" className="rounded-xl border border-trust/30 bg-trust/5 p-4 transition-colors hover:bg-trust/10">
+            <Activity className="h-5 w-5 text-trust" />
+            <p className="mt-3 font-semibold text-foreground">Start tracker</p>
+            <p className="mt-1 text-xs text-muted-foreground">Open your free digital tracker.</p>
+          </a>
         </div>
 
         {/* Referral hub */}
@@ -181,11 +231,11 @@ export default function AccountPage() {
               <TabsTrigger value="profile">Profile</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="orders" className="mt-4">
+            <TabsContent id="orders" value="orders" className="mt-4 scroll-mt-28">
               <OrdersList />
             </TabsContent>
 
-            <TabsContent value="subs" className="mt-4">
+            <TabsContent id="subscriptions" value="subs" className="mt-4 scroll-mt-28">
               {subs.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
                   <Repeat className="mx-auto h-8 w-8 text-muted-foreground" />
