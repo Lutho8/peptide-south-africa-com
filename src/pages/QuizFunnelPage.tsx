@@ -943,23 +943,21 @@ export default function QuizFunnelPage() {
             <p className="mt-2 text-xs text-muted-foreground">Free • 30 minutes • No commitment</p>
           </div>
 
-          {/* WhatsApp CTA */}
+          {/* WhatsApp community CTA — final step after completing the quiz */}
           <div className="reveal-view mb-8 rounded-2xl border border-trust/30 bg-trust/5 p-5 text-center sm:p-6">
             <MessageCircle className="mx-auto mb-2 h-8 w-8 text-trust" />
             <h3 className="font-display text-base font-semibold text-foreground sm:text-lg">
-              Prefer to chat it through?
+              Join our WhatsApp community
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Real humans, on WhatsApp, during SA business hours.
+              Continue with protocol education, batch COAs and community updates after your quiz.
             </p>
-            <a
-              href={waLink(`Hi, I'm ${lead.name || "interested"}. I just got my protocol recommendation (${aiProtocol.protocolName}) and have some questions.`)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/community"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-trust px-6 py-3 font-semibold text-trust-foreground transition-all hover:opacity-90 active:scale-95"
             >
-              <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
-            </a>
+              <MessageCircle className="h-4 w-4" /> Join the WhatsApp Group
+            </Link>
           </div>
 
           {/* Trust footer */}

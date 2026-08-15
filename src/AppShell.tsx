@@ -61,7 +61,6 @@ const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const AdminIndexPage = lazy(() => import("@/pages/admin/AdminIndexPage"));
 const AdminTestimonialsPage = lazy(() => import("@/pages/admin/AdminTestimonialsPage"));
 const AdminFAQsPage = lazy(() => import("@/pages/admin/AdminFAQsPage"));
-const AdminDiscountEligibilityPage = lazy(() => import("@/pages/admin/AdminDiscountEligibilityPage"));
 const AdminSEOReindexPage = lazy(() => import("@/pages/admin/AdminSEOReindexPage"));
 const AdminBatchesPage = lazy(() => import("@/pages/admin/AdminBatchesPage"));
 const AdminCustomersPage = lazy(() => import("@/pages/admin/AdminCustomersPage"));
@@ -130,7 +129,6 @@ export default function AppShell() {
                 <Route path="/admin" element={<Suspense fallback={<RouteLoadingFallback />}><AdminIndexPage /></Suspense>} />
                 <Route path="/admin/testimonials" element={<Suspense fallback={<RouteLoadingFallback />}><AdminTestimonialsPage /></Suspense>} />
                 <Route path="/admin/faqs" element={<Suspense fallback={<RouteLoadingFallback />}><AdminFAQsPage /></Suspense>} />
-                <Route path="/admin/discounts" element={<Suspense fallback={<RouteLoadingFallback />}><AdminDiscountEligibilityPage /></Suspense>} />
                 <Route path="/admin/seo-reindex" element={<Suspense fallback={<RouteLoadingFallback />}><AdminSEOReindexPage /></Suspense>} />
                 <Route path="/admin/batches" element={<Suspense fallback={<RouteLoadingFallback />}><AdminBatchesPage /></Suspense>} />
                 <Route path="/admin/customers" element={<Suspense fallback={<RouteLoadingFallback />}><AdminCustomersPage /></Suspense>} />

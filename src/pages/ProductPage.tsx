@@ -249,9 +249,14 @@ export default function ProductPage() {
                           </span>
                           <span className="font-semibold text-foreground">
                             {v.label}
-                            {packSize > 1 && (
+                            {packSize === 1 && (
+                              <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                Single product
+                              </span>
+                            )}
+                            {packSize === 3 && (
                               <span className="ml-1.5 rounded bg-trust/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
-                                Best value · 15% off
+                                Most frequently chosen
                               </span>
                             )}
                           </span>
@@ -275,12 +280,12 @@ export default function ProductPage() {
                       <span className="font-semibold text-foreground">
                         5-Pack Pick &amp; Mix
                         <span className="ml-1.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                          20% off
+                          Best price per unit
                         </span>
                       </span>
                     </span>
                     <span className="text-right text-[11px] font-semibold text-primary">
-                      Build a custom 5-pack →
+                      Save 20% with a custom 5-pack →
                     </span>
                   </Link>
                 </div>
@@ -309,7 +314,11 @@ export default function ProductPage() {
 
             {/* Purchase mode — Subscribe & save */}
             {product.inStock && (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-card shadow-card">
+                <div className="flex items-center justify-between bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary">
+                  <span>Subscription option</span>
+                  <span>Save {subDiscountPct}% every delivery</span>
+                </div>
                 <div className="grid grid-cols-2">
                   <button
                     onClick={() => setPurchaseMode("one-time")}
@@ -397,7 +406,7 @@ export default function ProductPage() {
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
                 <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
               </Link>
-              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
+              <span className="flex items-center gap-1 rounded-lg bg-primary/5 px-2 py-1 font-semibold text-primary"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
               <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Price includes VAT — what you see is what you pay</span>
             </div>
 
@@ -417,39 +426,95 @@ export default function ProductPage() {
         <FrequentlyBoughtTogether slug={product.slug} />
       </section>
 
-      {/* Details Sections */}
+      {/* Beginner and technical information */}
       <section className="border-t border-border bg-card py-16">
-        <div className="container grid gap-12 md:grid-cols-3">
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">What's Included</h3>
-            <ul className="mt-4 flex flex-col gap-2">
-              {product.whatsIncluded.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-primary" /> {item}
-                </li>
-              ))}
-            </ul>
+        <div className="container grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-primary/20 bg-background p-6 shadow-card sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Beginner information</p>
+            <h2 className="mt-2 font-display text-2xl font-bold text-foreground">New to this product? Start here.</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              A quick overview of what is included, who normally researches it and how the order process works.
+            </p>
+
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+              <div>
+                <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
+                <ul className="mt-3 flex flex-col gap-2">
+                  {product.whatsIncluded.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-display text-base font-semibold text-foreground">Who It's For</h3>
+                <ul className="mt-3 flex flex-col gap-2">
+                  {product.whoItsFor.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-border pt-5">
+              <h3 className="font-display text-base font-semibold text-foreground">How It Works</h3>
+              <ol className="mt-3 grid gap-2">
+                {product.howItWorks.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
+                    {item}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">Who It's For</h3>
-            <ul className="mt-4 flex flex-col gap-2">
-              {product.whoItsFor.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-primary" /> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">How It Works</h3>
-            <ol className="mt-4 flex flex-col gap-2">
-              {product.howItWorks.map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
-                  {item}
-                </li>
-              ))}
-            </ol>
+
+          <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Technical data</p>
+            <h2 className="mt-2 font-display text-2xl font-bold text-foreground">Product specifications</h2>
+            <dl className="mt-6 divide-y divide-border rounded-xl border border-border">
+              {product.sku && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">SKU</dt>
+                  <dd className="font-mono font-semibold text-foreground">{product.sku}</dd>
+                </div>
+              )}
+              {product.casNumber && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">CAS number</dt>
+                  <dd className="font-mono font-semibold text-foreground">{product.casNumber}</dd>
+                </div>
+              )}
+              {product.compoundClass && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">Compound class</dt>
+                  <dd className="text-right font-semibold text-foreground">{product.compoundClass}</dd>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                <dt className="text-muted-foreground">Purity</dt>
+                <dd className="font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd>
+              </div>
+              {product.storage && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">Storage</dt>
+                  <dd className="max-w-[65%] text-right font-semibold text-foreground">{product.storage}</dd>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                <dt className="text-muted-foreground">Product track</dt>
+                <dd><TrackBadge track={product.track} /></dd>
+              </div>
+            </dl>
+            <Link
+              to="/testing"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-5 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
+            >
+              <Shield className="h-4 w-4" /> Open batch COA and testing
+            </Link>
           </div>
         </div>
       </section>

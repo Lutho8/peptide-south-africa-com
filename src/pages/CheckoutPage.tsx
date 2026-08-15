@@ -37,9 +37,9 @@ const inputCls =
 
 
 export default function CheckoutPage() {
-  const { items, subtotal, totalPrice, discountAmount, clearCart } = useCart();
+  const { items, subtotal, totalPrice, clearCart } = useCart();
   const bundleSavings = cartBundleSavings(items);
-  const specialOffer = Math.round((bundleSavings + discountAmount) * 100) / 100;
+  const specialOffer = Math.round(bundleSavings * 100) / 100;
   const { user, refreshOrders } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();

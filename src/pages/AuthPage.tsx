@@ -32,15 +32,19 @@ export default function AuthPage() {
           options: { emailRedirectTo: `${window.location.origin}${redirect}` },
         });
         if (error) throw error;
-        toast({ title: "Welcome!", description: "Account created — your 10% off is now active." });
+        toast({ title: "Welcome!", description: "Account created — your free Peptide Tracker is ready." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: "Welcome back" });
       }
       navigate(redirect);
-    } catch (err: any) {
-      toast({ title: "Authentication error", description: err.message, variant: "destructive" });
+    } catch (err: unknown) {
+      toast({
+        title: "Authentication error",
+        description: err instanceof Error ? err.message : "Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setBusy(false);
     }
@@ -55,10 +59,10 @@ export default function AuthPage() {
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: "Google sign-in failed",
-        description: err.message || "Please try again or use email.",
+        description: err instanceof Error ? err.message : "Please try again or use email.",
         variant: "destructive",
       });
     } finally {
@@ -76,8 +80,8 @@ export default function AuthPage() {
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "signup"
-            ? "Get 10% off your first order — auto-applied at checkout."
-            : "Welcome back. Your discount is waiting if you haven't ordered yet."}
+            ? "Create an account to reorder, manage subscriptions, open your batch COA and start your free Peptide Tracker."
+            : "Welcome back. Your orders, subscriptions, COAs and free Peptide Tracker are waiting."}
         </p>
 
         <button

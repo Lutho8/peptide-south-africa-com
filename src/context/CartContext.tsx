@@ -46,17 +46,11 @@ interface CartContextType {
   totalItems: number;
   subtotal: number;
   totalPrice: number;
-  discountCode: string | null;
-  discountAmount: number;
-  isDiscountEligible: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-
-export const FIRST_ORDER_CODE = "PEPTIDESA10";
-export const FIRST_ORDER_PCT = 0.10;
 
 function makeLineId(productId: string, variantLabel?: string) {
   return `${productId}::${variantLabel ?? "default"}`;
@@ -89,7 +83,7 @@ function loadPersistedItems(): CartItem[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { user, hasFirstOrder } = useAuth();
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>(() => loadPersistedItems());
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -171,10 +165,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  const isDiscountEligible = !!user && hasFirstOrder === false;
-  const discountAmount = isDiscountEligible ? subtotal * FIRST_ORDER_PCT : 0;
-  const totalPrice = subtotal - discountAmount;
-  const discountCode = isDiscountEligible ? FIRST_ORDER_CODE : null;
+  const totalPrice = subtotal;
 
   const signature = useMemo(() => computeSignature(items), [items]);
 
@@ -221,7 +212,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider
       value={{
         items, addToCart, addBundleToCart, removeBundle, removeFromCart, updateQuantity, clearCart,
-        totalItems, subtotal, totalPrice, discountCode, discountAmount, isDiscountEligible,
+        totalItems, subtotal, totalPrice,
         isCartOpen, setIsCartOpen,
       }}
     >

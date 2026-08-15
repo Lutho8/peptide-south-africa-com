@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ArrowLeft, ShoppingBag } from "lucide-react";
+import { Minus, Plus, X, ArrowLeft, ShoppingBag, Gift, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import FreeShippingBar from "@/components/FreeShippingBar";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 export default function CartPage() {
-  const { items, removeFromCart, removeBundle, updateQuantity, subtotal, discountAmount } = useCart();
+  const { items, removeFromCart, removeBundle, updateQuantity, subtotal } = useCart();
   const { format } = useCurrency();
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
@@ -26,7 +27,11 @@ export default function CartPage() {
       total: lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0),
     };
   });
-  const specialOffer = Math.round((cartBundleSavings(items) + discountAmount) * 100) / 100;
+  const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
+  const cartUnits = items.reduce((sum, item) => {
+    const pack = Number(item.variantLabel?.match(/(\d+)\s*-?\s*Pack/i)?.[1] ?? 1);
+    return sum + pack * item.quantity;
+  }, 0);
   const anchorSlug = items[0]?.product.slug;
 
   if (items.length === 0) {
@@ -53,6 +58,8 @@ export default function CartPage() {
           <ArrowLeft className="h-4 w-4" /> Continue Shopping
         </Link>
         <h1 className="mb-8 text-center font-display text-3xl font-bold text-foreground">My Cart</h1>
+
+        <FreeShippingBar subtotalZar={subtotal} className="mb-5" />
 
         <div className="flex flex-col gap-3">
           {bundles.map((b) => (
@@ -118,7 +125,37 @@ export default function CartPage() {
           ))}
         </div>
 
-        <div className="mt-8 rounded-lg border border-border bg-card p-6">
+        {anchorSlug && cartUnits < 5 && (
+          <Link
+            to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
+            className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-4"
+          >
+            <span>
+              <span className="block font-semibold text-foreground">
+                {cartUnits < 3 ? "Most customers choose the 3-pack" : "Best price per unit: 5-pack"}
+              </span>
+              <span className="block text-sm text-muted-foreground">
+                {cartUnits < 3 ? "See the next pack and compare the savings." : "Build any five and save 20%."}
+              </span>
+            </span>
+            <ArrowRight className="h-5 w-5 shrink-0 text-primary" />
+          </Link>
+        )}
+
+        <a
+          href="https://peptide-south-africa.co.za/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex items-center gap-3 rounded-xl border border-trust/25 bg-trust/5 p-4"
+        >
+          <Gift className="h-5 w-5 shrink-0 text-trust" />
+          <span>
+            <span className="block font-semibold text-foreground">Free Peptide Tracker included</span>
+            <span className="block text-sm text-muted-foreground">Open your digital progress companion at any time.</span>
+          </span>
+        </a>
+
+        <div className="mt-6 rounded-lg border border-border bg-card p-6">
           {specialOffer > 0 && (
             <div className="mb-2 flex justify-between text-sm">
               <span className="font-semibold text-destructive">Special Offer</span>

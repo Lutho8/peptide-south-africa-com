@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { parsePhoneNumberFromString } from "libphonenumber-js/min";
+import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js/min";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -30,7 +30,7 @@ export default function CommunityJoinForm({
     e.preventDefault();
     setErrors({});
 
-    const parsed = parsePhoneNumberFromString(national, country as any);
+    const parsed = parsePhoneNumberFromString(national, country as CountryCode);
     const phoneE164 = parsed?.isValid() ? parsed.number : "";
 
     const payload = {
@@ -68,10 +68,10 @@ export default function CommunityJoinForm({
         return;
       }
       onSuccess({ groupUrl: data.groupUrl ?? null });
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast({
         title: "Network error",
-        description: err?.message ?? "Try again shortly.",
+        description: err instanceof Error ? err.message : "Try again shortly.",
         variant: "destructive",
       });
     } finally {
