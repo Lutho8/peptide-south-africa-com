@@ -1,9 +1,10 @@
-import { X, Minus, Plus, ShoppingBag } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, Gift, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+import FreeShippingBar from "@/components/FreeShippingBar";
 
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
@@ -18,7 +19,6 @@ export default function CartDrawer() {
     removeBundle,
     updateQuantity,
     subtotal,
-    discountAmount,
     totalItems,
   } = useCart();
   const { format } = useCurrency();
@@ -37,7 +37,11 @@ export default function CartDrawer() {
       total: lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0),
     };
   });
-  const specialOffer = Math.round((cartBundleSavings(items) + discountAmount) * 100) / 100;
+  const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
+  const cartUnits = items.reduce((sum, item) => {
+    const pack = Number(item.variantLabel?.match(/(\d+)\s*-?\s*Pack/i)?.[1] ?? 1);
+    return sum + pack * item.quantity;
+  }, 0);
 
   if (!isCartOpen) return null;
 
@@ -70,6 +74,7 @@ export default function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto p-4">
+              <FreeShippingBar subtotalZar={subtotal} className="mb-4" />
               <div className="flex flex-col gap-3">
                 {bundles.map((b) => (
                   <div key={b.id} className="rounded-lg border border-primary/30 bg-primary/[0.03] p-3">
@@ -129,6 +134,37 @@ export default function CartDrawer() {
                   </div>
                 ))}
               </div>
+
+              {anchorSlug && cartUnits < 5 && (
+                <Link
+                  to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
+                  onClick={() => setIsCartOpen(false)}
+                  className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-3 text-sm"
+                >
+                  <span>
+                    <span className="block font-semibold text-foreground">
+                      {cartUnits < 3 ? "Most customers choose the 3-pack" : "Best price per unit: 5-pack"}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {cartUnits < 3 ? "See the larger pack and its savings." : "Build any five and save 20%."}
+                    </span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-primary" />
+                </Link>
+              )}
+
+              <a
+                href="https://peptide-south-africa.co.za/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex items-center gap-3 rounded-xl border border-trust/25 bg-trust/5 p-3"
+              >
+                <Gift className="h-5 w-5 shrink-0 text-trust" />
+                <span>
+                  <span className="block text-sm font-semibold text-foreground">Free Peptide Tracker included</span>
+                  <span className="block text-xs text-muted-foreground">Your digital progress companion.</span>
+                </span>
+              </a>
             </div>
 
             <div className="border-t border-border p-4">
