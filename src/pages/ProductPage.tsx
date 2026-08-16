@@ -426,7 +426,7 @@ export default function ProductPage() {
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — COA Available</span>
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
-                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
+                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · published source report
               </Link>
               <span className="flex items-center gap-1 rounded-lg bg-primary/5 px-2 py-1 font-semibold text-primary"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
               <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Price includes VAT — what you see is what you pay</span>

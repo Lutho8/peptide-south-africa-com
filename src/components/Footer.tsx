@@ -38,7 +38,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link to="/" className="font-display text-lg font-bold text-foreground">Peptide South Africa</Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              Research-grade peptides. Lab-tested. 99% purity. Cape Town, South Africa.
+              Peptide-first research catalogue. Published lab reports where available. Cape Town, South Africa.
             </p>
             {/* Newsletter */}
             <div className="mt-5">
@@ -104,7 +104,7 @@ export default function Footer() {
                   <Phone className="h-3.5 w-3.5 shrink-0" /> {businessInfo.telephoneDisplay}
                 </a>
               </address>
-              <span className="text-xs">✓ Lab Tested · 99% Purity · Secure Checkout</span>
+              <span className="text-xs">✓ Published reports · Source scope shown · Secure checkout</span>
             </div>
           </div>
 

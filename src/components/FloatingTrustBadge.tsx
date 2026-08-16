@@ -36,7 +36,7 @@ export default function FloatingTrustBadge() {
     >
       <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-primary/20 bg-card/90 px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-widest text-foreground shadow-lg backdrop-blur">
         <ShieldCheck className="h-4 w-4 text-primary" />
-        <span>99% HPLC · COA Verified · Same-Day SA Courier</span>
+        <span>Published reports · Secure checkout · SA courier</span>
       </div>
     </div>
   );
