@@ -19,6 +19,7 @@ interface Batch {
   coa_pdf_url: string | null;
   manufactured_at: string | null;
   expires_at: string | null;
+  notes: string | null;
   is_published: boolean;
 }
 
@@ -27,12 +28,14 @@ const empty = {
   variant_label: "",
   lot_number: "",
   hplc_purity: "",
-  mass_spec_passed: true,
+  mass_spec_passed: false,
   endotoxin_eu_mg: "",
   lab_name: "Janoshik Analytical",
   test_date: new Date().toISOString().slice(0, 10),
   manufactured_at: "",
   expires_at: "",
+  notes: "",
+  external_coa_url: "",
   is_published: true,
 };
 
@@ -65,11 +68,12 @@ export default function AdminBatchesPage() {
     e.preventDefault();
     setBusy(true);
 
-    let coa_pdf_url: string | null = null;
+    let coa_pdf_url: string | null = form.external_coa_url.trim() || null;
     if (file) {
-      const path = `${form.product_slug}/${form.lot_number}-${Date.now()}.pdf`;
+      const extension = file.name.split(".").pop()?.toLowerCase() || "pdf";
+      const path = `${form.product_slug}/${form.lot_number}-${Date.now()}.${extension}`;
       const { error: upErr } = await supabase.storage.from("coa-pdfs").upload(path, file, {
-        contentType: "application/pdf",
+        contentType: file.type || "application/octet-stream",
         upsert: false,
       });
       if (upErr) {
@@ -96,6 +100,7 @@ export default function AdminBatchesPage() {
       expires_at: form.expires_at || null,
       is_published: form.is_published,
       coa_pdf_url,
+      notes: form.notes || null,
     });
     setBusy(false);
 
@@ -174,6 +179,19 @@ export default function AdminBatchesPage() {
           onChange={(e) => setForm({ ...form, lab_name: e.target.value })}
           className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
         />
+        <input
+          placeholder="External verification URL (optional)"
+          type="url"
+          value={form.external_coa_url}
+          onChange={(e) => setForm({ ...form, external_coa_url: e.target.value })}
+          className="rounded-lg border border-input bg-background px-3 py-2 text-sm sm:col-span-2"
+        />
+        <input
+          placeholder="Scope note (e.g. supplier sample; batch field blank)"
+          value={form.notes}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          className="rounded-lg border border-input bg-background px-3 py-2 text-sm sm:col-span-3"
+        />
         <label className="flex flex-col gap-1 text-xs text-muted-foreground">
           Test date
           <input
@@ -223,11 +241,15 @@ export default function AdminBatchesPage() {
           <Upload className="h-4 w-4 text-primary" />
           <input
             type="file"
-            accept="application/pdf"
+            accept="application/pdf,image/jpeg,image/png,image/webp"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             className="text-xs"
           />
         </label>
+
+        <p className="sm:col-span-3 rounded-lg border border-amber-300/40 bg-amber-50 p-3 text-xs text-amber-950">
+          Record only tests explicitly shown on the source report. Do not mark mass spectrometry or enter an endotoxin result unless the document includes that test. The lot number becomes the short verification path used by future vial labels.
+        </p>
 
         <button
           type="submit"

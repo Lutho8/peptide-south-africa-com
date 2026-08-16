@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
+import { getCoasForProduct } from "@/data/coas";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -96,6 +97,18 @@ export default function ProductPage() {
     selectedVariantMeta?.pack && selectedVariantMeta.pack > 1
       ? singleVialPrice * selectedVariantMeta.pack - selectedVariantMeta.price
       : undefined;
+  const productCoas = getCoasForProduct(product.slug);
+  const primaryCoa = productCoas[0];
+  const productMedia = [
+    { src: product.image, alt: product.name, label: "Product", fit: "cover" as const },
+    ...productCoas.map((coa) => ({
+      src: coa.reportImageUrl,
+      alt: `${coa.productName} Janoshik report task ${coa.taskNumber}`,
+      label: `COA #${coa.taskNumber}`,
+      fit: "contain" as const,
+      href: coa.verificationUrl,
+    })),
+  ];
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
@@ -190,7 +203,7 @@ export default function ProductPage() {
         <div className="grid gap-10 md:grid-cols-2 md:items-start">
           {/* Image — sticks on desktop so the product follows the user as they scroll. */}
           <div className="md:sticky md:top-24 md:self-start">
-            <ProductImageZoom src={product.image} alt={product.name} />
+            <ProductImageZoom src={product.image} alt={product.name} media={productMedia} />
           </div>
 
 
@@ -210,7 +223,7 @@ export default function ProductPage() {
               {display(currentPrice).primary}
             </p>
 
-            <CoaBadge purity={product.purity ?? "≥99% HPLC"} />
+            <CoaBadge purity={product.purity ?? "HPLC result published"} coaUrl={primaryCoa?.verificationUrl} />
 
             {/* Monospace authenticity strip — lab-grade trust signals */}
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border border-border bg-muted/30 p-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -411,7 +424,7 @@ export default function ProductPage() {
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
+              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — COA Available</span>
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
                 <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
               </Link>

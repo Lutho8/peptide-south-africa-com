@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Truck, ShieldCheck, X } from "lucide-react";
 
-const ANNOUNCEMENT_STATE = "psa_announcement_dismissed_v3";
+const ANNOUNCEMENT_STATE = "psa_announcement_dismissed_v4";
 
 const messages = [
   {
@@ -10,7 +10,7 @@ const messages = [
   },
   {
     icon: ShieldCheck,
-    text: "Every batch ≥99% HPLC tested · COA on every product · Independently lab tested",
+    text: "Published lab reports · Source-level results · QR-linked vial labels",
   },
 ];
 

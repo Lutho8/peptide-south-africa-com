@@ -6,7 +6,7 @@ const PRODUCT_LD = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Tesamorelin",
-  "description": "Buy Tesamorelin in South Africa. GHRH analog for GH secretion research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier.",
+  "description": "Buy Tesamorelin in South Africa. GHRH analog for research with a published Janoshik source report and ZAR pricing.",
   "brand": {
     "@type": "Brand",
     "name": "Peptide South Africa"
@@ -28,7 +28,7 @@ const PRODUCT_LD = {
     }
   },
   "additionalProperty": [
-    { "@type": "PropertyValue", "name": "Purity", "value": "≥99%" },
+    { "@type": "PropertyValue", "name": "Published purity result", "value": "98.425%–98.589% (Janoshik task 164644)" },
     { "@type": "PropertyValue", "name": "Category", "value": "GHRH analog" },
     { "@type": "PropertyValue", "name": "Testing", "value": "Third-party HPLC tested at Janoshik Analytical" }
   ]
@@ -49,7 +49,7 @@ export default function BuyTesamorelinSA() {
     <>
       <SEO
         title="Buy Tesamorelin in South Africa | GHRH Analog Research Peptide"
-        description="Buy Tesamorelin in South Africa. GHRH analog for GH secretion research, ZAR pricing, third-party tested ≥99% purity. Local Cape Town peptide supplier."
+        description="Buy Tesamorelin in South Africa. GHRH analog for research with a published Janoshik source report and ZAR pricing."
         path="/buy-tesamorelin-south-africa"
         type="product"
         keywords="buy tesamorelin south africa, tesamorelin SA, GHRH peptide south africa, tesamorelin ZAR, growth hormone peptide SA"
@@ -74,13 +74,13 @@ export default function BuyTesamorelinSA() {
               <MapPin className="w-3 h-3" /> Cape Town, South Africa
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy Tesamorelin in South Africa</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for GH production stimulation and visceral adipose tissue reduction. HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
+            <p className="text-lg text-muted-foreground max-w-2xl">Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for GH production stimulation and visceral adipose tissue reduction. Janoshik task #164644 reports 98.425%–98.589% purity for sample TSM10.</p>
           </div>
 
           {/* Trust bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
-              { icon: <Shield className="w-5 h-5 text-primary" />, text: "≥99% Purity" },
+              { icon: <Shield className="w-5 h-5 text-primary" />, text: "Source Report" },
               { icon: <FlaskConical className="w-5 h-5 text-primary" />, text: "HPLC Tested" },
               { icon: <MapPin className="w-5 h-5 text-primary" />, text: "SA-Based Supplier" },
               { icon: <Truck className="w-5 h-5 text-primary" />, text: "ZAR Pricing" },
@@ -107,10 +107,10 @@ export default function BuyTesamorelinSA() {
 
             <ul className="space-y-2 mb-6">
               {[
-                "Third-party HPLC tested at Janoshik Analytical",
-                "Certificate of Analysis included with every order",
+                "Published Janoshik report task #164644",
+                "Source report visible in the product carousel",
                 "South Africa-based supplier — ZAR pricing, no forex fees",
-                "Batch-certified ≥99% purity guaranteed",
+                "Reported purity: 98.425%–98.589% for sample TSM10",
                 "Fast local dispatch from Cape Town",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-foreground">
@@ -147,8 +147,8 @@ export default function BuyTesamorelinSA() {
                 <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes only and are not scheduled medicines under SAHPRA when used in a research context. They are not approved for therapeutic use without a practitioner.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-foreground mb-1">What purity is guaranteed?</h3>
-                <p className="text-sm text-muted-foreground">≥99% purity — every batch is third-party HPLC tested at Janoshik Analytical. The Certificate of Analysis is downloadable directly from the product page.</p>
+                <h3 className="font-semibold text-foreground mb-1">What does the published report show?</h3>
+                <p className="text-sm text-muted-foreground">Janoshik task #164644 reports 98.425% and 98.589% purity for sample TSM10. The report names the supplier client and leaves its batch field blank, so it is a source-sample report rather than unique-vial authentication.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">How do you ship in South Africa?</h3>

@@ -39,6 +39,7 @@ import BuyGhkCuSA from "@/pages/BuyGhkCuSA";
 import BuyTesamorelinSA from "@/pages/BuyTesamorelinSA";
 import BuyMotsCSA from "@/pages/BuyMotsCSA";
 import TestingPage from "@/pages/TestingPage";
+import CoaRedirectPage from "@/pages/CoaRedirectPage";
 import CommunityJoinPage from "@/pages/CommunityJoinPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -123,6 +124,7 @@ export default function AppShell() {
                 <Route path="/buy-tesamorelin-south-africa" element={<BuyTesamorelinSA />} />
                 <Route path="/buy-mots-c-south-africa" element={<BuyMotsCSA />} />
                 <Route path="/testing" element={<TestingPage />} />
+                <Route path="/v/:code" element={<CoaRedirectPage />} />
                 <Route path="/account" element={<Suspense fallback={<RouteLoadingFallback />}><AccountPage /></Suspense>} />
                 <Route path="/community" element={<CommunityJoinPage />} />
                 <Route path="/auth" element={<Suspense fallback={<RouteLoadingFallback />}><AuthPage /></Suspense>} />

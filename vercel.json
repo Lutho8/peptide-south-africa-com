@@ -2,6 +2,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/v/t01",
+      "destination": "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/pets", "destination": "https://pets.peptide-south-africa.com/" },
     { "source": "/pets/:path*", "destination": "https://pets.peptide-south-africa.com/:path*" },
