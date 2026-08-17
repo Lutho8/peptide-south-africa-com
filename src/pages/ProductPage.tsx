@@ -225,12 +225,12 @@ export default function ProductPage() {
 
             <CoaBadge purity={product.purity ?? "HPLC result published"} coaUrl={primaryCoa?.verificationUrl} />
 
-            {/* Monospace authenticity strip — lab-grade trust signals */}
+            {/* Report-scope strip — never invent a lot or imply unique-vial authentication. */}
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border border-border bg-muted/30 p-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              <div><dt className="inline text-foreground/60">LOT</dt> <dd className="inline font-semibold text-foreground">{`PSA-${(product.slug || "x").slice(0,3).toUpperCase()}-${new Date().getFullYear()}`}</dd></div>
+              <div><dt className="inline text-foreground/60">SAMPLE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa?.sampleReference ?? "NOT PUBLISHED"}</dd></div>
               <div><dt className="inline text-foreground/60">PURITY</dt> <dd className="inline font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd></div>
-              <div><dt className="inline text-foreground/60">COA</dt> <dd className="inline font-semibold text-foreground">JANOSHIK ✓</dd></div>
-              <div><dt className="inline text-foreground/60">BATCH</dt> <dd className="inline font-semibold text-foreground">{new Date().toISOString().slice(0,10)}</dd></div>
+              <div><dt className="inline text-foreground/60">COA</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? `TASK ${primaryCoa.taskNumber}` : "PENDING"}</dd></div>
+              <div><dt className="inline text-foreground/60">SCOPE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? "SOURCE REPORT" : "NOT LINKED"}</dd></div>
             </dl>
 
 

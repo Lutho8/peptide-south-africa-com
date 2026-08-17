@@ -7,6 +7,21 @@
       "source": "/v/t01",
       "destination": "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
       "permanent": true
+    },
+    {
+      "source": "/v/m01",
+      "destination": "https://verify.janoshik.com/tests/83567_HGNB5E53261C",
+      "permanent": true
+    },
+    {
+      "source": "/v/r01",
+      "destination": "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
+      "permanent": true
+    },
+    {
+      "source": "/v/z01",
+      "destination": "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
+      "permanent": true
     }
   ],
   "rewrites": [

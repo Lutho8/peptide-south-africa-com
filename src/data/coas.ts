@@ -22,6 +22,66 @@ export interface CoaRecord {
  */
 export const staticCoas: CoaRecord[] = [
   {
+    id: "mots-c-83567",
+    shortCode: "m01",
+    productSlug: "mots-c",
+    productName: "MOTS-C",
+    productSku: "RTT-MTC-10",
+    strength: "10 mg",
+    labName: "Janoshik Analytical",
+    taskNumber: "83567",
+    sampleReference: "MOTS-C 10mg",
+    reportDate: "2025-10-21",
+    verificationUrl: "https://verify.janoshik.com/tests/83567_HGNB5E53261C",
+    reportImageUrl: "/coa/mots-c-janoshik-83567.svg",
+    results: [
+      { label: "Reported content", value: "11.42 mg" },
+      { label: "Reported purity", value: "99.098%" },
+    ],
+    sourceNote:
+      "This report identifies the submitted sample as MOTS-C 10mg and names Zztai Peptide Ltd. as the client. Its batch is reported as Unknown, so it verifies the published lab report—not a unique PSA vial or lot.",
+  },
+  {
+    id: "retatrutide-61141",
+    shortCode: "r01",
+    productSlug: "rt3-reta",
+    productName: "Retatrutide",
+    productSku: "RTT-RT3-10",
+    strength: "10 mg",
+    labName: "Janoshik Analytical",
+    taskNumber: "61141",
+    sampleReference: "Retatrutide 10mg",
+    reportDate: "2025-04-01",
+    verificationUrl: "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
+    reportImageUrl: "/coa/retatrutide-janoshik-61141.svg",
+    results: [
+      { label: "Reported content", value: "10.80 mg" },
+      { label: "Reported purity", value: "99.060%" },
+    ],
+    sourceNote:
+      "This report identifies the submitted sample as Retatrutide 10mg and names Zztai Peptide Ltd. as the client. Its batch is reported as Unknown, so it verifies the published lab report—not a unique PSA vial or lot.",
+  },
+  {
+    id: "tirzepatide-164662",
+    shortCode: "z01",
+    productSlug: "tz2-tirz",
+    productName: "Tirzepatide",
+    productSku: "RTT-TZ2-20",
+    strength: "20 mg",
+    labName: "Janoshik Analytical",
+    taskNumber: "164662",
+    sampleReference: "T120",
+    reportDate: "2026-05-27",
+    verificationUrl: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
+    reportImageUrl: "/coa/tirzepatide-janoshik-164662.svg",
+    results: [
+      { label: "Reported content", value: "134.42 mg; 132.84 mg" },
+      { label: "Reported purity", value: "99.867%; 99.899%" },
+    ],
+    sourceNote:
+      "This report identifies the submitted sample as T120, names Zztai Peptide Ltd. as the client, and reports 134.42 mg and 132.84 mg. Its batch is reported as Unknown and it does not identify a 20 mg PSA lot, so it verifies the published source report—not a unique PSA vial or lot.",
+  },
+  {
     id: "tesamorelin-164644",
     shortCode: "t01",
     productSlug: "tesamorelin",
@@ -46,4 +106,3 @@ export const staticCoas: CoaRecord[] = [
 export function getCoasForProduct(productSlug: string): CoaRecord[] {
   return staticCoas.filter((record) => record.productSlug === productSlug);
 }
-
