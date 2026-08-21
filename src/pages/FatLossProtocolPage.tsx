@@ -21,10 +21,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-
-const WA_NUMBER = "27641344646";
-const waLink = (msg: string) =>
-  `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+import { buildWhatsAppUrl as waLink } from "@/lib/contact";
 
 /* ─── BMI Calculator ─── */
 function BMICalculator() {
@@ -58,10 +55,11 @@ function BMICalculator() {
       <div className="space-y-6">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-foreground">Height</label>
+            <label htmlFor="bmi-height" className="text-sm font-medium text-foreground">Height</label>
             <span className="text-sm font-semibold text-foreground">{height} cm</span>
           </div>
           <input
+            id="bmi-height"
             type="range"
             min={140}
             max={220}
@@ -73,10 +71,11 @@ function BMICalculator() {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-foreground">Weight</label>
+            <label htmlFor="bmi-weight" className="text-sm font-medium text-foreground">Weight</label>
             <span className="text-sm font-semibold text-foreground">{weight} kg</span>
           </div>
           <input
+            id="bmi-weight"
             type="range"
             min={40}
             max={200}
