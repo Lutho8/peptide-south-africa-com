@@ -1,0 +1,87 @@
+name: QA
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      target-url:
+        description: 'Base URL to test (full suite)'
+        required: false
+        default: 'https://peptide-south-africa.com'
+      suite:
+        description: 'smoke | full'
+        required: false
+        default: 'full'
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate qa/ directory
+        id: qadir
+        run: |
+          if [ -d qa ]; then echo "dir=qa" >> "$GITHUB_OUTPUT";
+          elif [ -d ../qa ]; then echo "dir=../qa" >> "$GITHUB_OUTPUT";
+          else echo "QA directory not found in repo; checking out workspace copy" && echo "dir=qa" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ steps.qadir.outputs.dir }}/package-lock.json
+
+      - name: Install QA dependencies
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        run: npm ci || npm install
+
+      - name: Install Playwright browsers
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Run inventory crawl
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.suite == 'full'
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        env:
+          BASE_URL: ${{ github.event.inputs.target-url || 'https://peptide-south-africa.com' }}
+        run: npx playwright test tests/inventory.spec.ts --project=chromium
+
+      - name: Run smoke suite (push/PR)
+        if: github.event_name != 'workflow_dispatch'
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        env:
+          BASE_URL: https://peptide-south-africa.com
+        run: npx playwright test --grep @smoke --project=chromium
+
+      - name: Run full suite (manual dispatch)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.suite == 'full'
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        env:
+          BASE_URL: ${{ github.event.inputs.target-url }}
+        run: npx playwright test --project=chromium
+
+      - name: Run smoke suite (manual dispatch, smoke)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.suite == 'smoke'
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        env:
+          BASE_URL: ${{ github.event.inputs.target-url }}
+        run: npx playwright test --grep @smoke --project=chromium
+
+      - name: Generate QA report
+        if: always()
+        working-directory: ${{ steps.qadir.outputs.dir }}
+        run: node report.js || true
+
+      - name: Upload QA report + results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-report-${{ github.run_number }}
+          path: |
+            ${{ steps.qadir.outputs.dir }}/reports/
+            ${{ steps.qadir.outputs.dir }}/test-results/
+          retention-days: 30
