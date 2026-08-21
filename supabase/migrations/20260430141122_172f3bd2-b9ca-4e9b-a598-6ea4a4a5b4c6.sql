@@ -66,7 +66,7 @@ CREATE TRIGGER trg_testimonials_updated_at
   BEFORE UPDATE ON public.testimonials
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
--- Orders (used for first-order discount eligibility)
+-- Orders
 CREATE TABLE public.orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,

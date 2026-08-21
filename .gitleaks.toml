@@ -16,5 +16,7 @@ useDefault = true
 [allowlist]
 description = "Supabase publishable anon key (public by design; RLS enforces access)"
 regexes = [
+  # Browser-local dismissal state; not a credential.
+  '''psa_announcement_dismissed_v3''',
   '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1dHN6bXJzdWtvcXFlaWx6cmJ2Iiwicm9sZSI6ImFub24i[A-Za-z0-9_.\-]*''',
 ]

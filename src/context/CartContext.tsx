@@ -16,6 +16,8 @@ export interface CartItem {
   bundleDiscountPct?: number;
   /** Undiscounted single-vial price — used to display "You Save". */
   compareAtPrice?: number;
+  /** Stable source group for atomic replacement (for example quiz plans). */
+  groupId?: string;
 }
 
 export interface BundleLineInput {
@@ -24,6 +26,13 @@ export interface BundleLineInput {
   unitPrice: number;
   /** Undiscounted single-vial price. */
   compareAtPrice: number;
+}
+
+export interface CartGroupLineInput {
+  product: Product;
+  variantLabel?: string;
+  unitPrice: number;
+  quantity: number;
 }
 
 export interface AddToCartOptions {
@@ -38,6 +47,8 @@ interface CartContextType {
   addToCart: (product: Product, opts?: AddToCartOptions) => void;
   /** Adds a Pick & Mix bundle as grouped per-vial lines. Returns the bundleId. */
   addBundleToCart: (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => string;
+  /** Replaces only lines created by the same guided flow, preserving manual cart items. */
+  replaceCartGroup: (groupId: string, lines: CartGroupLineInput[]) => void;
   /** Removes every line belonging to a bundle. */
   removeBundle: (bundleId: string) => void;
   removeFromCart: (lineId: string) => void;
@@ -46,17 +57,11 @@ interface CartContextType {
   totalItems: number;
   subtotal: number;
   totalPrice: number;
-  discountCode: string | null;
-  discountAmount: number;
-  isDiscountEligible: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-
-export const FIRST_ORDER_CODE = "PEPTIDESA10";
-export const FIRST_ORDER_PCT = 0.10;
 
 function makeLineId(productId: string, variantLabel?: string) {
   return `${productId}::${variantLabel ?? "default"}`;
@@ -89,7 +94,7 @@ function loadPersistedItems(): CartItem[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { user, hasFirstOrder } = useAuth();
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>(() => loadPersistedItems());
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -156,6 +161,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => i.bundleId !== bundleId));
   }, []);
 
+  const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
+    setItems((prev) => [
+      ...prev.filter((item) => item.groupId !== groupId),
+      ...lines.map((line) => ({
+        ...line,
+        groupId,
+        lineId: `${groupId}::${line.product.id}::${line.variantLabel ?? "default"}`,
+      })),
+    ]);
+  }, []);
+
   const updateQuantity = useCallback((lineId: string, quantity: number) => {
     if (quantity <= 0) {
       setItems((prev) => prev.filter((i) => i.lineId !== lineId));
@@ -171,10 +187,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
-  const isDiscountEligible = !!user && hasFirstOrder === false;
-  const discountAmount = isDiscountEligible ? subtotal * FIRST_ORDER_PCT : 0;
-  const totalPrice = subtotal - discountAmount;
-  const discountCode = isDiscountEligible ? FIRST_ORDER_CODE : null;
+  const totalPrice = subtotal;
 
   const signature = useMemo(() => computeSignature(items), [items]);
 
@@ -220,8 +233,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items, addToCart, addBundleToCart, removeBundle, removeFromCart, updateQuantity, clearCart,
-        totalItems, subtotal, totalPrice, discountCode, discountAmount, isDiscountEligible,
+        items, addToCart, addBundleToCart, replaceCartGroup, removeBundle, removeFromCart, updateQuantity, clearCart,
+        totalItems, subtotal, totalPrice,
         isCartOpen, setIsCartOpen,
       }}
     >

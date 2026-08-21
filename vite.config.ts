@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
     host: "::",
     port: 8080,
@@ -22,10 +21,26 @@ export default defineConfig(({ mode }) => ({
       ],
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          // Stable, rarely-changing vendor code split away from app code that
+          // changes on every deploy — lets returning visitors reuse a cached
+          // vendor chunk instead of re-downloading it after every release.
+          if (/react-dom|\/react\/|react-router/.test(id)) return "vendor-react";
+          if (/@radix-ui|framer-motion|lucide-react/.test(id)) return "vendor-ui";
+          if (id.includes("@supabase")) return "vendor-supabase";
+          return undefined;
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+});

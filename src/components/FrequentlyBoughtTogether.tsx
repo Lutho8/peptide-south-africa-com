@@ -3,13 +3,13 @@ import { Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { products, type Product } from "@/data/products";
-import { BUNDLE_MAP } from "@/data/bundles";
+import { BUNDLE_MAP, POST_ADD_ACCESSORIES, type BundleHint } from "@/data/bundles";
 
 interface Props {
   /** Slug of the anchor/primary product. */
   slug: string;
-  /** Compact mode used inside cart drawer. */
-  variant?: "default" | "compact";
+  /** Compact mode used inside cart drawer. `single` = one-tile Keeps-style recommend. */
+  variant?: "default" | "compact" | "single";
 }
 
 /**
@@ -20,11 +20,20 @@ interface Props {
 export default function FrequentlyBoughtTogether({ slug, variant = "default" }: Props) {
   const { addToCart } = useCart();
   const { format } = useCurrency();
-  const hints = BUNDLE_MAP[slug] ?? [];
-  const picks: Product[] = hints
+  // Merge curated peptide pairings with universal reconstitution accessories
+  // so BAC water / swabs always show up even if a specific slug has no map entry.
+  const seen = new Set<string>([slug]);
+  const merged: BundleHint[] = [];
+  for (const h of [...(BUNDLE_MAP[slug] ?? []), ...POST_ADD_ACCESSORIES]) {
+    if (seen.has(h.slug)) continue;
+    seen.add(h.slug);
+    merged.push(h);
+  }
+  const picks: Product[] = merged
     .map((h) => products.find((p) => p.slug === h.slug))
     .filter((p): p is Product => !!p && p.inStock)
     .slice(0, 2);
+  const hints = merged;
 
   if (picks.length === 0) return null;
 
@@ -39,6 +48,34 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
   };
 
   const addBundle = () => picks.forEach(addOne);
+
+  if (variant === "single") {
+    const p = picks[0];
+    return (
+      <div className="rounded-lg border border-border bg-card p-4">
+        <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          We also recommend
+        </p>
+        <div className="flex items-center gap-3">
+          <img src={typeof p.image === "string" ? p.image : ""} alt="" className="h-16 w-16 rounded-md object-cover" loading="lazy" />
+          <div className="min-w-0 flex-1">
+            <Link to={`/product/${p.slug}`} className="block truncate text-sm font-semibold text-foreground hover:underline">
+              {p.name}
+            </Link>
+            <span className="text-xs text-muted-foreground">{p.category}</span>
+            <p className="mt-0.5 text-sm font-bold text-foreground">{format(p.variants?.[0]?.price ?? p.price)}</p>
+          </div>
+          <button
+            onClick={() => addOne(p)}
+            aria-label={`Add ${p.name} to cart`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "compact") {
     return (

@@ -23,7 +23,7 @@ const reviewsData: Record<string, Review[]> = {
     { name: "Hannah B., Stellenbosch", date: "March 14, 2026", rating: 5, text: "Excellent quality and fast nationwide delivery. Packaging was discreet and secure.", verified: true },
   ],
   "tesamorelin": [
-    { name: "Dr. Nkosi", date: "March 18, 2026", rating: 5, text: "Premium quality Tesamorelin. Lab results confirmed ≥99% purity. Excellent for our GH research.", verified: true },
+    { name: "Dr. Nkosi", date: "March 18, 2026", rating: 5, text: "Premium quality Tesamorelin. The source report was easy to locate and review.", verified: true },
     { name: "Amanda S., Johannesburg", date: "March 16, 2026", rating: 5, text: "Smooth ordering process, fast domestic shipping. Arrived in 2 days.", verified: true },
     { name: "Lukas F., Sandton", date: "March 12, 2026", rating: 5, text: "Reliable supplier with a transparent COA. Courier delivery was painless.", verified: true },
     { name: "Sarah B., Durban", date: "March 10, 2026", rating: 5, text: "Best price I've found for research-grade Tesamorelin. No customs hassle.", verified: true },

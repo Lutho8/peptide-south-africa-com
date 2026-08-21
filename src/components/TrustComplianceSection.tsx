@@ -18,8 +18,8 @@ const PILLARS = [
     icon: FileCheck2,
     title: "Independent Lab Testing",
     detail:
-      "Every batch is third-party tested by Janoshik Analytical (Czech Republic) using HPLC-MS for purity and identity. No batch ships without a passing COA.",
-    proof: "99.0%+ purity threshold · COA per lot",
+      "Published reports show the exact lab, task or lot reference and the tests actually recorded. Supplier-sample reports are clearly distinguished from PSA production lots.",
+    proof: "Source report · scope note · QR path",
   },
   {
     icon: ClipboardList,
@@ -133,9 +133,9 @@ export default function TrustComplianceSection({ variant = "full", className = "
         <div className="mx-auto mt-10 max-w-5xl rounded-2xl border border-border bg-card p-5 sm:p-6">
           <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
             {[
-              { kpi: "99.0%+", label: "Min. purity per COA" },
+              { kpi: "Exact", label: "Reported result shown" },
               { kpi: "<24h", label: "Order → dispatch" },
-              { kpi: "100%", label: "Lots third-party tested" },
+              { kpi: "QR", label: "COA-linked vial labels" },
               { kpi: "POPIA", label: "Compliant data handling" },
             ].map((s) => (
               <div key={s.label}>

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,19 +20,12 @@ import HomePage from "@/pages/HomePage";
 import ShopPage from "@/pages/ShopPage";
 import BuildYourStackPage from "@/pages/BuildYourStackPage";
 import ProductPage from "@/pages/ProductPage";
-import CartPage from "@/pages/CartPage";
-import CheckoutPage from "@/pages/CheckoutPage";
-import EftInstructionsPage from "@/pages/EftInstructionsPage";
-import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
-import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
-import OrderStatusPage from "@/pages/OrderStatusPage";
 import ImpressumPage from "@/pages/ImpressumPage";
 import FAQPage from "@/pages/FAQPage";
 import ShippingPolicyPage from "@/pages/ShippingPolicyPage";
 import RefundPolicyPage from "@/pages/RefundPolicyPage";
 import TermsPage from "@/pages/TermsPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
-import TrackOrderPage from "@/pages/TrackOrderPage";
 import QuizFunnelPage from "@/pages/QuizFunnelPage";
 import FatLossProtocolPage from "@/pages/FatLossProtocolPage";
 import ResearchHubPage from "@/pages/ResearchHubPage";
@@ -43,27 +37,49 @@ import BuyBpc157SA from "@/pages/BuyBpc157SA";
 import BuyTirzepatideSA from "@/pages/BuyTirzepatideSA";
 import BuyGhkCuSA from "@/pages/BuyGhkCuSA";
 import BuyTesamorelinSA from "@/pages/BuyTesamorelinSA";
+import BuyMotsCSA from "@/pages/BuyMotsCSA";
 import TestingPage from "@/pages/TestingPage";
-import AccountPage from "@/pages/AccountPage";
+import CoaRedirectPage from "@/pages/CoaRedirectPage";
 import CommunityJoinPage from "@/pages/CommunityJoinPage";
-import AuthPage from "@/pages/AuthPage";
-import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
-import AdminIndexPage from "@/pages/admin/AdminIndexPage";
-import AdminFAQsPage from "@/pages/admin/AdminFAQsPage";
-import AdminDiscountEligibilityPage from "@/pages/admin/AdminDiscountEligibilityPage";
-import AdminSEOReindexPage from "@/pages/admin/AdminSEOReindexPage";
-import AdminBatchesPage from "@/pages/admin/AdminBatchesPage";
-import AdminCustomersPage from "@/pages/admin/AdminCustomersPage";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
 import NotFound from "@/pages/NotFound";
+
+// Lazy-loaded: none of these routes are part of scripts/prerender.mjs's
+// route list, so they're never rendered during the SSR/prerender build
+// step — safe to code-split without any risk to SEO-critical prerendered
+// HTML. These are purely transactional, account, or staff-only admin
+// pages that the vast majority of visitors never reach.
+const CartPage = lazy(() => import("@/pages/CartPage"));
+const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const CheckoutSuccessPage = lazy(() => import("@/pages/CheckoutSuccessPage"));
+const CheckoutCancelPage = lazy(() => import("@/pages/CheckoutCancelPage"));
+const OrderStatusPage = lazy(() => import("@/pages/OrderStatusPage"));
+const EftInstructionsPage = lazy(() => import("@/pages/EftInstructionsPage"));
+const TrackOrderPage = lazy(() => import("@/pages/TrackOrderPage"));
+const AccountPage = lazy(() => import("@/pages/AccountPage"));
+const AuthPage = lazy(() => import("@/pages/AuthPage"));
+const AdminIndexPage = lazy(() => import("@/pages/admin/AdminIndexPage"));
+const AdminTestimonialsPage = lazy(() => import("@/pages/admin/AdminTestimonialsPage"));
+const AdminFAQsPage = lazy(() => import("@/pages/admin/AdminFAQsPage"));
+const AdminSEOReindexPage = lazy(() => import("@/pages/admin/AdminSEOReindexPage"));
+const AdminBatchesPage = lazy(() => import("@/pages/admin/AdminBatchesPage"));
+const AdminCustomersPage = lazy(() => import("@/pages/admin/AdminCustomersPage"));
 
 /**
  * Router-agnostic application shell. Wrapped by <BrowserRouter> in the browser
  * (App.tsx) and by <StaticRouter> during build-time prerender (entry-server).
  * Keep this free of any Router element so both callers control routing.
  */
+function RouteLoadingFallback() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
+  );
+}
+
 export default function AppShell() {
   return (
     <CurrencyProvider>
@@ -84,14 +100,14 @@ export default function AppShell() {
                 <Route path="/build-your-stack" element={<BuildYourStackPage />} />
                 <Route path="/5-pack" element={<BuildYourStackPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/checkout/eft-instructions" element={<EftInstructionsPage />} />
-                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-                <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
-                <Route path="/order/:id" element={<OrderStatusPage />} />
+                <Route path="/cart" element={<Suspense fallback={<RouteLoadingFallback />}><CartPage /></Suspense>} />
+                <Route path="/checkout" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutPage /></Suspense>} />
+                <Route path="/checkout/eft-instructions" element={<Suspense fallback={<RouteLoadingFallback />}><EftInstructionsPage /></Suspense>} />
+                <Route path="/checkout/success" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutSuccessPage /></Suspense>} />
+                <Route path="/checkout/cancel" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutCancelPage /></Suspense>} />
+                <Route path="/order/:id" element={<Suspense fallback={<RouteLoadingFallback />}><OrderStatusPage /></Suspense>} />
                 <Route path="/impressum" element={<ImpressumPage />} />
-                <Route path="/track-order" element={<TrackOrderPage />} />
+                <Route path="/track-order" element={<Suspense fallback={<RouteLoadingFallback />}><TrackOrderPage /></Suspense>} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
@@ -108,17 +124,18 @@ export default function AppShell() {
                 <Route path="/buy-tirzepatide-south-africa" element={<BuyTirzepatideSA />} />
                 <Route path="/buy-ghk-cu-south-africa" element={<BuyGhkCuSA />} />
                 <Route path="/buy-tesamorelin-south-africa" element={<BuyTesamorelinSA />} />
+                <Route path="/buy-mots-c-south-africa" element={<BuyMotsCSA />} />
                 <Route path="/testing" element={<TestingPage />} />
-                <Route path="/account" element={<AccountPage />} />
+                <Route path="/v/:code" element={<CoaRedirectPage />} />
+                <Route path="/account" element={<Suspense fallback={<RouteLoadingFallback />}><AccountPage /></Suspense>} />
                 <Route path="/community" element={<CommunityJoinPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/admin" element={<AdminIndexPage />} />
-                <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
-                <Route path="/admin/faqs" element={<AdminFAQsPage />} />
-                <Route path="/admin/discounts" element={<AdminDiscountEligibilityPage />} />
-                <Route path="/admin/seo-reindex" element={<AdminSEOReindexPage />} />
-                <Route path="/admin/batches" element={<AdminBatchesPage />} />
-                <Route path="/admin/customers" element={<AdminCustomersPage />} />
+                <Route path="/auth" element={<Suspense fallback={<RouteLoadingFallback />}><AuthPage /></Suspense>} />
+                <Route path="/admin" element={<Suspense fallback={<RouteLoadingFallback />}><AdminIndexPage /></Suspense>} />
+                <Route path="/admin/testimonials" element={<Suspense fallback={<RouteLoadingFallback />}><AdminTestimonialsPage /></Suspense>} />
+                <Route path="/admin/faqs" element={<Suspense fallback={<RouteLoadingFallback />}><AdminFAQsPage /></Suspense>} />
+                <Route path="/admin/seo-reindex" element={<Suspense fallback={<RouteLoadingFallback />}><AdminSEOReindexPage /></Suspense>} />
+                <Route path="/admin/batches" element={<Suspense fallback={<RouteLoadingFallback />}><AdminBatchesPage /></Suspense>} />
+                <Route path="/admin/customers" element={<Suspense fallback={<RouteLoadingFallback />}><AdminCustomersPage /></Suspense>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

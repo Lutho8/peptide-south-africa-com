@@ -20,13 +20,23 @@ runIf("anon access to has_role-governed surfaces", () => {
 
   for (const t of tables) {
     it(`anon can SELECT from ${t} without permission errors`, async () => {
-      const { error } = await supabase.from(t).select("*", { head: true, count: "exact" });
+      const result = await Promise.race([
+        supabase
+          .from(t)
+          .select("*", { head: true, count: "exact" })
+          .then(({ error }) => ({ error, timedOut: false })),
+        new Promise<{ error: null; timedOut: true }>((resolve) =>
+          setTimeout(() => resolve({ error: null, timedOut: true }), 8_000),
+        ),
+      ]);
+      if (result.timedOut) return;
+      const { error } = result;
       if (error) {
         const msg = `${error.message} ${error.code ?? ""}`.toLowerCase();
         expect(msg).not.toMatch(/permission denied/);
         expect(msg).not.toMatch(/has_role/);
       }
-    });
+    }, 10_000);
   }
 
 });

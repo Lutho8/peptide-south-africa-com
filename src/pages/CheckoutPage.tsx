@@ -2,30 +2,28 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, Tag, CreditCard, Landmark, Loader2, Truck } from "lucide-react";
-import CartCountdown from "@/components/CartCountdown";
-import SecurityChecklist from "@/components/SecurityChecklist";
-import CheckoutTrustBar from "@/components/CheckoutTrustBar";
-import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
-import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
-import FreeShippingBar from "@/components/FreeShippingBar";
+import { Lock, Loader2, Landmark, CreditCard } from "lucide-react";
+import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
+import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import CheckoutStepper from "@/components/CheckoutStepper";
 import { useToast } from "@/hooks/use-toast";
-import { COPY, t as tCopy, type CopyKey } from "@/lib/copy";
-import {
-  SHIPPING_RULES,
-  amountToFreeShipping,
-  getShippingCost,
-} from "@/lib/shipping";
+import { amountToFreeShipping } from "@/lib/shipping";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
+import {
+  CHECKOUT_FORM_KEY as FORM_KEY,
+  checkoutTotals,
+  emptyCheckoutForm as emptyForm,
+  paymentErrorMessage,
+  postToPayFast,
+  startPayfastCheckout,
+} from "@/lib/startPayfastCheckout";
 
-const FORM_KEY = "rtt_checkout_form";
 export const EFT_SESSION_KEY = "rtt_eft_instructions";
 
 export type EftInstructionsState = {
@@ -42,42 +40,24 @@ export type EftInstructionsState = {
 };
 
 type PaymentMethod = "eft" | "payfast";
-const emptyForm: CheckoutForm = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  address1: "",
-  city: "",
-  region: "",
-  postalCode: "",
+
+const errCopy: Record<string, string> = {
+  err_name_chars: "Please enter a valid name",
+  err_email: "Enter a valid email",
+  err_address_short: "Enter your street address",
+  err_required: "Required",
+  err_postal_sa: "Enter a 4-digit postal code",
+  err_region_sa: "Select a province",
 };
 
-/** Build & auto-submit an HTML form to PayFast. */
-function postToPayFast(actionUrl: string, fields: Record<string, string>) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = actionUrl;
-  form.style.display = "none";
-  for (const [k, v] of Object.entries(fields)) {
-    if (v === undefined || v === null || v === "") continue;
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = k;
-    input.value = String(v);
-    form.appendChild(input);
-  }
-  document.body.appendChild(form);
-  form.submit();
-}
+const inputCls =
+  "w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive";
+
 
 export default function CheckoutPage() {
-  const { items, subtotal, totalPrice, discountAmount, discountCode, isDiscountEligible, clearCart } = useCart();
-  // Bundle savings are already baked into unit prices; surfaced here for the
-  // Section-6 savings breakdown. Original = what the same vials cost as singles.
+  const { items, subtotal, totalPrice, clearCart } = useCart();
   const bundleSavings = cartBundleSavings(items);
-  const originalSubtotal = subtotal + bundleSavings;
-  const totalSavings = Math.round((bundleSavings + discountAmount) * 100) / 100;
-  const totalSavingsPct = originalSubtotal > 0 ? Math.round((totalSavings / originalSubtotal) * 1000) / 10 : 0;
+  const specialOffer = Math.round(bundleSavings * 100) / 100;
   const { user, refreshOrders } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -111,20 +91,12 @@ export default function CheckoutPage() {
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const errText = (key?: string): string | undefined => {
-    if (!key) return undefined;
-    if ((COPY as Record<string, unknown>)[key]) return tCopy(key as CopyKey);
-    return key;
-  };
+  const errText = (key?: string) => (key ? errCopy[key] ?? key : undefined);
 
-  // Shipping math (ZAR only).
-  const shippingMath = useMemo(() => {
-    const rule = SHIPPING_RULES["South Africa"];
-    const ship = getShippingCost(totalPrice, "South Africa") ?? 0;
-    const grandTotal = totalPrice + ship;
-    const remaining = amountToFreeShipping(totalPrice);
-    return { rule, ship, grandTotal, freeUnlocked: ship === 0, remaining };
-  }, [totalPrice]);
+  const shippingMath = useMemo(
+    () => ({ ...checkoutTotals(totalPrice), remaining: amountToFreeShipping(totalPrice) }),
+    [totalPrice],
+  );
 
   if (items.length === 0) {
     return (
@@ -135,12 +107,111 @@ export default function CheckoutPage() {
     );
   }
 
+  /**
+   * Pay by EFT (Capitec Business): create the order row (same shape as the
+   * PayFast helper), ask eft-create-order for a unique payment reference and
+   * the bank details, then route to the instructions page. Falls back to the
+   * PayFast card flow when EFT isn't configured server-side yet.
+   */
+  const startEftCheckout = async () => {
+    if (!user) return;
+    const totals = checkoutTotals(totalPrice);
+    const description = items
+      .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
+      .join(", ")
+      .slice(0, 500);
+
+    const { data: orderRow, error: orderErr } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        total: totals.grandTotal,
+        discount_code: null,
+        status: "pending",
+        currency: "ZAR",
+        order_description: description,
+        shipping_country: "South Africa",
+        shipping_method: totals.rule.method,
+        shipping_cost: Math.round(totals.ship * 100) / 100,
+        shipping_currency: "ZAR",
+        free_shipping_applied: totals.freeUnlocked,
+      })
+      .select("id")
+      .single();
+    if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
+
+    const amount = totals.grandTotal;
+    const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", {
+      body: {
+        orderId: orderRow.id,
+        amount,
+        itemName: description.slice(0, 100) || "Peptide South Africa order",
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+      },
+    });
+
+    const status = (fnErr as { context?: Response } | null)?.context?.status;
+    const eftUnavailable =
+      status === 503 ||
+      (typeof data?.error === "string" && data.error.toLowerCase().includes("not configured"));
+    if (eftUnavailable) {
+      // EFT env vars not set server-side yet — fall back to PayFast with a notice.
+      toast({
+        title: "EFT unavailable right now",
+        description: "We've switched you to secure card payment via PayFast instead.",
+      });
+      // The order row already exists, so reuse the hosted-payment function
+      // directly instead of creating a second order.
+      const origin = window.location.origin;
+      const { data: pfData, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
+        body: {
+          orderId: orderRow.id,
+          amount,
+          itemName: description.slice(0, 100) || "Peptide South Africa order",
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
+          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
+        },
+      });
+      if (pfErr) throw new Error(pfErr.message);
+      if (!pfData || pfData.error) throw new Error(pfData?.error || "Payment could not be started");
+      if (!pfData.actionUrl || !pfData.fields) throw new Error("Invalid PayFast response");
+      await refreshOrders();
+      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      clearCart();
+      postToPayFast(pfData.actionUrl, pfData.fields);
+      return;
+    }
+    if (fnErr) throw new Error(fnErr.message);
+    if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
+    if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
+
+    const state: EftInstructionsState = {
+      orderId: orderRow.id,
+      amount,
+      paymentReference: data.payment_reference,
+      bank: data.bank,
+    };
+    try {
+      window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
+    } catch { /* storage unavailable — router state still works */ }
+
+    await refreshOrders();
+    await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+    clearCart();
+    navigate("/checkout/eft-instructions", { state });
+  };
+
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
-      toast({ title: "Check your details", description: tCopy("fix_form"), variant: "destructive" });
+      toast({ title: "Almost there", description: "Check the highlighted fields.", variant: "destructive" });
       requestAnimationFrame(() => {
         const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
         el?.focus();
@@ -149,425 +220,281 @@ export default function CheckoutPage() {
       return;
     }
     if (!user) {
-      toast({ title: "Please sign in", description: "Sign in to complete checkout.", variant: "destructive" });
-      navigate("/auth");
+      toast({ title: "Sign in to finish", description: "One quick step before payment.", variant: "destructive" });
+      navigate("/auth?next=/checkout");
       return;
     }
     setBusy(true);
     try {
-      const description = items
-        .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
-        .join(", ")
-        .slice(0, 500);
-
-      const { data: orderRow, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          total: Math.round(shippingMath.grandTotal * 100) / 100,
-          discount_code: discountCode,
-          status: "pending",
-          currency: "ZAR",
-          order_description: description,
-          shipping_country: "South Africa",
-          shipping_method: shippingMath.rule.method,
-          shipping_cost: Math.round(shippingMath.ship * 100) / 100,
-          shipping_currency: "ZAR",
-          free_shipping_applied: shippingMath.freeUnlocked,
-        })
-        .select("id")
-        .single();
-      if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
-
-      const origin = window.location.origin;
-      const amount = Math.round(shippingMath.grandTotal * 100) / 100;
-      const payload = {
-        orderId: orderRow.id,
-        amount,
-        itemName: description.slice(0, 100) || "Peptide South Africa order",
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-        cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
-      };
-
       if (method === "eft") {
-        const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", { body: payload });
-        const status = (fnErr as { context?: Response } | null)?.context?.status;
-        const eftUnavailable =
-          status === 503 ||
-          (typeof data?.error === "string" && data.error.toLowerCase().includes("not configured"));
-        if (eftUnavailable) {
-          // EFT env vars not set server-side yet — fall back to PayFast with a notice.
-          toast({
-            title: "EFT unavailable right now",
-            description: "We've switched you to secure card payment via PayFast instead.",
-          });
-          await startPayFast(orderRow.id);
-          return;
-        }
-        if (fnErr) throw new Error(fnErr.message);
-        if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
-        if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
-
-        const state: EftInstructionsState = {
-          orderId: orderRow.id,
-          amount,
-          paymentReference: data.payment_reference,
-          bank: data.bank,
-        };
-        try {
-          window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
-        } catch { /* storage unavailable — router state still works */ }
-
-        await refreshOrders();
-        await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-        clearCart();
-        navigate("/checkout/eft-instructions", { state });
+        await startEftCheckout();
         return;
       }
-
-      await startPayFast(orderRow.id);
+      await startPayfastCheckout({
+        userId: user.id,
+        items,
+        totalPrice,
+        form,
+        onBeforeRedirect: async () => {
+          await refreshOrders();
+          await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+          clearCart();
+        },
+      });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Payment could not be started";
       toast({
         title: "Payment unavailable",
-        description: msg.includes("not configured") || msg.includes("503")
-          ? tCopy("payment_unavailable")
-          : msg,
+        description: paymentErrorMessage(err),
         variant: "destructive",
       });
       setBusy(false);
     }
   };
 
-  const startPayFast = async (orderId: string) => {
-    const description = items
-      .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
-      .join(", ")
-      .slice(0, 500);
-    const origin = window.location.origin;
-    const amount = Math.round(shippingMath.grandTotal * 100) / 100;
-
-      const { data, error: fnErr } = await supabase.functions.invoke("payfast-create-payment", {
-        body: {
-          orderId,
-          amount,
-          itemName: description.slice(0, 100) || "Peptide South Africa order",
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          returnUrl: `${origin}/checkout/success?order_id=${orderId}`,
-          cancelUrl: `${origin}/checkout/cancel?order_id=${orderId}`,
-        },
-      });
-      if (fnErr) throw new Error(fnErr.message);
-      if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
-      if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
-
-      await refreshOrders();
-      await supabase.from("cart_snapshots").delete().eq("user_id", user!.id);
-      clearCart();
-      postToPayFast(data.actionUrl, data.fields);
-  };
-
-  const showFreeNudge =
-    !shippingMath.freeUnlocked &&
-    shippingMath.remaining > 0 &&
-    shippingMath.remaining <= shippingMath.rule.freeOver * 0.25;
 
   return (
     <>
-    <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
-    <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
-    <div className="container py-6 pb-28 md:py-12 lg:pb-12">
-      <CheckoutStepper current="details" className="mb-6" />
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl">Checkout</h1>
-        <CartCountdown variant="compact" />
+      <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
+      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
+
+      {/* Sticky mobile order summary */}
+      <div className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur-md lg:hidden">
+        <MobileOrderSummaryBar
+          subtotal={subtotal}
+          specialOffer={specialOffer}
+          shipping={shippingMath.ship}
+          freeShipping={shippingMath.freeUnlocked}
+          total={shippingMath.grandTotal}
+        />
       </div>
-      <div className="grid gap-8 lg:grid-cols-3">
-        <form id="checkout-form" onSubmit={handlePay} className="lg:col-span-2 flex flex-col gap-6">
 
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-              <Truck className="h-4 w-4 text-primary" /> Shipping
-            </h3>
-            <p className="mt-3 text-sm text-muted-foreground">
-              🇿🇦 {tCopy("local_courier_sa")}<br />
-              <span className="font-semibold text-foreground">
-                {shippingMath.freeUnlocked ? "Free" : formatZAR(shippingMath.rule.flat)}{" "}
-                <span className="font-normal text-muted-foreground">(Free over R1,500)</span>
-              </span>
-            </p>
-            {showFreeNudge && (
-              <p className="mt-2 rounded-md bg-trust/10 px-3 py-2 text-xs font-semibold text-trust">
-                Add {formatZAR(shippingMath.remaining)} more to unlock free shipping
-              </p>
-            )}
-          </div>
+      <div className="container max-w-5xl py-8 pb-32 md:py-12 lg:pb-12">
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-3xl font-bold text-foreground">Almost there</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Two quick steps and your order ships from Cape Town.
+          </p>
+        </div>
 
-          <FreeShippingBar subtotalZar={totalPrice} />
-
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="font-display text-lg font-semibold text-foreground">Contact Information</h3>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <input required placeholder="First Name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
-                  aria-invalid={!!errors.firstName} aria-describedby={errors.firstName ? "err-firstName" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.firstName && <p id="err-firstName" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
-              </div>
-              <div>
-                <input required placeholder="Last Name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
-                  aria-invalid={!!errors.lastName} aria-describedby={errors.lastName ? "err-lastName" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.lastName && <p id="err-lastName" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
-              </div>
-              <div className="sm:col-span-2">
-                <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
-                  aria-invalid={!!errors.email} aria-describedby={errors.email ? "err-email" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.email && <p id="err-email" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="font-display text-lg font-semibold text-foreground">Shipping Address</h3>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <input required placeholder="Address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
-                  aria-invalid={!!errors.address1} aria-describedby={errors.address1 ? "err-address1" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.address1 && <p id="err-address1" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
-              </div>
-              <div>
-                <input required placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
-                  aria-invalid={!!errors.city} aria-describedby={errors.city ? "err-city" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.city && <p id="err-city" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
-              </div>
-              <div>
-                <select required value={form.region} onChange={(e) => setField("region", e.target.value)}
-                  aria-invalid={!!errors.region} aria-describedby={errors.region ? "err-region" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive">
-                  <option value="">Select Province</option>
-                  {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
-                {errors.region && <p id="err-region" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
-              </div>
-              <div>
-                <input required inputMode="numeric" placeholder="Postal Code (e.g. 8001)" value={form.postalCode}
-                  onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode}
-                  aria-describedby={errors.postalCode ? "err-postalCode" : undefined}
-                  className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive" />
-                {errors.postalCode && <p id="err-postalCode" role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
-              </div>
-              <div className="sm:col-span-2">
-                <input readOnly value="South Africa" className="w-full rounded-lg border border-input bg-muted px-4 py-3 text-sm text-muted-foreground" />
-              </div>
-            </div>
-          </div>
-
-          <DeliveryReturnsAccordion defaultOpen="shipping" />
-
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-              <Tag className="h-4 w-4 text-primary" /> Discount Code
-            </h3>
-            <div className="mt-3 flex items-center gap-2">
-              <input readOnly value={discountCode ?? ""} placeholder={isDiscountEligible ? "" : "Sign in to auto-apply PEPTIDESA10"}
-                className="flex-1 rounded-lg border border-input bg-muted px-4 py-3 text-sm font-mono text-foreground" />
-              {isDiscountEligible ? (
-                <span className="rounded-md bg-trust/10 px-3 py-2 text-xs font-bold text-trust">−10% APPLIED</span>
-              ) : (
-                <Link to="/auth" className="rounded-md bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Sign in</Link>
-              )}
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-              <CreditCard className="h-4 w-4 text-primary" /> Payment Method
-            </h3>
-            <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label="Payment method">
-              <label
-                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
-                  method === "eft"
-                    ? "border-primary bg-primary/5 ring-2 ring-ring"
-                    : "border-border bg-background hover:bg-muted/50"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value="eft"
-                  checked={method === "eft"}
-                  onChange={() => setMethod("eft")}
-                  className="mt-1 h-4 w-4 accent-primary"
-                />
-                <span className="flex-1">
-                  <span className="flex items-center gap-2 font-semibold text-foreground">
-                    <Landmark className="h-4 w-4 text-primary" />
-                    Pay by EFT (Capitec) — no card fees
-                  </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                    Pay directly from your banking app. We'll show you our Capitec Business account
-                    details and a unique reference right after you place your order.
-                  </span>
-                  <span className="mt-2 inline-block rounded-md bg-trust/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
-                    Recommended
-                  </span>
-                </span>
-              </label>
-              <label
-                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
-                  method === "payfast"
-                    ? "border-primary bg-primary/5 ring-2 ring-ring"
-                    : "border-border bg-background hover:bg-muted/50"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value="payfast"
-                  checked={method === "payfast"}
-                  onChange={() => setMethod("payfast")}
-                  className="mt-1 h-4 w-4 accent-primary"
-                />
-                <span className="flex-1">
-                  <span className="flex items-center gap-2 font-semibold text-foreground">
-                    <CreditCard className="h-4 w-4 text-primary" />
-                    Pay by card / PayFast
-                  </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                    Credit/debit card, Instant EFT, SnapScan, Zapper, Mobicred or Masterpass via{" "}
-                    <a href="https://www.payfast.co.za" target="_blank" rel="noopener noreferrer"
-                      className="font-semibold text-foreground hover:text-primary"
-                      onClick={(e) => e.stopPropagation()}>PayFast</a>.
-                    You'll be redirected to PayFast's secure checkout.
-                  </span>
-                  <span className="mt-2 flex flex-wrap gap-1.5">
-                    {["Visa","Mastercard","Instant EFT","Capitec Pay","SnapScan","Zapper"].map((m) => (
-                      <span key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</span>
-                    ))}
-                  </span>
-                </span>
-              </label>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Charged in <span className="font-semibold text-foreground">ZAR</span>. Your order is reserved while payment is arranged.
-            </p>
-          </div>
-
-          <CheckoutTrustBar />
-
-          <button type="submit" disabled={busy}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-            data-testid="pay-now-button">
-            {busy ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> {tCopy("processing_payment")}</>
-            ) : method === "eft" ? (
-              <><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>
-            ) : (
-              <>{tCopy("pay_now")} — {formatZAR(shippingMath.grandTotal)}</>
-            )}
-          </button>
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> SSL Encrypted</span>
-            <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {tCopy("secure_checkout")}</span>
-          </div>
-        </form>
-
-        {/* Mobile sticky pay bar — total + pay CTA always in view on small screens */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-          <div className="flex items-center justify-between gap-3">
+        <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+          <div className="flex flex-col gap-6">
             <div>
-              <p className="text-[11px] text-muted-foreground">{tCopy("total")}</p>
-              <p className="font-display text-lg font-bold leading-tight text-foreground">{formatZAR(shippingMath.grandTotal)}</p>
+              <ExpressCheckoutButton />
+              <div className="mt-5 flex items-center gap-3">
+                <span className="h-px flex-1 bg-border" />
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or enter details manually</span>
+                <span className="h-px flex-1 bg-border" />
+              </div>
             </div>
-            <button type="submit" form="checkout-form" disabled={busy}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
-              {busy ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> {tCopy("processing_payment")}</>
-              ) : method === "eft" ? (
-                <>Place order →</>
-              ) : (
-                <>{tCopy("pay_now")} →</>
-              )}
-            </button>
-          </div>
-        </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-border bg-card p-6 h-fit">
-            <h3 className="font-display text-lg font-bold text-foreground">Order Summary</h3>
-            <div className="mt-4 flex flex-col gap-3">
-              {items.map((item) => (
-                <div key={item.lineId} className="flex items-center gap-3">
-                  <span className={`${vialTileFrameClasses} block h-12 w-12 shrink-0`} data-testid={VIAL_TEST_ID}>
-                    <span aria-hidden className={vialAccentBarSmClasses} />
-                    <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">
-                      {item.product.name}
-                      {item.variantLabel && <span className="ml-1 text-muted-foreground">· {item.variantLabel}</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
+              <section className="rounded-lg border border-border bg-card p-6">
+                <h2 className="font-display text-base font-semibold text-foreground">
+                  1. Where should we send your confirmation?
+                </h2>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div>
+                    <input required type="email" autoComplete="email" aria-label="Email address" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
+                      aria-invalid={!!errors.email} className={inputCls} />
+                    {errors.email && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
                   </div>
-                  <span className="text-sm font-semibold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <input required autoComplete="given-name" aria-label="First name" placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
+                        aria-invalid={!!errors.firstName} className={inputCls} />
+                      {errors.firstName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
+                    </div>
+                    <div>
+                      <input required autoComplete="family-name" aria-label="Last name" placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
+                        aria-invalid={!!errors.lastName} className={inputCls} />
+                      {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="mt-4 border-t border-border pt-4">
-              {bundleSavings > 0 && (
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Single-vial value</span><span className="line-through">{formatZAR(originalSubtotal)}</span>
+
+                <h2 className="mt-8 font-display text-base font-semibold text-foreground">
+                  2. Where should we deliver?
+                </h2>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div>
+                    <input required autoComplete="street-address" aria-label="Street address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
+                      aria-invalid={!!errors.address1} className={inputCls} />
+                    {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <input required autoComplete="address-level2" aria-label="City" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
+                        aria-invalid={!!errors.city} className={inputCls} />
+                      {errors.city && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
+                    </div>
+                    <div>
+                      <select required aria-label="Province" value={form.region} onChange={(e) => setField("region", e.target.value)}
+                        aria-invalid={!!errors.region} className={inputCls}>
+                        <option value="">Province</option>
+                        {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                      {errors.region && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
+                    </div>
+                  </div>
+                  <div>
+                    <input required inputMode="numeric" autoComplete="postal-code" aria-label="Postal code" placeholder="Postal code" value={form.postalCode}
+                      onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
+                    {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Delivered across South Africa in 1–3 business days.</p>
                 </div>
-              )}
-              {bundleSavings > 0 && (
-                <div className="mt-1 flex justify-between text-sm font-semibold text-trust" data-testid="checkout-bundle-savings">
-                  <span>Bundle discount</span><span>−{formatZAR(bundleSavings)}</span>
+              </section>
+
+              <section className="rounded-lg border border-border bg-card p-6">
+                <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
+                  <CreditCard className="h-4 w-4 text-primary" /> 3. How would you like to pay?
+                </h2>
+                <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label="Payment method">
+                  <label
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
+                      method === "eft"
+                        ? "border-primary bg-primary/5 ring-2 ring-ring"
+                        : "border-border bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment-method"
+                      value="eft"
+                      checked={method === "eft"}
+                      onChange={() => setMethod("eft")}
+                      className="mt-1 h-4 w-4 accent-primary"
+                    />
+                    <span className="flex-1">
+                      <span className="flex items-center gap-2 font-semibold text-foreground">
+                        <Landmark className="h-4 w-4 text-primary" />
+                        Pay by EFT (Capitec) — no card fees
+                      </span>
+                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                        Pay directly from your banking app. We'll show you our Capitec Business account
+                        details and a unique reference right after you place your order.
+                      </span>
+                      <span className="mt-2 inline-block rounded-md bg-trust/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
+                        Recommended
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
+                      method === "payfast"
+                        ? "border-primary bg-primary/5 ring-2 ring-ring"
+                        : "border-border bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment-method"
+                      value="payfast"
+                      checked={method === "payfast"}
+                      onChange={() => setMethod("payfast")}
+                      className="mt-1 h-4 w-4 accent-primary"
+                    />
+                    <span className="flex-1">
+                      <span className="flex items-center gap-2 font-semibold text-foreground">
+                        <CreditCard className="h-4 w-4 text-primary" />
+                        Pay by card / PayFast
+                      </span>
+                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                        Credit/debit card, Instant EFT, SnapScan, Zapper, Mobicred or Masterpass via{" "}
+                        <a href="https://www.payfast.co.za" target="_blank" rel="noopener noreferrer"
+                          className="font-semibold text-foreground hover:text-primary"
+                          onClick={(e) => e.stopPropagation()}>PayFast</a>.
+                        You'll be redirected to PayFast's secure checkout.
+                      </span>
+                      <span className="mt-2 flex flex-wrap gap-1.5">
+                        {["Visa","Mastercard","Instant EFT","Capitec Pay","SnapScan","Zapper"].map((m) => (
+                          <span key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</span>
+                        ))}
+                      </span>
+                    </span>
+                  </label>
                 </div>
-              )}
-              <div className="mt-1 flex justify-between text-sm text-muted-foreground"><span>{tCopy("subtotal")}</span><span>{formatZAR(subtotal)}</span></div>
-              {isDiscountEligible && (
-                <div className="mt-1 flex justify-between text-sm font-semibold text-trust"><span>{discountCode} (−10%)</span><span>−{formatZAR(discountAmount)}</span></div>
-              )}
-              <div className="mt-1 flex justify-between text-sm" data-testid="checkout-shipping">
-                <span className="text-muted-foreground">
-                  {tCopy("shipping")}
-                  <span className="ml-1 text-[11px] text-muted-foreground/80">({shippingMath.rule.method} · {shippingMath.rule.days}d)</span>
-                </span>
-                {shippingMath.freeUnlocked ? (
-                  <span className="font-semibold text-trust">{tCopy("free")}</span>
-                ) : (
-                  <span className="font-semibold text-foreground">{formatZAR(shippingMath.ship)}</span>
-                )}
-              </div>
-              <div className="mt-2 flex justify-between font-display text-lg font-bold text-foreground">
-                <span>{tCopy("total")}</span>
-                <span data-testid="checkout-total">{formatZAR(shippingMath.grandTotal)}</span>
-              </div>
-              {totalSavings > 0 && (
-                <div className="mt-3 rounded-lg bg-trust/10 px-3 py-2 text-center text-sm font-bold text-trust" data-testid="checkout-total-savings">
-                  You Save {formatZAR(totalSavings)} ({totalSavingsPct}% off) ✓
-                  {shippingMath.freeUnlocked && <span className="ml-1 font-semibold">· Free Shipping Applied ✓</span>}
-                </div>
-              )}
-            </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Charged in <span className="font-semibold text-foreground">ZAR</span>. Your order is reserved while payment is arranged.
+                </p>
+              </section>
+
+              <button type="submit" disabled={busy}
+                className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                data-testid="pay-now-button">
+                {busy
+                  ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>)
+                  : method === "eft"
+                    ? (<><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)
+                    : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
+              </button>
+              <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                <Lock className="h-3.5 w-3.5" /> Secure payment · EFT or PayFast · ZAR
+              </p>
+            </form>
           </div>
 
-          <SecurityChecklist />
+          <aside className="flex flex-col gap-4">
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h2 className="font-display text-base font-semibold text-foreground">Your order</h2>
+              <div className="mt-4 flex flex-col gap-3">
+                {items.map((item) => (
+                  <div key={item.lineId} className="flex items-center gap-3">
+                    <span className={`${vialTileFrameClasses} block h-12 w-12 shrink-0`} data-testid={VIAL_TEST_ID}>
+                      <span aria-hidden className={vialAccentBarSmClasses} />
+                      <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground">{item.product.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.variantLabel && <>{item.variantLabel} · </>}Qty {item.quantity}
+                      </p>
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">{formatZAR(item.unitPrice * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
+                {specialOffer > 0 && (
+                  <div className="flex justify-between font-semibold text-destructive">
+                    <span>Special Offer</span><span>−{formatZAR(specialOffer)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span><span className="text-foreground">{formatZAR(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground" data-testid="checkout-shipping">
+                  <span>Shipping</span>
+                  {shippingMath.freeUnlocked
+                    ? <span className="font-semibold text-trust">Free</span>
+                    : <span className="text-foreground">{formatZAR(shippingMath.ship)}</span>}
+                </div>
+                <div className="flex justify-between pt-2 font-display text-base font-bold text-foreground">
+                  <span>Total</span><span data-testid="checkout-total">{formatZAR(shippingMath.grandTotal)}</span>
+                </div>
+              </div>
+            </div>
+
+            <CheckoutSuppliesRail />
+          </aside>
+        </div>
+
+        {/* Mobile sticky pay bar */}
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+          <button type="submit" form="checkout-form" disabled={busy}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
+            {busy
+              ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>)
+              : method === "eft"
+                ? (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)
+                : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
+          </button>
+          <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+            <Lock className="h-3 w-3" /> Secure payment · EFT or PayFast · ZAR
+          </p>
         </div>
       </div>
-      <div className="mt-10">
-        <PaymentMethodsBanner />
-      </div>
-    </div>
+
     </>
   );
 }

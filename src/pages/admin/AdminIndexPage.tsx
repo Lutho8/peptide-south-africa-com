@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageSquareQuote, HelpCircle, Tag, Database, ExternalLink, Search, FlaskConical, Users } from "lucide-react";
+import { MessageSquareQuote, HelpCircle, Database, ExternalLink, Search, FlaskConical, Users } from "lucide-react";
 
 interface LogRow {
   id: string;
@@ -40,7 +40,6 @@ export default function AdminIndexPage() {
     { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },
     { to: "/admin/testimonials", icon: MessageSquareQuote, title: "Testimonials", desc: "Manage social proof shown across the site." },
     { to: "/admin/faqs", icon: HelpCircle, title: "Product FAQs", desc: "Edit the global FAQ accordion on every product page." },
-    { to: "/admin/discounts", icon: Tag, title: "Discount Eligibility", desc: "Check why PEPTIDESA10 is or isn't applied for a user." },
     { to: "/admin/seo-reindex", icon: Search, title: "SEO Re-indexing", desc: "Checklist to re-run URL Inspection after each sitemap update." },
   ];
 

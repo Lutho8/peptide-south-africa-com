@@ -27,9 +27,10 @@ jobs:
       VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: "24"
+          cache: npm
 
       - name: Scan source, public, configs, env
         env:
@@ -38,11 +39,11 @@ jobs:
 
       - name: Install deps
         if: always()
-        run: bun install --frozen-lockfile
+        run: npm ci
 
       - name: Build
         if: always()
-        run: bun run build
+        run: npm run build
 
       - name: Scan built output (incl. bundled VITE_* env)
         if: always()

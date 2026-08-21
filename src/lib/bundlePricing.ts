@@ -5,9 +5,6 @@
 //   10-Pack "Researcher Value"→ 30% off  (any 10 vials across the catalog)
 //
 // All prices are ZAR and VAT-inclusive (15%) — never display excl. VAT.
-// The first-order code PEPTIDESA10 (10%) stacks ON TOP of bundle pricing:
-// it is applied by CartContext to the already-discounted cart subtotal,
-// i.e. sequentially: singles → bundle discount → PEPTIDESA10.
 
 import { products, type Product } from "@/data/products";
 

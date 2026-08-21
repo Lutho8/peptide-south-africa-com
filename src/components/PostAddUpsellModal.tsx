@@ -10,7 +10,7 @@ const SESSION_KEY = "psa_postadd_shown";
 
 /**
  * Modal that fires after the first addToCart in a session, suggesting
- * 2 complementary peptides. Dismissible, max once per session.
+ * one relevant complementary product. Dismissible, max once per session.
  * Mounted globally in App.tsx. Listens to cart `items` length growing
  * from 0/1 to trigger.
  */
@@ -41,7 +41,7 @@ export default function PostAddUpsellModal() {
   const picks = hints
     .map((h) => products.find((p) => p.slug === h.slug))
     .filter((p): p is NonNullable<typeof p> => !!p && p.inStock)
-    .slice(0, 2);
+    .slice(0, 1);
 
   if (picks.length === 0) {
     setOpen(false);
@@ -75,7 +75,7 @@ export default function PostAddUpsellModal() {
         <div className="p-4">
           <p className="font-mono text-[11px] uppercase tracking-wider text-primary">Complete your protocol</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Researchers often pair these with your selection. One tap to add.
+            Researchers often pair this with your selection. One tap to add.
           </p>
           <ul className="mt-4 flex flex-col gap-3">
             {picks.map((p) => (
