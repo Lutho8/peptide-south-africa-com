@@ -1,0 +1,18 @@
+{
+  "name": "psa-qa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright QA system for the Peptide South Africa ecosystem",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:inventory": "playwright test tests/inventory.spec.ts --project=chromium",
+    "test:headed": "playwright test --headed",
+    "report": "node report.js",
+    "install:browsers": "playwright install"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.49.0"
+  }
+}
