@@ -21,6 +21,7 @@ import BuildYourStackPage from "@/pages/BuildYourStackPage";
 import ProductPage from "@/pages/ProductPage";
 import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
+import EftInstructionsPage from "@/pages/EftInstructionsPage";
 import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
 import OrderStatusPage from "@/pages/OrderStatusPage";
@@ -85,6 +86,7 @@ export default function AppShell() {
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/checkout/eft-instructions" element={<EftInstructionsPage />} />
                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
                 <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
                 <Route path="/order/:id" element={<OrderStatusPage />} />

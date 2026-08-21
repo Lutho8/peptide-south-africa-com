@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Shield, Lock, Tag, CreditCard, Loader2, Truck } from "lucide-react";
+import { Shield, Lock, Tag, CreditCard, Landmark, Loader2, Truck } from "lucide-react";
 import CartCountdown from "@/components/CartCountdown";
 import SecurityChecklist from "@/components/SecurityChecklist";
 import CheckoutTrustBar from "@/components/CheckoutTrustBar";
@@ -26,6 +26,22 @@ import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 const FORM_KEY = "rtt_checkout_form";
+export const EFT_SESSION_KEY = "rtt_eft_instructions";
+
+export type EftInstructionsState = {
+  orderId: string;
+  amount: number;
+  paymentReference: string;
+  bank: {
+    account_name: string;
+    bank: string;
+    account_number: string;
+    branch_code: string;
+    reference: string;
+  };
+};
+
+type PaymentMethod = "eft" | "payfast";
 const emptyForm: CheckoutForm = {
   firstName: "",
   lastName: "",
@@ -66,6 +82,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [method, setMethod] = useState<PaymentMethod>("eft");
 
   const [form, setForm] = useState<CheckoutForm>(() => {
     if (typeof window === "undefined") return emptyForm;
@@ -164,27 +181,54 @@ export default function CheckoutPage() {
 
       const origin = window.location.origin;
       const amount = Math.round(shippingMath.grandTotal * 100) / 100;
+      const payload = {
+        orderId: orderRow.id,
+        amount,
+        itemName: description.slice(0, 100) || "Peptide South Africa order",
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
+        cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
+      };
 
-      const { data, error: fnErr } = await supabase.functions.invoke("payfast-create-payment", {
-        body: {
+      if (method === "eft") {
+        const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", { body: payload });
+        const status = (fnErr as { context?: Response } | null)?.context?.status;
+        const eftUnavailable =
+          status === 503 ||
+          (typeof data?.error === "string" && data.error.toLowerCase().includes("not configured"));
+        if (eftUnavailable) {
+          // EFT env vars not set server-side yet — fall back to PayFast with a notice.
+          toast({
+            title: "EFT unavailable right now",
+            description: "We've switched you to secure card payment via PayFast instead.",
+          });
+          await startPayFast(orderRow.id);
+          return;
+        }
+        if (fnErr) throw new Error(fnErr.message);
+        if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
+        if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
+
+        const state: EftInstructionsState = {
           orderId: orderRow.id,
           amount,
-          itemName: description.slice(0, 100) || "Peptide South Africa order",
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
-        },
-      });
-      if (fnErr) throw new Error(fnErr.message);
-      if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
-      if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
+          paymentReference: data.payment_reference,
+          bank: data.bank,
+        };
+        try {
+          window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
+        } catch { /* storage unavailable — router state still works */ }
 
-      await refreshOrders();
-      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-      clearCart();
-      postToPayFast(data.actionUrl, data.fields);
+        await refreshOrders();
+        await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+        clearCart();
+        navigate("/checkout/eft-instructions", { state });
+        return;
+      }
+
+      await startPayFast(orderRow.id);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Payment could not be started";
       toast({
@@ -196,6 +240,36 @@ export default function CheckoutPage() {
       });
       setBusy(false);
     }
+  };
+
+  const startPayFast = async (orderId: string) => {
+    const description = items
+      .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
+      .join(", ")
+      .slice(0, 500);
+    const origin = window.location.origin;
+    const amount = Math.round(shippingMath.grandTotal * 100) / 100;
+
+      const { data, error: fnErr } = await supabase.functions.invoke("payfast-create-payment", {
+        body: {
+          orderId,
+          amount,
+          itemName: description.slice(0, 100) || "Peptide South Africa order",
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          returnUrl: `${origin}/checkout/success?order_id=${orderId}`,
+          cancelUrl: `${origin}/checkout/cancel?order_id=${orderId}`,
+        },
+      });
+      if (fnErr) throw new Error(fnErr.message);
+      if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
+      if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
+
+      await refreshOrders();
+      await supabase.from("cart_snapshots").delete().eq("user_id", user!.id);
+      clearCart();
+      postToPayFast(data.actionUrl, data.fields);
   };
 
   const showFreeNudge =
@@ -316,20 +390,75 @@ export default function CheckoutPage() {
 
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-              <CreditCard className="h-4 w-4 text-primary" /> Payment
+              <CreditCard className="h-4 w-4 text-primary" /> Payment Method
             </h3>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Pay securely via credit/debit card, Instant EFT, SnapScan, Zapper, Mobicred or Masterpass.
-              All payments processed via{" "}
-              <a href="https://www.payfast.co.za" target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground hover:text-primary">PayFast</a>.
-            </p>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {["Visa","Mastercard","Instant EFT","Capitec Pay","SnapScan","Zapper","Mobicred","Masterpass"].map((m) => (
-                <li key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</li>
-              ))}
-            </ul>
+            <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label="Payment method">
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
+                  method === "eft"
+                    ? "border-primary bg-primary/5 ring-2 ring-ring"
+                    : "border-border bg-background hover:bg-muted/50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment-method"
+                  value="eft"
+                  checked={method === "eft"}
+                  onChange={() => setMethod("eft")}
+                  className="mt-1 h-4 w-4 accent-primary"
+                />
+                <span className="flex-1">
+                  <span className="flex items-center gap-2 font-semibold text-foreground">
+                    <Landmark className="h-4 w-4 text-primary" />
+                    Pay by EFT (Capitec) — no card fees
+                  </span>
+                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                    Pay directly from your banking app. We'll show you our Capitec Business account
+                    details and a unique reference right after you place your order.
+                  </span>
+                  <span className="mt-2 inline-block rounded-md bg-trust/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
+                    Recommended
+                  </span>
+                </span>
+              </label>
+              <label
+                className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
+                  method === "payfast"
+                    ? "border-primary bg-primary/5 ring-2 ring-ring"
+                    : "border-border bg-background hover:bg-muted/50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment-method"
+                  value="payfast"
+                  checked={method === "payfast"}
+                  onChange={() => setMethod("payfast")}
+                  className="mt-1 h-4 w-4 accent-primary"
+                />
+                <span className="flex-1">
+                  <span className="flex items-center gap-2 font-semibold text-foreground">
+                    <CreditCard className="h-4 w-4 text-primary" />
+                    Pay by card / PayFast
+                  </span>
+                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                    Credit/debit card, Instant EFT, SnapScan, Zapper, Mobicred or Masterpass via{" "}
+                    <a href="https://www.payfast.co.za" target="_blank" rel="noopener noreferrer"
+                      className="font-semibold text-foreground hover:text-primary"
+                      onClick={(e) => e.stopPropagation()}>PayFast</a>.
+                    You'll be redirected to PayFast's secure checkout.
+                  </span>
+                  <span className="mt-2 flex flex-wrap gap-1.5">
+                    {["Visa","Mastercard","Instant EFT","Capitec Pay","SnapScan","Zapper"].map((m) => (
+                      <span key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</span>
+                    ))}
+                  </span>
+                </span>
+              </label>
+            </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              You'll be redirected to PayFast's secure checkout. Charged in <span className="font-semibold text-foreground">ZAR</span>.
+              Charged in <span className="font-semibold text-foreground">ZAR</span>. Your order is reserved while payment is arranged.
             </p>
           </div>
 
@@ -340,6 +469,8 @@ export default function CheckoutPage() {
             data-testid="pay-now-button">
             {busy ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> {tCopy("processing_payment")}</>
+            ) : method === "eft" ? (
+              <><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>
             ) : (
               <>{tCopy("pay_now")} — {formatZAR(shippingMath.grandTotal)}</>
             )}
@@ -361,6 +492,8 @@ export default function CheckoutPage() {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
               {busy ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> {tCopy("processing_payment")}</>
+              ) : method === "eft" ? (
+                <>Place order →</>
               ) : (
                 <>{tCopy("pay_now")} →</>
               )}
