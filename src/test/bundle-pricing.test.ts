@@ -9,7 +9,6 @@ import {
   resolveStackProducts,
   singleVialPrice,
 } from "@/lib/bundlePricing";
-import { FIRST_ORDER_PCT } from "@/context/CartContext";
 
 const bySlug = (slug: string) => {
   const p = getProductBySlug(slug);
@@ -136,22 +135,7 @@ describe("pre-curated stacks", () => {
   });
 });
 
-describe("PEPTIDESA10 stacks on top of bundle discounts (Section 7)", () => {
-  it("3-Pack RT3 → 15% off → additional 10% = R2,869 (23.5% total)", () => {
-    const rt3 = bySlug("rt3-reta");
-    const pack3 = rt3.variants!.find((v) => v.pack === 3)!;
-    expect(pack3.price).toBe(3188); // 3750 × 0.85, rounded
-
-    // CartContext applies the first-order code to the bundle-discounted subtotal.
-    const afterCode = pack3.price * (1 - FIRST_ORDER_PCT);
-    expect(Math.round(afterCode)).toBe(2869);
-
-    const originalSingles = singleVialPrice(rt3) * 3; // 3750
-    const totalSavings = originalSingles - afterCode; // ≈ 880.8
-    const pct = (totalSavings / originalSingles) * 100;
-    expect(Math.round(pct * 10) / 10).toBe(23.5);
-  });
-
+describe("cart bundle savings", () => {
   it("cartBundleSavings reports 3-pack and pick & mix savings together", () => {
     const rt3 = bySlug("rt3-reta");
     const ghk = bySlug("ghk-cu-50mg");

@@ -18,7 +18,6 @@ import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import MediaLogos from "@/components/MediaLogos";
 import HeroShop from "@/components/HeroShop";
-import BundlePromoBanner from "@/components/BundlePromoBanner";
 import SupportVideosSection from "@/components/SupportVideosSection";
 import TextUsSection from "@/components/TextUsSection";
 import CategoryShowcase from "@/components/CategoryShowcase";
@@ -92,7 +91,6 @@ export default function HomePage() {
       <JsonLd data={localBusinessSchema} />
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
-      <BundlePromoBanner />
 
       {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
       <SupportVideosSection />
@@ -411,7 +409,9 @@ export default function HomePage() {
         title="Explore By Goal"
         links={[
           ...entityClusters.fatLoss.links.slice(0, 2),
+          entityClusters.fatLoss.links.find(l => l.href === "/buy-retatrutide-south-africa")!,
           ...entityClusters.healing.links.slice(0, 1),
+          entityClusters.healing.links.find(l => l.href === "/buy-bpc-157-south-africa")!,
           ...entityClusters.growthHormone.links.slice(0, 1),
           ...entityClusters.trust.links.slice(0, 2),
         ]}
@@ -427,20 +427,22 @@ export default function HomePage() {
       <section className="bg-hero-gradient py-14 md:py-20">
         <div className="container px-4 text-center">
           <h2 className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
-            Ready to start? Save 10% on your first order.
+            Your free Peptide Tracker is ready.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
-            Use code <span className="font-mono font-bold">PEPTIDESA10</span> at checkout.
-            Free shipping over R1,500 across South Africa. Same-day dispatch from Cape Town.
+            Plan your routine, record notes and keep your progress in one mobile-friendly place.
+            Free shipping still applies over R1,500 across South Africa.
           </p>
-          <Link
-            to="/shop"
+          <a
+            href="https://peptide-south-africa.co.za/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-bold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
           >
-            Buy Now <ArrowRight className="h-5 w-5" />
-          </Link>
+            Open Free Tracker <ArrowRight className="h-5 w-5" />
+          </a>
           <p className="mt-3 text-sm text-primary-foreground/70">
-            Or <Link to="/quiz" className="underline">take the 2-min quiz</Link> for a personalised protocol
+            New to peptides? <Link to="/quiz" className="underline">Start with the quiz</Link>
           </p>
         </div>
       </section>

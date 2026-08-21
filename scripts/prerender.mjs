@@ -46,6 +46,7 @@ const staticRoutes = [
   "/buy-tirzepatide-south-africa",
   "/buy-ghk-cu-south-africa",
   "/buy-tesamorelin-south-africa",
+  "/buy-mots-c-south-africa",
 ];
 
 function extractSlugs(file, key = "slug") {

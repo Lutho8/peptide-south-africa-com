@@ -8,7 +8,6 @@ export type NocobaseAction =
 
 export type LeadSource =
   | "newsletter"
-  | "discount_popup"
   | "quiz"
   | "signup"
   | "cart_abandoned"
@@ -16,7 +15,6 @@ export type LeadSource =
 
 const STAGE_BY_SOURCE: Record<LeadSource, string> = {
   newsletter: "subscriber",
-  discount_popup: "lead",
   quiz: "quiz_completed",
   signup: "account_created",
   cart_abandoned: "cart_abandoner",
@@ -25,7 +23,6 @@ const STAGE_BY_SOURCE: Record<LeadSource, string> = {
 
 const TAGS_BY_SOURCE: Record<LeadSource, string[]> = {
   newsletter: ["newsletter"],
-  discount_popup: ["discount_popup", "first_order_discount"],
   quiz: ["quiz"],
   signup: ["signup"],
   cart_abandoned: ["cart", "abandoned_24h"],

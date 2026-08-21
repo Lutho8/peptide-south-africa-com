@@ -29,3 +29,4 @@ brand-guard-report/
 
 # Build-time prerender temp bundle
 .ssr-tmp/
+.vercel

@@ -14,6 +14,18 @@ const CARDS = [
     current: false,
   },
   {
+    key: "pets",
+    title: "Peptides4Pets",
+    eyebrow: "PSA PETS",
+    body:
+      "Pet-longevity waitlist for South African dogs and cats — BPC-157, KPV, recovery blends, mobility collagen and calming peptides, with vet-handout dosing and honest evidence notes.",
+    cta: "Join the pet waitlist",
+    href: "https://pets.peptide-south-africa.com",
+    border: "#D97E3F",
+    highlighted: true,
+    current: false,
+  },
+  {
     key: "store",
     title: "Peptide South Africa",
     eyebrow: "THE STORE",
@@ -36,11 +48,11 @@ export default function EcosystemSection() {
             The Peptide SA Ecosystem
           </span>
           <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-            One Ecosystem. Two Properties.
+            One Ecosystem. Three Properties.
           </h2>
         </div>
 
-        <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+        <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-3">
           {CARDS.map((c) => (
             <div
               key={c.key}

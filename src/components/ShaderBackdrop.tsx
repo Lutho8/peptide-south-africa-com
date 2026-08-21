@@ -145,7 +145,7 @@ export default function ShaderBackdrop({
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.6);
       const { clientWidth: w, clientHeight: h } = canvas;
-      if (canvas.width !== (w * dpr) | 0 || canvas.height !== (h * dpr) | 0) {
+      if (canvas.width !== ((w * dpr) | 0) || canvas.height !== ((h * dpr) | 0)) {
         canvas.width = (w * dpr) | 0;
         canvas.height = (h * dpr) | 0;
         gl.viewport(0, 0, canvas.width, canvas.height);

@@ -23,6 +23,12 @@ const staticEntries: SitemapEntry[] = [
   { path: "/fat-loss-protocol", changefreq: "weekly", priority: "0.85" },
   { path: "/quiz", changefreq: "weekly", priority: "0.8" },
   { path: "/research", changefreq: "weekly", priority: "0.6" },
+  { path: "/buy-retatrutide-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-tirzepatide-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-bpc-157-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-ghk-cu-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-tesamorelin-south-africa", changefreq: "weekly", priority: "0.85" },
+  { path: "/buy-mots-c-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/impressum", changefreq: "yearly", priority: "0.4" },
   { path: "/faq", changefreq: "monthly", priority: "0.7" },
   { path: "/track-order", changefreq: "monthly", priority: "0.5" },
@@ -115,7 +121,7 @@ const xml = [
 writeFileSync(resolve("public/sitemap.xml"), xml);
 writeFileSync(
   resolve("public/sitemap-meta.json"),
-  JSON.stringify({ generatedAt: new Date().toISOString(), urlCount: all.length }, null, 2) + "\n",
+  JSON.stringify({ generatedAt: `${today}T00:00:00.000Z`, urlCount: all.length }, null, 2) + "\n",
 );
 console.log(
   `sitemap.xml written (${all.length} entries, ${productEntries.length} products, ${blogEntries.length} blog posts)`,

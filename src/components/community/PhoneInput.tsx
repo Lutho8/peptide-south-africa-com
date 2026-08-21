@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { getCountries, getCountryCallingCode } from "libphonenumber-js/min";
+import { getCountries, getCountryCallingCode, type CountryCode } from "libphonenumber-js/min";
 
-const PRIORITY: string[] = ["ZA", "US", "GB", "AU", "CA", "DE", "FR", "NL", "AE", "NZ"];
+const PRIORITY: CountryCode[] = ["ZA", "US", "GB", "AU", "CA", "DE", "FR", "NL", "AE", "NZ"];
 
 type Props = {
   country: string;
@@ -22,14 +22,14 @@ export default function PhoneInput({
 }: Props) {
   const countries = useMemo(() => {
     const all = getCountries();
-    const priority = PRIORITY.filter((c) => all.includes(c as any));
+    const priority = PRIORITY.filter((c) => all.includes(c));
     const rest = all.filter((c) => !priority.includes(c)).sort();
     return [...priority, ...rest];
   }, []);
 
-  const dial = (iso: string) => {
+  const dial = (iso: CountryCode) => {
     try {
-      return `+${getCountryCallingCode(iso as any)}`;
+      return `+${getCountryCallingCode(iso)}`;
     } catch {
       return "";
     }
@@ -56,6 +56,7 @@ export default function PhoneInput({
       </select>
       <input
         type="tel"
+        aria-label="WhatsApp number"
         inputMode="tel"
         autoComplete="tel-national"
         placeholder="82 123 4567"

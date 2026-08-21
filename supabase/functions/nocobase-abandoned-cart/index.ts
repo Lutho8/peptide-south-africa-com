@@ -1,7 +1,7 @@
 // supabase/functions/nocobase-abandoned-cart/index.ts
 // Hourly sweep: find cart_snapshots not yet notified, older than 24h, push to
-// Nocobase exactly once per unique cart, with a personalized first-order
-// discount if the user is still eligible.
+// Nocobase exactly once per unique cart, including the free digital tracker
+// that is included with every order.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -10,8 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const FIRST_ORDER_CODE = "PEPTIDESA10";
-const FIRST_ORDER_PCT = 10;
+const TRACKER_URL = "https://peptide-south-africa.co.za/";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -68,22 +67,13 @@ Deno.serve(async (req) => {
       continue;
     }
 
-    // Eligibility: 10% off only for users with zero past orders.
-    const { count: totalOrders } = await supabase
-      .from("orders")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", snap.user_id);
-    const eligible = (totalOrders ?? 0) === 0;
-    const discountPct = eligible ? FIRST_ORDER_PCT : 0;
-    const discountCode = eligible ? FIRST_ORDER_CODE : null;
     const subtotal = Number(snap.subtotal ?? 0);
-    const projectedTotal = eligible ? subtotal * (1 - FIRST_ORDER_PCT / 100) : subtotal;
 
     // Get user email
     const { data: userRes } = await supabase.auth.admin.getUserById(snap.user_id);
     const email = userRes?.user?.email ?? null;
 
-    const tags = ["cart", "abandoned_24h", eligible ? "discount_eligible" : "repeat_customer_recovery"];
+    const tags = ["cart", "abandoned_24h", "tracker_bonus"];
 
     await supabase.functions.invoke("nocobase-sync", {
       body: {
@@ -93,9 +83,9 @@ Deno.serve(async (req) => {
           email,
           items,
           subtotal,
-          discount_code: discountCode,
-          discount_pct: discountPct,
-          projected_total: projectedTotal,
+          projected_total: subtotal,
+          digital_bonus: "Free Peptide Tracker",
+          tracker_url: TRACKER_URL,
           cart_signature: snap.cart_signature ?? null,
           stage: "cart_abandoner",
           tags,
@@ -108,7 +98,7 @@ Deno.serve(async (req) => {
     // resets notified_at when the cart contents actually change.
     await supabase
       .from("cart_snapshots")
-      .update({ notified_at: new Date().toISOString(), discount_pct: discountPct })
+      .update({ notified_at: new Date().toISOString(), discount_pct: 0 })
       .eq("id", snap.id);
 
     pushed++;

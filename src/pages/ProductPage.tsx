@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
+import { getCoasForProduct } from "@/data/coas";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -96,24 +97,39 @@ export default function ProductPage() {
     selectedVariantMeta?.pack && selectedVariantMeta.pack > 1
       ? singleVialPrice * selectedVariantMeta.pack - selectedVariantMeta.price
       : undefined;
+  const productCoas = getCoasForProduct(product.slug);
+  const primaryCoa = productCoas[0];
+  const productMedia = [
+    { src: product.image, alt: product.name, label: "Product", fit: "cover" as const },
+    ...productCoas.map((coa) => ({
+      src: coa.reportImageUrl,
+      alt: `${coa.productName} Janoshik report task ${coa.taskNumber}`,
+      label: `COA #${coa.taskNumber}`,
+      fit: "contain" as const,
+      href: coa.verificationUrl,
+    })),
+  ];
 
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
+    if (isGPTrack) {
+      navigate(`/quiz?product=${product.slug}`);
+      return;
+    }
     if (purchaseMode === "subscribe") {
       if (!user) {
         navigate(`/auth?redirect=/product/${product.slug}`);
         return;
       }
       setSubBusy(true);
-      const next = new Date();
-      next.setDate(next.getDate() + intervalWeeks * 7);
       const { error } = await supabase.from("subscriptions").insert({
         user_id: user.id,
         product_slug: product.slug,
         variant_label: variantLabel ?? null,
         interval_weeks: intervalWeeks,
         discount_pct: subDiscountPct,
-        next_charge_at: next.toISOString(),
+        next_charge_at: null,
+        status: "pending",
       });
       setSubBusy(false);
       if (error) {
@@ -121,8 +137,8 @@ export default function ProductPage() {
         return;
       }
       toast({
-        title: "Subscription saved",
-        description: "Manage it anytime in your account. Billing activation is in final review.",
+        title: "Subscription request saved",
+        description: "We'll confirm billing and the first delivery before activating it. You have not been charged.",
       });
       navigate("/account");
       return;
@@ -143,7 +159,13 @@ export default function ProductPage() {
 
   return (
     <div>
-      <JsonLd data={productSchema({ ...product, variants: product.variants })} />
+      <JsonLd data={productSchema({
+        ...product,
+        description: isGPTrack
+          ? `${product.name} is available through a clinician-guided pathway with eligibility review before prescription or fulfilment.`
+          : product.description,
+        variants: product.variants,
+      })} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -154,8 +176,12 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={`${product.name} | Research Peptide | Peptide South Africa`}
-        description={`${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
+        title={isGPTrack
+          ? `${product.name} South Africa | Clinician-Guided Pathway`
+          : `${product.name} South Africa | Research Peptide Supplier`}
+        description={isGPTrack
+          ? `${product.name} clinician-guided pathway with eligibility review before prescription or fulfilment. Per-batch COA and South African delivery.`
+          : `${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
@@ -177,7 +203,7 @@ export default function ProductPage() {
         <div className="grid gap-10 md:grid-cols-2 md:items-start">
           {/* Image — sticks on desktop so the product follows the user as they scroll. */}
           <div className="md:sticky md:top-24 md:self-start">
-            <ProductImageZoom src={product.image} alt={product.name} />
+            <ProductImageZoom src={product.image} alt={product.name} media={productMedia} />
           </div>
 
 
@@ -191,20 +217,20 @@ export default function ProductPage() {
                   <Star key={i} className="h-4 w-4 fill-badge text-badge" />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">(47 reviews)</span>
+              <span className="text-sm text-muted-foreground">Customer reviews</span>
             </div>
             <p className="mt-4 font-display text-3xl font-bold text-foreground">
-              {product?.priceRange ?? display(currentPrice).primary}
+              {display(currentPrice).primary}
             </p>
 
-            <CoaBadge purity={product.purity ?? "≥99% HPLC"} />
+            <CoaBadge purity={product.purity ?? "HPLC result published"} coaUrl={primaryCoa?.verificationUrl} />
 
-            {/* Monospace authenticity strip — lab-grade trust signals */}
+            {/* Report-scope strip — never invent a lot or imply unique-vial authentication. */}
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border border-border bg-muted/30 p-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              <div><dt className="inline text-foreground/60">LOT</dt> <dd className="inline font-semibold text-foreground">{`PSA-${(product.slug || "x").slice(0,3).toUpperCase()}-${new Date().getFullYear()}`}</dd></div>
+              <div><dt className="inline text-foreground/60">SAMPLE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa?.sampleReference ?? "NOT PUBLISHED"}</dd></div>
               <div><dt className="inline text-foreground/60">PURITY</dt> <dd className="inline font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd></div>
-              <div><dt className="inline text-foreground/60">COA</dt> <dd className="inline font-semibold text-foreground">JANOSHIK ✓</dd></div>
-              <div><dt className="inline text-foreground/60">BATCH</dt> <dd className="inline font-semibold text-foreground">{new Date().toISOString().slice(0,10)}</dd></div>
+              <div><dt className="inline text-foreground/60">COA</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? `TASK ${primaryCoa.taskNumber}` : "PENDING"}</dd></div>
+              <div><dt className="inline text-foreground/60">SCOPE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? "SOURCE REPORT" : "NOT LINKED"}</dd></div>
             </dl>
 
 
@@ -219,7 +245,11 @@ export default function ProductPage() {
               </p>
             )}
 
-            <p className="mt-4 text-muted-foreground">{product.description}</p>
+            <p className="mt-4 text-muted-foreground">
+              {isGPTrack
+                ? `${product.name} is offered through a clinician-guided pathway. A registered clinician reviews suitability before any prescription or fulfilment.`
+                : product.description}
+            </p>
 
             {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
             {product.variants && product.variants.length > 0 && (
@@ -249,9 +279,14 @@ export default function ProductPage() {
                           </span>
                           <span className="font-semibold text-foreground">
                             {v.label}
-                            {packSize > 1 && (
+                            {packSize === 1 && (
+                              <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                Single product
+                              </span>
+                            )}
+                            {packSize === 3 && (
                               <span className="ml-1.5 rounded bg-trust/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
-                                Best value · 15% off
+                                Most frequently chosen
                               </span>
                             )}
                           </span>
@@ -275,12 +310,12 @@ export default function ProductPage() {
                       <span className="font-semibold text-foreground">
                         5-Pack Pick &amp; Mix
                         <span className="ml-1.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                          20% off
+                          Best price per unit
                         </span>
                       </span>
                     </span>
                     <span className="text-right text-[11px] font-semibold text-primary">
-                      Build a custom 5-pack →
+                      Save 20% with a custom 5-pack →
                     </span>
                   </Link>
                 </div>
@@ -308,8 +343,12 @@ export default function ProductPage() {
             </div>
 
             {/* Purchase mode — Subscribe & save */}
-            {product.inStock && (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
+            {product.inStock && !isGPTrack && (
+              <div className="mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-card shadow-card">
+                <div className="flex items-center justify-between bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary">
+                  <span>Subscription request</span>
+                  <span>Save {subDiscountPct}% after activation</span>
+                </div>
                 <div className="grid grid-cols-2">
                   <button
                     onClick={() => setPurchaseMode("one-time")}
@@ -329,7 +368,7 @@ export default function ProductPage() {
                     }`}
                   >
                     <span className="flex items-center gap-2 text-sm font-bold text-primary">
-                      <Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%
+                      <Repeat className="h-4 w-4" /> Subscribe &amp; save {subDiscountPct}%
                     </span>
                     <span className="font-display text-base font-bold text-foreground">
                       {format(Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100)}
@@ -339,7 +378,7 @@ export default function ProductPage() {
                 {purchaseMode === "subscribe" && (
                   <div className="border-t border-border bg-background/50 px-4 py-3">
                     <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Reorder every
+                      Preferred delivery frequency
                     </label>
                     <div className="mt-2 flex gap-2">
                       {[4, 8, 12].map((w) => (
@@ -357,7 +396,7 @@ export default function ProductPage() {
                       ))}
                     </div>
                     <p className="mt-2 text-[11px] text-muted-foreground">
-                      Pause, skip, or cancel anytime from your account.
+                      No charge now. We confirm the first delivery before activation; cancel anytime from your account.
                     </p>
                   </div>
                 )}
@@ -373,7 +412,9 @@ export default function ProductPage() {
               {!product.inStock ? (
                 "Pre-Order"
               ) : purchaseMode === "subscribe" ? (
-                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Subscribe · save {subDiscountPct}%</>
+                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
+              ) : isGPTrack ? (
+                <><Stethoscope className="h-4 w-4" /> Start Medical Quiz</>
               ) : added ? (
                 "✓ Added to Cart!"
               ) : (
@@ -381,23 +422,13 @@ export default function ProductPage() {
               )}
             </button>
 
-            {/* Secondary CTA — Clinician consult for GP-track */}
-            {isGPTrack && product.inStock && (
-              <Link
-                to={`/quiz?product=${product.slug}`}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/10"
-              >
-                <Stethoscope className="h-4 w-4" /> Prefer guidance? Start Clinician Consultation
-              </Link>
-            )}
-
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> ≥99% Purity — COA Available</span>
+              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — COA Available</span>
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
-                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · per-batch COA
+                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · published source report
               </Link>
-              <span className="flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
+              <span className="flex items-center gap-1 rounded-lg bg-primary/5 px-2 py-1 font-semibold text-primary"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
               <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Price includes VAT — what you see is what you pay</span>
             </div>
 
@@ -417,39 +448,103 @@ export default function ProductPage() {
         <FrequentlyBoughtTogether slug={product.slug} />
       </section>
 
-      {/* Details Sections */}
+      {/* Beginner and technical information */}
       <section className="border-t border-border bg-card py-16">
-        <div className="container grid gap-12 md:grid-cols-3">
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">What's Included</h3>
-            <ul className="mt-4 flex flex-col gap-2">
-              {product.whatsIncluded.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-primary" /> {item}
-                </li>
-              ))}
-            </ul>
+        <div className="container grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-primary/20 bg-background p-6 shadow-card sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Beginner information</p>
+            <h2 className="mt-2 font-display text-2xl font-bold text-foreground">New to this product? Start here.</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {isGPTrack
+                ? "A clear overview of the clinician-review pathway and what happens before fulfilment."
+                : "A quick overview of what is included, who normally researches it and how the order process works."}
+            </p>
+
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+              <div>
+                <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
+                <ul className="mt-3 flex flex-col gap-2">
+                  {(isGPTrack
+                    ? ["Clinician eligibility review", "Eligible prescribed product after approval", "Batch Certificate of Analysis", "Storage and delivery guidance"]
+                    : product.whatsIncluded).map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-display text-base font-semibold text-foreground">Who It's For</h3>
+                <ul className="mt-3 flex flex-col gap-2">
+                  {(isGPTrack
+                    ? ["Customers seeking a clinician-reviewed pathway", "People who understand approval is not guaranteed", "Customers prepared to disclose relevant medical information securely"]
+                    : product.whoItsFor).map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-border pt-5">
+              <h3 className="font-display text-base font-semibold text-foreground">How It Works</h3>
+              <ol className="mt-3 grid gap-2">
+                {(isGPTrack
+                  ? ["Complete the medical quiz", "A registered clinician reviews eligibility", "Eligible orders proceed with a valid prescription", "Use the tracker and follow-up pathway"]
+                  : product.howItWorks).map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
+                    {item}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">Who It's For</h3>
-            <ul className="mt-4 flex flex-col gap-2">
-              {product.whoItsFor.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="h-4 w-4 shrink-0 text-primary" /> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-display text-lg font-semibold text-foreground">How It Works</h3>
-            <ol className="mt-4 flex flex-col gap-2">
-              {product.howItWorks.map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
-                  {item}
-                </li>
-              ))}
-            </ol>
+
+          <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Technical data</p>
+            <h2 className="mt-2 font-display text-2xl font-bold text-foreground">Product specifications</h2>
+            <dl className="mt-6 divide-y divide-border rounded-xl border border-border">
+              {product.sku && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">SKU</dt>
+                  <dd className="font-mono font-semibold text-foreground">{product.sku}</dd>
+                </div>
+              )}
+              {product.casNumber && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">CAS number</dt>
+                  <dd className="font-mono font-semibold text-foreground">{product.casNumber}</dd>
+                </div>
+              )}
+              {product.compoundClass && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">Compound class</dt>
+                  <dd className="text-right font-semibold text-foreground">{product.compoundClass}</dd>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                <dt className="text-muted-foreground">Purity</dt>
+                <dd className="font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd>
+              </div>
+              {product.storage && (
+                <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                  <dt className="text-muted-foreground">Storage</dt>
+                  <dd className="max-w-[65%] text-right font-semibold text-foreground">{product.storage}</dd>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 p-4 text-sm">
+                <dt className="text-muted-foreground">Product track</dt>
+                <dd><TrackBadge track={product.track} /></dd>
+              </div>
+            </dl>
+            <Link
+              to="/testing"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-5 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
+            >
+              <Shield className="h-4 w-4" /> Open batch COA and testing
+            </Link>
           </div>
         </div>
       </section>
@@ -458,7 +553,9 @@ export default function ProductPage() {
       <section className="border-t border-border py-8">
         <div className="container">
           <p className="text-center text-xs text-muted-foreground">
-            For research purposes only. Not for human use or consumption.
+            {isGPTrack
+              ? "Available only through clinician review. Supply is subject to clinical eligibility and a valid prescription; no medical outcome is guaranteed."
+              : "For research purposes only. Not for human use or consumption."}
           </p>
         </div>
       </section>

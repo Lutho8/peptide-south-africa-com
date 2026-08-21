@@ -29,12 +29,15 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ShaderBackdrop from "@/components/ShaderBackdrop";
-import ProtocolPlans, { type PlanChoice } from "@/components/ProtocolPlans";
+import ProtocolPlans, { buildProductPlans, type PlanChoice } from "@/components/ProtocolPlans";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
+import { buildFallbackProtocol, type AIProtocol } from "@/lib/quizProtocolFallback";
+import { matchProtocolProducts } from "@/lib/quizProductMatching";
+import { useAuth } from "@/hooks/useAuth";
 
-const WA_NUMBER = "27641344646";
+const WA_NUMBER = "27721242377";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
 const waLink = (msg: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
@@ -54,22 +57,6 @@ interface LeadInfo {
   name: string;
   email: string;
   whatsapp: string;
-}
-
-interface AIProtocol {
-  protocolName: string;
-  subtitle: string;
-  duration: string;
-  whyFits: string;
-  timeline: string;
-  monthlyPrice: string;
-  fullPrice: string;
-  savings: string;
-  peptides: { name: string; dose: string; frequency: string; purpose: string }[];
-  expectedResults: { icon: string; label: string }[];
-  included: string[];
-  weeklySchedule: string;
-  warnings: string[];
 }
 
 type Opt = { value: string; label: string; icon: string; desc: string };
@@ -200,7 +187,8 @@ export default function QuizFunnelPage() {
   const [error, setError] = useState<string | null>(null);
   const [theaterPct, setTheaterPct] = useState(0);
   const [planChosen, setPlanChosen] = useState<PlanChoice | null>(null);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { replaceCartGroup, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const protocolRef = useRef<AIProtocol | null>(null);
   const errorRef = useRef<string | null>(null);
 
@@ -215,30 +203,36 @@ export default function QuizFunnelPage() {
   // Match AI-recommended peptides to actual shop products by fuzzy name match.
   const matchedProducts = useMemo(() => {
     if (!aiProtocol?.peptides?.length) return [];
-    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const seen = new Set<string>();
-    const out: typeof products = [];
-    for (const pep of aiProtocol.peptides) {
-      const target = norm(pep.name);
-      const hit = products.find((p) => {
-        const a = norm(p.name);
-        const b = norm(p.slug);
-        return a.includes(target) || target.includes(a) || b.includes(target) || target.includes(b);
-      });
-      if (hit && !seen.has(hit.id)) {
-        seen.add(hit.id);
-        out.push(hit);
-      }
-    }
-    return out;
+    return matchProtocolProducts(aiProtocol.peptides, products);
   }, [aiProtocol]);
+
+  const exactPlans = useMemo(() => {
+    if (matchedProducts.length === 0) return undefined;
+    const singleTotal = matchedProducts.reduce((sum, product) => {
+      const single = product.variants?.find((variant) => variant.pack === 1);
+      return sum + (single?.price ?? product.price);
+    }, 0);
+    const threePackTotal = matchedProducts.reduce((sum, product) => {
+      const pack = product.variants?.find((variant) => variant.pack === 3);
+      return sum + (pack?.price ?? product.price * 3);
+    }, 0);
+    return buildProductPlans(singleTotal, threePackTotal);
+  }, [matchedProducts]);
 
   const handleChoosePlan = (plan: PlanChoice) => {
     setPlanChosen(plan);
-    matchedProducts.forEach((p) => {
-      const v = p.variants?.[0];
-      addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
+    const lines = matchedProducts.map((p) => {
+      const desiredPack = plan.months === 1 ? 1 : 3;
+      const variant = p.variants?.find((candidate) => candidate.pack === desiredPack) ?? p.variants?.[0];
+      const repeats = plan.months === 6 ? 2 : 1;
+      return {
+        product: p,
+        variantLabel: variant?.label,
+        unitPrice: variant?.price ?? p.price,
+        quantity: repeats,
+      };
     });
+    replaceCartGroup("quiz-protocol", lines);
     setIsCartOpen(true);
     sonnerToast.success(`${plan.months}-month cycle started`, {
       description: `${matchedProducts.length} product${matchedProducts.length === 1 ? "" : "s"} from your protocol are in your cart.`,
@@ -310,9 +304,12 @@ export default function QuizFunnelPage() {
         if (!data?.protocol) throw new Error("No protocol received");
         protocolRef.current = data.protocol as AIProtocol;
 
-        import("@/lib/nocobase").then(({ captureLead }) => {
+        // Preserve the existing CRM sync for signed-in visitors. Anonymous
+        // lead forwarding remains disabled until its data destination is
+        // explicitly approved.
+        if (user) import("@/lib/nocobase").then(({ captureLead }) => {
           const goalTag = answers.goal ? [`goal:${answers.goal}`] : [];
-          captureLead({
+          void captureLead({
             source: "quiz",
             email: lead.email,
             extraTags: goalTag,
@@ -327,7 +324,10 @@ export default function QuizFunnelPage() {
       })
       .catch((err) => {
         console.error("Protocol generation error:", err);
-        errorRef.current = err instanceof Error ? err.message : "Failed to generate your protocol. Please try again.";
+        // Conversion-safe fallback: the visitor always receives a useful,
+        // catalog-matched result even when Supabase is unavailable.
+        protocolRef.current = buildFallbackProtocol(answers, lead.name);
+        errorRef.current = null;
       });
   };
 
@@ -364,14 +364,18 @@ export default function QuizFunnelPage() {
         setTimeout(() => {
           clearInterval(hold);
           if (!protocolRef.current && !errorRef.current) {
-            setError("This is taking longer than usual. Please try again.");
+            const fallback = buildFallbackProtocol(answers, lead.name);
+            protocolRef.current = fallback;
+            setAiProtocol(fallback);
+            setPhase("results");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }
         }, 15000);
       }
     };
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [phase]);
+  }, [answers, lead.name, phase]);
 
   const activeStage = Math.min(
     theaterStages.length - 1,
@@ -382,7 +386,7 @@ export default function QuizFunnelPage() {
   const ProgressChrome = ({ label }: { label: string }) => (
     <div className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="container flex items-center gap-4 px-4 py-4">
-        {(flowIndex > 0 || phase === "lead") && phase === phase && (
+        {(flowIndex > 0 || phase === "lead") && (
           <button
             onClick={goBack}
             className="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -594,6 +598,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="text"
+                  aria-label="Full name"
                   required
                   placeholder="Your full name"
                   value={lead.name}
@@ -607,6 +612,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="email"
+                  aria-label="Email address"
                   required
                   placeholder="you@example.com"
                   value={lead.email}
@@ -621,6 +627,7 @@ export default function QuizFunnelPage() {
                 </label>
                 <input
                   type="tel"
+                  aria-label="WhatsApp number"
                   placeholder="+27 XX XXX XXXX"
                   value={lead.whatsapp}
                   onChange={(e) => setLead((p) => ({ ...p, whatsapp: e.target.value }))}
@@ -761,7 +768,7 @@ export default function QuizFunnelPage() {
         </div>
       </div>
 
-      <div className="container px-4 py-10 md:py-16">
+      <div className="container px-4 py-10 pb-28 md:py-16">
         <div className="mx-auto max-w-3xl">
           {/* Header — physician frame, not AI gimmick */}
           <div className="mb-8 text-center">
@@ -787,6 +794,21 @@ export default function QuizFunnelPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">{aiProtocol.whyFits}</p>
           </div>
 
+          {/* Conversion-first plan choice: exact cart prices, above the detail. */}
+          <div id="choose-cycle" className="reveal-view mb-8 scroll-mt-24 rounded-3xl border border-border bg-card/90 p-5 shadow-card-hover backdrop-blur-sm sm:p-8">
+            <ProtocolPlans
+              monthlyPrice={aiProtocol.monthlyPrice}
+              budget={answers.budget}
+              exactPlans={exactPlans}
+              onChoose={handleChoosePlan}
+            />
+            {planChosen && (
+              <p className="mt-3 text-center text-xs font-semibold text-trust">
+                {planChosen.months}-month cycle selected — your exact pack quantities are in the cart.
+              </p>
+            )}
+          </div>
+
           {/* Peptide Stack */}
           {aiProtocol.peptides && aiProtocol.peptides.length > 0 && (
             <div className="reveal-view mb-8">
@@ -798,10 +820,9 @@ export default function QuizFunnelPage() {
                   <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-card">
                     <p className="font-display text-sm font-bold text-primary">{p.name}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{p.purpose}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.dose}</span>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-foreground">{p.frequency}</span>
-                    </div>
+                    <p className="mt-2 text-[11px] font-medium text-muted-foreground">
+                      Exact dosing and frequency are confirmed during clinician review.
+                    </p>
                   </div>
                 ))}
               </div>
@@ -844,7 +865,7 @@ export default function QuizFunnelPage() {
           {aiProtocol.expectedResults && aiProtocol.expectedResults.length > 0 && (
             <div className="reveal-view mb-8">
               <h3 className="mb-4 font-display text-base font-semibold text-foreground sm:text-lg">
-                What to expect
+                What happens next
               </h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {aiProtocol.expectedResults.map((r, i) => {
@@ -866,11 +887,11 @@ export default function QuizFunnelPage() {
             </div>
           )}
 
-          {/* Weekly Schedule */}
+          {/* Clinician review schedule */}
           {aiProtocol.weeklySchedule && (
             <div className="reveal-view mb-8 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6">
               <h3 className="mb-2 font-display text-base font-semibold text-foreground sm:text-lg">
-                Your week, mapped
+                Schedule confirmation
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{aiProtocol.weeklySchedule}</p>
             </div>
@@ -907,20 +928,6 @@ export default function QuizFunnelPage() {
             </div>
           )}
 
-          {/* ===================== PLAN ENGINEERING (Keeps model) ===================== */}
-          <div className="reveal-view mb-8 rounded-3xl border border-border bg-card/90 p-5 shadow-card-hover backdrop-blur-sm sm:p-8">
-            <ProtocolPlans
-              monthlyPrice={aiProtocol.monthlyPrice}
-              budget={answers.budget}
-              onChoose={handleChoosePlan}
-            />
-            {planChosen && (
-              <p className="mt-3 text-center text-xs font-semibold text-trust">
-                {planChosen.months}-month cycle selected — your stack is in the cart.
-              </p>
-            )}
-          </div>
-
           {/* Zoom Consultation Booking */}
           <div className="reveal-view mb-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-5 text-center sm:p-6">
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
@@ -943,23 +950,21 @@ export default function QuizFunnelPage() {
             <p className="mt-2 text-xs text-muted-foreground">Free • 30 minutes • No commitment</p>
           </div>
 
-          {/* WhatsApp CTA */}
+          {/* WhatsApp community CTA — final step after completing the quiz */}
           <div className="reveal-view mb-8 rounded-2xl border border-trust/30 bg-trust/5 p-5 text-center sm:p-6">
             <MessageCircle className="mx-auto mb-2 h-8 w-8 text-trust" />
             <h3 className="font-display text-base font-semibold text-foreground sm:text-lg">
-              Prefer to chat it through?
+              Join our WhatsApp community
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Real humans, on WhatsApp, during SA business hours.
+              Continue with protocol education, batch COAs and community updates after your quiz.
             </p>
-            <a
-              href={waLink(`Hi, I'm ${lead.name || "interested"}. I just got my protocol recommendation (${aiProtocol.protocolName}) and have some questions.`)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/community"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-trust px-6 py-3 font-semibold text-trust-foreground transition-all hover:opacity-90 active:scale-95"
             >
-              <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
-            </a>
+              <MessageCircle className="h-4 w-4" /> Join the WhatsApp Group
+            </Link>
           </div>
 
           {/* Trust footer */}

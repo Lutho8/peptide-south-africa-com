@@ -1,85 +1,82 @@
-import { useState, useEffect } from "react";
-import { X, Gift } from "lucide-react";
-import { captureLead } from "@/lib/nocobase";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { X, Gift, LineChart, CalendarCheck, ExternalLink } from "lucide-react";
 
-const POPUP_DISMISSED_KEY = "rtt_discount_dismissed";
+const POPUP_DISMISSED_KEY = "psa_tracker_popup_dismissed_v1";
+const TRACKER_URL = "https://peptide-south-africa.co.za/";
 
 export default function DiscountPopup() {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    if (localStorage.getItem(POPUP_DISMISSED_KEY)) return;
-    const timer = setTimeout(() => setShow(true), 5000);
-    return () => clearTimeout(timer);
-  }, []);
+    const suppressed = ["/checkout", "/cart", "/account", "/auth", "/quiz"].some((path) =>
+      location.pathname.startsWith(path),
+    );
+    if (suppressed || localStorage.getItem(POPUP_DISMISSED_KEY)) {
+      setShow(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => setShow(true), 7000);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
 
   if (!show) return null;
 
-  const handleClose = () => {
+  const dismiss = () => {
     localStorage.setItem(POPUP_DISMISSED_KEY, "true");
     setShow(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      captureLead({ source: "discount_popup", email });
-      setSubmitted(true);
-      localStorage.setItem(POPUP_DISMISSED_KEY, "true");
-      setTimeout(() => setShow(false), 3000);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-2xl sm:p-8">
         <button
-          onClick={handleClose}
+          type="button"
+          onClick={dismiss}
+          aria-label="Close tracker offer"
           className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
         </button>
 
-        {submitted ? (
-          <div className="text-center py-4">
-            <Gift className="mx-auto h-12 w-12 text-primary" />
-            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Welcome aboard! 🎉</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Use code <span className="font-bold text-primary">PEPTIDESA10</span> at checkout for 10% off your first order.
-            </p>
+        <div className="text-center">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <Gift className="h-7 w-7 text-primary" />
           </div>
-        ) : (
-          <>
-            <div className="text-center">
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Gift className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-foreground">Get 10% Off Your First Order</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Join our newsletter and receive an exclusive discount code instantly.
-              </p>
-            </div>
-            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-hero-gradient py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-              >
-                Claim My 10% Off
-              </button>
-            </form>
-            <p className="mt-3 text-center text-xs text-muted-foreground">No spam, ever. Unsubscribe anytime.</p>
-          </>
-        )}
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Included free</p>
+          <h3 className="mt-2 font-display text-2xl font-bold text-foreground">
+            You’ve unlocked the Peptide Tracker
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Keep your routine, notes and progress in one simple mobile-friendly place.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-2.5">
+          <div className="flex items-center gap-3 rounded-xl border border-border bg-background p-3 text-sm text-foreground">
+            <CalendarCheck className="h-5 w-5 shrink-0 text-primary" />
+            Plan and record your routine
+          </div>
+          <div className="flex items-center gap-3 rounded-xl border border-border bg-background p-3 text-sm text-foreground">
+            <LineChart className="h-5 w-5 shrink-0 text-primary" />
+            See your progress over time
+          </div>
+        </div>
+
+        <a
+          href={TRACKER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={dismiss}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+        >
+          Open My Free Tracker <ExternalLink className="h-4 w-4" />
+        </a>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          No discount code needed · Free digital bonus
+        </p>
       </div>
     </div>
   );
