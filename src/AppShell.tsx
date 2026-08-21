@@ -56,6 +56,7 @@ const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
 const CheckoutSuccessPage = lazy(() => import("@/pages/CheckoutSuccessPage"));
 const CheckoutCancelPage = lazy(() => import("@/pages/CheckoutCancelPage"));
 const OrderStatusPage = lazy(() => import("@/pages/OrderStatusPage"));
+const EftInstructionsPage = lazy(() => import("@/pages/EftInstructionsPage"));
 const TrackOrderPage = lazy(() => import("@/pages/TrackOrderPage"));
 const AccountPage = lazy(() => import("@/pages/AccountPage"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -101,6 +102,7 @@ export default function AppShell() {
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<Suspense fallback={<RouteLoadingFallback />}><CartPage /></Suspense>} />
                 <Route path="/checkout" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutPage /></Suspense>} />
+                <Route path="/checkout/eft-instructions" element={<Suspense fallback={<RouteLoadingFallback />}><EftInstructionsPage /></Suspense>} />
                 <Route path="/checkout/success" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutSuccessPage /></Suspense>} />
                 <Route path="/checkout/cancel" element={<Suspense fallback={<RouteLoadingFallback />}><CheckoutCancelPage /></Suspense>} />
                 <Route path="/order/:id" element={<Suspense fallback={<RouteLoadingFallback />}><OrderStatusPage /></Suspense>} />
