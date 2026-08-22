@@ -46,7 +46,7 @@ locally / 2 on CI. Traces, video, screenshots retained on failure in
 `fixtures/personas.ts`: retail_customer, subscriber, b2b_buyer,
 telehealth_patient, mobile_shopper — realistic SA names, `+27` phones,
 Cape Town / Johannesburg / Durban addresses. All emails use the
-`qa+*@ridethetide.test` sink domain; never point them at real inboxes.
+`qa+*@peptide-south-africa.test` sink domain; never point them at real inboxes.
 
 ## Safety rules
 
