@@ -47,6 +47,18 @@ describe("BuildYourStackPage", () => {
     expect(first.value).toBe("selank");
   });
 
+  it("prefills all five slots from an age-based starter pathway", () => {
+    renderBuilder("/build-your-stack?starter=30s");
+    const selects = screen.getAllByLabelText(/Vial \d+/) as HTMLSelectElement[];
+    expect(selects.map((select) => select.value)).toEqual([
+      "mots-c",
+      "thymosin-alpha-1",
+      "bpc-tb500-blend",
+      "kpv",
+      "ghk-cu-50mg",
+    ]);
+  });
+
   it("adds a complete in-stock 5-pack to the cart as grouped bundle lines", () => {
     renderBuilder();
     const slugs = ["selank", "semax", "pinealon", "epitalon", "kpv"]; // all in stock

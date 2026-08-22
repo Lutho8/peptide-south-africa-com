@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import { getStarterPathway, STORE_LINKS } from "@/data/starterPathways";
 
 /** One selector slot: a product slug or empty. */
 type Slot = string | "";
@@ -33,9 +34,12 @@ export default function BuildYourStackPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("prefill") ?? "";
   const validPrefill = products.some((p) => p.slug === prefillSlug) ? prefillSlug : "";
+  const starterPathway = getStarterPathway(searchParams.get("starter"));
 
   const [size, setSize] = useState<MixBundleSize>(5);
-  const [slots, setSlots] = useState<Slot[]>(() => emptySlots(5, validPrefill ? [validPrefill] : []));
+  const [slots, setSlots] = useState<Slot[]>(() =>
+    emptySlots(5, starterPathway?.slugs ?? (validPrefill ? [validPrefill] : [])),
+  );
   const [added, setAdded] = useState(false);
 
   const { addBundleToCart } = useCart();
@@ -122,6 +126,20 @@ export default function BuildYourStackPage() {
         }}
       />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Build Your Stack" }]} />
+
+      {starterPathway && (
+        <section className="border-b border-primary/20 bg-primary/5">
+          <div className="container flex flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary">Educational starting map · {starterPathway.label}</p>
+              <p className="mt-1 text-sm text-foreground">
+                We prefilled five research categories for comparison. Review every product and change anything before adding it to your basket.
+              </p>
+            </div>
+            <Link to={STORE_LINKS.startHere} className="shrink-0 text-sm font-semibold text-primary hover:underline">Why these categories? →</Link>
+          </div>
+        </section>
+      )}
 
       {/* Hero strip */}
       <section className="border-b border-border bg-hero-gradient">

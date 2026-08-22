@@ -10,6 +10,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import OrdersList from "@/components/account/OrdersList";
 import ProfileEditor from "@/components/account/ProfileEditor";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useCart } from "@/context/CartContext";
+import { getProductBySlug } from "@/data/products";
+import { STORE_LINKS } from "@/data/starterPathways";
 
 interface Subscription {
   id: string;
@@ -26,6 +29,7 @@ export default function AccountPage() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addToCart, setIsCartOpen } = useCart();
 
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [referral, setReferral] = useState<ReferralCode | null>(null);
@@ -83,6 +87,21 @@ export default function AccountPage() {
       toast({ title: `Subscription ${status}` });
     }
     setBusy(null);
+  };
+
+  const reorderSubscription = (subscription: Subscription) => {
+    const product = getProductBySlug(subscription.product_slug);
+    if (!product || !product.inStock) {
+      toast({ title: "Currently unavailable", description: "Open the store to choose an available alternative." });
+      return;
+    }
+    const variant = product.variants?.find((candidate) => candidate.label === subscription.variant_label);
+    addToCart(product, {
+      variantLabel: variant?.label,
+      unitPrice: variant?.price ?? product.price,
+    });
+    setIsCartOpen(true);
+    toast({ title: "Added for review", description: "Confirm the basket and delivery details before checkout." });
   };
 
   const nextDelivery = subs
@@ -263,7 +282,7 @@ export default function AccountPage() {
                   <Repeat className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-3 text-sm font-medium text-foreground">No subscriptions yet</p>
                   <p className="mt-1 text-xs text-muted-foreground">Subscribe & save 12% on any research-track product.</p>
-                  <Link to="/shop?track=RUO" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                  <Link to={STORE_LINKS.researchShop} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
                     Browse research catalog <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -295,7 +314,16 @@ export default function AccountPage() {
                               </p>
                             )}
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            {(isActive || isPaused) && (
+                              <button
+                                disabled={busy === s.id}
+                                onClick={() => reorderSubscription(s)}
+                                className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+                              >
+                                <RefreshCw className="h-3.5 w-3.5" /> Reorder now
+                              </button>
+                            )}
                             {isActive && (
                               <button disabled={busy === s.id} onClick={() => updateSubStatus(s.id, "paused")} className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-muted">
                                 <Pause className="h-3.5 w-3.5" /> Pause
@@ -312,9 +340,20 @@ export default function AccountPage() {
                               </button>
                             )}
                             {isCancelled && (
-                              <span className="rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-                                Cancelled
-                              </span>
+                              <Link
+                                to={`/product/${s.product_slug}?purchase=subscribe`}
+                                className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+                              >
+                                <Repeat className="h-3.5 w-3.5" /> Restart in store
+                              </Link>
+                            )}
+                            {isPending && (
+                              <Link
+                                to={`/product/${s.product_slug}?purchase=subscribe`}
+                                className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-muted"
+                              >
+                                Review request
+                              </Link>
                             )}
                           </div>
                         </div>

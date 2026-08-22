@@ -13,6 +13,7 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
+import { STORE_LINKS } from "@/data/starterPathways";
 
 const SITE_URL = "https://www.peptide-south-africa.com";
 
@@ -216,10 +217,10 @@ export default function ShopPage() {
 
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                to="/quiz"
+                to={STORE_LINKS.startHere}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
               >
-                Find My Protocol <ArrowRight className="h-4 w-4" />
+                New here? Start here <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/quiz?intent=consult"
@@ -231,7 +232,7 @@ export default function ShopPage() {
                 href="#products"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted sm:w-auto"
               >
-                Browse Compounds
+                Browse Research Catalog
               </a>
             </div>
           </div>

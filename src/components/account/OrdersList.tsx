@@ -4,17 +4,20 @@ import { Package, Repeat, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { products, getProductBySlug } from "@/data/products";
+import { getProductBySlug } from "@/data/products";
+import { getReorderLines } from "@/lib/orderReorder";
 import { toast } from "sonner";
 
 interface OrderRow {
   id: string;
+  public_ref: string;
   total: number;
   status: string;
   currency: string;
   created_at: string;
   paid_at: string | null;
   order_description: string | null;
+  order_items: unknown;
 }
 
 function statusTone(status: string) {
@@ -31,28 +34,6 @@ function statusTone(status: string) {
   }
 }
 
-/**
- * Parse "Retatrutide (3-Pack) x1, BPC-157 (Single Vial) x2" back into
- * { slug, variantLabel, qty } so we can rebuild the cart on reorder.
- */
-function parseDescription(desc: string | null): { slug: string; variantLabel?: string; qty: number }[] {
-  if (!desc) return [];
-  return desc
-    .split(",")
-    .map((chunk) => chunk.trim())
-    .map((chunk) => {
-      const m = chunk.match(/^(.+?)(?:\s+\((.+?)\))?\s+x(\d+)$/i);
-      if (!m) return null;
-      const [, name, variant, qtyStr] = m;
-      const product = products.find(
-        (p) => p.name.toLowerCase() === name.trim().toLowerCase(),
-      );
-      if (!product) return null;
-      return { slug: product.slug, variantLabel: variant ?? undefined, qty: Number(qtyStr) || 1 };
-    })
-    .filter((x): x is { slug: string; variantLabel: string | undefined; qty: number } => x !== null);
-}
-
 export default function OrdersList() {
   const { user } = useAuth();
   const { addToCart, setIsCartOpen } = useCart();
@@ -65,7 +46,7 @@ export default function OrdersList() {
     (async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id, total, status, currency, created_at, paid_at, order_description")
+        .select("id, public_ref, total, status, currency, created_at, paid_at, order_description, order_items")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(20);
@@ -75,7 +56,7 @@ export default function OrdersList() {
   }, [user]);
 
   const reorder = (order: OrderRow) => {
-    const parsed = parseDescription(order.order_description);
+    const parsed = getReorderLines(order);
     if (parsed.length === 0) {
       toast.error("Couldn't reconstruct this order — please add items manually.");
       return;
@@ -124,14 +105,15 @@ export default function OrdersList() {
   return (
     <div className="space-y-3">
       {orders.map((order) => {
-        const lines = parseDescription(order.order_description);
-        const canReorder = lines.length > 0 && order.status === "paid";
+        const lines = getReorderLines(order);
+        const allAvailable = lines.every((line) => getProductBySlug(line.slug)?.inStock);
+        const canReorder = lines.length > 0 && allAvailable && order.status === "paid";
         return (
           <div key={order.id} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="font-mono text-xs text-muted-foreground">#{order.id.slice(0, 8)}</p>
+                  <p className="font-mono text-xs text-muted-foreground">{order.public_ref || `#${order.id.slice(0, 8)}`}</p>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusTone(order.status)}`}>
                     {order.status}
                   </span>
@@ -163,6 +145,14 @@ export default function OrdersList() {
                     )}
                     Reorder
                   </button>
+                )}
+                {order.status === "paid" && lines.length > 0 && !allAvailable && (
+                  <Link
+                    to="/shop"
+                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+                  >
+                    Choose alternatives
+                  </Link>
                 )}
               </div>
             </div>

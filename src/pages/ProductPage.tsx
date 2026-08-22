@@ -1,4 +1,4 @@
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap, Stethoscope } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
 
@@ -33,6 +33,7 @@ interface CmsFaq { question: string; answer: string }
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
   const product = getProductBySlug(slug || "");
   const { addToCart } = useCart();
   const { format, display } = useCurrency();
@@ -43,7 +44,9 @@ export default function ProductPage() {
   const { setLastViewed } = useLastViewedProduct();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
-  const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
+  const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">(
+    searchParams.get("purchase") === "subscribe" ? "subscribe" : "one-time",
+  );
   const [intervalWeeks, setIntervalWeeks] = useState<4 | 8 | 12>(8);
   const [subBusy, setSubBusy] = useState(false);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
@@ -398,10 +401,10 @@ export default function ProductPage() {
             >
               {!product.inStock ? (
                 "Pre-Order"
-              ) : purchaseMode === "subscribe" ? (
-                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
               ) : isGPTrack ? (
                 <><Stethoscope className="h-4 w-4" /> Start Medical Quiz</>
+              ) : purchaseMode === "subscribe" ? (
+                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
               ) : added ? (
                 "✓ Added to Cart!"
               ) : (

@@ -27,6 +27,7 @@ const TMP = resolve(".ssr-tmp");
 const staticRoutes = [
   "/",
   "/shop",
+  "/start-here",
   "/build-your-stack",
   "/blog",
   "/faq",

@@ -31,6 +31,7 @@ import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
+import NewUserPathwayBand from "@/components/NewUserPathwayBand";
 
 const results = [
   { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
@@ -91,6 +92,9 @@ export default function HomePage() {
       <JsonLd data={localBusinessSchema} />
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
+
+      {/* ===================== NEW-CUSTOMER PATHWAY ===================== */}
+      <NewUserPathwayBand />
 
       {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
       <SupportVideosSection />

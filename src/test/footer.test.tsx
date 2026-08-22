@@ -32,6 +32,11 @@ function renderFooter() {
 }
 
 describe("Footer legal bar", () => {
+  it("links new customers to the canonical start page", () => {
+    renderFooter();
+    expect(screen.getByRole("link", { name: /New here\? Start here/i })).toHaveAttribute("href", "/start-here");
+  });
+
   it("renders all five legal links in the canonical order", () => {
     renderFooter();
     const nav = screen.getByRole("navigation", { name: /legal/i });

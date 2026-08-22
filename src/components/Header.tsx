@@ -17,6 +17,7 @@ const DROPDOWNS: Dropdown[] = [
   {
     label: "Shop",
     items: [
+      { label: "New here? Start here", to: "/start-here", desc: "Guided vs research · clear first step" },
       { label: "Build Your Stack", to: "/build-your-stack", desc: "Design your own · save 20%" },
       { label: "All products", to: "/shop", desc: "Browse the full range" },
       { label: "Shop 3-Packs", to: "/shop#products", desc: "Value packs · 15–30% off" },

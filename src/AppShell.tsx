@@ -19,6 +19,7 @@ import DiscountPopup from "@/components/DiscountPopup";
 import HomePage from "@/pages/HomePage";
 import ShopPage from "@/pages/ShopPage";
 import BuildYourStackPage from "@/pages/BuildYourStackPage";
+import StarterPathwaysPage from "@/pages/StarterPathwaysPage";
 import ProductPage from "@/pages/ProductPage";
 import ImpressumPage from "@/pages/ImpressumPage";
 import FAQPage from "@/pages/FAQPage";
@@ -96,6 +97,7 @@ export default function AppShell() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/shop" element={<ShopPage />} />
+                <Route path="/start-here" element={<StarterPathwaysPage />} />
                 <Route path="/build-your-stack" element={<BuildYourStackPage />} />
                 <Route path="/5-pack" element={<BuildYourStackPage />} />
                 <Route path="/product/:slug" element={<ProductPage />} />
