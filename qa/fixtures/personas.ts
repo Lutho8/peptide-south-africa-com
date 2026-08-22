@@ -22,7 +22,7 @@ export const personas: Record<string, Persona> = {
     key: 'retail_customer',
     firstName: 'Thandi',
     lastName: 'Nkosi',
-    email: 'qa+retail@ridethetide.test',
+    email: 'qa+retail@peptide-south-africa.test',
     phone: '+27821234567',
     address: {
       street: '12 Kloof Street',
@@ -36,7 +36,7 @@ export const personas: Record<string, Persona> = {
     key: 'subscriber',
     firstName: 'Pieter',
     lastName: 'van der Merwe',
-    email: 'qa+subscriber@ridethetide.test',
+    email: 'qa+subscriber@peptide-south-africa.test',
     phone: '+27835550142',
     address: {
       street: '45 Oxford Road',
@@ -50,7 +50,7 @@ export const personas: Record<string, Persona> = {
     key: 'b2b_buyer',
     firstName: 'Naledi',
     lastName: 'Mokoena',
-    email: 'qa+b2b@ridethetide.test',
+    email: 'qa+b2b@peptide-south-africa.test',
     phone: '+27849823310',
     address: {
       street: '7 Fredman Drive',
@@ -65,7 +65,7 @@ export const personas: Record<string, Persona> = {
     key: 'telehealth_patient',
     firstName: 'Sipho',
     lastName: 'Dlamini',
-    email: 'qa+patient@ridethetide.test',
+    email: 'qa+patient@peptide-south-africa.test',
     phone: '+27614098875',
     address: {
       street: '103 Florida Road',
@@ -79,7 +79,7 @@ export const personas: Record<string, Persona> = {
     key: 'mobile_shopper',
     firstName: 'Ayesha',
     lastName: 'Pillay',
-    email: 'qa+mobile@ridethetide.test',
+    email: 'qa+mobile@peptide-south-africa.test',
     phone: '+27790664421',
     address: {
       street: '28 Beach Road',

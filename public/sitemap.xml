@@ -64,6 +64,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/research" />
   </url>
   <url>
+    <loc>https://www.peptide-south-africa.com/reviews</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/reviews" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/reviews" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/reviews" />
+  </url>
+  <url>
     <loc>https://www.peptide-south-africa.com/buy-retatrutide-south-africa</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>weekly</changefreq>

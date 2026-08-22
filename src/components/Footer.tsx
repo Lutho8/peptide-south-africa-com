@@ -86,6 +86,7 @@ export default function Footer() {
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
               <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
               <Link to="/community" className="hover:text-foreground">WhatsApp Community</Link>
+              <Link to="/reviews" className="font-semibold text-primary hover:text-foreground">Peptide South Africa Reviews</Link>
               <Link to="/clinician" className="hover:text-foreground">For Clinicians</Link>
               <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
 

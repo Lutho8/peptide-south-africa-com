@@ -34,6 +34,7 @@ const staticRoutes = [
   "/fat-loss-protocol",
   "/quiz",
   "/testing",
+  "/reviews",
   "/shipping",
   "/refund",
   "/terms",
