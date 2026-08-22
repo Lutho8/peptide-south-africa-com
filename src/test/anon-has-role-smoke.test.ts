@@ -39,4 +39,19 @@ runIf("anon access to has_role-governed surfaces", () => {
     }, 10_000);
   }
 
+  it("anon can read only the public customer review fields", async () => {
+    const { error } = await supabase
+      .from("customer_reviews")
+      .select(
+        "id, display_name, location, rating, review, product_type, verified_purchase, published_at, created_at",
+      )
+      .limit(1);
+    expect(error).toBeNull();
+  }, 10_000);
+
+  it("anon cannot read private review moderation fields", async () => {
+    const { error } = await supabase.from("customer_reviews").select("email, order_ref").limit(1);
+    expect(error).not.toBeNull();
+  }, 10_000);
+
 });

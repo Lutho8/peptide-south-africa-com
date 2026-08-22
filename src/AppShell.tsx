@@ -45,6 +45,7 @@ import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
 import NotFound from "@/pages/NotFound";
+import ReviewsPage from "@/pages/ReviewsPage";
 
 // Lazy-loaded: none of these routes are part of scripts/prerender.mjs's
 // route list, so they're never rendered during the SSR/prerender build
@@ -126,6 +127,7 @@ export default function AppShell() {
                 <Route path="/buy-tesamorelin-south-africa" element={<BuyTesamorelinSA />} />
                 <Route path="/buy-mots-c-south-africa" element={<BuyMotsCSA />} />
                 <Route path="/testing" element={<TestingPage />} />
+                <Route path="/reviews" element={<ReviewsPage />} />
                 <Route path="/v/:code" element={<CoaRedirectPage />} />
                 <Route path="/account" element={<Suspense fallback={<RouteLoadingFallback />}><AccountPage /></Suspense>} />
                 <Route path="/community" element={<CommunityJoinPage />} />

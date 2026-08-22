@@ -32,6 +32,14 @@ function renderFooter() {
 }
 
 describe("Footer legal bar", () => {
+  it("links the public review hub from the footer", () => {
+    renderFooter();
+    expect(screen.getByRole("link", { name: "Peptide South Africa Reviews" })).toHaveAttribute(
+      "href",
+      "/reviews",
+    );
+  });
+
   it("renders all five legal links in the canonical order", () => {
     renderFooter();
     const nav = screen.getByRole("navigation", { name: /legal/i });

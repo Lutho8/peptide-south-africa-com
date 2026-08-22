@@ -23,6 +23,7 @@ const staticEntries: SitemapEntry[] = [
   { path: "/fat-loss-protocol", changefreq: "weekly", priority: "0.85" },
   { path: "/quiz", changefreq: "weekly", priority: "0.8" },
   { path: "/research", changefreq: "weekly", priority: "0.6" },
+  { path: "/reviews", changefreq: "weekly", priority: "0.8" },
   { path: "/buy-retatrutide-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/buy-tirzepatide-south-africa", changefreq: "weekly", priority: "0.85" },
   { path: "/buy-bpc-157-south-africa", changefreq: "weekly", priority: "0.85" },
