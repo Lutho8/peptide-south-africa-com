@@ -435,14 +435,20 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
           discount_code: string | null
           free_shipping_applied: boolean
           id: string
           order_description: string | null
+          order_items: Json
           paid_at: string | null
           payfast_pf_payment_id: string | null
           payfast_token: string | null
           payment_provider: string
+          public_ref: string
+          shipping_address: Json
           shipping_cost: number
           shipping_country: string | null
           shipping_currency: string | null
@@ -454,14 +460,20 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
           discount_code?: string | null
           free_shipping_applied?: boolean
           id?: string
           order_description?: string | null
+          order_items?: Json
           paid_at?: string | null
           payfast_pf_payment_id?: string | null
           payfast_token?: string | null
           payment_provider?: string
+          public_ref?: string
+          shipping_address?: Json
           shipping_cost?: number
           shipping_country?: string | null
           shipping_currency?: string | null
@@ -473,14 +485,20 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
           discount_code?: string | null
           free_shipping_applied?: boolean
           id?: string
           order_description?: string | null
+          order_items?: Json
           paid_at?: string | null
           payfast_pf_payment_id?: string | null
           payfast_token?: string | null
           payment_provider?: string
+          public_ref?: string
+          shipping_address?: Json
           shipping_cost?: number
           shipping_country?: string | null
           shipping_currency?: string | null
@@ -490,6 +508,170 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      shipments: {
+        Row: {
+          address_city: string | null
+          address_province: string | null
+          b2b_account_id: string | null
+          channel: string
+          cold_chain: boolean
+          courier: string | null
+          courier_cost: number | null
+          created_at: string
+          delivered_at: string | null
+          dispatched_at: string | null
+          id: string
+          order_ref: string
+          packaging_cost: number | null
+          packed_at: string | null
+          packed_by: string | null
+          packing_checklist: Json
+          packing_notes: string | null
+          packing_profile: string
+          picked_at: string | null
+          postnet_branch_name: string | null
+          promised_date: string | null
+          psa_order_id: number | null
+          ready_for_collection_at: string | null
+          service: string
+          ship_date: string | null
+          status: string
+          tamper_seal_number: string | null
+          tracking_number: string | null
+          updated_at: string
+          web_order_id: string | null
+          weight_kg: number | null
+        }
+        Insert: {
+          address_city?: string | null
+          address_province?: string | null
+          b2b_account_id?: string | null
+          channel?: string
+          cold_chain?: boolean
+          courier?: string | null
+          courier_cost?: number | null
+          created_at?: string
+          delivered_at?: string | null
+          dispatched_at?: string | null
+          id?: string
+          order_ref: string
+          packaging_cost?: number | null
+          packed_at?: string | null
+          packed_by?: string | null
+          packing_checklist?: Json
+          packing_notes?: string | null
+          packing_profile?: string
+          picked_at?: string | null
+          postnet_branch_name?: string | null
+          promised_date?: string | null
+          psa_order_id?: number | null
+          ready_for_collection_at?: string | null
+          service?: string
+          ship_date?: string | null
+          status?: string
+          tamper_seal_number?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+          web_order_id?: string | null
+          weight_kg?: number | null
+        }
+        Update: {
+          address_city?: string | null
+          address_province?: string | null
+          b2b_account_id?: string | null
+          channel?: string
+          cold_chain?: boolean
+          courier?: string | null
+          courier_cost?: number | null
+          created_at?: string
+          delivered_at?: string | null
+          dispatched_at?: string | null
+          id?: string
+          order_ref?: string
+          packaging_cost?: number | null
+          packed_at?: string | null
+          packed_by?: string | null
+          packing_checklist?: Json
+          packing_notes?: string | null
+          packing_profile?: string
+          picked_at?: string | null
+          postnet_branch_name?: string | null
+          promised_date?: string | null
+          psa_order_id?: number | null
+          ready_for_collection_at?: string | null
+          service?: string
+          ship_date?: string | null
+          status?: string
+          tamper_seal_number?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+          web_order_id?: string | null
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_web_order_id_fkey"
+            columns: ["web_order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipment_batch_allocations: {
+        Row: {
+          allocated_by: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          lot_number: string
+          product_batch_id: string | null
+          product_slug: string
+          quantity: number
+          shipment_id: string
+          variant_label: string | null
+        }
+        Insert: {
+          allocated_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lot_number: string
+          product_batch_id?: string | null
+          product_slug: string
+          quantity?: number
+          shipment_id: string
+          variant_label?: string | null
+        }
+        Update: {
+          allocated_by?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          lot_number?: string
+          product_batch_id?: string | null
+          product_slug?: string
+          quantity?: number
+          shipment_id?: string
+          variant_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_batch_allocations_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipment_batch_allocations_product_batch_id_fkey"
+            columns: ["product_batch_id"]
+            isOneToOne: false
+            referencedRelation: "product_batches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_attempts: {
         Row: {

@@ -64,6 +64,7 @@ const AdminFAQsPage = lazy(() => import("@/pages/admin/AdminFAQsPage"));
 const AdminSEOReindexPage = lazy(() => import("@/pages/admin/AdminSEOReindexPage"));
 const AdminBatchesPage = lazy(() => import("@/pages/admin/AdminBatchesPage"));
 const AdminCustomersPage = lazy(() => import("@/pages/admin/AdminCustomersPage"));
+const AdminFulfilmentPage = lazy(() => import("@/pages/admin/AdminFulfilmentPage"));
 
 /**
  * Router-agnostic application shell. Wrapped by <BrowserRouter> in the browser
@@ -132,6 +133,7 @@ export default function AppShell() {
                 <Route path="/admin/seo-reindex" element={<Suspense fallback={<RouteLoadingFallback />}><AdminSEOReindexPage /></Suspense>} />
                 <Route path="/admin/batches" element={<Suspense fallback={<RouteLoadingFallback />}><AdminBatchesPage /></Suspense>} />
                 <Route path="/admin/customers" element={<Suspense fallback={<RouteLoadingFallback />}><AdminCustomersPage /></Suspense>} />
+                <Route path="/admin/fulfilment" element={<Suspense fallback={<RouteLoadingFallback />}><AdminFulfilmentPage /></Suspense>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

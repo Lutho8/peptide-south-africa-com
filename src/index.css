@@ -4,6 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .postnet-print-sheet,
+  .postnet-print-sheet * {
+    visibility: visible !important;
+  }
+
+  .postnet-print-sheet {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-height: 100%;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
+
 @layer base {
   :root {
     --background: 210 20% 98%;

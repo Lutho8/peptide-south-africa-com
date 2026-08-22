@@ -2,40 +2,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageSquareQuote, HelpCircle, Database, ExternalLink, Search, FlaskConical, Users } from "lucide-react";
-
-interface LogRow {
-  id: string;
-  action: string;
-  status: string;
-  created_at: string;
-  error: string | null;
-}
+import { MessageSquareQuote, HelpCircle, Database, Search, FlaskConical, PackageCheck, Users } from "lucide-react";
 
 export default function AdminIndexPage() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
-  const [logs, setLogs] = useState<LogRow[]>([]);
-  const [hasNocoConfig, setHasNocoConfig] = useState<boolean | null>(null);
+  const [shipmentCounts, setShipmentCounts] = useState<{ total: number; open: number } | null>(null);
 
   useEffect(() => {
     if (loading) return;
     if (!user) { navigate("/auth"); return; }
     if (!isAdmin) { navigate("/"); return; }
-    supabase
-      .from("integration_logs")
-      .select("id, action, status, created_at, error")
-      .eq("integration", "nocobase")
-      .order("created_at", { ascending: false })
-      .limit(5)
-      .then(({ data }) => {
-        setLogs(data ?? []);
-        // If any non-skipped log exists, treat as configured
-        setHasNocoConfig((data ?? []).some((l) => l.status !== "skipped_not_configured"));
-      });
+    Promise.all([
+      supabase.from("shipments").select("id", { count: "exact", head: true }).eq("channel", "b2c"),
+      supabase.from("shipments").select("id", { count: "exact", head: true }).eq("channel", "b2c").not("status", "in", '("delivered","cancelled")'),
+    ]).then(([total, open]) => setShipmentCounts({ total: total.count ?? 0, open: open.count ?? 0 }));
   }, [user, isAdmin, loading]);
 
   const cards = [
+    { to: "/admin/fulfilment", icon: PackageCheck, title: "PostNet Fulfilment", desc: "Pick, allocate lots, complete packing checks, print handover sheets and record tracking." },
     { to: "/admin/customers", icon: Users, title: "Customers (CRM)", desc: "Enriched lifetime records, segments, tags, timeline, manual credits." },
     { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },
     { to: "/admin/testimonials", icon: MessageSquareQuote, title: "Testimonials", desc: "Manage social proof shown across the site." },
@@ -62,49 +47,22 @@ export default function AdminIndexPage() {
         ))}
       </div>
 
-      {/* Nocobase status */}
+      {/* First-party CRM status */}
       <div className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="flex items-center gap-2">
           <Database className="h-5 w-5 text-primary" />
-          <h3 className="font-display text-lg font-semibold text-foreground">Nocobase CRM Sync</h3>
-          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-            hasNocoConfig ? "bg-trust/10 text-trust" : "bg-muted text-muted-foreground"
-          }`}>
-            {hasNocoConfig === null ? "checking…" : hasNocoConfig ? "configured" : "not configured"}
-          </span>
+          <h3 className="font-display text-lg font-semibold text-foreground">Supabase CRM &amp; Fulfilment Sync</h3>
+          <span className="rounded-full bg-trust/10 px-2 py-0.5 text-xs font-semibold text-trust">connected</span>
         </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          Lead, order, quiz, and abandoned-cart events flow to Nocobase via the <code>nocobase-sync</code> edge function.
-          See <code>NOCOBASE_SETUP.md</code> for setup steps.
+          Paid website orders are written into the existing <code>psa_orders</code> CRM record, linked to one <code>shipments</code> record,
+          and tracked through the shared <code>fulfilment_events</code> audit trail.
         </p>
-        <div className="mt-4">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent events</h4>
-          {logs.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">No events yet.</p>
-          ) : (
-            <ul className="mt-2 divide-y divide-border">
-              {logs.map((l) => (
-                <li key={l.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                  <span className="font-mono text-xs text-muted-foreground">{new Date(l.created_at).toLocaleString()}</span>
-                  <span className="font-medium text-foreground">{l.action}</span>
-                  <span className={`rounded px-2 py-0.5 text-xs ${
-                    l.status === "ok" ? "bg-trust/10 text-trust" :
-                    l.status.includes("error") || l.status === "exception" ? "bg-destructive/10 text-destructive" :
-                    "bg-muted text-muted-foreground"
-                  }`}>{l.status}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="mt-4 flex flex-wrap gap-3 text-sm">
+          <span className="rounded-lg bg-muted px-3 py-2 text-foreground"><strong>{shipmentCounts?.open ?? "…"}</strong> open parcels</span>
+          <span className="rounded-lg bg-muted px-3 py-2 text-foreground"><strong>{shipmentCounts?.total ?? "…"}</strong> CRM shipments</span>
         </div>
-        <a
-          href="https://www.nocobase.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-1 text-xs text-primary hover:underline"
-        >
-          About Nocobase <ExternalLink className="h-3 w-3" />
-        </a>
+        <Link to="/admin/fulfilment" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">Open PostNet queue</Link>
       </div>
     </div>
   );

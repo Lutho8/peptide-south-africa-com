@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Lock, Loader2 } from "lucide-react";
+import { Building2, Lock, Loader2, Truck } from "lucide-react";
 import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
 import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
-import { amountToFreeShipping } from "@/lib/shipping";
+import { amountToFreeShipping, POSTNET_SHIPPING_RULES } from "@/lib/shipping";
 import { cartBundleSavings } from "@/lib/bundlePricing";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
@@ -26,7 +26,9 @@ import {
 const errCopy: Record<string, string> = {
   err_name_chars: "Please enter a valid name",
   err_email: "Enter a valid email",
+  err_phone_sa: "Enter a valid South African mobile number",
   err_address_short: "Enter your street address",
+  err_branch_short: "Enter the PostNet branch name",
   err_required: "Required",
   err_postal_sa: "Enter a 4-digit postal code",
   err_region_sa: "Select a province",
@@ -67,7 +69,7 @@ export default function CheckoutPage() {
     }
   }, [form]);
 
-  const setField = <K extends keyof CheckoutForm>(key: K, value: string) => {
+  const setField = <K extends keyof CheckoutForm>(key: K, value: CheckoutForm[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
@@ -75,8 +77,8 @@ export default function CheckoutPage() {
   const errText = (key?: string) => (key ? errCopy[key] ?? key : undefined);
 
   const shippingMath = useMemo(
-    () => ({ ...checkoutTotals(totalPrice), remaining: amountToFreeShipping(totalPrice) }),
-    [totalPrice],
+    () => ({ ...checkoutTotals(totalPrice, form.deliveryMethod), remaining: amountToFreeShipping(totalPrice) }),
+    [totalPrice, form.deliveryMethod],
   );
 
   if (items.length === 0) {
@@ -188,17 +190,63 @@ export default function CheckoutPage() {
                       {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
                     </div>
                   </div>
+                  <div>
+                    <input required type="tel" autoComplete="tel" aria-label="Mobile number" placeholder="Mobile number (e.g. 082 123 4567)" value={form.phone}
+                      onChange={(e) => setField("phone", e.target.value.replace(/[\s()-]/g, ""))}
+                      aria-invalid={!!errors.phone} className={inputCls} />
+                    {errors.phone && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.phone)}</p>}
+                    <p className="mt-1 text-xs text-muted-foreground">Used for PostNet delivery or collection notifications.</p>
+                  </div>
                 </div>
 
                 <h2 className="mt-8 font-display text-base font-semibold text-foreground">
-                  2. Where should we deliver?
+                  2. Choose your PostNet delivery
                 </h2>
                 <div className="mt-4 flex flex-col gap-3">
-                  <div>
-                    <input required autoComplete="street-address" aria-label="Street address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
-                      aria-invalid={!!errors.address1} className={inputCls} />
-                    {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
+                  <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="PostNet delivery method">
+                    {([
+                      { value: "postnet_to_door" as const, icon: Truck, detail: "Delivered to your address" },
+                      { value: "postnet_to_postnet" as const, icon: Building2, detail: "Collect from your chosen branch" },
+                    ]).map((option) => {
+                      const rule = POSTNET_SHIPPING_RULES[option.value];
+                      const selected = form.deliveryMethod === option.value;
+                      return (
+                        <label key={option.value} className={`cursor-pointer rounded-xl border p-4 transition-colors ${selected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border bg-background hover:border-primary/40"}`}>
+                          <input
+                            type="radio"
+                            name="deliveryMethod"
+                            value={option.value}
+                            checked={selected}
+                            onChange={() => setField("deliveryMethod", option.value)}
+                            className="sr-only"
+                          />
+                          <span className="flex items-start gap-3">
+                            <option.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <span>
+                              <span className="block text-sm font-semibold text-foreground">{rule.shortLabel}</span>
+                              <span className="mt-0.5 block text-xs text-muted-foreground">{option.detail} · {rule.days}</span>
+                              <span className="mt-2 block text-xs font-semibold text-primary">{shippingMath.freeUnlocked ? "Free" : formatZAR(rule.flat)}</span>
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
+
+                  {form.deliveryMethod === "postnet_to_postnet" ? (
+                    <div>
+                      <input required aria-label="Preferred PostNet branch" placeholder="Preferred PostNet branch (e.g. East London Vincent Park)" value={form.postnetBranch}
+                        onChange={(e) => setField("postnetBranch", e.target.value)} aria-invalid={!!errors.postnetBranch} className={inputCls} />
+                      {errors.postnetBranch && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postnetBranch)}</p>}
+                      <p className="mt-1 text-xs text-muted-foreground">Enter the exact branch name where you want to collect.</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <input required autoComplete="street-address" aria-label="Street address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
+                        aria-invalid={!!errors.address1} className={inputCls} />
+                      {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
+                    </div>
+                  )}
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
                       <input required autoComplete="address-level2" aria-label="City" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
@@ -219,7 +267,9 @@ export default function CheckoutPage() {
                       onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
                     {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
                   </div>
-                  <p className="text-xs text-muted-foreground">Delivered across South Africa in 1–3 business days.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Orders are packed in-house in Cape Town. Tracking is sent after PostNet handover.
+                  </p>
                 </div>
               </section>
 

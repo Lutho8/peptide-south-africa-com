@@ -125,7 +125,7 @@ export function productSchema(product: {
   };
   const shipping = {
     "@type": "OfferShippingDetails",
-    shippingRate: { "@type": "MonetaryAmount", value: "89", currency: "ZAR" },
+    shippingRate: { "@type": "MonetaryAmount", value: "109", currency: "ZAR" },
     shippingDestination: { "@type": "DefinedRegion", addressCountry: "ZA" },
     deliveryTime: {
       "@type": "ShippingDeliveryTime",

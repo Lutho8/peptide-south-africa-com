@@ -12,7 +12,7 @@ const shippingSchema = {
   name: "Shipping Policy — Peptide South Africa",
   url: `${SITE_URL}/shipping`,
   description:
-    "Peptide South Africa shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping over R1,500.",
+    "Peptide South Africa shipping policy: in-house Cape Town packing, PostNet-to-Door or PostNet-to-PostNet delivery, tracking, and free shipping over R1,500.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -23,7 +23,7 @@ export default function ShippingPolicyPage() {
     <>
       <SEO
         title="Shipping Policy — South Africa"
-        description="Same-day dispatch from Cape Town before 14:00 SAST. Aramex / PEP Paxi 1–5 business days. Free shipping over R1,500. Discreet, unbranded packaging."
+        description="In-house Cape Town packing with PostNet-to-Door or PostNet-to-PostNet delivery. Tracking included and free shipping over R1,500."
         path="/shipping"
         lang="en"
         alternates={buildAlternates("/shipping")}
@@ -44,9 +44,10 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">1. Order Processing &amp; Dispatch</h2>
               <ul className="mt-3 list-disc space-y-1 pl-5">
-                <li>Same-day dispatch on orders placed before <span className="font-semibold text-foreground">14:00 SAST</span>, Monday–Friday.</li>
+                <li>Orders released before <span className="font-semibold text-foreground">12:00 SAST</span> are normally handed to PostNet the same business day, Monday–Thursday.</li>
                 <li>Orders placed after the cut-off ship on the next business day.</li>
-                <li>No dispatch on Sundays or South African public holidays.</li>
+                <li>East London and other longer-distance parcels are normally dispatched Monday–Wednesday.</li>
+                <li>No dispatch on weekends or South African public holidays.</li>
               </ul>
               <p className="mt-3">Processing time refers to preparing and handing the package to the carrier; it does not include carrier transit time.</p>
             </section>
@@ -65,15 +66,15 @@ export default function ShippingPolicyPage() {
                   </thead>
                   <tbody className="text-muted-foreground">
                     <tr className="border-t border-border">
-                      <td className="px-4 py-2">Metro (Cape Town, JHB, DBN, PTA)</td>
-                      <td className="px-4 py-2">Aramex / PEP Paxi</td>
+                      <td className="px-4 py-2">PostNet-to-Door</td>
+                      <td className="px-4 py-2">PostNet</td>
                       <td className="px-4 py-2">1–3 business days</td>
                       <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
                     </tr>
                     <tr className="border-t border-border">
-                      <td className="px-4 py-2">Regional &amp; outlying</td>
-                      <td className="px-4 py-2">Aramex / PEP Paxi</td>
-                      <td className="px-4 py-2">2–5 business days</td>
+                      <td className="px-4 py-2">PostNet-to-PostNet collection</td>
+                      <td className="px-4 py-2">PostNet</td>
+                      <td className="px-4 py-2">2–3 business days</td>
                       <td className="px-4 py-2 font-semibold text-foreground">R1,500</td>
                     </tr>
                   </tbody>
@@ -93,17 +94,17 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">4. Tracking &amp; Delivery Responsibility</h2>
               <p className="mt-3">
-                Once shipped, you receive an email with a carrier tracking link. Peptide South Africa's responsibility ends when the package is
-                handed to the carrier. For lost, delayed, or marked-as-delivered-but-not-received packages, please open a claim with the
-                carrier directly; we will supply shipment details on request.
+                Once handed over, your PostNet tracking number is added to your order tracker. Branch-collection customers should wait for the
+                collection notification before visiting the selected PostNet branch. Contact our support team if a parcel is delayed or the
+                tracking status appears incorrect so we can assist with the carrier enquiry.
               </p>
             </section>
 
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">5. Address Accuracy</h2>
               <p className="mt-3">
-                Customers are responsible for ensuring the shipping address is correct and complete. We are not liable for undeliverable
-                packages caused by address errors; re-shipment may incur an additional fee.
+                Door-delivery customers must provide a complete address and reachable mobile number. Branch-collection customers must enter the
+                exact PostNet branch name. Address or branch corrections after handover may incur an additional fee.
               </p>
             </section>
 
@@ -116,7 +117,15 @@ export default function ShippingPolicyPage() {
             </section>
 
             <section>
-              <h2 className="font-display text-lg font-semibold text-foreground">7. Policy Acceptance</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground">7. PAXI</h2>
+              <p className="mt-3">
+                PAXI is not offered for peptide orders. It may be used only for eligible accessory-only or merchandise parcels when that option
+                is shown at checkout.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-display text-lg font-semibold text-foreground">8. Policy Acceptance</h2>
               <p className="mt-3">By placing an order you acknowledge that you have read, understood, and agreed to this Shipping Policy.</p>
             </section>
           </div>

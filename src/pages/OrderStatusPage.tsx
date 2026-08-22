@@ -9,6 +9,7 @@ type OrderStatus = "pending" | "paid" | "failed" | "cancelled";
 
 interface OrderRow {
   id: string;
+  public_ref: string;
   status: OrderStatus;
   total: number;
   currency: string;
@@ -30,7 +31,7 @@ export default function OrderStatusPage() {
     const load = async () => {
       const { data } = await supabase
         .from("orders")
-        .select("id,status,total,currency,paid_at,order_description,created_at")
+        .select("id,public_ref,status,total,currency,paid_at,order_description,created_at")
         .eq("id", id)
         .maybeSingle();
       if (cancelled) return;
@@ -109,7 +110,7 @@ export default function OrderStatusPage() {
           <div className="mt-6 w-full max-w-md rounded-xl border border-border bg-card p-5 text-left">
             <div className="flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
               <span>{COPY.order_number.en} / {COPY.order_number.de}</span>
-              <span className="font-mono text-foreground">#{order.id.slice(0, 8).toUpperCase()}</span>
+              <span className="font-mono text-foreground">{order.public_ref}</span>
             </div>
             {order.order_description && (
               <p className="mt-3 text-sm text-foreground">{order.order_description}</p>
@@ -131,6 +132,11 @@ export default function OrderStatusPage() {
         )}
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {isPaid && (
+            <Link to="/track-order" className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary">
+              Track PostNet delivery
+            </Link>
+          )}
           <Link to="/shop" className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground">
             {COPY.continue_shopping.en} · {COPY.continue_shopping.de}
           </Link>

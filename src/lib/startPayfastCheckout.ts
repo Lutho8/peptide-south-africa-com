@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { CartItem } from "@/context/CartContext";
-import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
+import { POSTNET_SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm } from "@/lib/checkoutSchema";
 
 export const CHECKOUT_FORM_KEY = "rtt_checkout_form";
@@ -9,6 +9,9 @@ export const emptyCheckoutForm: CheckoutForm = {
   firstName: "",
   lastName: "",
   email: "",
+  phone: "",
+  deliveryMethod: "postnet_to_door",
+  postnetBranch: "",
   address1: "",
   city: "",
   region: "",
@@ -52,9 +55,9 @@ export function postToPayFast(actionUrl: string, fields: Record<string, string>)
   form.submit();
 }
 
-export function checkoutTotals(totalPrice: number) {
-  const rule = SHIPPING_RULES["South Africa"];
-  const ship = getShippingCost(totalPrice, "South Africa") ?? 0;
+export function checkoutTotals(totalPrice: number, method: CheckoutForm["deliveryMethod"] = "postnet_to_door") {
+  const rule = POSTNET_SHIPPING_RULES[method];
+  const ship = getShippingCost(totalPrice, "South Africa", method) ?? 0;
   return {
     rule,
     ship,
@@ -83,7 +86,7 @@ export async function startPayfastCheckout({
   form,
   onBeforeRedirect,
 }: StartArgs): Promise<void> {
-  const totals = checkoutTotals(totalPrice);
+  const totals = checkoutTotals(totalPrice, form.deliveryMethod);
 
   const description = items
     .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
@@ -99,11 +102,32 @@ export async function startPayfastCheckout({
       status: "pending",
       currency: "ZAR",
       order_description: description,
+      customer_name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+      customer_email: form.email.trim().toLowerCase(),
+      customer_phone: form.phone.trim(),
       shipping_country: "South Africa",
-      shipping_method: totals.rule.method,
+      shipping_method: form.deliveryMethod,
       shipping_cost: Math.round(totals.ship * 100) / 100,
       shipping_currency: "ZAR",
       free_shipping_applied: totals.freeUnlocked,
+      shipping_address: {
+        address1: form.address1.trim() || null,
+        city: form.city.trim(),
+        province: form.region,
+        postal_code: form.postalCode.trim(),
+        postnet_branch: form.deliveryMethod === "postnet_to_postnet" ? form.postnetBranch.trim() : null,
+      },
+      order_items: items.map((item) => ({
+        product_id: item.product.id,
+        product_slug: item.product.slug,
+        sku: item.product.sku ?? null,
+        name: item.product.name,
+        variant_label: item.variantLabel ?? null,
+        quantity: item.quantity,
+        unit_price_zar: item.unitPrice,
+        is_accessory: item.product.category === "Accessories",
+        packing_profile: item.product.category === "Accessories" ? "ambient" : "insulated",
+      })),
     })
     .select("id")
     .single();
