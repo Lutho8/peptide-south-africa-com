@@ -137,16 +137,20 @@ export default function CartDrawer() {
 
               {anchorSlug && cartUnits < 5 && (
                 <Link
-                  to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
+                  to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : mp(`/build-your-stack?prefill=${anchorSlug}`)}
                   onClick={() => setIsCartOpen(false)}
                   className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-3 text-sm"
                 >
                   <span>
                     <span className="block font-semibold text-foreground">
-                      {cartUnits < 3 ? "Most customers choose the 3-pack" : "Best price per unit: 5-pack"}
+                      {cartUnits < 3
+                        ? "Default to 3-Pack — Full Course"
+                        : "One-tap upgrade: 5-Pack Pick & Mix"}
                     </span>
                     <span className="block text-xs text-muted-foreground">
-                      {cartUnits < 3 ? "See the larger pack and its savings." : "Build any five and save 20%."}
+                      {cartUnits < 3
+                        ? "Lower cost per vial and best day-one value."
+                        : "Add 2 more vials to unlock 20% savings across the bundle."}
                     </span>
                   </span>
                   <ArrowRight className="h-4 w-4 shrink-0 text-primary" />

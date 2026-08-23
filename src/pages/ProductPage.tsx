@@ -259,6 +259,9 @@ export default function ProductPage() {
                   {product.variants.map((v, i) => {
                     const packSize = v.pack ?? 1;
                     const save = packSize > 1 ? singleVialPrice * packSize - v.price : 0;
+                    const perVial = packSize > 1 ? v.price / packSize : v.price;
+                    const isThreePack = packSize === 3;
+                    const displayLabel = isThreePack ? "3-Pack — Full Course" : v.label;
                     return (
                       <button
                         key={v.label}
@@ -278,21 +281,26 @@ export default function ProductPage() {
                             {selectedVariant === i && <span className="h-2 w-2 rounded-full bg-primary" />}
                           </span>
                           <span className="font-semibold text-foreground">
-                            {v.label}
+                            {displayLabel}
                             {packSize === 1 && (
                               <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
                                 Single product
                               </span>
                             )}
-                            {packSize === 3 && (
+                            {isThreePack && (
                               <span className="ml-1.5 rounded bg-trust/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
-                                Most frequently chosen
+                                Most popular
                               </span>
                             )}
                           </span>
                         </span>
                         <span className="text-right">
                           <span className="block font-mono font-bold text-foreground">{format(v.price)}</span>
+                          {packSize > 1 && (
+                            <span className="block text-[11px] text-muted-foreground">
+                              {format(perVial)} / vial (single: {format(singleVialPrice)})
+                            </span>
+                          )}
                           {save > 0 && (
                             <span className="block text-[11px] font-semibold text-trust">Save {format(save)}</span>
                           )}
