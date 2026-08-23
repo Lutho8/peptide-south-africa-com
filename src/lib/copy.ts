@@ -49,7 +49,7 @@ const EN: Record<CopyKey, string> = {
   lab_tested: "Independently lab tested",
   purity_99: "≥99% HPLC purity · COA on every batch",
   discreet_packaging: "Discreet, unbranded packaging",
-  secure_checkout: "Secure checkout via PayFast",
+  secure_checkout: "Secure checkout — pay by EFT from any SA bank",
   age_gate_body:
     "You must be 18+ to enter. Research use only — not for human consumption.",
   pay_now: "Pay Now",

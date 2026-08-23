@@ -46,7 +46,7 @@ const PILLARS = [
     icon: Lock,
     title: "Operational Legitimacy",
     detail:
-      "Registered South African entity (Pty) Ltd. POPIA-compliant data handling. PayFast/Yoco PCI-DSS payment rails. Discreet, signature-required courier delivery.",
+      "Registered South African entity (Pty) Ltd. POPIA-compliant data handling. Bank-to-bank EFT payments — no card data ever touches our servers. Discreet, signature-required courier delivery.",
     proof: "POPIA · PCI-DSS · CIPC registered",
   },
 ];

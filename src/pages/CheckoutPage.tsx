@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Lock, Loader2, Landmark, CreditCard } from "lucide-react";
+import { Lock, Loader2, Landmark } from "lucide-react";
 import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
-import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+import ExpressEftButton from "@/components/ExpressEftButton";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
@@ -17,29 +17,12 @@ import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 import {
   CHECKOUT_FORM_KEY as FORM_KEY,
+  EFT_SESSION_KEY,
   checkoutTotals,
   emptyCheckoutForm as emptyForm,
   paymentErrorMessage,
-  postToPayFast,
-  startPayfastCheckout,
-} from "@/lib/startPayfastCheckout";
-
-export const EFT_SESSION_KEY = "rtt_eft_instructions";
-
-export type EftInstructionsState = {
-  orderId: string;
-  amount: number;
-  paymentReference: string;
-  bank: {
-    account_name: string;
-    bank: string;
-    account_number: string;
-    branch_code: string;
-    reference: string;
-  };
-};
-
-type PaymentMethod = "eft" | "payfast";
+  startEftCheckout,
+} from "@/lib/eftCheckout";
 
 const errCopy: Record<string, string> = {
   err_name_chars: "Please enter a valid name",
@@ -62,7 +45,6 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const [method, setMethod] = useState<PaymentMethod>("eft");
 
   const [form, setForm] = useState<CheckoutForm>(() => {
     if (typeof window === "undefined") return emptyForm;
@@ -107,105 +89,6 @@ export default function CheckoutPage() {
     );
   }
 
-  /**
-   * Pay by EFT (Capitec Business): create the order row (same shape as the
-   * PayFast helper), ask eft-create-order for a unique payment reference and
-   * the bank details, then route to the instructions page. Falls back to the
-   * PayFast card flow when EFT isn't configured server-side yet.
-   */
-  const startEftCheckout = async () => {
-    if (!user) return;
-    const totals = checkoutTotals(totalPrice);
-    const description = items
-      .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
-      .join(", ")
-      .slice(0, 500);
-
-    const { data: orderRow, error: orderErr } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        total: totals.grandTotal,
-        discount_code: null,
-        status: "pending",
-        currency: "ZAR",
-        order_description: description,
-        shipping_country: "South Africa",
-        shipping_method: totals.rule.method,
-        shipping_cost: Math.round(totals.ship * 100) / 100,
-        shipping_currency: "ZAR",
-        free_shipping_applied: totals.freeUnlocked,
-      })
-      .select("id")
-      .single();
-    if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
-
-    const amount = totals.grandTotal;
-    const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", {
-      body: {
-        orderId: orderRow.id,
-        amount,
-        itemName: description.slice(0, 100) || "Peptide South Africa order",
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-      },
-    });
-
-    const status = (fnErr as { context?: Response } | null)?.context?.status;
-    const eftUnavailable =
-      status === 503 ||
-      (typeof data?.error === "string" && data.error.toLowerCase().includes("not configured"));
-    if (eftUnavailable) {
-      // EFT env vars not set server-side yet — fall back to PayFast with a notice.
-      toast({
-        title: "EFT unavailable right now",
-        description: "We've switched you to secure card payment via PayFast instead.",
-      });
-      // The order row already exists, so reuse the hosted-payment function
-      // directly instead of creating a second order.
-      const origin = window.location.origin;
-      const { data: pfData, error: pfErr } = await supabase.functions.invoke("payfast-create-payment", {
-        body: {
-          orderId: orderRow.id,
-          amount,
-          itemName: description.slice(0, 100) || "Peptide South Africa order",
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-          cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
-        },
-      });
-      if (pfErr) throw new Error(pfErr.message);
-      if (!pfData || pfData.error) throw new Error(pfData?.error || "Payment could not be started");
-      if (!pfData.actionUrl || !pfData.fields) throw new Error("Invalid PayFast response");
-      await refreshOrders();
-      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-      clearCart();
-      postToPayFast(pfData.actionUrl, pfData.fields);
-      return;
-    }
-    if (fnErr) throw new Error(fnErr.message);
-    if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
-    if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
-
-    const state: EftInstructionsState = {
-      orderId: orderRow.id,
-      amount,
-      paymentReference: data.payment_reference,
-      bank: data.bank,
-    };
-    try {
-      window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
-    } catch { /* storage unavailable — router state still works */ }
-
-    await refreshOrders();
-    await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-    clearCart();
-    navigate("/checkout/eft-instructions", { state });
-  };
-
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = validateCheckout(form);
@@ -226,30 +109,26 @@ export default function CheckoutPage() {
     }
     setBusy(true);
     try {
-      if (method === "eft") {
-        await startEftCheckout();
-        return;
+      const state = await startEftCheckout({ userId: user.id, items, totalPrice, form });
+      try {
+        window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
+      } catch {
+        /* storage unavailable */
       }
-      await startPayfastCheckout({
-        userId: user.id,
-        items,
-        totalPrice,
-        form,
-        onBeforeRedirect: async () => {
-          await refreshOrders();
-          await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
-          clearCart();
-        },
-      });
+      await refreshOrders();
+      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      clearCart();
+      navigate("/checkout/eft-instructions", { state });
     } catch (err) {
       toast({
-        title: "Payment unavailable",
+        title: "Checkout unavailable",
         description: paymentErrorMessage(err),
         variant: "destructive",
       });
       setBusy(false);
     }
   };
+
 
 
   return (
@@ -279,7 +158,7 @@ export default function CheckoutPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
             <div>
-              <ExpressCheckoutButton />
+              <ExpressEftButton />
               <div className="mt-5 flex items-center gap-3">
                 <span className="h-px flex-1 bg-border" />
                 <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or enter details manually</span>
@@ -347,75 +226,21 @@ export default function CheckoutPage() {
 
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
-                  <CreditCard className="h-4 w-4 text-primary" /> 3. How would you like to pay?
+                  <Landmark className="h-4 w-4 text-primary" /> 3. Payment — EFT (direct bank transfer)
                 </h2>
-                <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label="Payment method">
-                  <label
-                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
-                      method === "eft"
-                        ? "border-primary bg-primary/5 ring-2 ring-ring"
-                        : "border-border bg-background hover:bg-muted/50"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment-method"
-                      value="eft"
-                      checked={method === "eft"}
-                      onChange={() => setMethod("eft")}
-                      className="mt-1 h-4 w-4 accent-primary"
-                    />
-                    <span className="flex-1">
-                      <span className="flex items-center gap-2 font-semibold text-foreground">
-                        <Landmark className="h-4 w-4 text-primary" />
-                        Pay by EFT (Capitec) — no card fees
-                      </span>
-                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                        Pay directly from your banking app. We'll show you our Capitec Business account
-                        details and a unique reference right after you place your order.
-                      </span>
-                      <span className="mt-2 inline-block rounded-md bg-trust/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-trust">
-                        Recommended
-                      </span>
-                    </span>
-                  </label>
-                  <label
-                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-all ${
-                      method === "payfast"
-                        ? "border-primary bg-primary/5 ring-2 ring-ring"
-                        : "border-border bg-background hover:bg-muted/50"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment-method"
-                      value="payfast"
-                      checked={method === "payfast"}
-                      onChange={() => setMethod("payfast")}
-                      className="mt-1 h-4 w-4 accent-primary"
-                    />
-                    <span className="flex-1">
-                      <span className="flex items-center gap-2 font-semibold text-foreground">
-                        <CreditCard className="h-4 w-4 text-primary" />
-                        Pay by card / PayFast
-                      </span>
-                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                        Credit/debit card, Instant EFT, SnapScan, Zapper, Mobicred or Masterpass via{" "}
-                        <a href="https://www.payfast.co.za" target="_blank" rel="noopener noreferrer"
-                          className="font-semibold text-foreground hover:text-primary"
-                          onClick={(e) => e.stopPropagation()}>PayFast</a>.
-                        You'll be redirected to PayFast's secure checkout.
-                      </span>
-                      <span className="mt-2 flex flex-wrap gap-1.5">
-                        {["Visa","Mastercard","Instant EFT","Capitec Pay","SnapScan","Zapper"].map((m) => (
-                          <span key={m} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{m}</span>
-                        ))}
-                      </span>
-                    </span>
-                  </label>
+                <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary bg-primary/5 p-4 ring-2 ring-ring">
+                  <Landmark className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground">Pay by EFT — no card fees</p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      Pay directly from your banking app (Capitec, FNB, Standard Bank, Absa, Nedbank, TymeBank — any SA bank).
+                      Place your order and we will show you our bank details and your unique payment reference on the next screen.
+                      Your order is reserved while your transfer clears.
+                    </p>
+                  </div>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Charged in <span className="font-semibold text-foreground">ZAR</span>. Your order is reserved while payment is arranged.
+                  Charged in <span className="font-semibold text-foreground">ZAR</span>. Orders are packed as soon as your payment reflects.
                 </p>
               </section>
 
@@ -423,13 +248,11 @@ export default function CheckoutPage() {
                 className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 data-testid="pay-now-button">
                 {busy
-                  ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>)
-                  : method === "eft"
-                    ? (<><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)
-                    : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
+                  ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
+                  : (<><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
               </button>
               <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <Lock className="h-3.5 w-3.5" /> Secure payment · EFT or PayFast · ZAR
+                <Lock className="h-3.5 w-3.5" /> Secure checkout · EFT bank transfer · ZAR
               </p>
             </form>
           </div>
@@ -484,13 +307,11 @@ export default function CheckoutPage() {
           <button type="submit" form="checkout-form" disabled={busy}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
             {busy
-              ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>)
-              : method === "eft"
-                ? (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)
-                : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
+              ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
+              : (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
           </button>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Lock className="h-3 w-3" /> Secure payment · EFT or PayFast · ZAR
+            <Lock className="h-3 w-3" /> Secure checkout · EFT bank transfer · ZAR
           </p>
         </div>
       </div>

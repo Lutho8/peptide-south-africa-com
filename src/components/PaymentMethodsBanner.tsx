@@ -1,13 +1,13 @@
-// Footer payment-methods strip — PayFast (South Africa).
+// Footer payment-methods strip — EFT / direct bank transfer (South Africa).
 const METHODS = [
-  "Visa",
-  "Mastercard",
-  "Instant EFT",
-  "Capitec Pay",
-  "SnapScan",
-  "Zapper",
-  "Mobicred",
-  "Masterpass",
+  "EFT",
+  "Bank transfer",
+  "Capitec",
+  "FNB",
+  "Standard Bank",
+  "Absa",
+  "Nedbank",
+  "TymeBank",
 ];
 
 export default function PaymentMethodsBanner() {
@@ -28,16 +28,7 @@ export default function PaymentMethodsBanner() {
           ))}
         </ul>
         <p className="text-[10px] text-muted-foreground">
-          Secure payments powered by{" "}
-          <a
-            href="https://www.payfast.co.za"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-foreground hover:text-primary"
-          >
-            PayFast
-          </a>
-          {" "}· PCI-DSS compliant · ZAR
+          Pay directly from your banking app · No card fees · ZAR
         </p>
       </div>
     </div>

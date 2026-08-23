@@ -16,7 +16,7 @@ import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CheckoutStepper from "@/components/CheckoutStepper";
 import { formatZAR } from "@/lib/price";
-import { EFT_SESSION_KEY, type EftInstructionsState } from "@/pages/CheckoutPage";
+import { EFT_SESSION_KEY, type EftInstructionsState } from "@/lib/eftCheckout";
 import { useToast } from "@/hooks/use-toast";
 
 function useCopy(): [string | null, (key: string, value: string) => void] {

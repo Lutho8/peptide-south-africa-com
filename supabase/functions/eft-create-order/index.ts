@@ -1,5 +1,5 @@
 // Creates a storefront order for direct EFT payment into the Capitec business account.
-// Mirrors the payfast-create-payment contract where possible: the frontend creates the
+// EFT order initialisation. The frontend creates the
 // `orders` row itself (same as CheckoutPage does today) and calls this function with
 // { orderId, amount, itemName, firstName, lastName, email, returnUrl, cancelUrl }.
 // This function mirrors the order into psa_orders (payment_method='eft_capitec',
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
     }
     if (!paymentReference) return json({ error: 'could not allocate payment reference' }, 500);
 
-    // Mirror into psa_orders (order_id carries the storefront order UUID, like payfast-itn).
+    // Mirror into psa_orders (order_id carries the storefront order UUID).
     const { error: psaErr } = await admin.from('psa_orders').insert({
       order_id: orderId,
       unified_order_id: orderId,
