@@ -71,6 +71,28 @@ interface StartArgs {
   onBeforeRedirect?: () => Promise<void> | void;
 }
 
+async function extractFunctionError(err: unknown): Promise<string | null> {
+  if (!err || typeof err !== "object") return null;
+  const candidate = err as { message?: string; context?: unknown };
+
+  if (candidate.context instanceof Response) {
+    try {
+      const res = candidate.context.clone();
+      const payload = await res.json().catch(() => null) as { error?: unknown } | null;
+      if (payload && typeof payload.error === "string" && payload.error.trim().length > 0) {
+        return payload.error;
+      }
+
+      const text = await res.text();
+      if (text.trim().length > 0) return text;
+    } catch {
+      // Ignore parse issues and fall back to generic message.
+    }
+  }
+
+  return typeof candidate.message === "string" ? candidate.message : null;
+}
+
 /**
  * Creates the order row, asks the edge function for a signed PayFast payload
  * and redirects the browser to the hosted payment page (Apple Pay, Capitec Pay,
@@ -122,7 +144,10 @@ export async function startPayfastCheckout({
       cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
     },
   });
-  if (fnErr) throw new Error(fnErr.message);
+  if (fnErr) {
+    const detail = await extractFunctionError(fnErr);
+    throw new Error(detail || "Payment could not be started");
+  }
   if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
   if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
 

@@ -11,6 +11,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+const PAYFAST_SANDBOX_DEFAULTS = {
+  merchantId: '10000100',
+  merchantKey: '46f0cd694581a',
+} as const;
+
 // Field order is significant for the PayFast signature.
 const SIGNATURE_FIELD_ORDER = [
   'merchant_id', 'merchant_key', 'return_url', 'cancel_url', 'notify_url',
@@ -53,16 +58,24 @@ Deno.serve(async (req) => {
     );
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: claims, error: claimsErr } = await supabase.auth.getClaims(token);
-    if (claimsErr || !claims?.claims) return json({ error: 'Unauthorized' }, 401);
-    const userId = claims.claims.sub as string;
+    const { data: authData, error: authErr } = await supabase.auth.getUser(token);
+    if (authErr || !authData?.user?.id) return json({ error: 'Unauthorized' }, 401);
+    const userId = authData.user.id;
 
-    const merchantId = Deno.env.get('PAYFAST_MERCHANT_ID');
-    const merchantKey = Deno.env.get('PAYFAST_MERCHANT_KEY');
-    const passphrase = Deno.env.get('PAYFAST_PASSPHRASE');
     const mode = (Deno.env.get('PAYFAST_MODE') || 'sandbox').toLowerCase();
+    const configuredMerchantId = Deno.env.get('PAYFAST_MERCHANT_ID')?.trim();
+    const configuredMerchantKey = Deno.env.get('PAYFAST_MERCHANT_KEY')?.trim();
+    const passphrase = Deno.env.get('PAYFAST_PASSPHRASE');
+
+    const merchantId = configuredMerchantId || (mode === 'sandbox' ? PAYFAST_SANDBOX_DEFAULTS.merchantId : undefined);
+    const merchantKey = configuredMerchantKey || (mode === 'sandbox' ? PAYFAST_SANDBOX_DEFAULTS.merchantKey : undefined);
+
+    if (mode === 'sandbox' && (!configuredMerchantId || !configuredMerchantKey)) {
+      console.warn('PAYFAST_MERCHANT_ID / PAYFAST_MERCHANT_KEY not set. Using PayFast sandbox default credentials.');
+    }
+
     if (!merchantId || !merchantKey) {
-      return json({ error: 'Payments not configured yet. Please try again shortly.' }, 503);
+      return json({ error: 'Payments not configured yet. Please set PayFast merchant credentials.' }, 503);
     }
 
     const body = await req.json().catch(() => ({}));
