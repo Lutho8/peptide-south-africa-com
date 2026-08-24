@@ -30,17 +30,6 @@ function isCoaScanCode(value: string): value is CoaScanCode {
   return Object.prototype.hasOwnProperty.call(COA_SCAN_DESTINATIONS, value);
 }
 
-interface RequestLike {
-  method?: string;
-  query?: Record<string, string | string[] | undefined>;
-}
-
-interface ResponseLike {
-  statusCode: number;
-  setHeader(name: string, value: string): void;
-  end(body?: string): void;
-}
-
 export interface CoaScanResolution {
   code: string;
   destination: string;
@@ -77,16 +66,18 @@ export function resolveCoaScan(rawCode: string | string[] | undefined): CoaScanR
  * the public short code and published supplier-report metadata before issuing
  * a temporary redirect to the independent laboratory verification page.
  */
-export default function handler(request: RequestLike, response: ResponseLike) {
-  const method = request.method ?? "GET";
+export const config = { runtime: "edge" };
+
+export default function handler(request: Request): Response {
+  const method = request.method;
   if (method !== "GET" && method !== "HEAD") {
-    response.statusCode = 405;
-    response.setHeader("Allow", "GET, HEAD");
-    response.end("Method not allowed");
-    return;
+    return new Response("Method not allowed", {
+      status: 405,
+      headers: { Allow: "GET, HEAD" },
+    });
   }
 
-  const result = resolveCoaScan(request.query?.code);
+  const result = resolveCoaScan(new URL(request.url).searchParams.get("code") ?? undefined);
   const event = result.found
     ? {
         event: "coa_qr_scan",
@@ -103,9 +94,12 @@ export default function handler(request: RequestLike, response: ResponseLike) {
       };
 
   console.info(JSON.stringify(event));
-  response.statusCode = 307;
-  response.setHeader("Location", result.destination);
-  response.setHeader("Cache-Control", "private, no-store");
-  response.setHeader("Referrer-Policy", "no-referrer");
-  response.end();
+  return new Response(null, {
+    status: 307,
+    headers: {
+      Location: result.destination,
+      "Cache-Control": "private, no-store",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
 }
