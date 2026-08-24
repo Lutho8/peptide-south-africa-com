@@ -98,8 +98,13 @@ async function main() {
       const { html, head } = await render(route);
       let page = template;
 
-      // Inject SSR markup into the root div.
-      page = page.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
+      // Record which route produced this HTML. Vercel's SPA fallback serves
+      // the homepage file for non-prerendered paths (checkout, account, admin,
+      // etc.); the client uses this marker to avoid hydrating the wrong route.
+      page = page.replace(
+        '<div id="root"></div>',
+        `<div id="root" data-prerender-path="${route}">${html}</div>`,
+      );
 
       // Merge Helmet head. Remove the build-time <title> so the route title wins.
       const headTags = [head.title, head.meta, head.link, head.script]

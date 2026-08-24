@@ -10,8 +10,18 @@ const app = (
   </HelmetProvider>
 );
 
-if (root.hasChildNodes()) {
+const normalizePath = (value: string) => value.replace(/\/+$/, "") || "/";
+const prerenderPath = root.dataset.prerenderPath;
+const canHydrate =
+  root.hasChildNodes() &&
+  typeof prerenderPath === "string" &&
+  normalizePath(prerenderPath) === normalizePath(window.location.pathname);
+
+if (canHydrate) {
   hydrateRoot(root, app);
 } else {
+  // A non-prerendered route can receive the homepage HTML through the SPA
+  // rewrite. Remove that stale shell before mounting the requested route.
+  root.replaceChildren();
   createRoot(root).render(app);
 }

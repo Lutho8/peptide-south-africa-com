@@ -64,11 +64,16 @@ describe("release contracts", () => {
 
   it("keeps public routes code-split and enforces the production bundle budget", () => {
     const appShell = read("src/AppShell.tsx");
+    const clientEntry = read("src/main.tsx");
+    const prerender = read("scripts/prerender.mjs");
     const packageJson = read("package.json");
     const bundleBudget = read("scripts/check-bundle-budget.mjs");
 
     expect(appShell).not.toMatch(/^import .*@\/pages\//m);
     expect(appShell.match(/lazy\(\(\) => import\("@\/pages\//g)?.length).toBeGreaterThanOrEqual(40);
+    expect(prerender).toContain("data-prerender-path");
+    expect(clientEntry).toContain("normalizePath(prerenderPath) === normalizePath(window.location.pathname)");
+    expect(clientEntry).toContain("root.replaceChildren()");
     expect(packageJson).toContain("node scripts/check-bundle-budget.mjs");
     expect(bundleBudget).toContain("300 * 1024");
   });
