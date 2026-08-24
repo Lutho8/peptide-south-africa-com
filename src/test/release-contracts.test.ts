@@ -63,19 +63,15 @@ describe("release contracts", () => {
   });
 
   it("emits an anonymous event and a no-store redirect for a QR request", () => {
-    const headers = new Map<string, string>();
-    const response = {
-      statusCode: 0,
-      setHeader: (name: string, value: string) => headers.set(name, value),
-      end: () => undefined,
-    };
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
 
-    coaScanHandler({ method: "GET", query: { code: "z01" } }, response);
+    const response = coaScanHandler(
+      new Request("https://www.peptide-south-africa.com/api/coa-scan?code=z01"),
+    );
 
-    expect(response.statusCode).toBe(307);
-    expect(headers.get("Location")).toContain("164662_D9DXNXDK1YM4");
-    expect(headers.get("Cache-Control")).toBe("private, no-store");
+    expect(response.status).toBe(307);
+    expect(response.headers.get("Location")).toContain("164662_D9DXNXDK1YM4");
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
     expect(info).toHaveBeenCalledOnce();
     const event = JSON.parse(String(info.mock.calls[0][0]));
     expect(event).toMatchObject({
