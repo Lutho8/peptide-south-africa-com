@@ -72,7 +72,7 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
               </li>
               <li>• Damaged-in-transit or incorrect items: replaced free of charge when reported within 48 hours of delivery.</li>
               <li>• For health and safety reasons, opened or reconstituted vials are non-returnable (industry standard).</li>
-              <li>• Refunds processed to the original payment method within 5–7 business days of receiving the return.</li>
+              <li>• Approved refunds are paid by EFT to the verified payer bank account within 5–10 business days.</li>
             </ul>
           </AccordionContent>
         </AccordionItem>

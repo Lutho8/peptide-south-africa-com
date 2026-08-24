@@ -57,7 +57,7 @@ export default function CommunityJoinPage() {
               <Pill
                 icon={<MessageCircle className="h-4 w-4" />}
                 title="What you'll get"
-                body="Drop announcements, batch COAs, member-only pricing, Q&A with our team."
+                body="Receive announcements, published testing reports, member-only pricing and Q&A with our team."
               />
             </aside>
           </div>

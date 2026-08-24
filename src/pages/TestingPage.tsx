@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   CheckCircle2,
@@ -12,11 +12,13 @@ import {
 } from "lucide-react";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import CoaLabelStudio, { type LabelStudioRecord } from "@/components/CoaLabelStudio";
+import type { LabelStudioRecord } from "@/components/CoaLabelStudio";
 import { supabase } from "@/integrations/supabase/client";
 import { staticCoas } from "@/data/coas";
 import { products } from "@/data/products";
 import { useAuth } from "@/hooks/useAuth";
+
+const CoaLabelStudio = lazy(() => import("@/components/CoaLabelStudio"));
 
 interface BatchRow {
   id: string;
@@ -260,7 +262,15 @@ export default function TestingPage() {
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">Print the verified record onto the vial.</h2>
             <p className="mt-2 text-sm text-muted-foreground">Optimized for the Nelko P21 40 × 14 mm roll and Brother VC-500W 45 × 25 mm tape.</p>
           </div>
-          <CoaLabelStudio records={labelRecords} />
+          <Suspense
+            fallback={(
+              <div className="mx-auto flex min-h-64 max-w-5xl items-center justify-center rounded-3xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+                Loading the mobile label studio…
+              </div>
+            )}
+          >
+            <CoaLabelStudio records={labelRecords} />
+          </Suspense>
         </div>
       </section>
     </>
@@ -287,6 +297,9 @@ function CoaCard({ record, highlight }: { record: PublishedCoa; highlight?: bool
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded bg-primary/10 px-2 py-1 font-mono text-xs font-semibold text-primary">{record.reference}</span>
             {record.taskNumber && <span className="rounded bg-muted px-2 py-1 font-mono text-xs text-muted-foreground">Task #{record.taskNumber}</span>}
+            {record.sourceNote?.includes("Zztai Peptide Ltd.") && (
+              <span className="rounded bg-trust/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-trust">Supplier source report</span>
+            )}
             <span className="text-xs text-muted-foreground">{new Date(record.testDate).toLocaleDateString("en-ZA")}</span>
           </div>
           <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{record.productName} {record.strength}</h3>

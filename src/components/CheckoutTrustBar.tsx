@@ -1,4 +1,4 @@
-import { Lock, Truck, Clock, RefreshCcw, CreditCard, ShieldCheck } from "lucide-react";
+import { Lock, Truck, Clock, RefreshCcw, Landmark, ShieldCheck } from "lucide-react";
 import { trilingual } from "@/lib/copy";
 
 export default function CheckoutTrustBar() {
@@ -9,13 +9,13 @@ export default function CheckoutTrustBar() {
           <Lock className="h-3.5 w-3.5 text-trust" /> 256-bit SSL
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-          <CreditCard className="h-3.5 w-3.5 text-primary" /> PCI-DSS · EFT
+          <Landmark className="h-3.5 w-3.5 text-primary" /> EFT only · ZAR
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
           <ShieldCheck className="h-3.5 w-3.5 text-trust" /> POPIA compliant
         </span>
         <div className="flex items-center gap-1.5">
-          {["VISA", "MC", "PAYPAL", "EFT", "BTC"].map((brand) => (
+          {["EFT", "CAPITEC", "FNB", "ABSA", "NEDBANK"].map((brand) => (
             <span
               key={brand}
               className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-bold tracking-wider text-foreground"

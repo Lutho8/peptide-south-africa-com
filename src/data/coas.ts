@@ -1,3 +1,5 @@
+import { COA_SCAN_DESTINATIONS } from "@/data/coaScanDestinations";
+
 export interface CoaRecord {
   id: string;
   shortCode: string;
@@ -32,7 +34,7 @@ export const staticCoas: CoaRecord[] = [
     taskNumber: "83567",
     sampleReference: "MOTS-C 10mg",
     reportDate: "2025-10-21",
-    verificationUrl: "https://verify.janoshik.com/tests/83567_HGNB5E53261C",
+    verificationUrl: COA_SCAN_DESTINATIONS.m01.url,
     reportImageUrl: "/coa/mots-c-janoshik-83567.svg",
     results: [
       { label: "Reported content", value: "11.42 mg" },
@@ -52,7 +54,7 @@ export const staticCoas: CoaRecord[] = [
     taskNumber: "61141",
     sampleReference: "Retatrutide 10mg",
     reportDate: "2025-04-01",
-    verificationUrl: "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
+    verificationUrl: COA_SCAN_DESTINATIONS.r01.url,
     reportImageUrl: "/coa/retatrutide-janoshik-61141.svg",
     results: [
       { label: "Reported content", value: "10.80 mg" },
@@ -72,7 +74,7 @@ export const staticCoas: CoaRecord[] = [
     taskNumber: "164662",
     sampleReference: "T120",
     reportDate: "2026-05-27",
-    verificationUrl: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
+    verificationUrl: COA_SCAN_DESTINATIONS.z01.url,
     reportImageUrl: "/coa/tirzepatide-janoshik-164662.svg",
     results: [
       { label: "Reported content", value: "134.42 mg; 132.84 mg" },
@@ -92,7 +94,7 @@ export const staticCoas: CoaRecord[] = [
     taskNumber: "164644",
     sampleReference: "TSM10",
     reportDate: "2026-05-27",
-    verificationUrl: "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
+    verificationUrl: COA_SCAN_DESTINATIONS.t01.url,
     reportImageUrl: "/coa/tesamorelin-janoshik-164644.jpg",
     results: [
       { label: "Reported content", value: "12.95 mg; 12.27 mg" },

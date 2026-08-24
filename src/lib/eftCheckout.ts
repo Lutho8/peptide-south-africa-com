@@ -4,6 +4,22 @@ import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm } from "@/lib/checkoutSchema";
 
 export const CHECKOUT_FORM_KEY = "rtt_checkout_form";
+export const EFT_SESSION_KEY = "rtt_eft_instructions";
+
+export type EftBankDetails = {
+  account_name: string;
+  bank: string;
+  account_number: string;
+  branch_code: string;
+  reference: string;
+};
+
+export type EftInstructionsState = {
+  orderId: string;
+  amount: number;
+  paymentReference: string;
+  bank: EftBankDetails;
+};
 
 export const emptyCheckoutForm: CheckoutForm = {
   firstName: "",
@@ -34,24 +50,6 @@ export function hasCompleteCheckoutDetails(form: CheckoutForm | null): form is C
   return validateCheckout(form).ok === true;
 }
 
-/** Build & auto-submit an HTML form to PayFast. */
-export function postToPayFast(actionUrl: string, fields: Record<string, string>) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = actionUrl;
-  form.style.display = "none";
-  for (const [k, v] of Object.entries(fields)) {
-    if (v === undefined || v === null || v === "") continue;
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = k;
-    input.value = String(v);
-    form.appendChild(input);
-  }
-  document.body.appendChild(form);
-  form.submit();
-}
-
 export function checkoutTotals(totalPrice: number) {
   const rule = SHIPPING_RULES["South Africa"];
   const ship = getShippingCost(totalPrice, "South Africa") ?? 0;
@@ -63,26 +61,45 @@ export function checkoutTotals(totalPrice: number) {
   };
 }
 
-interface StartArgs {
+/**
+ * Extracts the most useful customer-facing message from a failed
+ * `supabase.functions.invoke` call: reads the edge function's JSON body off
+ * the response context when it's still readable, falling back to the generic
+ * FunctionsHttpError message.
+ */
+export async function functionErrorMessage(fnErr: unknown): Promise<string> {
+  const err = fnErr as { context?: Response; message?: string } | null;
+  const res = err?.context;
+  if (res instanceof Response) {
+    try {
+      const body = await res.clone().json();
+      if (body && typeof body.error === "string" && body.error) return body.error;
+    } catch {
+      /* body already consumed or not JSON */
+    }
+  }
+  return err?.message || "Checkout could not be started";
+}
+
+interface StartEftArgs {
   userId: string;
   items: CartItem[];
   totalPrice: number;
   form: CheckoutForm;
-  onBeforeRedirect?: () => Promise<void> | void;
 }
 
 /**
- * Creates the order row, asks the edge function for a signed PayFast payload
- * and redirects the browser to the hosted payment page (Apple Pay, Capitec Pay,
- * instant EFT and cards all live there). Throws on failure.
+ * EFT-only checkout: creates the `orders` row, asks the eft-create-order
+ * edge function for a unique payment reference + bank details, and returns
+ * the state the instructions page needs. Throws an Error with a
+ * customer-safe message on failure.
  */
-export async function startPayfastCheckout({
+export async function startEftCheckout({
   userId,
   items,
   totalPrice,
   form,
-  onBeforeRedirect,
-}: StartArgs): Promise<void> {
+}: StartEftArgs): Promise<EftInstructionsState> {
   const totals = checkoutTotals(totalPrice);
 
   const description = items
@@ -109,8 +126,7 @@ export async function startPayfastCheckout({
     .single();
   if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
 
-  const origin = window.location.origin;
-  const { data, error: fnErr } = await supabase.functions.invoke("payfast-create-payment", {
+  const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", {
     body: {
       orderId: orderRow.id,
       amount: totals.grandTotal,
@@ -118,20 +134,22 @@ export async function startPayfastCheckout({
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
-      returnUrl: `${origin}/checkout/success?order_id=${orderRow.id}`,
-      cancelUrl: `${origin}/checkout/cancel?order_id=${orderRow.id}`,
     },
   });
-  if (fnErr) throw new Error(fnErr.message);
-  if (!data || data.error) throw new Error(data?.error || "Payment could not be started");
-  if (!data.actionUrl || !data.fields) throw new Error("Invalid PayFast response");
+  if (fnErr) throw new Error(await functionErrorMessage(fnErr));
+  if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
+  if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
 
-  await onBeforeRedirect?.();
-  postToPayFast(data.actionUrl, data.fields);
+  return {
+    orderId: orderRow.id,
+    amount: totals.grandTotal,
+    paymentReference: data.payment_reference,
+    bank: data.bank,
+  };
 }
 
 export function paymentErrorMessage(err: unknown): string {
-  const msg = err instanceof Error ? err.message : "Payment could not be started";
+  const msg = err instanceof Error ? err.message : "Checkout could not be started";
   return msg.includes("not configured") || msg.includes("503")
     ? "Payment is temporarily unavailable. Please try again shortly."
     : msg;

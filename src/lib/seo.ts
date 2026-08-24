@@ -14,7 +14,7 @@ export const localBusinessSchema = {
   telephone: businessInfo.telephone,
   priceRange: "R500 - R4000",
   currenciesAccepted: "ZAR",
-  paymentAccepted: "Visa, Mastercard, Instant EFT, Capitec Pay, SnapScan, Zapper, Mobicred, Masterpass",
+  paymentAccepted: "EFT, Direct bank transfer",
   description:
     "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
   ...(businessInfo.email ? { email: businessInfo.email } : {}),

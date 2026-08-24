@@ -48,11 +48,12 @@ test.describe('inventory crawl', () => {
             .map((h) => normalizeHref(h, origin))
             .filter((x): x is string => !!x);
         }
-      } catch (e: any) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
         info = {
           title: null, metaDescription: null, h1: null,
           brokenLinks: [], brokenImages: [],
-          error: String(e?.message || e).slice(0, 300),
+          error: message.slice(0, 300),
         };
       }
 

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
-import ExpressCheckoutButton from "@/components/ExpressCheckoutButton";
+import ExpressEftButton from "@/components/ExpressEftButton";
 import FreeShippingBar from "@/components/FreeShippingBar";
 
 import { useMarket, marketPath } from "@/hooks/useMarket";
@@ -179,7 +179,7 @@ export default function CartDrawer() {
               </div>
               <p className="mb-4 text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
 
-              <ExpressCheckoutButton onNavigate={() => setIsCartOpen(false)} className="mb-3" />
+              <ExpressEftButton onNavigate={() => setIsCartOpen(false)} className="mb-3" />
 
               <Link
                 to={mp("/checkout")}

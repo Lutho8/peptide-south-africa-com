@@ -104,7 +104,7 @@ export default function ProductPage() {
     ...productCoas.map((coa) => ({
       src: coa.reportImageUrl,
       alt: `${coa.productName} Janoshik report task ${coa.taskNumber}`,
-      label: `COA #${coa.taskNumber}`,
+      label: `Supplier report #${coa.taskNumber}`,
       fit: "contain" as const,
       href: coa.verificationUrl,
     })),
@@ -180,8 +180,8 @@ export default function ProductPage() {
           ? `${product.name} South Africa | Clinician-Guided Pathway`
           : `${product.name} South Africa | Research Peptide Supplier`}
         description={isGPTrack
-          ? `${product.name} clinician-guided pathway with eligibility review before prescription or fulfilment. Per-batch COA and South African delivery.`
-          : `${product.shortDescription || product.description.slice(0, 140)} 99%+ HPLC purity, COA included. Ships across South Africa.`}
+          ? `${product.name} clinician-guided pathway with eligibility review before prescription or fulfilment. Published supplier source reports where available and South African delivery.`
+          : `${product.shortDescription || product.description.slice(0, 140)} Published supplier source reports where available. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
@@ -424,7 +424,7 @@ export default function ProductPage() {
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — COA Available</span>
+              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — published report available</span>
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
                 <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · published source report
               </Link>
@@ -465,7 +465,7 @@ export default function ProductPage() {
                 <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
                 <ul className="mt-3 flex flex-col gap-2">
                   {(isGPTrack
-                    ? ["Clinician eligibility review", "Eligible prescribed product after approval", "Batch Certificate of Analysis", "Storage and delivery guidance"]
+                    ? ["Clinician eligibility review", "Eligible prescribed product after approval", "Published supplier source report, where available", "Storage and delivery guidance"]
                     : product.whatsIncluded).map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
@@ -543,7 +543,7 @@ export default function ProductPage() {
               to="/testing"
               className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-5 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
             >
-              <Shield className="h-4 w-4" /> Open batch COA and testing
+              <Shield className="h-4 w-4" /> Open supplier reports and testing
             </Link>
           </div>
         </div>

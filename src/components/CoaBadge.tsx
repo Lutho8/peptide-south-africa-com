@@ -2,9 +2,9 @@ import { BadgeCheck, FlaskConical, ShieldCheck } from "lucide-react";
 
 /**
  * Janoshik COA trust badge — the store's biggest differentiator, made visible
- * on every product page. `coaUrl` is intentionally optional: when a real
- * per-batch COA link exists it becomes a "View COA" button; until then the
- * badge communicates the reported result without inventing a dead link.
+ * on every product page. `coaUrl` is intentionally optional: when a published
+ * supplier source report exists it becomes a "View source report" button;
+ * until then the badge communicates status without inventing a dead link.
  */
 export default function CoaBadge({
   purity = "≥99% HPLC",
@@ -41,7 +41,7 @@ export default function CoaBadge({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full bg-trust px-3 py-1 text-[11px] font-bold text-white hover:opacity-90"
               >
-                View COA →
+                View source report →
               </a>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">

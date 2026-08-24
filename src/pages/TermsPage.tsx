@@ -34,10 +34,17 @@ export default function TermsPage() {
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Website Terms and Conditions of Use</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated: April 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated: August 2026</p>
         <p className="mt-4 text-sm text-muted-foreground">
           If you have concerns about any health condition, diagnosis, or treatment, please consult with a qualified healthcare professional.
         </p>
+
+        <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm leading-relaxed text-foreground">
+          <p className="font-semibold">Important medical and product-use notice</p>
+          <p className="mt-2 text-muted-foreground">
+            Website content is general information only and is not medical advice, diagnosis or treatment. Research catalogue products are supplied only for their stated research purpose. Clinician-guided products require an independent clinical assessment and, where applicable, a valid prescription; eligibility and outcomes are never guaranteed.
+          </p>
+        </div>
 
         <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
           <section>
@@ -78,6 +85,9 @@ export default function TermsPage() {
             <p className="mt-3">
               Information is provided on an "as-is" basis. Peptide South Africa disclaims all warranties, express or implied, including warranties of merchantability and fitness for a particular purpose.
             </p>
+            <p className="mt-3">
+              The Website contains distinct research-catalogue and clinician-guided pathways. A product description, testing result or published report does not establish clinical suitability. A clinician-guided order proceeds only after the applicable independent review and prescription requirements have been met.
+            </p>
           </section>
 
           <section>
@@ -102,6 +112,9 @@ export default function TermsPage() {
             <p className="mt-3">
               If you have concerns about a medical condition, please consult a licensed healthcare professional. In an emergency, contact your local emergency services.
             </p>
+            <p className="mt-3">
+              A supplier source report confirms only the submitted supplier sample described by that report. Unless the report explicitly identifies a matching Peptide South Africa lot or batch, it does not authenticate an individual vial or represent that every unit has been separately tested.
+            </p>
           </section>
 
           <section>
@@ -110,8 +123,8 @@ export default function TermsPage() {
               <p>As a condition of using the Website, you acknowledge and agree that:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>You are over the age of 18.</li>
-                <li>You will not use Website services or content for commercial purposes.</li>
-                <li>Corporate entities are not eligible for registration as a member.</li>
+                <li>You will not reproduce or exploit Website content commercially without written permission.</li>
+                <li>Business customers may use approved B2B services subject to a separate written partner or trade agreement.</li>
                 <li>Your use of the Website may be revoked at any time at Peptide South Africa's sole discretion.</li>
                 <li>Peptide South Africa may modify, suspend, or discontinue the Website at any time with or without notice.</li>
               </ul>
@@ -128,9 +141,10 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">10. Payment and Billing</h2>
             <p className="mt-3">
-              Prices are displayed in South African Rand (ZAR). You are charged at checkout via our payment partner NowPayments
-              (Visa, Mastercard, Apple Pay, Google Pay, EFT, and major cryptocurrencies). Registered members consent to
-              storage of payment methods for processing purposes.
+              Prices are displayed in South African Rand (ZAR). Checkout is EFT / direct bank transfer only. Placing an order creates a pending order and a unique payment reference; it does not confirm payment. You must use the exact reference shown and the order will proceed only after cleared funds are verified against that reference.
+            </p>
+            <p className="mt-3">
+              We do not collect or store card details. Unidentified, duplicate, overpaid or underpaid transfers may delay allocation and require manual reconciliation. Approved refunds are paid by EFT to a bank account verified as belonging to the original payer under our <Link to="/refund" className="text-primary hover:underline">Refund Policy</Link>.
             </p>
           </section>
 
@@ -233,7 +247,7 @@ export default function TermsPage() {
             <div className="mt-3 space-y-3">
               <p><strong className="text-foreground/80">Included:</strong> One consultation per calendar month, booked through the usual scheduling process. Free last-minute rescheduling.</p>
               <p><strong className="text-foreground/80">Availability:</strong> Subscriptions are only available to users who have completed their initial consultation.</p>
-              <p><strong className="text-foreground/80">Billing Cycle:</strong> The first subscription period runs from the date of purchase until the 1st of the following month. Renewals occur on the 1st of each month.</p>
+              <p><strong className="text-foreground/80">Billing Cycle:</strong> The first subscription period runs from the date of purchase until the 1st of the following month. Renewal invoices are issued on the 1st of each month and are payable by EFT unless a separate written arrangement applies.</p>
               <p><strong className="text-foreground/80">Limitations:</strong> Unused consultations do not roll over. Additional consultations must be purchased separately. Missed consultations incur standard no-show fees.</p>
               <p><strong className="text-foreground/80">Refunds:</strong> Subscription payments are non-refundable except in exceptional circumstances.</p>
               <p><strong className="text-foreground/80">Cancellation:</strong> Users may cancel subscriptions at any time. Peptide South Africa may cancel subscriptions for failed payments, policy violations, or at its sole discretion.</p>

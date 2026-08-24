@@ -194,7 +194,7 @@ export default function AccountPage() {
           </button>
           <Link to="/testing" className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
             <FileCheck2 className="h-5 w-5 text-primary" />
-            <p className="mt-3 font-semibold text-foreground">Open your batch COA</p>
+            <p className="mt-3 font-semibold text-foreground">Open the published source report</p>
             <p className="mt-1 text-xs text-muted-foreground">Match the lot on your vial.</p>
           </Link>
           <a href="https://peptide-south-africa.co.za/" target="_blank" rel="noopener noreferrer" className="rounded-xl border border-trust/30 bg-trust/5 p-4 transition-colors hover:bg-trust/10">

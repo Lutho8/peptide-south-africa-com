@@ -39,7 +39,7 @@ const NEXT_STEPS = [
   {
     icon: Package,
     title: "Cold-chain dispatch",
-    body: "Validated insulated packaging ships Monday–Wednesday. Your batch COA travels in the box.",
+    body: "Validated insulated packaging ships Monday–Wednesday. Available published supplier reports remain accessible in the testing archive.",
   },
   {
     icon: Activity,

@@ -2,29 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/v/t01",
-      "destination": "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
-      "permanent": true
-    },
-    {
-      "source": "/v/m01",
-      "destination": "https://verify.janoshik.com/tests/83567_HGNB5E53261C",
-      "permanent": true
-    },
-    {
-      "source": "/v/r01",
-      "destination": "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
-      "permanent": true
-    },
-    {
-      "source": "/v/z01",
-      "destination": "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
-      "permanent": true
-    }
-  ],
   "rewrites": [
+    { "source": "/v/:code", "destination": "/api/coa-scan?code=:code" },
     { "source": "/pets", "destination": "https://pets.peptide-south-africa.com/" },
     { "source": "/pets/:path*", "destination": "https://pets.peptide-south-africa.com/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }

@@ -1,4 +1,4 @@
-import { Check, ShoppingCart, Truck, CreditCard } from "lucide-react";
+import { Check, ShoppingCart, Truck, Landmark } from "lucide-react";
 
 type Step = "cart" | "details" | "pay" | "done";
 
@@ -10,7 +10,7 @@ interface Props {
 const STEPS: { id: Step; label: string; icon: typeof ShoppingCart }[] = [
   { id: "cart", label: "Cart", icon: ShoppingCart },
   { id: "details", label: "Details", icon: Truck },
-  { id: "pay", label: "Pay", icon: CreditCard },
+  { id: "pay", label: "EFT", icon: Landmark },
 ];
 
 /**

@@ -957,7 +957,7 @@ export default function QuizFunnelPage() {
               Join our WhatsApp community
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Continue with protocol education, batch COAs and community updates after your quiz.
+              Continue with protocol education, published source reports and community updates after your quiz.
             </p>
             <Link
               to="/community"

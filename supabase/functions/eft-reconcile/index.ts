@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
         .update({ status: 'matched', matched_order_id: String(order.order_id) })
         .eq('id', dep.id);
 
-      // Order-confirmation email (same payload shape as payfast-itn).
+      // Order-confirmation email.
       const recipient = order.customer_email;
       if (recipient) {
         const { error: mailErr } = await supabase.from('email_outbox').insert({

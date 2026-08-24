@@ -110,6 +110,20 @@ export default function Footer() {
           </div>
 
         </div>
+        <div className="mt-8 grid gap-3 border-t border-border pt-6 text-left sm:grid-cols-2">
+          <div className="rounded-xl border border-border bg-background/60 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">Medical disclaimer</p>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              Website content is general information only and is not medical advice, diagnosis or treatment. Clinician-guided products require an independent clinical review and, where applicable, a valid prescription. In an emergency, contact local emergency services.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-background/60 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">Legal &amp; report scope</p>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              Research catalogue products are supplied only for their stated research purpose. A published supplier COA verifies the submitted supplier sample described in that report unless a PSA lot is explicitly identified; it does not authenticate an individual vial. See our <Link to={mp("/terms")} className="font-semibold text-primary hover:underline">Terms &amp; Conditions</Link>.
+            </p>
+          </div>
+        </div>
         <div className="mt-8 border-t border-border pt-6 flex flex-col items-center gap-3 px-4 text-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Peptide South Africa. All rights reserved. For research purposes only.</p>
           <nav

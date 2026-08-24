@@ -1,4 +1,4 @@
-import { Lock, ShieldCheck, CreditCard, EyeOff, FileLock2, RefreshCcw } from "lucide-react";
+import { Lock, ShieldCheck, Landmark, EyeOff, FileLock2, RefreshCcw } from "lucide-react";
 
 const items = [
   {
@@ -7,9 +7,9 @@ const items = [
     desc: "Every field on this page is encrypted end-to-end before it leaves your browser.",
   },
   {
-    icon: CreditCard,
-    title: "PCI-DSS Compliant Payments",
-    desc: "Card details are tokenised by our processor — we never see or store your full card number.",
+    icon: Landmark,
+    title: "EFT-Only Payment",
+    desc: "Pay bank-to-bank in ZAR using your unique order reference. We do not collect or store card details.",
   },
   {
     icon: EyeOff,
@@ -23,8 +23,8 @@ const items = [
   },
   {
     icon: ShieldCheck,
-    title: "Verified Lab-Tested Products",
-    desc: "Every batch ships with a third-party HPLC Certificate of Analysis (≥99% purity).",
+    title: "Published Source Reports",
+    desc: "Available supplier reports show the lab, task reference, reported result and their exact sample or lot scope.",
   },
   {
     icon: RefreshCcw,

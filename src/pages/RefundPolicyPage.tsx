@@ -33,7 +33,7 @@ export default function RefundPolicyPage() {
       <div className="container py-16">
         <div className="mx-auto max-w-3xl">
           <h1 className="font-display text-3xl font-bold text-foreground">Refund Policy</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Last updated: May 2026</p>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated: August 2026</p>
 
           <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
             <section>
@@ -64,7 +64,9 @@ export default function RefundPolicyPage() {
 
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">Refund Processing</h2>
-              <p className="mt-3">Approved refunds are processed to the original payment method within 5–10 business days.</p>
+              <p className="mt-3">
+                Because checkout is EFT-only, approved refunds are paid by EFT to a bank account verified as belonging to the original payer. Bank-detail verification may be required before payment. Once approved and verified, allow 5–10 business days for processing.
+              </p>
             </section>
 
             <section>

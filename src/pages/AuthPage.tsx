@@ -80,7 +80,7 @@ export default function AuthPage() {
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "signup"
-            ? "Create an account to reorder, manage subscriptions, open your batch COA and start your free Peptide Tracker."
+            ? "Create an account to reorder, manage subscriptions, open published source reports and start your free Peptide Tracker."
             : "Welcome back. Your orders, subscriptions, COAs and free Peptide Tracker are waiting."}
         </p>
 
