@@ -1,4 +1,34 @@
-import { COA_SCAN_DESTINATIONS, isCoaScanCode } from "../src/data/coaScanDestinations";
+// Keep the serverless redirect table self-contained. Vercel deploys `api/` as
+// an isolated function bundle, so runtime imports from the Vite `src/` tree
+// are not guaranteed to be present in /var/task.
+const COA_SCAN_DESTINATIONS = {
+  m01: {
+    product: "MOTS-C 10 mg",
+    taskNumber: "83567",
+    url: "https://verify.janoshik.com/tests/83567_HGNB5E53261C",
+  },
+  r01: {
+    product: "Retatrutide 10 mg",
+    taskNumber: "61141",
+    url: "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
+  },
+  z01: {
+    product: "Tirzepatide supplier source report",
+    taskNumber: "164662",
+    url: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
+  },
+  t01: {
+    product: "Tesamorelin 10 mg",
+    taskNumber: "164644",
+    url: "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
+  },
+} as const;
+
+type CoaScanCode = keyof typeof COA_SCAN_DESTINATIONS;
+
+function isCoaScanCode(value: string): value is CoaScanCode {
+  return Object.prototype.hasOwnProperty.call(COA_SCAN_DESTINATIONS, value);
+}
 
 interface RequestLike {
   method?: string;
