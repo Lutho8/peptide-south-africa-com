@@ -62,6 +62,17 @@ describe("release contracts", () => {
     expect(testingPage).toContain("<Suspense");
   });
 
+  it("keeps public routes code-split and enforces the production bundle budget", () => {
+    const appShell = read("src/AppShell.tsx");
+    const packageJson = read("package.json");
+    const bundleBudget = read("scripts/check-bundle-budget.mjs");
+
+    expect(appShell).not.toMatch(/^import .*@\/pages\//m);
+    expect(appShell.match(/lazy\(\(\) => import\("@\/pages\//g)?.length).toBeGreaterThanOrEqual(40);
+    expect(packageJson).toContain("node scripts/check-bundle-budget.mjs");
+    expect(bundleBudget).toContain("300 * 1024");
+  });
+
   it("emits an anonymous event and a no-store redirect for a QR request", () => {
     const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
 

@@ -95,7 +95,7 @@ async function main() {
 
   for (const route of routes) {
     try {
-      const { html, head } = render(route);
+      const { html, head } = await render(route);
       let page = template;
 
       // Inject SSR markup into the root div.

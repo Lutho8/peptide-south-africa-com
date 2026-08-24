@@ -7,7 +7,7 @@
     "predev": "node --experimental-strip-types scripts/generate-sitemap.ts",
     "prebuild": "node --experimental-strip-types scripts/generate-sitemap.ts",
     "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs",
+    "build": "vite build && node scripts/prerender.mjs && node scripts/check-bundle-budget.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
