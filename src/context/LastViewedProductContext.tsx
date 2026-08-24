@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, startTransition, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { ProductTrack } from "@/data/products";
 
 export interface LastViewedProduct {
@@ -29,9 +29,13 @@ export function LastViewedProductProvider({ children }: { children: ReactNode })
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) setLastViewedState(JSON.parse(raw));
       const d = sessionStorage.getItem(DISMISSED_KEY);
-      if (d) setDismissedSlug(d);
+      if (raw || d) {
+        startTransition(() => {
+          if (raw) setLastViewedState(JSON.parse(raw));
+          if (d) setDismissedSlug(d);
+        });
+      }
     } catch {
       // ignore
     }

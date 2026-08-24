@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo, type ReactNode } from "react";
+import { createContext, startTransition, useContext, useState, useCallback, useEffect, useRef, useMemo, type ReactNode } from "react";
 import type { Product } from "@/data/products";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -95,8 +95,18 @@ function loadPersistedItems(): CartItem[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [items, setItems] = useState<CartItem[]>(() => loadPersistedItems());
+  // Match the server-rendered empty cart for the first client render. Restoring
+  // local data in a transition prevents an app-shell update from interrupting
+  // a lazy route while its prerendered HTML is still hydrating.
+  const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => {
+    const persisted = loadPersistedItems();
+    if (persisted.length > 0) {
+      startTransition(() => setItems(persisted));
+    }
+  }, []);
 
   // Mirror items to localStorage so refreshes, tab closes, and /auth navigation
   // don't wipe the cart. Runs on every change; JSON.stringify is cheap here.

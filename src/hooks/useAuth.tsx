@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, startTransition, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,15 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkRoleAndOrders = async (uid: string | undefined) => {
     if (!uid) {
-      setIsAdmin(false);
-      setHasFirstOrder(null);
+      startTransition(() => {
+        setIsAdmin(false);
+        setHasFirstOrder(null);
+      });
       return;
     }
     // Hydrate from cache immediately to avoid re-querying on every auth event.
     try {
       const cached = typeof window !== "undefined" ? window.localStorage.getItem(cacheKey(uid)) : null;
       if (cached === "true" || cached === "false") {
-        setHasFirstOrder(cached === "true");
+        startTransition(() => setHasFirstOrder(cached === "true"));
       }
     } catch { /* ignore */ }
 
@@ -41,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setTimeout(async () => {
       const { data: roleData } = await supabase
         .from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
-      setIsAdmin(!!roleData);
+      startTransition(() => setIsAdmin(!!roleData));
 
       // Only query orders once per user; cached answer is reused across auth events.
       const cached = typeof window !== "undefined" ? window.localStorage.getItem(cacheKey(uid)) : null;
@@ -51,15 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from("orders").select("id", { count: "exact", head: true }).eq("user_id", uid);
       if (error) return;
       const has = (count ?? 0) > 0;
-      setHasFirstOrder(has);
+      startTransition(() => setHasFirstOrder(has));
       try { window.localStorage.setItem(cacheKey(uid), String(has)); } catch { /* ignore */ }
     }, 0);
   };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
+      startTransition(() => {
+        setSession(sess);
+        setUser(sess?.user ?? null);
+      });
       checkRoleAndOrders(sess?.user?.id);
       // Push new signups to Nocobase CRM
       if (event === "SIGNED_IN" && sess?.user) {
@@ -78,10 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
+      startTransition(() => {
+        setSession(sess);
+        setUser(sess?.user ?? null);
+        setLoading(false);
+      });
       checkRoleAndOrders(sess?.user?.id);
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
