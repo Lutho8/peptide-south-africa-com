@@ -90,6 +90,34 @@ Deno.serve(async (req)=>{
     }, 400);
     // Service-role client for psa_orders / email_outbox writes (RLS-locked).
     const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+    const { data: existingOrder, error: existingOrderErr } = await admin.from('psa_orders').select('order_id, user_id, order_total, payment_method, payment_reference').eq('order_id', orderId).maybeSingle();
+    if (existingOrderErr) {
+      console.error('psa_orders idempotency lookup failed:', existingOrderErr.message);
+      return json({
+        error: 'Order could not be prepared for EFT. Please try again.'
+      }, 500);
+    }
+    if (existingOrder) {
+      const sameOrder = existingOrder.user_id === userId && existingOrder.payment_method === 'eft_capitec' && Math.abs(Number(existingOrder.order_total) - storedTotal) <= 0.01 && typeof existingOrder.payment_reference === 'string' && existingOrder.payment_reference.length > 0;
+      if (!sameOrder) {
+        return json({
+          error: 'Order already has payment details that do not match this request.',
+          code: 'ORDER_CONFLICT'
+        }, 409);
+      }
+      return json({
+        ok: true,
+        order_id: orderId,
+        payment_reference: existingOrder.payment_reference,
+        bank: {
+          account_name: accountName,
+          bank: 'Capitec Business',
+          account_number: accountNumber,
+          branch_code: branchCode,
+          reference: existingOrder.payment_reference
+        }
+      });
+    }
     // Generate a unique payment reference (retry on psa_orders.payment_reference conflict).
     let paymentReference = '';
     for(let attempt = 0; attempt < 5; attempt++){
