@@ -46,11 +46,25 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   );
 
-  const summary = { ok: true, inserted: 0, duplicates: 0, matched: 0, still_unmatched: 0 };
+  const summary: {
+    ok: boolean;
+    inserted: number;
+    duplicates: number;
+    matched: number;
+    still_unmatched: number;
+    order_state?: {
+      order_id: string;
+      payment_reference: string | null;
+      payment_status: string;
+      payment_settled_at: string | null;
+    } | null;
+  } = { ok: true, inserted: 0, duplicates: 0, matched: 0, still_unmatched: 0 };
 
   try {
     const body = await req.json().catch(() => ({}));
     const deposits = Array.isArray(body?.deposits) ? body.deposits : [];
+    const verifyOrderId = body?.order_id != null ? String(body.order_id).trim() : '';
+    const verifyReference = normaliseRef(body?.reference);
 
     // ── 1. Ingest with dedupe ───────────────────────────────────────────────
     for (const d of deposits) {
@@ -170,6 +184,34 @@ Deno.serve(async (req) => {
       });
 
       summary.matched++;
+    }
+
+    // Return the exact target's current state so the operator can verify the
+    // result without relying on an unauthenticated storefront lookup.
+    if (verifyOrderId || verifyReference) {
+      let orderQuery = supabase
+        .from('psa_orders')
+        .select('order_id, payment_reference, payment_status, payment_settled_at')
+        .limit(1);
+
+      orderQuery = verifyOrderId
+        ? orderQuery.eq('order_id', verifyOrderId)
+        : orderQuery.ilike('payment_reference', verifyReference);
+
+      const { data: verifiedOrder, error: verifyError } = await orderQuery.maybeSingle();
+      if (verifyError) {
+        console.error('psa_orders verification failed:', verifyError.message);
+        return json({ ...summary, ok: false, error: 'order state verification failed' }, 500);
+      }
+
+      summary.order_state = verifiedOrder
+        ? {
+            order_id: String(verifiedOrder.order_id),
+            payment_reference: verifiedOrder.payment_reference == null ? null : String(verifiedOrder.payment_reference),
+            payment_status: String(verifiedOrder.payment_status),
+            payment_settled_at: verifiedOrder.payment_settled_at == null ? null : String(verifiedOrder.payment_settled_at),
+          }
+        : null;
     }
 
     return json(summary);
