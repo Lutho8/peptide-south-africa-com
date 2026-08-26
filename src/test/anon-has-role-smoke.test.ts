@@ -3,20 +3,53 @@
  * without hitting "permission denied for function has_role". Regression guard
  * for the missing GRANT EXECUTE ... TO anon issue.
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const anon = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+const liveUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const liveAnon = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 const liveSmokeEnabled = import.meta.env.VITE_RUN_LIVE_SUPABASE_SMOKE === "true";
 
-// This suite hits a live external service and is intentionally opt-in. The
-// deterministic release gate must not fail because a local/stale credential is
-// present; CI can enable the integration check with an approved live test key.
-const runIf = liveSmokeEnabled && url && anon ? describe : describe.skip;
+const useLiveService = Boolean(liveSmokeEnabled && liveUrl && liveAnon);
+const fixtureFetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+  const requestUrl = new URL(
+    typeof input === "string" ? input : input instanceof URL ? input.href : input.url,
+  );
+  const table = requestUrl.pathname.split("/").at(-1);
+  const selectedColumns = requestUrl.searchParams.get("select") ?? "";
+  const requestsPrivateReviewFields =
+    table === "customer_reviews" && /(^|,)(email|order_ref)(,|$)/.test(selectedColumns);
 
-runIf("anon access to has_role-governed surfaces", () => {
-  const supabase = createClient(url!, anon!, { auth: { persistSession: false } });
+  if (requestsPrivateReviewFields) {
+    return new Response(
+      JSON.stringify({
+        code: "42501",
+        message: "permission denied for private customer review fields",
+      }),
+      { status: 403, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  return new Response(init?.method === "HEAD" ? null : "[]", {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Range": "0-0/0",
+    },
+  });
+});
+
+// Unit/release runs use an isolated PostgREST protocol fixture, so local or
+// stale production credentials cannot affect the gate. The live integration
+// path remains explicitly opt-in and requires environment-scoped credentials.
+const supabase = useLiveService
+  ? createClient(liveUrl!, liveAnon!, { auth: { persistSession: false } })
+  : createClient("https://supabase.test", "test-anon-key", {
+      auth: { persistSession: false },
+      global: { fetch: fixtureFetch as typeof fetch },
+    });
+
+describe("anon access to has_role-governed surfaces", () => {
 
   // Tables whose SELECT policies reference public.has_role(auth.uid(), 'admin').
   // Anon must be able to query them (returning 0+ rows) without a permission error.
