@@ -1,0 +1,257 @@
+name: EFT sandbox contract
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/eft-sandbox.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/ci/eft-sandbox-contract.mjs"
+      - "supabase/config.toml"
+      - "supabase/migrations/**"
+      - "supabase/functions/_shared/pricing.ts"
+      - "supabase/functions/eft-create-order/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/eft-sandbox.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/ci/eft-sandbox-contract.mjs"
+      - "supabase/config.toml"
+      - "supabase/migrations/**"
+      - "supabase/functions/_shared/pricing.ts"
+      - "supabase/functions/eft-create-order/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eft-sandbox-contract-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-contract:
+    name: Verify authenticated EFT contract in isolated local Supabase
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - uses: supabase/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf # v2.1.1
+        with:
+          version: 2.115.0
+
+      - name: Isolate the CI project from production
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const configPath = "supabase/config.toml";
+          const config = fs.readFileSync(configPath, "utf8");
+          if (!/^project_id = "eutszmrsukoqqeilzrbv"$/m.test(config)) {
+            throw new Error("Refusing to rewrite an unexpected Supabase project_id");
+          }
+          fs.writeFileSync(
+            configPath,
+            config.replace(
+              /^project_id = "eutszmrsukoqqeilzrbv"$/m,
+              'project_id = "eft-sandbox-ci"',
+            ),
+          );
+
+          const migrationPath = "supabase/migrations/20260430143448_5d3ca12e-ea61-41fb-9838-1064a30b3114.sql";
+          const migration = fs.readFileSync(migrationPath, "utf8");
+          const expectedMarkers = [
+            "nocobase-abandoned-cart-hourly",
+            "eutszmrsukoqqeilzrbv.supabase.co",
+            "net.http_post",
+          ];
+          for (const marker of expectedMarkers) {
+            if (!migration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            migrationPath,
+            [
+              "-- CI-only no-op: the production migration schedules an outbound call to the hosted project.",
+              "-- The EFT contract does not depend on that integration and must never contact production.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+
+          const realtimeMigrationPath = "supabase/migrations/20260524220318_e51ed8eb-7d5b-45c0-8147-db613b894dde.sql";
+          const realtimeMigration = fs.readFileSync(realtimeMigrationPath, "utf8");
+          const expectedRealtimeMarkers = [
+            'ALTER TABLE realtime.messages ENABLE ROW LEVEL SECURITY',
+            'CREATE POLICY "Authenticated users can read realtime"',
+            'CREATE POLICY "Authenticated users can send realtime"',
+          ];
+          for (const marker of expectedRealtimeMarkers) {
+            if (!realtimeMigration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected Realtime migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            realtimeMigrationPath,
+            [
+              "-- CI-only no-op: the managed local Realtime table is owned by supabase_realtime.",
+              "-- The EFT contract neither reads nor writes Realtime messages.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+
+          const crmMigrationPath = "supabase/migrations/20260815164711_secure_internal_crm_views_and_queue_functions.sql";
+          const crmMigration = fs.readFileSync(crmMigrationPath, "utf8");
+          const expectedCrmMarkers = [
+            "public.unified_customer",
+            "public.crm_customer_lifecycle",
+            "public.enqueue_email(text, jsonb)",
+          ];
+          for (const marker of expectedCrmMarkers) {
+            if (!crmMigration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected CRM migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            crmMigrationPath,
+            [
+              "-- CI-only no-op: these grants target CRM views that exist remotely but are absent from migrations.",
+              "-- The EFT contract does not use the CRM reporting or email queue surfaces.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+
+          const migrationFiles = fs.readdirSync("supabase/migrations")
+            .filter((name) => name.endsWith(".sql"));
+          const hasTrackedPsaOrdersSchema = migrationFiles.some((name) => {
+            const sql = fs.readFileSync(`supabase/migrations/${name}`, "utf8");
+            return /create\s+table\s+(?:if\s+not\s+exists\s+)?public\.psa_orders\b/i.test(sql);
+          });
+          if (hasTrackedPsaOrdersSchema) {
+            throw new Error("A tracked psa_orders schema now exists; remove the CI bootstrap and review its compatibility");
+          }
+
+          const analyticsMigrationPath = "supabase/migrations/20260827150000_pricing_analytics_events.sql";
+          const analyticsMigration = fs.readFileSync(analyticsMigrationPath, "utf8");
+          for (const marker of [
+            "drop trigger if exists emit_verified_eft_revenue_events on public.psa_orders",
+            "after update of payment_status on public.psa_orders",
+          ]) {
+            if (!analyticsMigration.includes(marker)) {
+              throw new Error(`Refusing to bootstrap psa_orders for an unexpected analytics migration; missing ${marker}`);
+            }
+          }
+
+          fs.writeFileSync(
+            "supabase/migrations/20260827145959_ci_psa_orders.sql",
+            [
+              "-- CI-only bootstrap for production schema drift: psa_orders is not represented in tracked migrations.",
+              "create table public.psa_orders (",
+              "  order_id uuid primary key references public.orders(id) on delete cascade,",
+              "  unified_order_id uuid not null references public.orders(id) on delete cascade,",
+              "  user_id uuid not null references auth.users(id) on delete cascade,",
+              "  customer_email text not null,",
+              "  line_items text,",
+              "  order_total numeric(12,2) not null check (order_total >= 0),",
+              "  payment_method text not null,",
+              "  payment_status text not null,",
+              "  payment_reference text not null unique,",
+              "  created_at timestamptz not null default now(),",
+              "  updated_at timestamptz not null default now()",
+              ");",
+              "alter table public.psa_orders enable row level security;",
+              "grant all on public.psa_orders to service_role;",
+              "grant select, insert, update, delete on public.integration_logs to service_role;",
+              "",
+            ].join("\n"),
+          );
+          NODE
+
+      - name: Start isolated local Supabase
+        run: supabase start
+
+      - name: Export ephemeral local credentials
+        shell: bash
+        run: |
+          status_file="$RUNNER_TEMP/supabase-status.env"
+          supabase status -o env > "$status_file"
+          chmod 600 "$status_file"
+          set -a
+          source "$status_file"
+          set +a
+
+          : "${API_URL:?Local Supabase API URL was not reported}"
+          : "${ANON_KEY:?Local Supabase anon key was not reported}"
+          : "${SERVICE_ROLE_KEY:?Local Supabase service role key was not reported}"
+
+          echo "::add-mask::$ANON_KEY"
+          echo "::add-mask::$SERVICE_ROLE_KEY"
+          {
+            printf 'EFT_SANDBOX_SUPABASE_URL=%s\n' "$API_URL"
+            printf 'EFT_SANDBOX_PUBLISHABLE_KEY=%s\n' "$ANON_KEY"
+            printf 'EFT_SANDBOX_SERVICE_ROLE_KEY=%s\n' "$SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
+
+      - name: Serve the native EFT function locally
+        shell: bash
+        run: |
+          env_file="$RUNNER_TEMP/eft-ci.env"
+          printf '%s\n' \
+            'EFT_ACCOUNT_NAME=PSA CI Sandbox' \
+            'EFT_ACCOUNT_NUMBER=0000000000' \
+            'EFT_BRANCH_CODE=000000' > "$env_file"
+          chmod 600 "$env_file"
+
+          nohup supabase functions serve eft-create-order --env-file "$env_file" \
+            > "$RUNNER_TEMP/eft-function.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/eft-function.pid"
+
+          for attempt in {1..60}; do
+            status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+              --request POST \
+              --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
+              --header 'Content-Type: application/json' \
+              --data '{}' \
+              "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-create-order" || true)"
+            if [ "$status" = "401" ]; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
+          echo "Local EFT function did not become ready" >&2
+          exit 1
+
+      - name: Run authenticated EFT sandbox contract
+        run: node scripts/ci/eft-sandbox-contract.mjs
+
+      - name: Show local function logs on failure
+        if: failure()
+        shell: bash
+        run: sed -n '1,240p' "$RUNNER_TEMP/eft-function.log" || true
+
+      - name: Tear down the isolated Supabase stack
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$RUNNER_TEMP/eft-function.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/eft-function.pid")" 2>/dev/null || true
+          fi
+          supabase stop --no-backup

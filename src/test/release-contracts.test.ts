@@ -69,6 +69,37 @@ describe("release contracts", () => {
     expect(migration).toContain("analytics_events_settlement_once_idx");
   });
 
+  it("gates native EFT deployment on an authenticated synthetic sandbox contract", () => {
+    const workflow = read(".github/workflows/eft-sandbox.yml");
+    const contract = read("scripts/ci/eft-sandbox-contract.mjs");
+    const config = read("supabase/config.toml");
+    expect(workflow).toContain("environment: eft-sandbox");
+    expect(workflow).toContain("supabase functions deploy eft-create-order");
+    expect(workflow.indexOf("Deploy native EFT order function to sandbox"))
+      .toBeLessThan(workflow.indexOf("Run authenticated EFT sandbox contract"));
+    expect(workflow).toContain("version: 2.115.0");
+    expect(config).toMatch(/\[functions\.eft-create-order\]\s+verify_jwt = true/);
+    expect(contract).toContain("signInWithPassword");
+    expect(contract).toContain("Unauthenticated checkout returned HTTP");
+    expect(contract).toContain("example.invalid");
+  });
+
+  it("keeps the EFT sandbox contract price-free, manipulation-aware and cleanup-safe", () => {
+    const workflow = read(".github/workflows/eft-sandbox.yml");
+    const contract = read("scripts/ci/eft-sandbox-contract.mjs");
+    expect(contract).toContain("amount: 1");
+    expect(contract).toContain("unitPrice: 1");
+    expect(contract).toContain("Server amount mismatch: expected 719");
+    expect(contract).toContain("ORDER_CONFLICT");
+    expect(contract).toContain("INVALID_CART");
+    expect(contract).toContain('deleteRows("email_outbox"');
+    expect(contract).toContain('deleteRows("psa_orders"');
+    expect(contract).toContain('deleteRows("orders"');
+    expect(contract).toContain("admin.auth.admin.deleteUser");
+    expect(contract).not.toMatch(/console\.(?:log|error)\((?:first|replay|stored|.*\.data|.*\.bank)/);
+    expect(workflow).not.toMatch(/environment: eft-sandbox\s+env:/);
+  });
+
   it("publishes both the medical and supplier-report scope disclaimers", () => {
     const footer = read("src/components/Footer.tsx");
     const terms = read("src/pages/TermsPage.tsx");

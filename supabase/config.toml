@@ -15,5 +15,8 @@ verify_jwt = false
 [functions.process-email-queue]
 verify_jwt = true
 
+[functions.eft-create-order]
+verify_jwt = true
+
 [functions.retention-scheduler]
 verify_jwt = false
