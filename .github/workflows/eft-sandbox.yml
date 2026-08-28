@@ -6,16 +6,22 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/eft-sandbox.yml"
+      - "package.json"
+      - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
       - "supabase/config.toml"
+      - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
   push:
     branches: [main]
     paths:
       - ".github/workflows/eft-sandbox.yml"
+      - "package.json"
+      - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
       - "supabase/config.toml"
+      - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
 
@@ -23,15 +29,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: eft-sandbox-contract
-  cancel-in-progress: false
+  group: eft-sandbox-contract-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  deploy-and-contract:
-    name: Deploy native EFT function and verify authenticated contract
+  local-contract:
+    name: Verify authenticated EFT contract in isolated local Supabase
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: eft-sandbox
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -40,21 +45,6 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Validate managed sandbox credentials
-        shell: bash
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-          EFT_SANDBOX_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EFT_SANDBOX_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EFT_SANDBOX_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          : "${SUPABASE_ACCESS_TOKEN:?Missing eft-sandbox secret SUPABASE_ACCESS_TOKEN}"
-          : "${SUPABASE_PROJECT_ID:?Missing eft-sandbox secret SUPABASE_PROJECT_ID}"
-          : "${EFT_SANDBOX_SUPABASE_URL:?Missing eft-sandbox secret SUPABASE_URL}"
-          : "${EFT_SANDBOX_PUBLISHABLE_KEY:?Missing eft-sandbox secret SUPABASE_PUBLISHABLE_KEY}"
-          : "${EFT_SANDBOX_SERVICE_ROLE_KEY:?Missing eft-sandbox secret SUPABASE_SERVICE_ROLE_KEY}"
-
       - name: Install application dependencies
         run: npm ci
 
@@ -62,29 +52,117 @@ jobs:
         with:
           version: 2.115.0
 
-      - name: Configure synthetic EFT bank details
+      - name: Isolate the CI project from production
         shell: bash
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-          EFT_ACCOUNT_NAME: PSA CI Sandbox
-          EFT_ACCOUNT_NUMBER: "0000000000"
-          EFT_BRANCH_CODE: "000000"
         run: |
-          supabase secrets set --project-ref "$SUPABASE_PROJECT_ID" \
-            EFT_ACCOUNT_NAME="$EFT_ACCOUNT_NAME" \
-            EFT_ACCOUNT_NUMBER="$EFT_ACCOUNT_NUMBER" \
-            EFT_BRANCH_CODE="$EFT_BRANCH_CODE"
+          node <<'NODE'
+          const fs = require("node:fs");
 
-      - name: Deploy native EFT order function to sandbox
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-        run: supabase functions deploy eft-create-order --project-ref "$SUPABASE_PROJECT_ID" --use-api
+          const configPath = "supabase/config.toml";
+          const config = fs.readFileSync(configPath, "utf8");
+          if (!/^project_id = "eutszmrsukoqqeilzrbv"$/m.test(config)) {
+            throw new Error("Refusing to rewrite an unexpected Supabase project_id");
+          }
+          fs.writeFileSync(
+            configPath,
+            config.replace(
+              /^project_id = "eutszmrsukoqqeilzrbv"$/m,
+              'project_id = "eft-sandbox-ci"',
+            ),
+          );
+
+          const migrationPath = "supabase/migrations/20260430143448_5d3ca12e-ea61-41fb-9838-1064a30b3114.sql";
+          const migration = fs.readFileSync(migrationPath, "utf8");
+          const expectedMarkers = [
+            "nocobase-abandoned-cart-hourly",
+            "eutszmrsukoqqeilzrbv.supabase.co",
+            "net.http_post",
+          ];
+          for (const marker of expectedMarkers) {
+            if (!migration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            migrationPath,
+            [
+              "-- CI-only no-op: the production migration schedules an outbound call to the hosted project.",
+              "-- The EFT contract does not depend on that integration and must never contact production.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+          NODE
+
+      - name: Start isolated local Supabase
+        run: supabase start
+
+      - name: Export ephemeral local credentials
+        shell: bash
+        run: |
+          status_file="$RUNNER_TEMP/supabase-status.env"
+          supabase status -o env > "$status_file"
+          chmod 600 "$status_file"
+          set -a
+          source "$status_file"
+          set +a
+
+          : "${API_URL:?Local Supabase API URL was not reported}"
+          : "${ANON_KEY:?Local Supabase anon key was not reported}"
+          : "${SERVICE_ROLE_KEY:?Local Supabase service role key was not reported}"
+
+          echo "::add-mask::$ANON_KEY"
+          echo "::add-mask::$SERVICE_ROLE_KEY"
+          {
+            printf 'EFT_SANDBOX_SUPABASE_URL=%s\n' "$API_URL"
+            printf 'EFT_SANDBOX_PUBLISHABLE_KEY=%s\n' "$ANON_KEY"
+            printf 'EFT_SANDBOX_SERVICE_ROLE_KEY=%s\n' "$SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
+
+      - name: Serve the native EFT function locally
+        shell: bash
+        run: |
+          env_file="$RUNNER_TEMP/eft-ci.env"
+          printf '%s\n' \
+            'EFT_ACCOUNT_NAME=PSA CI Sandbox' \
+            'EFT_ACCOUNT_NUMBER=0000000000' \
+            'EFT_BRANCH_CODE=000000' > "$env_file"
+          chmod 600 "$env_file"
+
+          nohup supabase functions serve eft-create-order --env-file "$env_file" \
+            > "$RUNNER_TEMP/eft-function.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/eft-function.pid"
+
+          for attempt in {1..60}; do
+            status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+              --request POST \
+              --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
+              --header 'Content-Type: application/json' \
+              --data '{}' \
+              "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-create-order" || true)"
+            if [ "$status" = "401" ]; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
+          echo "Local EFT function did not become ready" >&2
+          exit 1
 
       - name: Run authenticated EFT sandbox contract
-        env:
-          EFT_SANDBOX_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EFT_SANDBOX_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EFT_SANDBOX_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/ci/eft-sandbox-contract.mjs
+
+      - name: Show local function logs on failure
+        if: failure()
+        shell: bash
+        run: sed -n '1,240p' "$RUNNER_TEMP/eft-function.log" || true
+
+      - name: Tear down the isolated Supabase stack
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$RUNNER_TEMP/eft-function.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/eft-function.pid")" 2>/dev/null || true
+          fi
+          supabase stop --no-backup
