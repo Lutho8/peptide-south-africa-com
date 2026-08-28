@@ -92,6 +92,28 @@ jobs:
               "",
             ].join("\n"),
           );
+
+          const realtimeMigrationPath = "supabase/migrations/20260524220318_e51ed8eb-7d5b-45c0-8147-db613b894dde.sql";
+          const realtimeMigration = fs.readFileSync(realtimeMigrationPath, "utf8");
+          const expectedRealtimeMarkers = [
+            'ALTER TABLE realtime.messages ENABLE ROW LEVEL SECURITY',
+            'CREATE POLICY "Authenticated users can read realtime"',
+            'CREATE POLICY "Authenticated users can send realtime"',
+          ];
+          for (const marker of expectedRealtimeMarkers) {
+            if (!realtimeMigration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected Realtime migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            realtimeMigrationPath,
+            [
+              "-- CI-only no-op: the managed local Realtime table is owned by supabase_realtime.",
+              "-- The EFT contract neither reads nor writes Realtime messages.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
           NODE
 
       - name: Start isolated local Supabase
