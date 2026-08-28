@@ -136,6 +136,50 @@ jobs:
               "",
             ].join("\n"),
           );
+
+          const migrationFiles = fs.readdirSync("supabase/migrations")
+            .filter((name) => name.endsWith(".sql"));
+          const hasTrackedPsaOrdersSchema = migrationFiles.some((name) => {
+            const sql = fs.readFileSync(`supabase/migrations/${name}`, "utf8");
+            return /create\s+table\s+(?:if\s+not\s+exists\s+)?public\.psa_orders\b/i.test(sql);
+          });
+          if (hasTrackedPsaOrdersSchema) {
+            throw new Error("A tracked psa_orders schema now exists; remove the CI bootstrap and review its compatibility");
+          }
+
+          const analyticsMigrationPath = "supabase/migrations/20260827150000_pricing_analytics_events.sql";
+          const analyticsMigration = fs.readFileSync(analyticsMigrationPath, "utf8");
+          for (const marker of [
+            "drop trigger if exists emit_verified_eft_revenue_events on public.psa_orders",
+            "after update of payment_status on public.psa_orders",
+          ]) {
+            if (!analyticsMigration.includes(marker)) {
+              throw new Error(`Refusing to bootstrap psa_orders for an unexpected analytics migration; missing ${marker}`);
+            }
+          }
+
+          fs.writeFileSync(
+            "supabase/migrations/20260827145959_ci_psa_orders.sql",
+            [
+              "-- CI-only bootstrap for production schema drift: psa_orders is not represented in tracked migrations.",
+              "create table public.psa_orders (",
+              "  order_id uuid primary key references public.orders(id) on delete cascade,",
+              "  unified_order_id uuid not null references public.orders(id) on delete cascade,",
+              "  user_id uuid not null references auth.users(id) on delete cascade,",
+              "  customer_email text not null,",
+              "  line_items text,",
+              "  order_total numeric(12,2) not null check (order_total >= 0),",
+              "  payment_method text not null,",
+              "  payment_status text not null,",
+              "  payment_reference text not null unique,",
+              "  created_at timestamptz not null default now(),",
+              "  updated_at timestamptz not null default now()",
+              ");",
+              "alter table public.psa_orders enable row level security;",
+              "grant all on public.psa_orders to service_role;",
+              "",
+            ].join("\n"),
+          );
           NODE
 
       - name: Start isolated local Supabase
