@@ -114,6 +114,28 @@ jobs:
               "",
             ].join("\n"),
           );
+
+          const crmMigrationPath = "supabase/migrations/20260815164711_secure_internal_crm_views_and_queue_functions.sql";
+          const crmMigration = fs.readFileSync(crmMigrationPath, "utf8");
+          const expectedCrmMarkers = [
+            "public.unified_customer",
+            "public.crm_customer_lifecycle",
+            "public.enqueue_email(text, jsonb)",
+          ];
+          for (const marker of expectedCrmMarkers) {
+            if (!crmMigration.includes(marker)) {
+              throw new Error(`Refusing to neutralize an unexpected CRM migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            crmMigrationPath,
+            [
+              "-- CI-only no-op: these grants target CRM views that exist remotely but are absent from migrations.",
+              "-- The EFT contract does not use the CRM reporting or email queue surfaces.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
           NODE
 
       - name: Start isolated local Supabase
