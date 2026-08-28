@@ -2,9 +2,15 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CartItem } from "@/context/CartContext";
 import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm } from "@/lib/checkoutSchema";
+import {
+  quoteCheckout,
+  type CheckoutSelection,
+  type MixBundleSize,
+} from "../../supabase/functions/_shared/pricing";
 
 export const CHECKOUT_FORM_KEY = "rtt_checkout_form";
 export const EFT_SESSION_KEY = "rtt_eft_instructions";
+export const EFT_REQUEST_KEY = "rtt_eft_request";
 
 export type EftBankDetails = {
   account_name: string;
@@ -61,88 +67,127 @@ export function checkoutTotals(totalPrice: number) {
   };
 }
 
-/**
- * Extracts the most useful customer-facing message from a failed
- * `supabase.functions.invoke` call: reads the edge function's JSON body off
- * the response context when it's still readable, falling back to the generic
- * FunctionsHttpError message.
- */
-export async function functionErrorMessage(fnErr: unknown): Promise<string> {
-  const err = fnErr as { context?: Response; message?: string } | null;
-  const res = err?.context;
-  if (res instanceof Response) {
-    try {
-      const body = await res.clone().json();
-      if (body && typeof body.error === "string" && body.error) return body.error;
-    } catch {
-      /* body already consumed or not JSON */
-    }
-  }
-  return err?.message || "Checkout could not be started";
-}
-
 interface StartEftArgs {
-  userId: string;
   items: CartItem[];
-  totalPrice: number;
   form: CheckoutForm;
 }
 
+/** Convert mutable UI cart lines into the price-free selection contract. */
+export function toCheckoutSelections(items: CartItem[]): CheckoutSelection[] {
+  const selections: CheckoutSelection[] = [];
+  const seenBundles = new Set<string>();
+
+  for (const item of items) {
+    if (item.bundleId) {
+      if (seenBundles.has(item.bundleId)) continue;
+      seenBundles.add(item.bundleId);
+      const lines = items.filter((candidate) => candidate.bundleId === item.bundleId);
+      const size = lines.length as MixBundleSize;
+      if (size !== 5 && size !== 10) throw new Error("Bundle selection is stale. Please rebuild the pack.");
+      if (lines.some((line) => line.quantity !== 1)) {
+        throw new Error("Bundle quantity is stale. Please rebuild the pack.");
+      }
+      selections.push({ kind: "mix_bundle", size, slugs: lines.map((line) => line.product.slug) });
+      continue;
+    }
+    selections.push({
+      kind: "item",
+      slug: item.product.slug,
+      variantLabel: item.variantLabel ?? null,
+      quantity: item.quantity,
+    });
+  }
+  return selections;
+}
+
+function newRequestId(): string {
+  if (typeof crypto.randomUUID !== "function") {
+    throw new Error("This browser cannot securely initialise an EFT checkout.");
+  }
+  return crypto.randomUUID();
+}
+
+export function getOrCreateEftRequestId(selections: CheckoutSelection[], form: CheckoutForm): string {
+  const fingerprint = JSON.stringify({
+    selections,
+    customer: {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim().toLowerCase(),
+    },
+  });
+  try {
+    const raw = window.sessionStorage.getItem(EFT_REQUEST_KEY);
+    const pending = raw ? JSON.parse(raw) as { requestId?: unknown; fingerprint?: unknown } : null;
+    if (
+      pending
+      && typeof pending.requestId === "string"
+      && typeof pending.fingerprint === "string"
+      && pending.fingerprint === fingerprint
+    ) {
+      return pending.requestId;
+    }
+    const requestId = newRequestId();
+    window.sessionStorage.setItem(EFT_REQUEST_KEY, JSON.stringify({ requestId, fingerprint }));
+    return requestId;
+  } catch {
+    return newRequestId();
+  }
+}
+
+function clearEftRequestId(requestId: string): void {
+  try {
+    const raw = window.sessionStorage.getItem(EFT_REQUEST_KEY);
+    const pending = raw ? JSON.parse(raw) as { requestId?: unknown } : null;
+    if (pending?.requestId === requestId) window.sessionStorage.removeItem(EFT_REQUEST_KEY);
+  } catch {
+    // A checkout response remains valid even when session storage is unavailable.
+  }
+}
+
 /**
- * EFT-only checkout: creates the `orders` row, asks the eft-create-order
- * edge function for a unique payment reference + bank details, and returns
- * the state the instructions page needs. Throws an Error with a
+ * EFT-only checkout: submits price-free selections to the same-origin server,
+ * which creates the authoritative order before invoking the existing EFT
+ * settlement boundary for bank details and email. Throws an Error with a
  * customer-safe message on failure.
  */
 export async function startEftCheckout({
-  userId,
   items,
-  totalPrice,
   form,
 }: StartEftArgs): Promise<EftInstructionsState> {
-  const totals = checkoutTotals(totalPrice);
+  const selections = toCheckoutSelections(items);
+  // Local quote is display-only. The server endpoint independently recomputes
+  // the same selection and is the sole authority for the order amount.
+  quoteCheckout(selections);
+  const requestId = getOrCreateEftRequestId(selections, form);
 
-  const description = items
-    .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)
-    .join(", ")
-    .slice(0, 500);
-
-  const { data: orderRow, error: orderErr } = await supabase
-    .from("orders")
-    .insert({
-      user_id: userId,
-      total: totals.grandTotal,
-      discount_code: null,
-      status: "pending",
-      currency: "ZAR",
-      order_description: description,
-      shipping_country: "South Africa",
-      shipping_method: totals.rule.method,
-      shipping_cost: Math.round(totals.ship * 100) / 100,
-      shipping_currency: "ZAR",
-      free_shipping_applied: totals.freeUnlocked,
-    })
-    .select("id")
-    .single();
-  if (orderErr || !orderRow) throw orderErr ?? new Error("Failed to create order");
-
-  const { data, error: fnErr } = await supabase.functions.invoke("eft-create-order", {
-    body: {
-      orderId: orderRow.id,
-      amount: totals.grandTotal,
-      itemName: description.slice(0, 100) || "Peptide South Africa order",
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  if (!accessToken) throw new Error("Your session has expired. Please sign in again.");
+  const response = await fetch("/api/eft-create-order", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      requestId,
+      selections,
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
-    },
+    }),
   });
-  if (fnErr) throw new Error(await functionErrorMessage(fnErr));
-  if (!data || data.error) throw new Error(data?.error || "EFT order could not be started");
-  if (!data.payment_reference || !data.bank) throw new Error("Invalid EFT response");
+  const data = await response.json().catch(() => null);
+  if (!response.ok || !data || data.error) throw new Error(data?.error || "EFT order could not be started");
+  if (!data.order_id || !data.payment_reference || !data.bank || !Number.isFinite(data.amount)) {
+    throw new Error("Invalid EFT response");
+  }
+  clearEftRequestId(requestId);
 
   return {
-    orderId: orderRow.id,
-    amount: totals.grandTotal,
+    orderId: data.order_id,
+    amount: data.amount,
     paymentReference: data.payment_reference,
     bank: data.bank,
   };

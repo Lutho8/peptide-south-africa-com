@@ -3,6 +3,11 @@
 // Same JSON contract as v1 so the frontend needs no changes.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { formatZarWhole, PRICING, WEIGHT_LOSS_SAVING } from "../_shared/pricing.ts";
+
+const PROGRAM_MONTHLY = formatZarWhole(PRICING.programOffers.monthly.amount);
+const PROGRAM_FULL = formatZarWhole(PRICING.programOffers.full12Week.amount);
+const PROGRAM_SAVING = `Save ${formatZarWhole(WEIGHT_LOSS_SAVING)} vs three monthly payments`;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -113,9 +118,9 @@ function buildProtocol(
         duration: "12 Weeks",
         whyFits: `${name}, your assessment indicates a metabolism that would benefit from a multi-pathway approach. The triple-agonist stack addresses GLP-1, GIP, and glucagon receptors simultaneously — the most advanced fat-loss protocol available. Combined with MOTS-C for mitochondrial density, this creates a powerful metabolic reset.`,
         timeline: "Week 2-3: Appetite suppression and initial water weight drop. Week 4-6: Steady fat loss of 0.5-1kg/week. Week 8-12: Visible body recomposition with improved energy and metabolic markers.",
-        monthlyPrice: "R3,799",
-        fullPrice: "R7,999",
-        savings: "Save R1,398",
+        monthlyPrice: PROGRAM_MONTHLY,
+        fullPrice: PROGRAM_FULL,
+        savings: PROGRAM_SAVING,
         peptides: [
           { name: "Retatrutide (RT3)", dose: "0.5mg → 4mg/week titrated", frequency: "Once weekly subcutaneous", purpose: "Triple-agonist fat loss, appetite regulation, metabolic optimization" },
           { name: "MOTS-C", dose: "5-10mg/week", frequency: "Twice weekly", purpose: "Mitochondrial biogenesis, exercise performance, metabolic flexibility" },
@@ -150,9 +155,9 @@ function buildProtocol(
         duration: "12 Weeks",
         whyFits: `${name}, your assessment suggests you're looking for a manageable entry point. The dual-agonist approach (TZ-2) offers significant appetite suppression and fat loss with a gentler side-effect profile than triple-agonists. Combined with BPC-157 for gut health — critical for fat-loss success.`,
         timeline: "Week 1-2: Reduced appetite, improved satiety. Week 3-5: 0.3-0.8kg/week fat loss. Week 6-12: Cumulative 4-8kg total body fat reduction with improved gut health.",
-        monthlyPrice: "R2,199",
-        fullPrice: "R5,499",
-        savings: "Save R1,098",
+        monthlyPrice: PROGRAM_MONTHLY,
+        fullPrice: PROGRAM_FULL,
+        savings: PROGRAM_SAVING,
         peptides: [
           { name: "Tirzepatide (TZ-2)", dose: "2.5mg → 7.5mg/week titrated", frequency: "Once weekly subcutaneous", purpose: "Dual GIP/GLP-1 agonist for appetite suppression and fat loss" },
           { name: "BPC-157", dose: "250-500mcg/day", frequency: "Daily", purpose: "Gut healing, reduces inflammation, supports nutrient absorption" },
@@ -185,9 +190,9 @@ function buildProtocol(
         duration: "12 Weeks",
         whyFits: `${name}, your assessment points to someone who's active and wants a balanced approach. This protocol combines the proven dual-agonist fat-loss mechanism with healing peptides to protect joints and soft tissue during increased training volume.`,
         timeline: "Week 2-3: Appetite regulation kicks in. Week 4-8: Steady 0.5kg/week fat loss while maintaining training intensity. Week 9-12: Visible recomposition with improved recovery.",
-        monthlyPrice: "R2,799",
-        fullPrice: "R6,299",
-        savings: "Save R1,098",
+        monthlyPrice: PROGRAM_MONTHLY,
+        fullPrice: PROGRAM_FULL,
+        savings: PROGRAM_SAVING,
         peptides: [
           { name: "Tirzepatide (TZ-2)", dose: "5mg → 10mg/week titrated", frequency: "Once weekly subcutaneous", purpose: "Sustained fat loss with appetite control" },
           { name: "BPC-157 / TB-500 Stack", dose: "250mcg BPC + 2mg TB", frequency: "Twice weekly", purpose: "Tendon/ligament protection, faster recovery between sessions" },
@@ -297,9 +302,9 @@ function buildProtocol(
         duration: "16 Weeks",
         whyFits: `${name}, your assessment indicates you're ready for a comprehensive transformation. This is our most advanced protocol, combining triple-agonist fat loss with complete tissue regeneration and mitochondrial optimization. For those who want it all.`,
         timeline: "Phase 1 (Weeks 1-4): Metabolic priming, appetite control, initial fat loss. Phase 2 (Weeks 5-10): Accelerated recomposition, tissue repair. Phase 3 (Weeks 11-16): Peak conditioning, maintenance transition.",
-        monthlyPrice: "R4,299",
-        fullPrice: "R12,999",
-        savings: "Save R4,197",
+        monthlyPrice: PROGRAM_MONTHLY,
+        fullPrice: PROGRAM_FULL,
+        savings: PROGRAM_SAVING,
         peptides: [
           { name: "Retatrutide (RT3)", dose: "1mg → 4mg/week titrated", frequency: "Once weekly", purpose: "Maximum fat loss via triple-agonist mechanism" },
           { name: "GLOW Blend", dose: "2,330mcg/day", frequency: "Daily", purpose: "Tissue regeneration, anti-aging, recovery" },
@@ -337,9 +342,9 @@ function buildProtocol(
         duration: "12 Weeks",
         whyFits: `${name}, your assessment shows you want results across multiple areas — body composition, recovery, and energy. This protocol combines the most versatile peptides to deliver visible fat loss while actively repairing tissue and improving overall vitality.`,
         timeline: "Week 1-3: Energy and appetite improvements. Week 4-8: Steady fat loss (0.5kg/week) with reduced soreness. Week 9-12: Visible transformation with improved recovery and sleep quality.",
-        monthlyPrice: "R2,999",
-        fullPrice: "R6,999",
-        savings: "Save R998",
+        monthlyPrice: PROGRAM_MONTHLY,
+        fullPrice: PROGRAM_FULL,
+        savings: PROGRAM_SAVING,
         peptides: [
           { name: "Tirzepatide (TZ-2)", dose: "5mg → 10mg/week", frequency: "Once weekly", purpose: "Sustained fat loss, appetite regulation" },
           { name: "BPC-157 / TB-500 Stack", dose: "250mcg BPC + 2mg TB", frequency: "Twice weekly", purpose: "Tissue repair, injury prevention, reduced inflammation" },

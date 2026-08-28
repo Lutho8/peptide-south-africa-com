@@ -12,16 +12,18 @@ import {
   type MixBundleSize,
 } from "@/lib/bundlePricing";
 import { useCart } from "@/context/CartContext";
-import { useCurrency } from "@/context/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import { formatZarWhole } from "../../supabase/functions/_shared/pricing";
 
 /** One selector slot: a product slug or empty. */
 type Slot = string | "";
 
-const selectableProducts = products; // full catalog; out-of-stock rendered disabled
+const selectableProducts = products.filter((product) => product.track !== "GP");
+const selectableSlugs = new Set(selectableProducts.map((product) => product.slug));
+const eligibleCuratedStacks = CURATED_STACKS.filter((stack) => stack.slugs.every((slug) => selectableSlugs.has(slug)));
 
 function emptySlots(size: MixBundleSize, prefill: Slot[] = []): Slot[] {
   const slots: Slot[] = Array(size).fill("");
@@ -32,14 +34,13 @@ function emptySlots(size: MixBundleSize, prefill: Slot[] = []): Slot[] {
 export default function BuildYourStackPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("prefill") ?? "";
-  const validPrefill = products.some((p) => p.slug === prefillSlug) ? prefillSlug : "";
+  const validPrefill = selectableSlugs.has(prefillSlug) ? prefillSlug : "";
 
   const [size, setSize] = useState<MixBundleSize>(5);
   const [slots, setSlots] = useState<Slot[]>(() => emptySlots(5, validPrefill ? [validPrefill] : []));
   const [added, setAdded] = useState(false);
 
   const { addBundleToCart } = useCart();
-  const { format } = useCurrency();
   const { toast } = useToast();
 
   const bySlug = useMemo(() => new Map(products.map((p) => [p.slug, p])), []);
@@ -66,7 +67,7 @@ export default function BuildYourStackPage() {
   };
 
   const applyStack = (stackId: string) => {
-    const stack = CURATED_STACKS.find((s) => s.id === stackId);
+    const stack = eligibleCuratedStacks.find((s) => s.id === stackId);
     if (!stack) return;
     if (size !== 5) switchSize(5);
     setSlots(emptySlots(5, stack.slugs));
@@ -164,7 +165,7 @@ export default function BuildYourStackPage() {
           Tap a curated 5-pack to auto-fill your slots, then tweak anything you like.
         </p>
         <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-          {CURATED_STACKS.map((stack) => {
+          {eligibleCuratedStacks.map((stack) => {
             const stackProducts = resolveStackProducts(stack).filter((p): p is Product => !!p);
             const q = stackProducts.length === 5 ? quoteMixBundle(stackProducts, 5) : undefined;
             const hasOOS = stackProducts.some((p) => !p.inStock);
@@ -184,8 +185,8 @@ export default function BuildYourStackPage() {
                 </p>
                 {q && (
                   <p className="mt-2 font-mono text-sm font-bold text-primary">
-                    {format(q.total)}{" "}
-                    <span className="text-[10px] font-semibold text-trust">save {format(q.savings)}</span>
+                    {formatZarWhole(q.total)}{" "}
+                    <span className="text-[10px] font-semibold text-trust">save {formatZarWhole(q.savings)}</span>
                   </p>
                 )}
                 {hasOOS && (
@@ -234,23 +235,14 @@ export default function BuildYourStackPage() {
                         <option value="">Vial {i + 1} — choose a peptide…</option>
                         {selectableProducts.map((sp) => (
                           <option key={sp.slug} value={sp.slug} disabled={!sp.inStock}>
-                            {sp.name} — R{singleVialPrice(sp).toLocaleString("en-ZA")}
+                            {sp.name}
                             {!sp.inStock ? " (out of stock)" : ""}
                           </option>
                         ))}
                       </select>
                       <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     </div>
-                    {p && (
-                      <div className="hidden shrink-0 text-right sm:block">
-                        <p className="font-mono text-sm font-bold text-foreground">
-                          {format(singleVialPrice(p))}
-                        </p>
-                        <p className="font-mono text-[10px] text-trust">
-                          → {format(Math.round(singleVialPrice(p) * tier.multiplier))} in pack
-                        </p>
-                      </div>
-                    )}
+                    {p && <span className="hidden text-xs font-semibold text-muted-foreground sm:block">quantity 1</span>}
                     {slug && (
                       <button
                         onClick={() => setSlot(i, "")}
@@ -277,20 +269,20 @@ export default function BuildYourStackPage() {
           <h3 className="font-display text-lg font-bold text-foreground">Your {size}-Pack</h3>
           <div className="mt-3 flex flex-col gap-1.5 text-sm">
             <div className="flex justify-between text-muted-foreground">
-              <span>Vials selected</span>
+              <span>Selected components</span>
               <span className="font-semibold text-foreground">{filledCount} / {size}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>Single-vial subtotal</span>
-              <span className={runningSubtotal > 0 ? "line-through" : ""}>{format(runningSubtotal)}</span>
+              <span>Combined pre-discount subtotal</span>
+              <span className={runningSubtotal > 0 ? "line-through" : ""}>{formatZarWhole(runningSubtotal)}</span>
             </div>
             <div className="flex justify-between font-semibold text-foreground">
               <span>{tier.label} ({tier.discountPct}% off)</span>
-              <span data-testid="mix-total">{format(runningTotal)}</span>
+              <span data-testid="mix-total">{formatZarWhole(runningTotal)}</span>
             </div>
             <div className="flex justify-between font-bold text-trust">
               <span>You Save</span>
-              <span data-testid="mix-savings">{format(runningSavings)}</span>
+              <span data-testid="mix-savings">{formatZarWhole(runningSavings)}</span>
             </div>
           </div>
           <button
@@ -301,7 +293,7 @@ export default function BuildYourStackPage() {
             {added ? (
               <><CheckCircle className="h-4 w-4" /> Added to Cart!</>
             ) : (
-              <><ShoppingCart className="h-4 w-4" /> Add {size}-Pack to Cart{quote ? ` — ${format(quote.total)}` : ""}</>
+              <><ShoppingCart className="h-4 w-4" /> Add {size}-Pack to Cart{quote ? ` — ${formatZarWhole(quote.total)}` : ""}</>
             )}
           </button>
           <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
@@ -321,9 +313,9 @@ export default function BuildYourStackPage() {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl backdrop-blur lg:hidden">
         <div className="container flex items-center justify-between gap-3 px-1">
           <div>
-            <p className="font-display text-base font-bold text-foreground">{format(runningTotal)}</p>
+            <p className="font-display text-base font-bold text-foreground">{formatZarWhole(runningTotal)}</p>
             <p className="text-[10px] font-semibold text-trust">
-              {runningSavings > 0 ? `You Save ${format(runningSavings)}` : `${filledCount}/${size} vials selected`}
+              {runningSavings > 0 ? `You Save ${formatZarWhole(runningSavings)}` : `${filledCount}/${size} vials selected`}
             </p>
           </div>
           <button

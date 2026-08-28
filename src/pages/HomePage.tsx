@@ -31,6 +31,8 @@ import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
+import BookConsultLink from "@/components/BookConsultLink";
+import WeightLossPricing from "@/components/WeightLossPricing";
 
 const results = [
   { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
@@ -209,12 +211,11 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 text-center">
-            <Link
-              to="/shop"
+            <BookConsultLink
               className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              Buy Now <ArrowRight className="h-4 w-4" />
-            </Link>
+              BOOK CONSULT <ArrowRight className="h-4 w-4" />
+            </BookConsultLink>
           </div>
         </div>
       </section>
@@ -277,37 +278,7 @@ export default function HomePage() {
             </div>
 
             {/* Pricing */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border-2 border-border bg-background p-6 text-center shadow-card">
-                <p className="text-sm font-medium text-muted-foreground">Monthly</p>
-                <p className="mt-1 font-display text-3xl font-bold text-foreground">
-                  R1,999<span className="text-base font-normal text-muted-foreground">/month</span>
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">Flexible, cancel anytime</p>
-                <Link
-                  to="/shop"
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-all hover:bg-muted"
-                >
-                  Buy Monthly — R1,999
-                </Link>
-              </div>
-              <div className="relative rounded-2xl border-2 border-primary bg-background p-6 text-center shadow-glow">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-hero-gradient px-4 py-1 text-xs font-bold text-primary-foreground">
-                  BEST VALUE
-                </span>
-                <p className="text-sm font-medium text-muted-foreground">Full 12-Week Program</p>
-                <p className="mt-1 font-display text-3xl font-bold text-gradient">
-                  R4,999
-                </p>
-                <p className="mt-2 text-xs text-trust font-semibold">Save R997 — 17% off</p>
-                <Link
-                  to="/shop"
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-                >
-                  Buy Now — R4,999 <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
+            <div className="mt-8"><WeightLossPricing /></div>
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
               ⚡ Limited spots available for personalized onboarding

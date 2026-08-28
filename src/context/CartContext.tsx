@@ -2,6 +2,7 @@ import { createContext, startTransition, useContext, useState, useCallback, useE
 import type { Product } from "@/data/products";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { PRICING, catalogPrice, quoteMixSlugs, roundCents, variantPrice, type MixBundleSize } from "../../supabase/functions/_shared/pricing";
 
 export interface CartItem {
   product: Product;
@@ -84,10 +85,37 @@ function loadPersistedItems(): CartItem[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     // Basic shape validation to avoid crashes if the schema drifts.
-    return parsed.filter(
+    const valid = parsed.filter(
       (i): i is CartItem =>
-        !!i && typeof i === "object" && !!i.product && typeof i.lineId === "string" && typeof i.quantity === "number",
+        !!i && typeof i === "object" && !!i.product && i.product.track !== "GP" && typeof i.lineId === "string" && typeof i.quantity === "number",
     );
+    const bundleIds = [...new Set(valid.flatMap((item) => item.bundleId ? [item.bundleId] : []))];
+    const repricedBundles = new Map<string, number[]>();
+    for (const bundleId of bundleIds) {
+      const lines = valid.filter((item) => item.bundleId === bundleId);
+      if (lines.length !== 5 && lines.length !== 10) continue;
+      const size = lines.length as MixBundleSize;
+      const quote = quoteMixSlugs(lines.map((line) => line.product.slug), size);
+      const multiplier = 1 - PRICING.packDiscounts[size];
+      const prices = lines.map((line) => roundCents(catalogPrice(line.product.slug) * multiplier));
+      const sumBeforeLast = prices.slice(0, -1).reduce((sum, amount) => sum + amount, 0);
+      prices[prices.length - 1] = roundCents(quote.total - sumBeforeLast);
+      repricedBundles.set(bundleId, prices);
+    }
+    return valid.flatMap((item) => {
+      if (item.bundleId) {
+        const lines = valid.filter((candidate) => candidate.bundleId === item.bundleId);
+        const prices = repricedBundles.get(item.bundleId);
+        if (!prices) return [];
+        const index = lines.findIndex((candidate) => candidate.lineId === item.lineId);
+        return [{ ...item, unitPrice: prices[index], compareAtPrice: catalogPrice(item.product.slug), quantity: 1 }];
+      }
+      try {
+        return [{ ...item, unitPrice: variantPrice(item.product.slug, item.variantLabel), quantity: Math.max(1, Math.floor(item.quantity)) }];
+      } catch {
+        return [];
+      }
+    });
   } catch {
     return [];
   }
@@ -125,8 +153,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 
   const addToCart = useCallback((product: Product, opts: AddToCartOptions = {}) => {
+    if (product.track === "GP") return;
     const variantLabel = opts.variantLabel;
-    const unitPrice = opts.unitPrice ?? product.price;
+    const unitPrice = variantPrice(product.slug, variantLabel);
     const lineId = makeLineId(product.id, variantLabel);
     setItems((prev) => {
       const existing = prev.find((i) => i.lineId === lineId);
@@ -146,14 +175,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addBundleToCart = useCallback(
     (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => {
+      if (lines.length !== 5 && lines.length !== 10) throw new Error("Invalid bundle size");
+      if (lines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to a research bundle");
+      const size = lines.length as MixBundleSize;
+      const quote = quoteMixSlugs(lines.map((line) => line.product.slug), size);
+      const multiplier = 1 - PRICING.packDiscounts[size];
+      const canonicalPrices = lines.map((line) => roundCents(catalogPrice(line.product.slug) * multiplier));
+      const sumBeforeLast = canonicalPrices.slice(0, -1).reduce((sum, amount) => sum + amount, 0);
+      canonicalPrices[canonicalPrices.length - 1] = roundCents(quote.total - sumBeforeLast);
       const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       setItems((prev) => [
         ...prev,
         ...lines.map((l, idx) => ({
           product: l.product,
           variantLabel: meta.label,
-          unitPrice: l.unitPrice,
-          compareAtPrice: l.compareAtPrice,
+          unitPrice: canonicalPrices[idx],
+          compareAtPrice: catalogPrice(l.product.slug),
           quantity: 1,
           lineId: `${bundleId}::${idx}`,
           bundleId,
@@ -172,10 +209,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
+    if (lines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to the cart");
     setItems((prev) => [
       ...prev.filter((item) => item.groupId !== groupId),
       ...lines.map((line) => ({
         ...line,
+        unitPrice: variantPrice(line.product.slug, line.variantLabel),
         groupId,
         lineId: `${groupId}::${line.product.id}::${line.variantLabel ?? "default"}`,
       })),

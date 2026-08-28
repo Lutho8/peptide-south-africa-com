@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -21,18 +21,27 @@ const HERO_VIDEO_POSTER =
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
+import { CONSULTATION_PATH } from "@/components/BookConsultLink";
+import { offerProps, trackEvent } from "@/lib/analytics";
+import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 export default function HeroShop() {
   const reduce = useReducedMotion();
   const { addToCart } = useCart();
   const { format } = useCurrency();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Hero featured products: RT3 (Weight Loss) + BPC/TB-500 (Recovery).
   const hero = products.find((p) => p.id === "1") ?? products[0];
   const secondary = products.find((p) => p.id === "6") ?? products.find((p) => p.id === "3") ?? products[1];
 
   const handleAdd = (p: typeof hero) => {
+    if (p.track === "GP") {
+      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
+      navigate(CONSULTATION_PATH);
+      return;
+    }
     const v = p.variants?.[0];
     addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     toast({
@@ -164,7 +173,9 @@ export default function HeroShop() {
                   <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{p.shortDescription}</p>
                   <div className="mt-3 flex items-baseline gap-2">
                     <span className="font-display text-xl font-bold text-foreground">
-                      {p.priceRange ?? format(p.price)}
+                      {p.track === "GP"
+                        ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month or ${formatZarWhole(PRICING.programOffers.full12Week.amount)}/12 weeks`
+                        : (p.priceRange ?? format(p.price))}
                     </span>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -178,7 +189,8 @@ export default function HeroShop() {
                       onClick={() => handleAdd(p)}
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98]"
                     >
-                      <ShoppingCart className="h-4 w-4" /> Start your protocol
+                      {p.track === "GP" ? <Stethoscope className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+                      {p.track === "GP" ? "BOOK CONSULT" : "Add to Cart"}
                     </button>
                   </div>
                 </div>

@@ -19,6 +19,7 @@ import productAlcoholSwabs from "@/assets/accessories/alcohol-swabs.jpg";
 import productGlassCartridge from "@/assets/accessories/glass-cartridge.jpg";
 import productPenNeedles from "@/assets/accessories/pen-needles.jpg";
 import productInsulinSyringes from "@/assets/accessories/insulin-syringes.jpg";
+import { catalogPrice, packPrice, variantPrice } from "../../supabase/functions/_shared/pricing";
 
 // All prices are in ZAR. Single-market site (South Africa).
 
@@ -39,14 +40,13 @@ export interface Variant {
  * 3-Pack is listed first so it becomes the default on the PDP.
  */
 function buildPackVariants(
-  basePrice: number,
+  slug: string,
   mgPerVial: number,
   stocks: { p1?: number; p3?: number } = {},
 ): Variant[] {
-  const round0 = (n: number) => Math.round(n);
   return [
-    { label: "3-Pack", price: round0(basePrice * 3 * 0.85), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
-    { label: "Single Vial", price: round0(basePrice), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
+    { label: "3-Pack", price: packPrice(slug, 3), pack: 3, mgPerVial, stock: stocks.p3 ?? 2 },
+    { label: "Single Vial", price: packPrice(slug, 1), pack: 1, mgPerVial, stock: stocks.p1 ?? 6 },
   ];
 }
 
@@ -93,22 +93,26 @@ export interface Product {
 }
 
 // Build all variants first so we can derive priceRange consistently.
-const rt3Variants  = buildPackVariants(1250, 10, { p3: 3 });
-const ghkVariants  = buildPackVariants(630,  50, { p3: 2 });
-const tesVariants  = buildPackVariants(775,  10, { p3: 2 });
-const tz2Variants  = buildPackVariants(895,  10, { p3: 2 });
-const motsVariants = buildPackVariants(485,  10, { p3: 2 });
-const bpcVariants  = buildPackVariants(955,  20, { p3: 2 });
-const glowVariants = buildPackVariants(1080, 70, { p3: 3 });
-const klowVariants = buildPackVariants(1260, 80, { p3: 2 });
-const kpvVariants      = buildPackVariants(1120, 10, { p3: 3 });
-const tha1Variants     = buildPackVariants(1500,  5, { p3: 2 });
-const ara290Variants   = buildPackVariants(1235, 16, { p3: 3 });
-const ss31Variants     = buildPackVariants(1615, 10, { p3: 2 });
-const pinealonVariants = buildPackVariants(855,  10, { p3: 3 });
-const epitalonVariants = buildPackVariants(855,  10, { p3: 3 });
-const selankVariants   = buildPackVariants(740,  10, { p3: 3 });
-const semaxVariants    = buildPackVariants(740,  10, { p3: 3 });
+const rt3Variants  = buildPackVariants("rt3-reta", 10, { p3: 3 });
+const ghkVariants  = buildPackVariants("ghk-cu-50mg", 50, { p3: 2 });
+const tesVariants  = buildPackVariants("tesamorelin", 10, { p3: 2 });
+const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p3: 2 });
+const motsVariants = buildPackVariants("mots-c", 10, { p3: 2 });
+const bpcVariants  = buildPackVariants("bpc-tb500-blend", 20, { p3: 2 });
+const glowVariants = buildPackVariants("glow70", 70, { p3: 3 });
+const klowVariants = buildPackVariants("klow80", 80, { p3: 2 });
+const kpvVariants      = buildPackVariants("kpv", 10, { p3: 3 });
+const tha1Variants     = buildPackVariants("thymosin-alpha-1", 5, { p3: 2 });
+const ara290Variants   = buildPackVariants("ara-290", 16, { p3: 3 });
+const ss31Variants     = buildPackVariants("ss-31", 10, { p3: 2 });
+const pinealonVariants = buildPackVariants("pinealon", 10, { p3: 3 });
+const epitalonVariants = buildPackVariants("epitalon", 10, { p3: 3 });
+const selankVariants   = buildPackVariants("selank", 10, { p3: 3 });
+const semaxVariants    = buildPackVariants("semax", 10, { p3: 3 });
+const bacWaterVariants: Variant[] = [
+  { label: "10ml", price: variantPrice("bac-water-bacteriostatic", "10ml"), pack: 1, stock: 40 },
+  { label: "3ml", price: variantPrice("bac-water-bacteriostatic", "3ml"), pack: 1, stock: 60 },
+];
 
 
 export const products: Product[] = [
@@ -118,7 +122,7 @@ export const products: Product[] = [
     slug: "rt3-reta",
     shortDescription: "Triple agonist targeting GLP-1, GIP, and glucagon receptors for metabolic research.",
     description: "RT3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
-    price: 1250,
+    price: catalogPrice("rt3-reta"),
     priceRange: rangeFromVariants(rt3Variants),
     image: productRt3,
     category: "GLP",
@@ -148,7 +152,7 @@ export const products: Product[] = [
     slug: "ghk-cu-50mg",
     shortDescription: "Copper peptide for skin rejuvenation, wound healing, and collagen synthesis research.",
     description: "GHK-Cu is a naturally occurring copper peptide with extensive research backing its role in tissue remodeling, collagen synthesis, and anti-inflammatory pathways. This 50mg vial provides ample material for comprehensive dermatological and regenerative research.",
-    price: 630,
+    price: catalogPrice("ghk-cu-50mg"),
     priceRange: rangeFromVariants(ghkVariants),
     image: productGhk,
     category: "Skin & Hair",
@@ -175,7 +179,7 @@ export const products: Product[] = [
     slug: "tesamorelin",
     shortDescription: "Growth hormone-releasing hormone analog for GH secretion and body composition research.",
     description: "Tesamorelin is a synthetic analog of growth hormone-releasing hormone (GHRH) studied for its ability to stimulate GH production. Widely researched for its effects on visceral adipose tissue reduction and lipodystrophy.",
-    price: 775,
+    price: catalogPrice("tesamorelin"),
     priceRange: rangeFromVariants(tesVariants),
     image: productTesa,
     category: "Growth Hormone",
@@ -203,7 +207,7 @@ export const products: Product[] = [
     slug: "tz2-tirz",
     shortDescription: "Dual GIP/GLP-1 receptor agonist for advanced metabolic and weight loss research.",
     description: "TZ-2 is a dual GIP and GLP-1 receptor agonist representing the next generation of metabolic peptide research. Studied extensively for its role in glucose homeostasis, appetite regulation, and significant body weight reduction in preclinical models.",
-    price: 895,
+    price: catalogPrice("tz2-tirz"),
     priceRange: rangeFromVariants(tz2Variants),
     image: productTz2,
     category: "GLP",
@@ -231,7 +235,7 @@ export const products: Product[] = [
     slug: "mots-c",
     shortDescription: "Mitochondrial-derived peptide for metabolic homeostasis and longevity research.",
     description: "MOTS-C is a mitochondrial-derived peptide that plays a critical role in metabolic homeostasis. Research shows it regulates insulin sensitivity, promotes fatty acid oxidation, and may have significant implications for aging and exercise physiology.",
-    price: 485,
+    price: catalogPrice("mots-c"),
     priceRange: rangeFromVariants(motsVariants),
     image: productMots,
     category: "Wellness & Longevity",
@@ -259,7 +263,7 @@ export const products: Product[] = [
     slug: "bpc-tb500-blend",
     shortDescription: "Synergistic healing blend combining BPC-157 and TB-500 for tissue repair research.",
     description: "This premium blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — into a single vial. Designed for researchers studying tissue repair, angiogenesis, and accelerated recovery pathways.",
-    price: 955,
+    price: catalogPrice("bpc-tb500-blend"),
     priceRange: rangeFromVariants(bpcVariants),
     image: productBpc,
     category: "Healing",
@@ -286,7 +290,7 @@ export const products: Product[] = [
     slug: "glow70",
     shortDescription: "Advanced skin peptide complex for collagen production and skin rejuvenation research.",
     description: "GLOW70 is a specialized 70mg skin peptide formulation designed for advanced dermatological research. Targets multiple pathways involved in collagen production, skin cell turnover, and protective barrier function.",
-    price: 1080,
+    price: catalogPrice("glow70"),
     priceRange: rangeFromVariants(glowVariants),
     image: productGlow,
     category: "Skin & Hair",
@@ -312,7 +316,7 @@ export const products: Product[] = [
     slug: "klow80",
     shortDescription: "Premium 80mg longevity peptide for cellular renewal and anti-aging research.",
     description: "KLOW80 is an 80mg premium longevity peptide designed for advanced aging research. Targets telomerase activation, mitochondrial biogenesis, and cellular senescence pathways — key areas in the quest to understand and potentially slow biological aging.",
-    price: 1260,
+    price: catalogPrice("klow80"),
     priceRange: rangeFromVariants(klowVariants),
     image: productKlow,
     category: "Wellness & Longevity",
@@ -338,7 +342,7 @@ export const products: Product[] = [
     slug: "kpv",
     shortDescription: "α-MSH tripeptide fragment for gut inflammation and mucosal healing research.",
     description: "KPV (Lysine-Proline-Valine) is the C-terminal tripeptide of α-MSH, studied for its anti-inflammatory effects on the gut and skin. Researchers use it to model mucosal healing, IBD pathways, and mast-cell modulation.",
-    price: 1120,
+    price: catalogPrice("kpv"),
     priceRange: rangeFromVariants(kpvVariants),
     image: productKpv,
     category: "Recovery",
@@ -365,7 +369,7 @@ export const products: Product[] = [
     slug: "thymosin-alpha-1",
     shortDescription: "28-amino-acid thymic peptide for immune modulation and T-cell research.",
     description: "Thymosin Alpha-1 (Tα1) is a 28-amino-acid peptide originally isolated from the thymus. It is studied for its role in T-cell maturation, innate immune signalling, and adjunctive immunology research protocols.",
-    price: 1500,
+    price: catalogPrice("thymosin-alpha-1"),
     priceRange: rangeFromVariants(tha1Variants),
     image: productTha1,
     category: "Recovery",
@@ -392,7 +396,7 @@ export const products: Product[] = [
     slug: "ara-290",
     shortDescription: "11-amino-acid EPO-derived peptide for neuropathic pain and tissue repair research.",
     description: "ARA-290 (Cibinetide) is an 11-amino-acid peptide derived from the tertiary structure of erythropoietin. It selectively activates the innate repair receptor and is studied in models of neuropathic pain, wound healing, and metabolic inflammation.",
-    price: 1235,
+    price: catalogPrice("ara-290"),
     priceRange: rangeFromVariants(ara290Variants),
     image: productAra290,
     category: "Recovery",
@@ -419,7 +423,7 @@ export const products: Product[] = [
     slug: "ss-31",
     shortDescription: "Mitochondrial-targeting tetrapeptide for cardiolipin and bioenergetics research.",
     description: "SS-31 (Elamipretide) is a cell-permeable tetrapeptide that binds cardiolipin on the inner mitochondrial membrane. Researchers use it to study mitochondrial bioenergetics, oxidative stress, and age-related cellular decline.",
-    price: 1615,
+    price: catalogPrice("ss-31"),
     priceRange: rangeFromVariants(ss31Variants),
     image: productSs31,
     category: "Wellness & Longevity",
@@ -446,7 +450,7 @@ export const products: Product[] = [
     slug: "pinealon",
     shortDescription: "Short bioregulator tripeptide for neuroprotection and cognitive-aging research.",
     description: "Pinealon is a synthetic tripeptide (Glu-Asp-Arg) from the Khavinson family of short bioregulators. It is studied for neuroprotective effects, cognitive resilience under stress, and pineal-axis regulation in aging models.",
-    price: 855,
+    price: catalogPrice("pinealon"),
     priceRange: rangeFromVariants(pinealonVariants),
     image: productPinealon,
     category: "Wellness & Longevity",
@@ -473,7 +477,7 @@ export const products: Product[] = [
     slug: "epitalon",
     shortDescription: "Tetrapeptide bioregulator for telomerase and pineal-axis longevity research.",
     description: "Epitalon (Ala-Glu-Asp-Gly) is a synthetic tetrapeptide developed by V. Khavinson, studied for its influence on telomerase activity, pineal function, and circadian regulation in aging research models.",
-    price: 855,
+    price: catalogPrice("epitalon"),
     priceRange: rangeFromVariants(epitalonVariants),
     image: productEpitalon,
     category: "Wellness & Longevity",
@@ -500,7 +504,7 @@ export const products: Product[] = [
     slug: "selank",
     shortDescription: "Synthetic tuftsin analogue for anxiolytic and cognitive research models.",
     description: "Selank is a synthetic heptapeptide analogue of the immunomodulator tuftsin, developed at the Russian Academy of Medical Sciences. Researchers study its anxiolytic profile, BDNF modulation, and cognitive performance under stress.",
-    price: 740,
+    price: catalogPrice("selank"),
     priceRange: rangeFromVariants(selankVariants),
     image: productSelank,
     category: "Wellness & Longevity",
@@ -527,7 +531,7 @@ export const products: Product[] = [
     slug: "semax",
     shortDescription: "Synthetic ACTH(4-10) analogue for nootropic and neuroprotection research.",
     description: "Semax is a synthetic heptapeptide analogue of ACTH(4-10) developed at the Institute of Molecular Genetics, Moscow. It is studied for BDNF/NGF upregulation, cognitive performance, and neuroprotective effects in ischaemia models.",
-    price: 740,
+    price: catalogPrice("semax"),
     priceRange: rangeFromVariants(semaxVariants),
     image: productSemax,
     category: "Wellness & Longevity",
@@ -554,8 +558,8 @@ export const products: Product[] = [
     slug: "bac-water-bacteriostatic",
     shortDescription: "Sterile 0.9% benzyl-alcohol bacteriostatic water for lyophilised peptide reconstitution.",
     description: "Pharmaceutical-grade bacteriostatic water preserved with 0.9% benzyl alcohol. Used to reconstitute lyophilised research peptides. Sterile-filled, sealed vial, produced under GMP conditions. Research use only.",
-    price: 89,
-    priceRange: "R89 – R199",
+    price: catalogPrice("bac-water-bacteriostatic"),
+    priceRange: rangeFromVariants(bacWaterVariants),
     image: productBacWater,
     category: "BAC Water",
     purity: "USP grade",
@@ -563,10 +567,7 @@ export const products: Product[] = [
     sku: "PSA-BAC-WATER",
     compoundClass: "Reconstitution diluent",
     track: "RUO",
-    variants: [
-      { label: "10ml", price: 199, pack: 1, stock: 40 },
-      { label: "3ml",  price: 89,  pack: 1, stock: 60 },
-    ],
+    variants: bacWaterVariants,
     benefits: ["Sterile 0.9% benzyl-alcohol preserved", "USP-grade water for injection", "Multi-dose vial", "Compatible with all lyophilised peptides"],
     whatsIncluded: ["1× sealed BAC water vial", "Batch/lot documentation"],
     whoItsFor: ["Every peptide reconstitution protocol", "Multi-vial research programmes", "Home-lab researchers"],
@@ -584,7 +585,7 @@ export const products: Product[] = [
     slug: "alcohol-swabs-20",
     shortDescription: "Sterile 70% isopropyl alcohol swabs for vial stopper and injection-site preparation.",
     description: "Individually foil-wrapped sterile 70% isopropyl alcohol prep swabs. Essential for aseptic reconstitution and injection preparation. 20 swabs per pack.",
-    price: 59,
+    price: catalogPrice("alcohol-swabs-20"),
     image: productAlcoholSwabs,
     category: "Accessories",
     sku: "PSA-ACC-SWAB20",
@@ -605,7 +606,7 @@ export const products: Product[] = [
     slug: "glass-cartridge-3ml",
     shortDescription: "Empty sterile 3ml glass cartridge with butyl stopper for reconstitution.",
     description: "Type-1 borosilicate glass cartridge, 3ml capacity, pre-sterilised with medical-grade butyl rubber stopper and aluminum crimp cap. For researchers who want to split larger peptide vials into multi-use working cartridges.",
-    price: 39,
+    price: catalogPrice("glass-cartridge-3ml"),
     image: productGlassCartridge,
     category: "Accessories",
     sku: "PSA-ACC-CART3",
@@ -626,7 +627,7 @@ export const products: Product[] = [
     slug: "peptide-pen-needles-10",
     shortDescription: "31G × 5mm sterile pen needles compatible with standard peptide pens.",
     description: "Ultra-thin 31-gauge × 5mm pen needles, individually sealed, sterile, single-use. Fits standard universal pen threads. 10 needles per pack.",
-    price: 49,
+    price: catalogPrice("peptide-pen-needles-10"),
     image: productPenNeedles,
     category: "Accessories",
     sku: "PSA-ACC-PEN10",
@@ -647,7 +648,7 @@ export const products: Product[] = [
     slug: "insulin-syringes-5",
     shortDescription: "Sterile 1ml U-100 insulin syringes with 29G × 12.7mm fixed needles.",
     description: "Sterile single-use 1ml U-100 insulin syringes with pre-attached 29G × 12.7mm needles. Clear graduated barrel for accurate dose measurement. 5 syringes per pack.",
-    price: 59,
+    price: catalogPrice("insulin-syringes-5"),
     image: productInsulinSyringes,
     category: "Accessories",
     sku: "PSA-ACC-SYR5",

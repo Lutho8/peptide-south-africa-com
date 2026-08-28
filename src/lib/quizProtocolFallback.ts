@@ -6,6 +6,11 @@ export interface QuizProtocolAnswers {
   readiness?: string;
   budget?: string;
 }
+import { formatZarWhole, PRICING, WEIGHT_LOSS_SAVING } from "../../supabase/functions/_shared/pricing";
+
+const PROGRAM_MONTHLY = formatZarWhole(PRICING.programOffers.monthly.amount);
+const PROGRAM_FULL = formatZarWhole(PRICING.programOffers.full12Week.amount);
+const PROGRAM_SAVING = `Save ${formatZarWhole(WEIGHT_LOSS_SAVING)} vs three monthly payments`;
 
 export interface AIProtocol {
   protocolName: string;
@@ -21,6 +26,17 @@ export interface AIProtocol {
   included: string[];
   weeklySchedule: string;
   warnings: string[];
+}
+
+/** Prevent a stale protocol service response from reintroducing old weight-loss pricing. */
+export function normalizeProtocolPricing(protocol: AIProtocol, answers: QuizProtocolAnswers): AIProtocol {
+  if (answers.goal === "recovery") return protocol;
+  return {
+    ...protocol,
+    monthlyPrice: PROGRAM_MONTHLY,
+    fullPrice: PROGRAM_FULL,
+    savings: PROGRAM_SAVING,
+  };
 }
 
 function safeFirstName(name: string) {
@@ -69,9 +85,9 @@ export function buildFallbackProtocol(answers: QuizProtocolAnswers, leadName: st
       duration: "12 Weeks",
       whyFits: `${name}, you selected both composition and performance. The recommended route starts with the two highest-priority pathways and uses 3-packs to improve value without adding unrelated products.`,
       timeline: "Weeks 1–4 establish adherence; weeks 5–12 focus on measurable composition, energy and recovery trends.",
-      monthlyPrice: "R2,205",
-      fullPrice: "R5,623",
-      savings: "Save 15% with 3-packs",
+      monthlyPrice: PROGRAM_MONTHLY,
+      fullPrice: PROGRAM_FULL,
+      savings: PROGRAM_SAVING,
       peptides: [
         { name: "RT3 (Reta)", dose: "Pending GP review", frequency: "Pending GP review", purpose: "Metabolic pathway" },
         { name: "BPC/TB-500 Blend", dose: "Per approved protocol", frequency: "Per approved schedule", purpose: "Recovery pathway" },
@@ -93,9 +109,9 @@ export function buildFallbackProtocol(answers: QuizProtocolAnswers, leadName: st
     duration: "12 Weeks",
     whyFits: `${name}, your answers point to body composition as the first priority. This recommendation keeps the starting stack focused and uses the 3-pack as the best balance of adherence and price per vial.`,
     timeline: "Weeks 1–4 establish the routine and baseline; weeks 5–12 focus on consistent tracking and review.",
-    monthlyPrice: "R1,850",
-    fullPrice: "R4,718",
-    savings: "Save 15% with 3-packs",
+    monthlyPrice: PROGRAM_MONTHLY,
+    fullPrice: PROGRAM_FULL,
+    savings: PROGRAM_SAVING,
     peptides: [
       { name: "TZ-2 (Tirz)", dose: "Pending GP review", frequency: "Pending GP review", purpose: "Metabolic pathway" },
       { name: "BPC/TB-500 Blend", dose: "Per approved protocol", frequency: "Per approved schedule", purpose: "Recovery and routine support" },

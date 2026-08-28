@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle,
@@ -33,9 +33,10 @@ import ProtocolPlans, { buildProductPlans, type PlanChoice } from "@/components/
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
-import { buildFallbackProtocol, type AIProtocol } from "@/lib/quizProtocolFallback";
+import { buildFallbackProtocol, normalizeProtocolPricing, type AIProtocol } from "@/lib/quizProtocolFallback";
 import { matchProtocolProducts } from "@/lib/quizProductMatching";
 import { useAuth } from "@/hooks/useAuth";
+import { offerProps, rememberOffer, trackEvent } from "@/lib/analytics";
 
 const WA_NUMBER = "27721242377";
 const ZOOM_LINK = "https://us06web.zoom.us/j/83316307927";
@@ -179,6 +180,8 @@ const GOAL_LABEL: Record<string, string> = {
 };
 
 export default function QuizFunnelPage() {
+  const [searchParams] = useSearchParams();
+  const isConsultJourney = searchParams.get("intent") === "consult";
   const [flowIndex, setFlowIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [lead, setLead] = useState<LeadInfo>({ name: "", email: "", whatsapp: "" });
@@ -191,6 +194,13 @@ export default function QuizFunnelPage() {
   const { user } = useAuth();
   const protocolRef = useRef<AIProtocol | null>(null);
   const errorRef = useRef<string | null>(null);
+  const qualifiedTracked = useRef(false);
+
+  useEffect(() => {
+    if (isConsultJourney) {
+      trackEvent({ event: "consultation_started", props: offerProps("monthly") });
+    }
+  }, [isConsultJourney]);
 
   const totalUnits = FLOW.length + 1; // + lead capture
   const progress =
@@ -207,6 +217,7 @@ export default function QuizFunnelPage() {
   }, [aiProtocol]);
 
   const exactPlans = useMemo(() => {
+    if (answers.goal !== "recovery") return undefined;
     if (matchedProducts.length === 0) return undefined;
     const singleTotal = matchedProducts.reduce((sum, product) => {
       const single = product.variants?.find((variant) => variant.pack === 1);
@@ -217,9 +228,15 @@ export default function QuizFunnelPage() {
       return sum + (pack?.price ?? product.price * 3);
     }, 0);
     return buildProductPlans(singleTotal, threePackTotal);
-  }, [matchedProducts]);
+  }, [answers.goal, matchedProducts]);
 
   const handleChoosePlan = (plan: PlanChoice) => {
+    if (answers.goal !== "recovery") {
+      const offer = plan.id === "monthly" ? "monthly" : "full12Week";
+      trackEvent({ event: "program_selected", props: rememberOffer(offer) });
+      setPlanChosen(plan);
+      return;
+    }
     setPlanChosen(plan);
     const lines = matchedProducts.map((p) => {
       const desiredPack = plan.months === 1 ? 1 : 3;
@@ -302,7 +319,7 @@ export default function QuizFunnelPage() {
         if (fnError) throw new Error(fnError.message);
         if (data?.error) throw new Error(data.error);
         if (!data?.protocol) throw new Error("No protocol received");
-        protocolRef.current = data.protocol as AIProtocol;
+        protocolRef.current = normalizeProtocolPricing(data.protocol as AIProtocol, answers);
 
         // Preserve the existing CRM sync for signed-in visitors. Anonymous
         // lead forwarding remains disabled until its data destination is
@@ -376,6 +393,13 @@ export default function QuizFunnelPage() {
     const raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [answers, lead.name, phase]);
+
+  useEffect(() => {
+    if (phase === "results" && isConsultJourney && !qualifiedTracked.current) {
+      qualifiedTracked.current = true;
+      trackEvent({ event: "consultation_qualified", props: offerProps("monthly") });
+    }
+  }, [isConsultJourney, phase]);
 
   const activeStage = Math.min(
     theaterStages.length - 1,
@@ -800,11 +824,14 @@ export default function QuizFunnelPage() {
               monthlyPrice={aiProtocol.monthlyPrice}
               budget={answers.budget}
               exactPlans={exactPlans}
+              consultHref={answers.goal !== "recovery" ? ZOOM_LINK : undefined}
               onChoose={handleChoosePlan}
             />
             {planChosen && (
               <p className="mt-3 text-center text-xs font-semibold text-trust">
-                {planChosen.months}-month cycle selected — your exact pack quantities are in the cart.
+                {answers.goal === "recovery"
+                  ? `${planChosen.months}-month cycle selected — your exact pack quantities are in the cart.`
+                  : `${planChosen.label} selected for clinician review.`}
               </p>
             )}
           </div>
@@ -940,12 +967,13 @@ export default function QuizFunnelPage() {
               A free 30-minute video consult to review this protocol before you commit to anything.
             </p>
             <a
+              id="book-consult"
               href={ZOOM_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
             >
-              <Video className="h-4 w-4" /> Book Zoom Consultation
+              <Video className="h-4 w-4" /> BOOK CONSULT
             </a>
             <p className="mt-2 text-xs text-muted-foreground">Free • 30 minutes • No commitment</p>
           </div>

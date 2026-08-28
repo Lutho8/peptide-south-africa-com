@@ -17,6 +17,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import RelatedContent from "@/components/RelatedContent";
 import { entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
+import BookConsultLink from "@/components/BookConsultLink";
 
 const credentials = [
   { icon: Award, title: "Pharmaceutical-Grade Compounds", desc: "All protocols use compounds that meet strict pharmaceutical quality standards." },
@@ -283,12 +284,11 @@ export default function AboutPage() {
           <p className="mx-auto mt-3 max-w-lg text-primary-foreground/80">
             Take a 2-minute assessment and discover the protocol designed for your body and goals.
           </p>
-          <Link
-            to="/quiz?intent=consult"
+          <BookConsultLink
             className="mt-8 inline-flex items-center gap-2 rounded-lg bg-card px-10 py-4 text-lg font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
           >
-            Book a Consultation <ArrowRight className="h-5 w-5" />
-          </Link>
+            BOOK CONSULT <ArrowRight className="h-5 w-5" />
+          </BookConsultLink>
         </div>
       </section>
 

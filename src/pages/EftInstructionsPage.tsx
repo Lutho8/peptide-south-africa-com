@@ -18,6 +18,7 @@ import CheckoutStepper from "@/components/CheckoutStepper";
 import { formatZAR } from "@/lib/price";
 import { EFT_SESSION_KEY, type EftInstructionsState } from "@/lib/eftCheckout";
 import { useToast } from "@/hooks/use-toast";
+import { currentOffer, trackEvent } from "@/lib/analytics";
 
 function useCopy(): [string | null, (key: string, value: string) => void] {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -94,6 +95,17 @@ export default function EftInstructionsPage() {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [acknowledged]);
+
+  useEffect(() => {
+    if (data) {
+      const offer = currentOffer();
+      trackEvent({ event: "eft_instructions_shown", props: {
+        order_id: data.orderId,
+        server_confirmed_amount_zar: data.amount,
+        ...(offer ? { offer_id: offer.offer_id, displayed_price_zar: offer.displayed_price_zar } : {}),
+      } });
+    }
+  }, [data]);
 
   if (!data) {
     return (
@@ -288,7 +300,7 @@ export default function EftInstructionsPage() {
           <p className="mt-6 text-center text-xs text-muted-foreground">
             Changed your mind?{" "}
             <Link to="/checkout" className="font-semibold text-primary hover:underline">
-              Go back and pay by card instead
+              Return to checkout
             </Link>
           </p>
         </div>

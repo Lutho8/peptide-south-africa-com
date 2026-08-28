@@ -1,11 +1,12 @@
 // Creates a storefront order for direct EFT payment into the Capitec business account.
-// EFT order initialisation. The frontend creates the
-// `orders` row itself (same as CheckoutPage does today) and calls this function with
-// { orderId, amount, itemName, firstName, lastName, email, returnUrl, cancelUrl }.
-// This function mirrors the order into psa_orders (payment_method='eft_capitec',
+// EFT order initialisation. The frontend submits price-free product, variant,
+// quantity and bundle selections. This function recomputes the payable amount,
+// creates both order records, and rejects invalid/stale selections.
+// It mirrors the order into psa_orders (payment_method='eft_capitec',
 // payment_status='awaiting_eft', payment_reference='PSA-XXXXXX'), enqueues the EFT
 // instruction email, and returns the bank details for the instructions page.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { PRICING, quoteCheckout } from '../_shared/pricing.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -54,42 +55,75 @@ Deno.serve(async (req)=>{
       }, 503);
     }
     const body = await req.json().catch(()=>({}));
-    const { orderId, amount, itemName, firstName, lastName, email } = body ?? {};
-    if (!orderId || typeof orderId !== 'string') return json({
-      error: 'orderId required',
-      code: 'BAD_REQUEST'
-    }, 400);
-    if (typeof amount !== 'number' || amount <= 0) return json({
-      error: 'invalid amount',
-      code: 'BAD_REQUEST'
-    }, 400);
+    const { requestId, selections, firstName, lastName, email } = body ?? {};
+    if (typeof requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
+      return json({ error: 'invalid checkout request', code: 'BAD_REQUEST' }, 400);
+    }
     if (!email || typeof email !== 'string') return json({
       error: 'email required',
       code: 'BAD_REQUEST'
     }, 400);
-    const { data: order, error: orderErr } = await supabase.from('orders').select('id, user_id, status, total, currency, order_description').eq('id', orderId).maybeSingle();
-    if (orderErr || !order) return json({
-      error: 'order not found',
-      code: 'ORDER_NOT_FOUND'
-    }, 404);
-    if (order.user_id !== userId) return json({
-      error: 'forbidden',
-      code: 'ORDER_FORBIDDEN'
-    }, 403);
-    const storedTotal = Number(order.total);
-    if (!Number.isFinite(storedTotal) || storedTotal <= 0) return json({
-      error: 'order has no payable total'
-    }, 400);
-    if (String(order.currency).toUpperCase() !== 'ZAR') return json({
-      error: 'currency must be ZAR',
-      code: 'BAD_REQUEST'
-    }, 400);
-    if (Math.abs(storedTotal - amount) > 0.01) return json({
-      error: 'amount mismatch',
-      code: 'AMOUNT_MISMATCH'
-    }, 400);
-    // Service-role client for psa_orders / email_outbox writes (RLS-locked).
+    let quote;
+    try {
+      quote = quoteCheckout(selections);
+    } catch (error) {
+      return json({
+        error: error instanceof Error ? error.message : 'Invalid cart selection',
+        code: 'INVALID_CART'
+      }, 400);
+    }
+    // Service-role client is the only writer of the price-bearing order row.
     const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+    const orderPayload = {
+      user_id: userId,
+      checkout_request_id: requestId,
+      total: quote.total,
+      discount_code: null,
+      status: 'pending',
+      currency: PRICING.currency,
+      order_description: quote.description,
+      shipping_country: PRICING.shipping.country,
+      shipping_method: PRICING.shipping.method,
+      shipping_cost: quote.shipping,
+      shipping_currency: PRICING.currency,
+      free_shipping_applied: quote.freeShippingApplied
+    };
+    let { data: order, error: orderLookupErr } = await admin.from('orders')
+      .select('id, user_id, total, currency, order_description')
+      .eq('checkout_request_id', requestId)
+      .maybeSingle();
+    if (orderLookupErr) {
+      console.error('authoritative order lookup failed:', orderLookupErr.message);
+      return json({ error: 'Order could not be created. Please try again.' }, 500);
+    }
+    if (!order) {
+      const inserted = await admin.from('orders').insert(orderPayload)
+        .select('id, user_id, total, currency, order_description').single();
+      order = inserted.data;
+      if (inserted.error && (inserted.error as { code?: string }).code === '23505') {
+        const raced = await admin.from('orders')
+          .select('id, user_id, total, currency, order_description')
+          .eq('checkout_request_id', requestId)
+          .maybeSingle();
+        order = raced.data;
+        orderLookupErr = raced.error;
+      } else {
+        orderLookupErr = inserted.error;
+      }
+    }
+    if (orderLookupErr || !order) {
+      console.error('authoritative order insert failed:', orderLookupErr?.message);
+      return json({ error: 'Order could not be created. Please try again.' }, 500);
+    }
+    const requestMatches = order.user_id === userId
+      && String(order.currency).toUpperCase() === PRICING.currency
+      && Math.abs(Number(order.total) - quote.total) <= 0.01
+      && String(order.order_description ?? '') === quote.description;
+    if (!requestMatches) {
+      return json({ error: 'Checkout request conflicts with an earlier cart.', code: 'ORDER_CONFLICT' }, 409);
+    }
+    const orderId = order.id;
+    const storedTotal = Number(order.total);
     const { data: existingOrder, error: existingOrderErr } = await admin.from('psa_orders').select('order_id, user_id, order_total, payment_method, payment_reference').eq('order_id', orderId).maybeSingle();
     if (existingOrderErr) {
       console.error('psa_orders idempotency lookup failed:', existingOrderErr.message);
@@ -108,6 +142,7 @@ Deno.serve(async (req)=>{
       return json({
         ok: true,
         order_id: orderId,
+        amount: storedTotal,
         payment_reference: existingOrder.payment_reference,
         bank: {
           account_name: accountName,
@@ -137,7 +172,7 @@ Deno.serve(async (req)=>{
       unified_order_id: orderId,
       user_id: userId,
       customer_email: String(email).slice(0, 200),
-      line_items: order.order_description ?? itemName ?? null,
+      line_items: order.order_description ?? null,
       order_total: storedTotal,
       payment_method: 'eft_capitec',
       payment_status: 'awaiting_eft',
@@ -175,8 +210,8 @@ Deno.serve(async (req)=>{
       `Branch code: ${branchCode}`,
       `Reference: ${paymentReference}`,
       ``,
-      `Use the reference exactly as shown so we can match your payment automatically.`,
-      `Once your deposit clears, we'll confirm your order and dispatch Monday–Wednesday`,
+      `Use the reference exactly as shown so our team can verify the matching bank deposit.`,
+      `Once the matching deposit is verified, we'll confirm your order and dispatch Monday–Wednesday`,
       `in insulated cold-chain packaging.`,
       ``,
       `— Peptide South Africa`
@@ -189,7 +224,7 @@ Deno.serve(async (req)=>{
         order_id: orderId,
         order_reference: paymentReference,
         customer_name: customerName,
-        items: order.order_description ?? itemName ?? null,
+        items: order.order_description ?? null,
         total: storedTotal,
         currency: 'ZAR',
         bank,
@@ -224,6 +259,7 @@ Deno.serve(async (req)=>{
     return json({
       ok: true,
       order_id: orderId,
+      amount: storedTotal,
       payment_reference: paymentReference,
       bank
     });

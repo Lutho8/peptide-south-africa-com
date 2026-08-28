@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { X, Check, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { useCurrency } from "@/context/CurrencyContext";
 import { products } from "@/data/products";
 import { BUNDLE_MAP, POST_ADD_ACCESSORIES } from "@/data/bundles";
 
@@ -16,7 +15,6 @@ const SESSION_KEY = "psa_postadd_shown";
  */
 export default function PostAddUpsellModal() {
   const { items, addToCart } = useCart();
-  const { format } = useCurrency();
   const [open, setOpen] = useState(false);
   const [anchorSlug, setAnchorSlug] = useState<string | null>(null);
   const [prevCount, setPrevCount] = useState(0);
@@ -51,7 +49,7 @@ export default function PostAddUpsellModal() {
   const addOne = (slug: string) => {
     const p = products.find((x) => x.slug === slug);
     if (!p) return;
-    const v = p.variants?.[0];
+    const v = p.variants?.find((variant) => variant.pack === 1) ?? p.variants?.[0];
     addToCart(p, { variantLabel: v?.label, unitPrice: v?.price ?? p.price, silent: true });
   };
 
@@ -90,7 +88,9 @@ export default function PostAddUpsellModal() {
                     {p.name}
                   </Link>
                   <p className="truncate text-[11px] text-muted-foreground">{p.shortDescription}</p>
-                  <span className="text-sm font-bold text-foreground">{format(p.variants?.[0]?.price ?? p.price)}</span>
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {p.variants?.find((variant) => variant.pack === 1)?.label ?? "Single item"} · quantity 1
+                  </span>
                 </div>
                 <button
                   onClick={() => addOne(p.slug)}

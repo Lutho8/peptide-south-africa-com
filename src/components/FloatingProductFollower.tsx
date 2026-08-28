@@ -4,6 +4,9 @@ import { X, Stethoscope, ShoppingCart } from "lucide-react";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useCart } from "@/context/CartContext";
+import { CONSULTATION_PATH } from "@/components/BookConsultLink";
+import { offerProps, trackEvent } from "@/lib/analytics";
+import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 /**
  * Site-wide floating follower card for the last-viewed product.
@@ -42,11 +45,14 @@ export default function FloatingProductFollower() {
 
   const visible = mounted && scrolled;
   const isGP = lastViewed.track === "GP";
-  const priceLabel = display(lastViewed.price).primary;
+  const priceLabel = isGP
+    ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
+    : display(lastViewed.price).primary;
 
   const handlePrimary = () => {
     if (isGP) {
-      navigate(`/quiz?product=${lastViewed.slug}`);
+      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
+      navigate(CONSULTATION_PATH);
       return;
     }
     // Minimal cart payload — uses canonical price; real variant selection lives on PDP.
@@ -110,7 +116,7 @@ export default function FloatingProductFollower() {
             >
               {isGP ? (
                 <>
-                  <Stethoscope className="h-3.5 w-3.5" /> Book consult
+                  <Stethoscope className="h-3.5 w-3.5" /> BOOK CONSULT
                 </>
               ) : (
                 <>

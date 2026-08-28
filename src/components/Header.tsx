@@ -3,6 +3,7 @@ import { Menu, X, ChevronDown, ShoppingCart, User } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 
 import { useCart } from "@/context/CartContext";
+import BookConsultLink from "@/components/BookConsultLink";
 import logoIcon from "@/assets/logo-icon.png";
 import logoHorizontal from "@/assets/logo-horizontal.png";
 
@@ -168,12 +169,11 @@ export default function Header() {
           >
             <User className="h-5 w-5" />
           </Link>
-          <Link
-            to="/quiz?intent=consult"
+          <BookConsultLink
             className="inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
-            Book Consult
-          </Link>
+            BOOK CONSULT
+          </BookConsultLink>
           <CartButton />
         </nav>
 
@@ -230,13 +230,12 @@ export default function Header() {
             <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
               My Account
             </Link>
-            <Link
-              to="/quiz?intent=consult"
+            <BookConsultLink
               onClick={() => setMobileOpen(false)}
               className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow"
             >
-              Book Consult
-            </Link>
+              BOOK CONSULT
+            </BookConsultLink>
           </div>
         </nav>
       )}

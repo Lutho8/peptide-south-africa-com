@@ -13,6 +13,8 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
+import BookConsultLink from "@/components/BookConsultLink";
+import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 const SITE_URL = "https://www.peptide-south-africa.com";
 
@@ -98,6 +100,13 @@ export default function ShopPage() {
     const byId = new Map(products.map((p) => [p.id, p]));
     return stackIds.map((id) => byId.get(id)).filter((p): p is typeof products[number] => !!p);
   }, [stackIds]);
+  const stackRequiresConsult = stackProducts.some((product) => product.track === "GP");
+  const stackSubtotal = stackProducts.reduce((sum, product) => sum + (product.variants?.[0]?.price ?? product.price), 0);
+  const stackSaving = stackProducts.reduce((sum, product) => {
+    const variant = product.variants?.[0];
+    const single = product.variants?.find((candidate) => candidate.pack === 1)?.price ?? product.price;
+    return sum + Math.max(0, single * (variant?.pack ?? 1) - (variant?.price ?? product.price));
+  }, 0);
 
   const addStackToCart = () => {
     stackProducts.forEach((p) => {
@@ -181,16 +190,30 @@ export default function ShopPage() {
                     {stackProducts.length} product{stackProducts.length === 1 ? "" : "s"} matched to your protocol
                   </h2>
                 </div>
-                <button
-                  onClick={addStackToCart}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
-                >
-                  <ShoppingCart className="h-4 w-4" /> Add stack to cart
-                </button>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-foreground">
+                    {stackRequiresConsult
+                      ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month or ${formatZarWhole(PRICING.programOffers.full12Week.amount)}/12 weeks`
+                      : `Combined subtotal R${stackSubtotal.toLocaleString("en-ZA")}`}
+                  </p>
+                  {!stackRequiresConsult && stackSaving > 0 && <p className="text-xs font-semibold text-trust">Save R{stackSaving.toLocaleString("en-ZA")}</p>}
+                  {stackRequiresConsult ? (
+                    <BookConsultLink className="mt-2 inline-flex items-center justify-center rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow">
+                      BOOK CONSULT
+                    </BookConsultLink>
+                  ) : (
+                    <button
+                      onClick={addStackToCart}
+                      className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
+                    >
+                      <ShoppingCart className="h-4 w-4" /> Add to Cart
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {stackProducts.map((p) => (
-                  <ProductCard key={p.id} product={p} />
+                  <ProductCard key={p.id} product={p} recommendation />
                 ))}
               </div>
             </div>
@@ -215,18 +238,11 @@ export default function ShopPage() {
             </p>
 
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-              <Link
-                to="/quiz"
+              <BookConsultLink
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
               >
-                Find My Protocol <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/quiz?intent=consult"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/40 bg-background px-6 py-3 text-sm font-semibold text-primary transition-all hover:bg-primary/5 active:scale-95 sm:w-auto"
-              >
-                Book a 15-min Consult
-              </Link>
+                BOOK CONSULT <ArrowRight className="h-4 w-4" />
+              </BookConsultLink>
               <a
                 href="#products"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted sm:w-auto"

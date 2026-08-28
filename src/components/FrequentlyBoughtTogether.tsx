@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Plus, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { products, type Product } from "@/data/products";
@@ -31,19 +32,34 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
   }
   const picks: Product[] = merged
     .map((h) => products.find((p) => p.slug === h.slug))
-    .filter((p): p is Product => !!p && p.inStock)
+    .filter((p): p is Product => !!p && p.inStock && p.track !== "GP")
     .slice(0, 2);
   const hints = merged;
+
+  const [variantBySlug, setVariantBySlug] = useState<Record<string, string>>({});
+
+  const selectedVariant = (product: Product) => {
+    const label = variantBySlug[product.slug];
+    return product.variants?.find((variant) => variant.label === label)
+      ?? product.variants?.find((variant) => variant.pack === 1)
+      ?? product.variants?.[0];
+  };
 
   if (picks.length === 0) return null;
 
   const bundleSubtotal = picks.reduce(
-    (sum, p) => sum + (p.variants?.[0]?.price ?? p.price),
+    (sum, p) => sum + (selectedVariant(p)?.price ?? p.price),
     0,
   );
+  const bundleSaving = picks.reduce((sum, product) => {
+    const variant = selectedVariant(product);
+    const pack = variant?.pack ?? 1;
+    const single = product.variants?.find((candidate) => candidate.pack === 1)?.price ?? product.price;
+    return sum + Math.max(0, single * pack - (variant?.price ?? product.price));
+  }, 0);
 
   const addOne = (p: Product) => {
-    const v = p.variants?.[0];
+    const v = selectedVariant(p);
     addToCart(p, { variantLabel: v?.label, unitPrice: v?.price ?? p.price, silent: true });
   };
 
@@ -63,7 +79,7 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
               {p.name}
             </Link>
             <span className="text-xs text-muted-foreground">{p.category}</span>
-            <p className="mt-0.5 text-sm font-bold text-foreground">{format(p.variants?.[0]?.price ?? p.price)}</p>
+            <p className="mt-0.5 text-xs font-semibold text-muted-foreground">{selectedVariant(p)?.label ?? "Single item"} · quantity 1</p>
           </div>
           <button
             onClick={() => addOne(p)}
@@ -91,7 +107,7 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
                 <Link to={`/product/${p.slug}`} className="block truncate text-xs font-semibold text-foreground hover:underline">
                   {p.name}
                 </Link>
-                <span className="text-[11px] text-muted-foreground">{format(p.variants?.[0]?.price ?? p.price)}</span>
+                <span className="text-[11px] text-muted-foreground">{selectedVariant(p)?.label ?? "Single item"} · quantity 1</span>
               </div>
               <button
                 onClick={() => addOne(p)}
@@ -117,6 +133,7 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
         <div className="text-right">
           <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Bundle subtotal</span>
           <p className="font-display text-lg font-bold text-foreground">{format(bundleSubtotal)}</p>
+          {bundleSaving > 0 && <p className="text-[11px] font-semibold text-trust">Save {format(bundleSaving)}</p>}
         </div>
       </div>
 
@@ -129,7 +146,20 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
                 {p.name}
               </Link>
               <span className="text-[11px] text-muted-foreground">{hints[idx]?.reason ?? p.category}</span>
-              <span className="mt-auto text-sm font-bold text-foreground">{format(p.variants?.[0]?.price ?? p.price)}</span>
+              {p.variants && p.variants.length > 0 ? (
+                <select
+                  aria-label={`Pack for ${p.name}`}
+                  value={selectedVariant(p)?.label}
+                  onChange={(event) => setVariantBySlug((current) => ({ ...current, [p.slug]: event.target.value }))}
+                  className="mt-auto rounded-md border border-border bg-background px-2 py-1 text-xs font-semibold text-foreground"
+                >
+                  {p.variants.map((variant) => (
+                    <option key={variant.label} value={variant.label}>{variant.label} · quantity 1</option>
+                  ))}
+                </select>
+              ) : (
+                <span className="mt-auto text-xs font-semibold text-muted-foreground">Single item · quantity 1</span>
+              )}
             </div>
             <button
               onClick={() => addOne(p)}

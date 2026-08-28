@@ -25,6 +25,7 @@ export default function CartPage() {
       label: lines[0]?.bundleLabel ?? "Pick & Mix Bundle",
       lines,
       total: lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0),
+      saving: lines.reduce((s, l) => s + Math.max(0, (l.compareAtPrice ?? l.unitPrice) - l.unitPrice) * l.quantity, 0),
     };
   });
   const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
@@ -68,6 +69,7 @@ export default function CartPage() {
                 <div>
                   <h3 className="font-display font-bold text-foreground">{b.label}</h3>
                   <p className="text-sm font-bold text-primary">{format(b.total)}</p>
+                  {b.saving > 0 && <p className="text-xs font-semibold text-trust">Save {format(b.saving)}</p>}
                 </div>
                 <button onClick={() => removeBundle(b.id)} aria-label="Remove bundle" className="rounded-full p-1 text-muted-foreground hover:bg-muted">
                   <X className="h-4 w-4" />
@@ -83,7 +85,7 @@ export default function CartPage() {
                     <Link to={mp(`/product/${item.product.slug}`)} className="flex-1 truncate hover:text-primary">
                       {item.product.name}
                     </Link>
-                    <span className="font-mono text-xs font-semibold text-foreground">{format(item.unitPrice)}</span>
+                    <span className="text-xs font-semibold text-muted-foreground">quantity {item.quantity}</span>
                   </li>
                 ))}
               </ul>

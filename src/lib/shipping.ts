@@ -1,4 +1,5 @@
 // Single-market shipping (South Africa, ZAR-only).
+import { PRICING } from "../../supabase/functions/_shared/pricing";
 
 export type ShippingCountry = "South Africa";
 
@@ -12,9 +13,9 @@ export interface ShippingRule {
 
 export const SHIPPING_RULES: Record<ShippingCountry, ShippingRule> = {
   "South Africa": {
-    method: "Local courier (The Courier Guy / Aramex)",
-    flat: 89,
-    freeOver: 1500,
+    method: PRICING.shipping.method,
+    flat: PRICING.shipping.flat,
+    freeOver: PRICING.shipping.freeOver,
     currency: "ZAR",
     days: "1–3",
   },

@@ -39,7 +39,7 @@ describe("Quiz deep-link routing", () => {
 });
 
 describe("Quiz deep-link cart preservation", () => {
-  for (const tc of QUIZ_OUTCOMES.filter((c) => c.expectedKind === "stack")) {
+  for (const tc of QUIZ_OUTCOMES.filter((c) => c.expectedKind === "stack" && !c.expectedProductIds.some((id) => products.find((product) => product.id === id)?.track === "GP"))) {
     it(`"${tc.name}" — visiting /shop?stack=... and adding preserves all items`, () => {
       // Parse the deep-link the way ShopPage does.
       const url = new URL(tc.expectedUrl(tc.expectedProductIds), "http://test.local");

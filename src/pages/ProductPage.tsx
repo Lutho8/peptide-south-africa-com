@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap, Stethoscope } from "lucide-react";
+import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
 
 import { getProductBySlug, products } from "@/data/products";
@@ -28,6 +28,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
 import { getCoasForProduct } from "@/data/coas";
+import { CONSULTATION_PATH } from "@/components/BookConsultLink";
+import { offerProps, trackEvent } from "@/lib/analytics";
+import WeightLossPricing from "@/components/WeightLossPricing";
+import { PRICING, WEIGHT_LOSS_SAVING } from "../../supabase/functions/_shared/pricing";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -113,7 +117,8 @@ export default function ProductPage() {
   const handleAdd = async () => {
     const variantLabel = product.variants?.[selectedVariant]?.label;
     if (isGPTrack) {
-      navigate(`/quiz?product=${product.slug}`);
+      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
+      navigate(CONSULTATION_PATH);
       return;
     }
     if (purchaseMode === "subscribe") {
@@ -159,13 +164,17 @@ export default function ProductPage() {
 
   return (
     <div>
-      <JsonLd data={productSchema({
-        ...product,
-        description: isGPTrack
-          ? `${product.name} is available through a clinician-guided pathway with eligibility review before prescription or fulfilment.`
-          : product.description,
-        variants: product.variants,
-      })} />
+      <JsonLd data={isGPTrack ? {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: `${product.name} clinician-guided weight-loss pathway`,
+        description: `${product.name} is available through a clinician-guided pathway with eligibility review before prescription or fulfilment.`,
+        areaServed: { "@type": "Country", name: "South Africa" },
+        offers: [
+          { "@type": "Offer", sku: PRICING.programOffers.monthly.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.monthly.amount, name: "Monthly plan" },
+          { "@type": "Offer", sku: PRICING.programOffers.full12Week.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.full12Week.amount, name: "Full 12-week program", description: `Save R${WEIGHT_LOSS_SAVING} compared with three monthly payments` },
+        ],
+      } : productSchema({ ...product, variants: product.variants })} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -252,7 +261,9 @@ export default function ProductPage() {
             </p>
 
             {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
-            {product.variants && product.variants.length > 0 && (
+            {isGPTrack ? (
+              <div className="mt-6"><WeightLossPricing /></div>
+            ) : product.variants && product.variants.length > 0 && (
               <div className="mt-6">
                 <label className="text-sm font-semibold text-foreground">Choose your pack</label>
                 <div className="mt-2 flex flex-col gap-2">
@@ -404,23 +415,23 @@ export default function ProductPage() {
             )}
 
             {/* Primary CTA — Add to Cart */}
-            <button
-              onClick={handleAdd}
-              disabled={!product.inStock || subBusy}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
-            >
-              {!product.inStock ? (
-                "Pre-Order"
-              ) : purchaseMode === "subscribe" ? (
-                subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
-              ) : isGPTrack ? (
-                <><Stethoscope className="h-4 w-4" /> Start Medical Quiz</>
-              ) : added ? (
-                "✓ Added to Cart!"
-              ) : (
-                "Add to Cart"
-              )}
-            </button>
+            {!isGPTrack && (
+              <button
+                onClick={handleAdd}
+                disabled={!product.inStock || subBusy}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+              >
+                {!product.inStock ? (
+                  "Pre-Order"
+                ) : purchaseMode === "subscribe" ? (
+                  subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
+                ) : added ? (
+                  "✓ Added to Cart!"
+                ) : (
+                  "Add to Cart"
+                )}
+              </button>
+            )}
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">

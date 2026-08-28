@@ -4,6 +4,8 @@ import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useMarket, marketPath } from "@/hooks/useMarket";
+import BookConsultLink from "@/components/BookConsultLink";
+import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 const FEATURED_IDS = ["1", "6", "7", "2", "4", "3"];
 
@@ -24,7 +26,7 @@ export default function FeaturedProductRail() {
               Best Sellers
             </span>
             <h2 className="font-display text-xl font-bold text-foreground sm:text-2xl">
-              Add to cart in one click
+              Popular pathways and products
             </h2>
           </div>
           <Link
@@ -39,6 +41,7 @@ export default function FeaturedProductRail() {
           <div className="flex gap-4 snap-x snap-mandatory">
             {featured.map((p, i) => {
               const lowStock = i === 1; // fake scarcity on second card
+              const isGPTrack = p.track === "GP";
               return (
                 <article
                   key={p.id}
@@ -83,19 +86,29 @@ export default function FeaturedProductRail() {
                     <div className="mt-auto flex items-end justify-between pt-4">
                       <div>
                         <p className="font-display text-lg font-bold text-foreground">
-                          {format(p.price)}
+                          {isGPTrack
+                            ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
+                            : format(p.price)}
                         </p>
-                        {p.priceRange && (
+                        {isGPTrack ? (
+                          <p className="text-[10px] text-muted-foreground">
+                            or {formatZarWhole(PRICING.programOffers.full12Week.amount)} for 12 weeks
+                          </p>
+                        ) : p.priceRange && (
                           <p className="text-[10px] text-muted-foreground">{p.priceRange}</p>
                         )}
                       </div>
-                      <button
-                        onClick={() => addToCart(p)}
-                        aria-label={`Add ${p.name} to cart`}
-                        className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-                      >
-                        <ShoppingCart className="h-3.5 w-3.5" /> Add
-                      </button>
+                      {isGPTrack ? (
+                        <BookConsultLink className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95" />
+                      ) : (
+                        <button
+                          onClick={() => addToCart(p)}
+                          aria-label={`Add ${p.name} to cart`}
+                          className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+                        >
+                          <ShoppingCart className="h-3.5 w-3.5" /> Add
+                        </button>
+                      )}
                     </div>
                   </div>
                 </article>

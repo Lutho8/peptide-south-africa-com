@@ -22,6 +22,10 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { buildWhatsAppUrl as waLink } from "@/lib/contact";
+import BookConsultLink from "@/components/BookConsultLink";
+import WeightLossPricing from "@/components/WeightLossPricing";
+import JsonLd from "@/components/JsonLd";
+import { PRICING, WEIGHT_LOSS_SAVING } from "../../supabase/functions/_shared/pricing";
 
 /* ─── BMI Calculator ─── */
 function BMICalculator() {
@@ -129,7 +133,17 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 export default function FatLossProtocolPage() {
   return (
     <div className="flex flex-col">
-      <SEO title="Peptide Fat Loss Protocol — South Africa" description="12-week GP-led fat loss protocol using Retatrutide and Tirzepatide. BMI calculator, dosing guide, physician oversight. Available nationwide across South Africa." path="/fat-loss-protocol" />
+      <SEO title="Peptide Fat Loss Protocol — R1,999/month or R4,999 for 12 Weeks" description="Clinician-guided weight-loss program: R1,999 monthly or one payment of R4,999 for the full 12 weeks, saving R997. VAT included. Available nationwide across South Africa." path="/fat-loss-protocol" />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: "Clinician-guided 12-week weight-loss program",
+        areaServed: { "@type": "Country", name: "South Africa" },
+        offers: [
+          { "@type": "Offer", sku: PRICING.programOffers.monthly.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.monthly.amount, name: "Monthly plan" },
+          { "@type": "Offer", sku: PRICING.programOffers.full12Week.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.full12Week.amount, name: "Full 12-week program", description: `Save R${WEIGHT_LOSS_SAVING} compared with three monthly payments` },
+        ],
+      }} />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Fat Loss Protocol", href: "/fat-loss-protocol" }]} />
       {/* HERO */}
       <section className="bg-hero-gradient py-16 sm:py-24">
@@ -142,12 +156,11 @@ export default function FatLossProtocolPage() {
               Receive a personalised fat loss plan and guided support designed for your body, goals, and lifestyle.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                to="/quiz?intent=consult"
+              <BookConsultLink
                 className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-semibold text-primary shadow-lg transition-all hover:bg-white/90 active:scale-95"
               >
-                Book a Consultation <ArrowRight className="h-4 w-4" />
-              </Link>
+                BOOK CONSULT <ArrowRight className="h-4 w-4" />
+              </BookConsultLink>
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-white/70">
               <span className="flex items-center gap-1.5"><Shield className="h-4 w-4" /> German Certified</span>
@@ -215,12 +228,11 @@ export default function FatLossProtocolPage() {
               <BMICalculator />
             </div>
             <div className="mt-6 text-center">
-              <Link
-                to="/quiz"
+              <BookConsultLink
                 className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
               >
-                Get Your Personalised Plan <ArrowRight className="h-4 w-4" />
-              </Link>
+                BOOK CONSULT <ArrowRight className="h-4 w-4" />
+              </BookConsultLink>
             </div>
           </div>
         </div>
@@ -263,64 +275,7 @@ export default function FatLossProtocolPage() {
             </h2>
             <p className="mt-3 text-center text-muted-foreground">Choose the plan that fits your transformation goals.</p>
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
-              {/* Introductory */}
-              <div className="rounded-2xl border-2 border-border bg-card p-6 text-center shadow-card">
-                <h3 className="font-display text-base font-bold text-foreground">Introductory Consultation</h3>
-                <p className="mt-3 font-display text-3xl font-bold text-foreground">R1,495</p>
-                <div className="mx-auto my-4 h-px w-12 bg-primary" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Begin your fat loss journey with a comprehensive health assessment. Receive a personalised protocol plan designed for your body and goals.
-                </p>
-                <a
-                  href={waLink("Hi, I'd like to book an Introductory Consultation for the 12-Week Fat Loss Protocol.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-                >
-                  Book a Consultation
-                </a>
-              </div>
-
-              {/* Package — highlighted */}
-              <div className="relative rounded-2xl border-2 border-primary bg-card p-6 text-center shadow-glow">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-hero-gradient px-4 py-1 text-xs font-bold text-white">
-                  BEST VALUE
-                </span>
-                <h3 className="font-display text-base font-bold text-foreground">Full 12-Week Protocol</h3>
-                <p className="mt-3 font-display text-3xl font-bold text-gradient">R4,999</p>
-                <div className="mx-auto my-4 h-px w-12 bg-primary" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Save R997 with the full program. Includes initial assessment, 12 weeks of guided supply, weekly check-ins, and priority WhatsApp support.
-                </p>
-                <a
-                  href={waLink("Hi, I'd like to start the Full 12-Week Fat Loss Protocol program.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-                >
-                  Book a Consultation
-                </a>
-              </div>
-
-              {/* Follow-up */}
-              <div className="rounded-2xl border-2 border-border bg-card p-6 text-center shadow-card">
-                <h3 className="font-display text-base font-bold text-foreground">Follow-up Consultation</h3>
-                <p className="mt-3 font-display text-3xl font-bold text-foreground">R995</p>
-                <div className="mx-auto my-4 h-px w-12 bg-primary" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Maintain your progress with regular check-ins. Track your goals and adjust your protocol for continued success.
-                </p>
-                <a
-                  href={waLink("Hi, I'd like to book a Follow-up Consultation for my fat loss protocol.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted active:scale-95"
-                >
-                  Book a Consultation
-                </a>
-              </div>
-            </div>
+            <div className="mt-10"><WeightLossPricing /></div>
           </div>
         </div>
       </section>
@@ -434,12 +389,11 @@ export default function FatLossProtocolPage() {
               ))}
             </div>
             <div className="mt-8 text-center">
-              <Link
-                to="/quiz"
+              <BookConsultLink
                 className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 text-base font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
               >
-                Get Your Fat Loss Plan <ArrowRight className="h-4 w-4" />
-              </Link>
+                BOOK CONSULT <ArrowRight className="h-4 w-4" />
+              </BookConsultLink>
             </div>
           </div>
         </div>
@@ -462,12 +416,11 @@ export default function FatLossProtocolPage() {
               At Peptide South Africa, we focus on an integrative approach to fat loss management. We aim to help you achieve your ideal body composition and maintain the results.
             </p>
             <div className="mt-8">
-              <Link
-                to="/quiz"
+              <BookConsultLink
                 className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 text-base font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
               >
-                Start Your Transformation Today <ArrowRight className="h-4 w-4" />
-              </Link>
+                BOOK CONSULT <ArrowRight className="h-4 w-4" />
+              </BookConsultLink>
             </div>
           </div>
         </div>
@@ -523,12 +476,11 @@ export default function FatLossProtocolPage() {
             Join 500+ clients who've transformed their health with a personalised, guided protocol.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/quiz?intent=consult"
+            <BookConsultLink
               className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-semibold text-primary shadow-lg transition-all hover:bg-white/90 active:scale-95"
             >
-              Book a Consultation <ArrowRight className="h-4 w-4" />
-            </Link>
+              BOOK CONSULT <ArrowRight className="h-4 w-4" />
+            </BookConsultLink>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/60">
             <span className="flex items-center gap-1.5"><Shield className="h-3 w-3" /> German Certified</span>

@@ -15,7 +15,7 @@ describe("quiz cart group replacement", () => {
   beforeEach(() => window.localStorage.clear());
 
   it("replaces a previous quiz plan without duplicating its products", () => {
-    const product = products.find((candidate) => candidate.slug === "tz2-tirz")!;
+    const product = products.find((candidate) => candidate.slug === "bpc-tb500-blend")!;
     const threePack = product.variants!.find((variant) => variant.pack === 3)!;
     const { result } = renderHook(() => useCart(), { wrapper });
 
@@ -44,7 +44,7 @@ describe("quiz cart group replacement", () => {
   });
 
   it("preserves manually added cart lines when the quiz plan changes", () => {
-    const product = products.find((candidate) => candidate.slug === "tz2-tirz")!;
+    const product = products.find((candidate) => candidate.slug === "bpc-tb500-blend")!;
     const threePack = product.variants!.find((variant) => variant.pack === 3)!;
     const { result } = renderHook(() => useCart(), { wrapper });
 

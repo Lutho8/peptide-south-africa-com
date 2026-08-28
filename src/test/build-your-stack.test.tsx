@@ -47,6 +47,15 @@ describe("BuildYourStackPage", () => {
     expect(first.value).toBe("selank");
   });
 
+  it("excludes clinician-only products from research bundle selection", () => {
+    renderBuilder("/build-your-stack?prefill=rt3-reta");
+    const first = screen.getByLabelText("Vial 1") as HTMLSelectElement;
+    expect(first.value).toBe("");
+    const optionValues = Array.from(first.options, (option) => option.value);
+    expect(optionValues).not.toContain("rt3-reta");
+    expect(optionValues).not.toContain("tz2-tirz");
+  });
+
   it("adds a complete in-stock 5-pack to the cart as grouped bundle lines", () => {
     renderBuilder();
     const slugs = ["selank", "semax", "pinealon", "epitalon", "kpv"]; // all in stock

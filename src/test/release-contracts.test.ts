@@ -27,6 +27,48 @@ describe("release contracts", () => {
     );
   });
 
+  it("keeps the active weight-loss journey on approved prices and one CTA destination", () => {
+    const active = [
+      "src/pages/HomePage.tsx",
+      "src/pages/FatLossProtocolPage.tsx",
+      "src/pages/AboutPage.tsx",
+      "src/pages/ShopPage.tsx",
+      "src/pages/ProductPage.tsx",
+      "src/pages/QuizFunnelPage.tsx",
+      "src/components/HeroShop.tsx",
+      "src/components/CategoryShowcase.tsx",
+      "src/components/FeaturedProductRail.tsx",
+      "src/components/FloatingProductFollower.tsx",
+      "src/components/FrequentlyBoughtTogether.tsx",
+      "src/components/BookConsultLink.tsx",
+      "src/components/ProtocolPlans.tsx",
+      "src/components/WeightLossPricing.tsx",
+      "src/lib/quizProtocolFallback.ts",
+      "supabase/functions/generate-protocol/index.ts",
+    ].map(read).join("\n");
+    expect(active).not.toMatch(/R1,495|R995|R299/);
+    expect(active).not.toMatch(/Book a Consultation|Book a 15-min Consult|Book Zoom Consultation|Start Medical Quiz|Start Your Protocol|Buy Monthly|Buy Now|Get Your Personalised Plan|Start Your Transformation Today/);
+    expect(active).not.toContain("/quiz?product=");
+    expect(read("src/components/BookConsultLink.tsx")).toContain('"/quiz?intent=consult"');
+    const pricing = read("supabase/functions/_shared/pricing.ts");
+    expect(pricing).toContain("weight_loss_monthly_1999");
+    expect(pricing).toContain("weight_loss_12_week_4999");
+  });
+
+  it("keeps EFT creation server-priced and retry-idempotent", () => {
+    const client = read("src/lib/eftCheckout.ts");
+    const server = read("api/eft-create-order.ts");
+    const migration = read("supabase/migrations/20260827150000_pricing_analytics_events.sql");
+    expect(client).toContain("requestId");
+    expect(client).not.toMatch(/body:\s*\{[^}]*\bamount\b/s);
+    expect(client).toContain('fetch("/api/eft-create-order"');
+    expect(server).toContain("quoteCheckout(body.selections");
+    expect(server).toContain("checkout_request_id");
+    expect(migration).toContain("orders_checkout_request_id_idx");
+    expect(migration).toContain("emit_verified_eft_revenue_events");
+    expect(migration).toContain("analytics_events_settlement_once_idx");
+  });
+
   it("publishes both the medical and supplier-report scope disclaimers", () => {
     const footer = read("src/components/Footer.tsx");
     const terms = read("src/pages/TermsPage.tsx");

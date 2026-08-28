@@ -132,14 +132,16 @@ Deno.serve(async (req) => {
 
       // ── Match: settle the order ─────────────────────────────────────────
       const now = new Date().toISOString();
-      const { error: updErr } = await supabase
+      const { data: settledOrder, error: updErr } = await supabase
         .from('psa_orders')
         .update({ payment_status: 'complete', payment_settled_at: now })
         .eq('order_id', order.order_id)
-        .eq('payment_status', 'awaiting_eft'); // guard against double-settle
+        .eq('payment_status', 'awaiting_eft')
+        .select('order_id')
+        .maybeSingle(); // guard against double-settle
 
-      if (updErr) {
-        console.error('psa_orders settle failed:', updErr.message);
+      if (updErr || !settledOrder) {
+        console.error('psa_orders settle failed:', updErr?.message ?? 'order was already settled');
         summary.still_unmatched++;
         continue;
       }

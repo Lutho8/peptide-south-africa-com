@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Check, ArrowRight, ShoppingCart } from "lucide-react";
+import { formatZarWhole, PRICING, WEIGHT_LOSS_SAVING } from "../../supabase/functions/_shared/pricing";
 
 /**
  * ProtocolPlans — commitment engineering for telehealth.
@@ -16,13 +17,12 @@ export interface PlanChoice {
   total: number;
 }
 
-export const zar = (n: number) => `R${Math.round(n).toLocaleString("en-ZA")}`;
+export const zar = formatZarWhole;
 
-export function buildPlans(monthly: number): PlanChoice[] {
+export function buildPlans(_monthly: number): PlanChoice[] {
   return [
-    { id: "monthly", label: "1 Month — The Tester", months: 1, perMonth: monthly, total: monthly },
-    { id: "starter", label: "3 Months — Starter Cycle", months: 3, perMonth: monthly * 0.9, total: monthly * 3 * 0.9 },
-    { id: "commitment", label: "6 Months — Commitment Cycle", months: 6, perMonth: monthly * 0.82, total: monthly * 6 * 0.82 },
+    { id: "monthly", label: "Monthly plan", months: 1, perMonth: PRICING.programOffers.monthly.amount, total: PRICING.programOffers.monthly.amount },
+    { id: "starter", label: "Full 12-week program", months: 3, perMonth: PRICING.programOffers.full12Week.amount / 3, total: PRICING.programOffers.full12Week.amount },
   ];
 }
 
@@ -37,10 +37,8 @@ export function buildProductPlans(singleVialsTotal: number, threePacksTotal: num
   ];
 }
 
-export function parseMonthly(price?: string | null): number {
-  if (!price) return 1999;
-  const n = Number(String(price).replace(/[^0-9.]/g, ""));
-  return Number.isFinite(n) && n > 0 ? n : 1999;
+export function parseMonthly(_price?: string | null): number {
+  return PRICING.programOffers.monthly.amount;
 }
 
 export default function ProtocolPlans({
@@ -49,19 +47,24 @@ export default function ProtocolPlans({
   onChoose,
   choosing,
   exactPlans,
+  consultHref,
 }: {
   monthlyPrice?: string | null;
   budget?: string;
   onChoose: (plan: PlanChoice) => void;
   choosing?: boolean;
   exactPlans?: PlanChoice[];
+  consultHref?: string;
 }) {
   const monthly = useMemo(() => parseMonthly(monthlyPrice), [monthlyPrice]);
   const plans = useMemo(() => exactPlans?.length === 3 ? exactPlans : buildPlans(monthly), [exactPlans, monthly]);
-  const [selected, setSelected] = useState<PlanChoice>(plans[1]); // 3-month default — the Keeps move
+  const [selected, setSelected] = useState<PlanChoice>(plans[1]);
+  const clinicianGuided = !exactPlans || exactPlans.length !== 3;
   const anchorMonthly = plans[0]?.perMonth ?? monthly;
 
-  const saveVsMonthly = (p: PlanChoice) => Math.max(0, anchorMonthly * p.months - p.total);
+  const saveVsMonthly = (p: PlanChoice) => clinicianGuided && p.id === "starter"
+    ? WEIGHT_LOSS_SAVING
+    : Math.max(0, anchorMonthly * p.months - p.total);
 
   return (
     <div>
@@ -70,7 +73,7 @@ export default function ProtocolPlans({
           Choose your cycle
         </span>
         <h3 className="mt-1 font-display text-xl font-bold text-foreground sm:text-2xl text-balance">
-          Same protocol. Three ways to commit to it.
+          {clinicianGuided ? "One program. Two payment options." : "Choose your research pack."}
         </h3>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
           {budget === "starter"
@@ -79,7 +82,7 @@ export default function ProtocolPlans({
         </p>
       </div>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-3" role="radiogroup" aria-label="Choose your protocol cycle">
+      <div className={`mt-6 grid gap-3 ${clinicianGuided ? "md:grid-cols-2" : "md:grid-cols-3"}`} role="radiogroup" aria-label="Choose your protocol cycle">
         {plans.map((p) => {
           const isSel = selected.id === p.id;
           const save = saveVsMonthly(p);
@@ -112,11 +115,12 @@ export default function ProtocolPlans({
               </span>
 
               <span className="mt-3 font-display text-2xl font-bold text-foreground">
-                {zar(p.perMonth)}
-                <span className="text-sm font-normal text-muted-foreground">/mo</span>
+                {zar(p.total)}{p.id === "monthly" && <span className="text-sm font-normal text-muted-foreground">/month</span>}
               </span>
               <span className="mt-0.5 text-xs text-muted-foreground">
-                {p.months > 1 ? `${zar(p.total)} paid for this cycle` : "One-time starter purchase"}
+                {clinicianGuided
+                  ? (p.months > 1 ? "One payment for the full 12 weeks" : "Cancel according to the applicable program terms")
+                  : `${p.months}-month research pack selection`}
               </span>
 
               {save > 0 ? (
@@ -157,15 +161,29 @@ export default function ProtocolPlans({
         })}
       </div>
 
-      <button
-        onClick={() => onChoose(selected)}
-        disabled={choosing}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-4 text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
-      >
-        Start the {selected.months}-month cycle — {zar(selected.total)} <ArrowRight className="h-5 w-5" />
-      </button>
+      {clinicianGuided ? (
+        <a
+          href={consultHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onChoose(selected)}
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-4 text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-95 active:scale-[0.98]"
+        >
+          BOOK CONSULT <ArrowRight className="h-5 w-5" />
+        </a>
+      ) : (
+        <button
+          onClick={() => onChoose(selected)}
+          disabled={choosing}
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-6 py-4 text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+        >
+          <ShoppingCart className="h-5 w-5" /> Add to Cart · {zar(selected.total)}
+        </button>
+      )}
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        Exact cart pricing, with no automatic renewal. Eligible prescription pathways are reviewed by an HPCSA-registered GP before fulfilment.
+        {clinicianGuided
+          ? "Eligible prescription pathways are reviewed by an HPCSA-registered GP before fulfilment."
+          : "Exact cart pricing, with no automatic renewal."}
       </p>
 
       <div
@@ -173,13 +191,25 @@ export default function ProtocolPlans({
         role="region"
         aria-label="Selected quiz plan"
       >
-        <button
-          onClick={() => onChoose(selected)}
-          disabled={choosing}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-3 text-sm font-bold text-primary-foreground shadow-glow disabled:opacity-60"
-        >
-          <ShoppingCart className="h-4 w-4" /> Start {selected.months}-month cycle · {zar(selected.total)}
-        </button>
+        {clinicianGuided ? (
+          <a
+            href={consultHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => onChoose(selected)}
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-3 text-sm font-bold text-primary-foreground shadow-glow"
+          >
+            BOOK CONSULT
+          </a>
+        ) : (
+          <button
+            onClick={() => onChoose(selected)}
+            disabled={choosing}
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-3 text-sm font-bold text-primary-foreground shadow-glow disabled:opacity-60"
+          >
+            <ShoppingCart className="h-4 w-4" /> Add to Cart · {zar(selected.total)}
+          </button>
+        )}
       </div>
     </div>
   );

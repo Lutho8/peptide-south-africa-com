@@ -29,10 +29,10 @@ function renderCard(slug: string) {
 }
 
 describe("GP-track purchase routing", () => {
-  it("routes a GP-track product into the medical quiz without adding it directly", () => {
+  it("routes a GP-track product into the canonical consultation journey without adding it directly", () => {
     renderCard("rt3-reta");
-    fireEvent.click(screen.getByRole("button", { name: /start quiz/i }));
-    expect(screen.getByTestId("route-probe")).toHaveTextContent("/quiz?product=rt3-reta|0");
+    fireEvent.click(screen.getByRole("button", { name: /book consult/i }));
+    expect(screen.getByTestId("route-probe")).toHaveTextContent("/quiz?intent=consult|0");
   });
 
   it("still adds an RUO product directly to the cart", () => {

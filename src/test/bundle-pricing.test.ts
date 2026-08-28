@@ -32,22 +32,22 @@ describe("3-pack tier (15% off) — all catalog products", () => {
 
 describe("5-pack pick & mix (20% off)", () => {
   it("prices a mixed selection at subtotal × 0.80 with correct savings", () => {
-    const sel = ["rt3-reta", "tz2-tirz", "mots-c", "ghk-cu-50mg", "ghk-cu-50mg"].map(bySlug);
-    const subtotal = 1250 + 895 + 485 + 630 + 630; // 3890
+    const sel = ["mots-c", "ghk-cu-50mg", "ghk-cu-50mg", "glow70", "tesamorelin"].map(bySlug);
+    const subtotal = 485 + 630 + 630 + 1080 + 775; // 3600
     const q = quoteMixBundle(sel, 5);
     expect(q.subtotal).toBe(subtotal);
-    expect(q.total).toBe(Math.round(subtotal * 0.8)); // 3112
-    expect(q.savings).toBe(subtotal - q.total); // 778
+    expect(q.total).toBe(Math.round(subtotal * 0.8)); // 2880
+    expect(q.savings).toBe(subtotal - q.total); // 720
     expect(q.discountPct).toBe(20);
   });
 
   it("rejects selections that aren't exactly 5", () => {
-    const sel = ["rt3-reta", "tz2-tirz"].map(bySlug);
+    const sel = ["mots-c", "ghk-cu-50mg"].map(bySlug);
     expect(() => quoteMixBundle(sel, 5)).toThrow();
   });
 
   it("allocated line prices sum exactly to the bundle total", () => {
-    const sel = ["rt3-reta", "tesamorelin", "bpc-tb500-blend", "glow70", "klow80"].map(bySlug);
+    const sel = ["mots-c", "tesamorelin", "bpc-tb500-blend", "glow70", "klow80"].map(bySlug);
     const q = quoteMixBundle(sel, 5);
     const lines = allocateMixLinePrices(sel, 5);
     const sum = Math.round(lines.reduce((s, n) => s + n, 0) * 100) / 100;
@@ -66,19 +66,19 @@ describe("10-pack researcher value (30% off)", () => {
     expect(q.discountPct).toBe(30);
   });
 
-  it("5 × RT3 + 5 × GLOW70: R11,650 → R8,155 (save R3,495)", () => {
-    const sel = [...Array(5).fill(bySlug("rt3-reta")), ...Array(5).fill(bySlug("glow70"))];
+  it("5 × GHK-Cu + 5 × GLOW70: R8,550 → R5,985 (save R2,565)", () => {
+    const sel = [...Array(5).fill(bySlug("ghk-cu-50mg")), ...Array(5).fill(bySlug("glow70"))];
     const q = quoteMixBundle(sel, 10);
-    expect(q.subtotal).toBe(11650);
-    expect(q.total).toBe(8155);
-    expect(q.savings).toBe(3495);
+    expect(q.subtotal).toBe(8550);
+    expect(q.total).toBe(5985);
+    expect(q.savings).toBe(2565);
   });
 
   it("allocation absorbs cent drift when single × 0.7 isn't a whole number", () => {
-    // 895 × 0.7 = 626.50 — mixed selection exercises the remainder path.
+    // 775 × 0.7 = 542.50 — mixed selection exercises the remainder path.
     const sel = [
-      ...Array(9).fill(bySlug("tz2-tirz")),
-      bySlug("rt3-reta"),
+      ...Array(9).fill(bySlug("tesamorelin")),
+      bySlug("ghk-cu-50mg"),
     ];
     const q = quoteMixBundle(sel, 10);
     const lines = allocateMixLinePrices(sel, 10);
@@ -88,11 +88,12 @@ describe("10-pack researcher value (30% off)", () => {
 });
 
 describe("pre-curated stacks", () => {
-  it("defines exactly 4 stacks of 5 resolvable products each", () => {
-    expect(CURATED_STACKS).toHaveLength(4);
+  it("defines only research-use stacks of 5 resolvable products each", () => {
+    expect(CURATED_STACKS).toHaveLength(2);
     for (const stack of CURATED_STACKS) {
       const resolved = resolveStackProducts(stack);
       expect(resolved.filter(Boolean)).toHaveLength(5);
+      expect(resolved.every((product) => product?.track !== "GP")).toBe(true);
     }
   });
 
@@ -112,21 +113,7 @@ describe("pre-curated stacks", () => {
     expect(q.savings).toBe(846);
   });
 
-  it("Performance Stack: R5,320 → R4,256 (save R1,064)", () => {
-    const stack = CURATED_STACKS.find((s) => s.id === "performance")!;
-    const q = quoteMixBundle(resolveStackProducts(stack) as never, 5);
-    expect(q.subtotal).toBe(5320);
-    expect(q.total).toBe(4256);
-    expect(q.savings).toBe(1064);
-  });
-
-  it("Fat Loss and Recovery stacks price from live catalog data", () => {
-    const fatLoss = CURATED_STACKS.find((s) => s.id === "fat-loss")!;
-    const qF = quoteMixBundle(resolveStackProducts(fatLoss) as never, 5);
-    // 1250 + 895 + 485 + 630 + 1080 = 4340 (brief's R4,310 had an arithmetic slip)
-    expect(qF.subtotal).toBe(4340);
-    expect(qF.total).toBe(3472);
-
+  it("Recovery stack prices from live catalog data", () => {
     const recovery = CURATED_STACKS.find((s) => s.id === "recovery")!;
     const qR = quoteMixBundle(resolveStackProducts(recovery) as never, 5);
     // 955 + 775 + 630 + 1080 + 485 = 3925 (brief's R3,905 had an arithmetic slip)
@@ -137,17 +124,16 @@ describe("pre-curated stacks", () => {
 
 describe("cart bundle savings", () => {
   it("cartBundleSavings reports 3-pack and pick & mix savings together", () => {
-    const rt3 = bySlug("rt3-reta");
     const ghk = bySlug("ghk-cu-50mg");
-    const pack3 = rt3.variants!.find((v) => v.pack === 3)!;
+    const pack3 = ghk.variants!.find((v) => v.pack === 3)!;
     const items = [
       // 3-Pack line added from PDP
-      { product: rt3, variantLabel: pack3.label, unitPrice: pack3.price, quantity: 1 },
+      { product: ghk, variantLabel: pack3.label, unitPrice: pack3.price, quantity: 1 },
       // one pick & mix vial line (20% off GHK single of 630 → 504)
       { product: ghk, unitPrice: 504, compareAtPrice: 630, quantity: 1 },
     ];
-    // 3750 − 3188 = 562, plus 126 = 688
-    expect(cartBundleSavings(items)).toBe(688);
+    // 1890 − 1607 = 283, plus 126 = 409
+    expect(cartBundleSavings(items)).toBe(409);
   });
 });
 

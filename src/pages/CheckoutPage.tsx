@@ -12,6 +12,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
 import { amountToFreeShipping } from "@/lib/shipping";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { currentOffer, trackEvent } from "@/lib/analytics";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
@@ -108,8 +109,10 @@ export default function CheckoutPage() {
       return;
     }
     setBusy(true);
+    const offer = currentOffer();
+    trackEvent({ event: "checkout_started", props: { displayed_price_zar: shippingMath.grandTotal, item_count: items.length, ...(offer ? { offer_id: offer.offer_id } : {}) } });
     try {
-      const state = await startEftCheckout({ userId: user.id, items, totalPrice, form });
+      const state = await startEftCheckout({ items, form });
       try {
         window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
       } catch {

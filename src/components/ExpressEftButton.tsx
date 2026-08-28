@@ -25,7 +25,7 @@ interface Props {
  * form when we don't have complete details on file.
  */
 export default function ExpressEftButton({ onNavigate, className = "" }: Props) {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, clearCart } = useCart();
   const { user, refreshOrders } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -43,12 +43,7 @@ export default function ExpressEftButton({ onNavigate, className = "" }: Props) 
 
     setBusy(true);
     try {
-      const state = await startEftCheckout({
-        userId: user.id,
-        items,
-        totalPrice,
-        form: saved,
-      });
+      const state = await startEftCheckout({ items, form: saved });
       try {
         window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
       } catch {

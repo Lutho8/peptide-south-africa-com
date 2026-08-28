@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { products, type Product } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
+import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 interface Props {
   eyebrow: string;
@@ -23,6 +24,7 @@ export default function CategoryShowcase({ eyebrow, title, blurb, productIds, sh
   const items = productIds
     .map((id) => products.find((p) => p.id === id))
     .filter(Boolean) as Product[];
+  const programPrice = `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month or ${formatZarWhole(PRICING.programOffers.full12Week.amount)}/12 weeks`;
 
   return (
     <section className={`relative isolate overflow-hidden bg-gradient-to-br ${ACCENT[accent]} text-white`}>
@@ -61,7 +63,7 @@ export default function CategoryShowcase({ eyebrow, title, blurb, productIds, sh
               <p className="mt-1 line-clamp-2 text-sm text-white/75">{p.shortDescription}</p>
               <div className="mt-3 flex items-center justify-between">
                 <span className="font-display text-base font-semibold">
-                  {p.priceRange ?? format(p.price)}
+                  {p.track === "GP" ? programPrice : (p.priceRange ?? format(p.price))}
                 </span>
                 <span className="inline-flex items-center gap-1 text-sm font-semibold text-white/90 group-hover:underline">
                   View {p.name} <ArrowRight className="h-4 w-4" />

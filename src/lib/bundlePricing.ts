@@ -7,22 +7,20 @@
 // All prices are ZAR and VAT-inclusive (15%) — never display excl. VAT.
 
 import { products, type Product } from "@/data/products";
+import { PRICING, quoteMixSlugs, roundCents, type MixBundleSize } from "../../supabase/functions/_shared/pricing";
 
 /** Discount multiplier per pick & mix bundle size. */
 export const MIX_BUNDLE_TIERS = {
-  5: { multiplier: 0.8, discountPct: 20, label: "5-Pack Pick & Mix" },
-  10: { multiplier: 0.7, discountPct: 30, label: "10-Pack Researcher Value" },
+  5: { multiplier: 1 - PRICING.packDiscounts[5], discountPct: PRICING.packDiscounts[5] * 100, label: "5-Pack Pick & Mix" },
+  10: { multiplier: 1 - PRICING.packDiscounts[10], discountPct: PRICING.packDiscounts[10] * 100, label: "10-Pack Researcher Value" },
 } as const;
-
-export type MixBundleSize = keyof typeof MIX_BUNDLE_TIERS;
+export type { MixBundleSize };
 
 /** 3-pack tier (implemented via product variants in products.ts). */
-export const PACK3_DISCOUNT_PCT = 15;
+export const PACK3_DISCOUNT_PCT = PRICING.packDiscounts[3] * 100;
 
-/** Round to whole rand (site convention for vial pricing). */
-const round0 = (n: number) => Math.round(n);
 /** Round to cents. */
-const round2 = (n: number) => Math.round(n * 100) / 100;
+const round2 = roundCents;
 
 /** Single-vial ZAR price for a product (variant pack === 1, falls back to product.price). */
 export function singleVialPrice(p: Product): number {
@@ -47,8 +45,8 @@ export function quoteMixBundle(selection: Product[], size: MixBundleSize): MixQu
     throw new Error(`A ${size}-pack needs exactly ${size} vials, got ${selection.length}`);
   }
   const tier = MIX_BUNDLE_TIERS[size];
-  const subtotal = selection.reduce((s, p) => s + singleVialPrice(p), 0);
-  const total = round0(subtotal * tier.multiplier);
+  const serverQuote = quoteMixSlugs(selection.map((product) => product.slug), size);
+  const { subtotal, total } = serverQuote;
   return {
     size,
     subtotal,
@@ -90,12 +88,6 @@ export interface CuratedStack {
 
 export const CURATED_STACKS: CuratedStack[] = [
   {
-    id: "fat-loss",
-    name: "Fat Loss Stack",
-    tagline: "Metabolic research combination",
-    slugs: ["rt3-reta", "tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70"],
-  },
-  {
     id: "recovery",
     name: "Recovery Stack",
     tagline: "Tissue repair & recovery focus",
@@ -106,12 +98,6 @@ export const CURATED_STACKS: CuratedStack[] = [
     name: "Longevity Stack",
     tagline: "Aging & cellular renewal protocol",
     slugs: ["klow80", "mots-c", "ghk-cu-50mg", "glow70", "tesamorelin"],
-  },
-  {
-    id: "performance",
-    name: "Performance Stack",
-    tagline: "Comprehensive research protocol",
-    slugs: ["rt3-reta", "tesamorelin", "bpc-tb500-blend", "glow70", "klow80"],
   },
 ];
 

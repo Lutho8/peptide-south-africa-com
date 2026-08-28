@@ -35,6 +35,7 @@ export default function CartDrawer() {
       label: lines[0]?.bundleLabel ?? "Pick & Mix Bundle",
       lines,
       total: lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0),
+      saving: lines.reduce((s, l) => s + Math.max(0, (l.compareAtPrice ?? l.unitPrice) - l.unitPrice) * l.quantity, 0),
     };
   });
   const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
@@ -82,6 +83,7 @@ export default function CartDrawer() {
                       <div>
                         <h4 className="font-display text-sm font-bold text-foreground">{b.label}</h4>
                         <span className="text-sm font-bold text-primary">{format(b.total)}</span>
+                        {b.saving > 0 && <p className="text-[11px] font-semibold text-trust">Save {format(b.saving)}</p>}
                       </div>
                       <button onClick={() => removeBundle(b.id)} aria-label="Remove bundle" className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-muted">
                         <X className="h-4 w-4" />
@@ -95,7 +97,7 @@ export default function CartDrawer() {
                             <img src={item.product.image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
                           </span>
                           <span className="flex-1 truncate">{item.product.name}</span>
-                          <span className="font-mono">{format(item.unitPrice)}</span>
+                          <span className="font-semibold">quantity {item.quantity}</span>
                         </li>
                       ))}
                     </ul>
