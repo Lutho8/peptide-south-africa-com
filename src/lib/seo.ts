@@ -156,7 +156,7 @@ export function productSchema(product: {
           offerCount: purchasable.length,
           availability: product.inStock
             ? "https://schema.org/InStock"
-            : "https://schema.org/PreOrder",
+            : "https://schema.org/OutOfStock",
           seller: { "@id": `${SITE_URL}/#organization` },
         }
       : {
@@ -168,7 +168,7 @@ export function productSchema(product: {
           itemCondition: "https://schema.org/NewCondition",
           availability: product.inStock
             ? "https://schema.org/InStock"
-            : "https://schema.org/PreOrder",
+            : "https://schema.org/OutOfStock",
           areaServed: { "@type": "Country", name: "ZA" },
           seller: { "@id": `${SITE_URL}/#organization` },
           hasMerchantReturnPolicy: returnPolicy,

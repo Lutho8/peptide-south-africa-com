@@ -211,9 +211,11 @@ export default function QuizFunnelPage() {
         : 100;
 
   // Match AI-recommended peptides to actual shop products by fuzzy name match.
+  // Out-of-stock products are excluded: this section is labelled "In stock now"
+  // and its prices feed directly into the purchasable plan totals.
   const matchedProducts = useMemo(() => {
     if (!aiProtocol?.peptides?.length) return [];
-    return matchProtocolProducts(aiProtocol.peptides, products);
+    return matchProtocolProducts(aiProtocol.peptides, products).filter((p) => p.inStock);
   }, [aiProtocol]);
 
   const exactPlans = useMemo(() => {

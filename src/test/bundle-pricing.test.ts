@@ -97,9 +97,17 @@ describe("pre-curated stacks", () => {
     }
   });
 
-  it("every stack component is in stock — stacks are one-tap purchasable", () => {
+  it("every stack component is in stock except the weight-loss products awaiting restock", () => {
+    // rt3-reta, tz2-tirz and tesamorelin are temporarily out of stock (founder
+    // directive 2026-08-29). Only tesamorelin appears in curated stacks; the
+    // builder blocks the bundle until its slot is swapped for an in-stock vial.
+    const TEMPORARILY_OUT_OF_STOCK = new Set(["rt3-reta", "tz2-tirz", "tesamorelin"]);
     for (const stack of CURATED_STACKS) {
       for (const p of resolveStackProducts(stack)) {
+        if (p && TEMPORARILY_OUT_OF_STOCK.has(p.slug)) {
+          expect(p.inStock, `${stack.name}: ${p.slug}`).toBe(false);
+          continue;
+        }
         expect(p?.inStock, `${stack.name}: ${p?.slug}`).toBe(true);
       }
     }

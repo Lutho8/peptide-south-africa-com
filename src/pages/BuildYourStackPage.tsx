@@ -34,7 +34,11 @@ function emptySlots(size: MixBundleSize, prefill: Slot[] = []): Slot[] {
 export default function BuildYourStackPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("prefill") ?? "";
-  const validPrefill = selectableSlugs.has(prefillSlug) ? prefillSlug : "";
+  // Deep-links (cart upsell, quiz stack) must not prefill an out-of-stock or
+  // clinician-guided product — the slot would be unpurchasable on arrival.
+  const validPrefill = selectableProducts.some((p) => p.slug === prefillSlug && p.inStock !== false)
+    ? prefillSlug
+    : "";
 
   const [size, setSize] = useState<MixBundleSize>(5);
   const [slots, setSlots] = useState<Slot[]>(() => emptySlots(5, validPrefill ? [validPrefill] : []));

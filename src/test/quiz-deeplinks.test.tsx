@@ -59,8 +59,11 @@ describe("Quiz deep-link cart preservation", () => {
       });
 
       const cartIds = result.current.items.map((i) => i.product.id).sort();
-      expect(cartIds).toEqual([...tc.expectedProductIds].sort());
-      expect(result.current.totalItems).toBe(tc.expectedProductIds.length);
+      // The cart-level stock guard drops out-of-stock stack items (e.g.
+      // tesamorelin in the recovery stack while it awaits restock).
+      const inStockIds = tc.expectedProductIds.filter((id) => byId.get(id)!.inStock);
+      expect(cartIds).toEqual([...inStockIds].sort());
+      expect(result.current.totalItems).toBe(inStockIds.length);
     });
   }
 

@@ -29,10 +29,13 @@ function renderCard(slug: string) {
 }
 
 describe("GP-track purchase routing", () => {
-  it("routes a GP-track product into the canonical consultation journey without adding it directly", () => {
+  it("routes an out-of-stock GP-track product to its pre-order page without adding it to the cart", () => {
+    // rt3-reta is GP-track AND temporarily out of stock (founder directive
+    // 2026-08-29): the card's primary CTA is the pre-order path to the PDP.
+    // The consultation journey ("BOOK CONSULT") resumes when it restocks.
     renderCard("rt3-reta");
-    fireEvent.click(screen.getByRole("button", { name: /book consult/i }));
-    expect(screen.getByTestId("route-probe")).toHaveTextContent("/quiz?intent=consult|0");
+    fireEvent.click(screen.getByRole("button", { name: /pre-order — reserve yours!/i }));
+    expect(screen.getByTestId("route-probe")).toHaveTextContent("/product/rt3-reta|0");
   });
 
   it("still adds an RUO product directly to the cart", () => {

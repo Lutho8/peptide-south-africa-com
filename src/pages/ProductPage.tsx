@@ -116,6 +116,9 @@ export default function ProductPage() {
   ];
 
   const handleAdd = async () => {
+    // Hard stop: out-of-stock products cannot be purchased, even if a stale
+    // UI (e.g. StickyProductCTA) somehow fires this handler.
+    if (!product.inStock) return;
     const variantLabel = product.variants?.[selectedVariant]?.label;
     if (isGPTrack) {
       trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });

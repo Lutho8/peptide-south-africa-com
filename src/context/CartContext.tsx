@@ -154,6 +154,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback((product: Product, opts: AddToCartOptions = {}) => {
     if (product.track === "GP") return;
+    // Stock guard: a product explicitly marked out of stock can never enter
+    // the cart, regardless of which UI triggered the add. (`=== false` so
+    // synthetic payloads without the field, e.g. FloatingProductFollower,
+    // keep working.)
+    if (product.inStock === false) return;
     const variantLabel = opts.variantLabel;
     const unitPrice = variantPrice(product.slug, variantLabel);
     const lineId = makeLineId(product.id, variantLabel);
@@ -175,18 +180,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addBundleToCart = useCallback(
     (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => {
-      if (lines.length !== 5 && lines.length !== 10) throw new Error("Invalid bundle size");
-      if (lines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to a research bundle");
-      const size = lines.length as MixBundleSize;
-      const quote = quoteMixSlugs(lines.map((line) => line.product.slug), size);
+      // Stock guard: drop any out-of-stock line so it can't be purchased
+      // through the bundle path (the builder already blocks these upstream).
+      const inStockLines = lines.filter((line) => line.product.inStock !== false);
+      const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      if (inStockLines.length === 0) return bundleId;
+      if (inStockLines.length !== 5 && inStockLines.length !== 10) throw new Error("Invalid bundle size");
+      if (inStockLines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to a research bundle");
+      const size = inStockLines.length as MixBundleSize;
+      const quote = quoteMixSlugs(inStockLines.map((line) => line.product.slug), size);
       const multiplier = 1 - PRICING.packDiscounts[size];
-      const canonicalPrices = lines.map((line) => roundCents(catalogPrice(line.product.slug) * multiplier));
+      const canonicalPrices = inStockLines.map((line) => roundCents(catalogPrice(line.product.slug) * multiplier));
       const sumBeforeLast = canonicalPrices.slice(0, -1).reduce((sum, amount) => sum + amount, 0);
       canonicalPrices[canonicalPrices.length - 1] = roundCents(quote.total - sumBeforeLast);
-      const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       setItems((prev) => [
         ...prev,
-        ...lines.map((l, idx) => ({
+        ...inStockLines.map((l, idx) => ({
           product: l.product,
           variantLabel: meta.label,
           unitPrice: canonicalPrices[idx],
@@ -210,9 +219,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
     if (lines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to the cart");
+    // Stock guard: out-of-stock products (e.g. an OOS quiz recommendation)
+    // are never written into the cart group.
+    const inStockLines = lines.filter((line) => line.product.inStock !== false);
     setItems((prev) => [
       ...prev.filter((item) => item.groupId !== groupId),
-      ...lines.map((line) => ({
+      ...inStockLines.map((line) => ({
         ...line,
         unitPrice: variantPrice(line.product.slug, line.variantLabel),
         groupId,

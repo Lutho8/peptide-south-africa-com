@@ -68,7 +68,7 @@ describe("BuildYourStackPage", () => {
     expect(probe.dataset.bundleLines).toBe("5");
   });
 
-  it("quick-select curated stack fills all 5 slots and is immediately purchasable", () => {
+  it("quick-select curated stack fills all 5 slots but blocks add while a slot is out of stock", () => {
     renderBuilder();
     fireEvent.click(screen.getByRole("button", { name: /Longevity Stack/ }));
     const selects = screen.getAllByLabelText(/Vial \d+/) as HTMLSelectElement[];
@@ -79,10 +79,20 @@ describe("BuildYourStackPage", () => {
       "glow70",
       "tesamorelin",
     ]);
+    // tesamorelin is temporarily out of stock (founder directive 2026-08-29) —
+    // the bundle cannot be added until its slot is swapped for an in-stock vial.
     const addButtons = screen.getAllByRole("button", { name: /Add 5-Pack/ });
-    expect((addButtons[0] as HTMLButtonElement).disabled).toBe(false);
-    fireEvent.click(addButtons[0]);
+    expect((addButtons[0] as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText("Vial 5"), { target: { value: "selank" } });
+    expect((screen.getAllByRole("button", { name: /Add 5-Pack/ })[0] as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(screen.getAllByRole("button", { name: /Add 5-Pack/ })[0]);
     const probe = screen.getByTestId("cart-probe");
     expect(probe.dataset.bundleLines).toBe("5");
+  });
+
+  it("ignores an out-of-stock ?prefill= deep-link slug", () => {
+    renderBuilder("/build-your-stack?prefill=tesamorelin");
+    const first = screen.getByLabelText("Vial 1") as HTMLSelectElement;
+    expect(first.value).toBe("");
   });
 });
