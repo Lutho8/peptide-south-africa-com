@@ -23,6 +23,7 @@ import CoaBadge from "@/components/CoaBadge";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
+import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
@@ -111,6 +112,9 @@ export default function ProductPage() {
   ];
 
   const handleAdd = async () => {
+    // Hard stop: out-of-stock products cannot be purchased, even if a stale
+    // UI (e.g. StickyProductCTA) somehow fires this handler.
+    if (!product.inStock) return;
     const variantLabel = product.variants?.[selectedVariant]?.label;
     if (isGPTrack) {
       navigate(`/quiz?product=${product.slug}`);
@@ -265,7 +269,19 @@ export default function ProductPage() {
                     return (
                       <button
                         key={v.label}
-                        onClick={() => setSelectedVariant(i)}
+                        onClick={() => {
+                          setSelectedVariant(i);
+                          trackEvent({
+                            event: "pdp_variant_selected",
+                            props: { slug: product.slug, pack_size: packSize, price_zar: v.price },
+                          });
+                          if (isThreePack) {
+                            trackEvent({
+                              event: "pdp_full_course_selected",
+                              props: { slug: product.slug, price_zar: v.price },
+                            });
+                          }
+                        }}
                         className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm font-medium transition-all ${
                           selectedVariant === i
                             ? "border-primary bg-primary/5 ring-2 ring-primary"
@@ -418,7 +434,7 @@ export default function ProductPage() {
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             >
               {!product.inStock ? (
-                "Pre-Order"
+                "Out of Stock"
               ) : purchaseMode === "subscribe" ? (
                 subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
               ) : isGPTrack ? (

@@ -13,7 +13,7 @@ export default function StickyProductCTA({ product, variantLabel, price, added, 
   const { display } = useCurrency();
   const priceDisplay = display(price);
   const cta = !product.inStock
-    ? "Pre-Order"
+    ? "Out of Stock"
     : product.track === "GP"
       ? "Start Quiz"
       : added

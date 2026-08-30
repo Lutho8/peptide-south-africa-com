@@ -100,13 +100,22 @@ export default function ShopPage() {
   }, [stackIds]);
 
   const addStackToCart = () => {
-    stackProducts.forEach((p) => {
+    // Skip out-of-stock items — the cart guard would drop them anyway, but
+    // filtering here keeps the confirmation toast count honest.
+    const purchasable = stackProducts.filter((p) => p.inStock);
+    purchasable.forEach((p) => {
       const v = p.variants?.[0];
       addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     });
+    if (purchasable.length === 0) {
+      sonnerToast.error("Stack unavailable", {
+        description: "Every product in this protocol is currently out of stock.",
+      });
+      return;
+    }
     setIsCartOpen(true);
     sonnerToast.success("Stack added to cart", {
-      description: `${stackProducts.length} product${stackProducts.length === 1 ? "" : "s"} from your protocol.`,
+      description: `${purchasable.length} product${purchasable.length === 1 ? "" : "s"} from your protocol.`,
     });
   };
 

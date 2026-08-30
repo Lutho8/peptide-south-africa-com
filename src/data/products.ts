@@ -139,8 +139,9 @@ export const products: Product[] = [
       { question: "How should I store this?", answer: "Refrigerate after reconstitution. Store lyophilized powder at -20°C." },
       { question: "Can I view the published report?", answer: "Yes. Janoshik task #61141 is available in the product gallery and public testing archive. It identifies Retatrutide 10mg; its batch is reported as Unknown, so it is not unique-vial authentication." },
     ],
-    inStock: true,
-    stock: 12,
+    // Out of stock — weight-loss flagship awaiting restock (founder directive 2026-08-29).
+    inStock: false,
+    stock: 0,
   },
   {
     id: "2",

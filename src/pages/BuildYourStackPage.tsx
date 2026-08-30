@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle, ChevronDown, Info, Layers, ShoppingCart, Sparkles, Truck, X } from "lucide-react";
 import { products, type Product } from "@/data/products";
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
+import { trackEvent } from "@/lib/analytics";
 
 /** One selector slot: a product slug or empty. */
 type Slot = string | "";
@@ -37,6 +38,12 @@ export default function BuildYourStackPage() {
   const [size, setSize] = useState<MixBundleSize>(5);
   const [slots, setSlots] = useState<Slot[]>(() => emptySlots(5, validPrefill ? [validPrefill] : []));
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    if (validPrefill) {
+      trackEvent({ event: "build_stack_prefill_started", props: { slug: validPrefill } });
+    }
+  }, [validPrefill]);
 
   const { addBundleToCart } = useCart();
   const { format } = useCurrency();

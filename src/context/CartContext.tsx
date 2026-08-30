@@ -115,6 +115,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 
   const addToCart = useCallback((product: Product, opts: AddToCartOptions = {}) => {
+    // Stock guard: a product explicitly marked out of stock can never enter
+    // the cart, regardless of which UI triggered the add. (`=== false` so
+    // synthetic payloads without the field, e.g. FloatingProductFollower,
+    // keep working.)
+    if (product.inStock === false) return;
     const variantLabel = opts.variantLabel;
     const unitPrice = opts.unitPrice ?? product.price;
     const lineId = makeLineId(product.id, variantLabel);
@@ -137,9 +142,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addBundleToCart = useCallback(
     (lines: BundleLineInput[], meta: { label: string; discountPct: number }) => {
       const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      // Stock guard: drop any out-of-stock line so it can't be purchased
+      // through the bundle path (the builder already blocks these upstream).
+      const inStockLines = lines.filter((l) => l.product.inStock !== false);
+      if (inStockLines.length === 0) return bundleId;
       setItems((prev) => [
         ...prev,
-        ...lines.map((l, idx) => ({
+        ...inStockLines.map((l, idx) => ({
           product: l.product,
           variantLabel: meta.label,
           unitPrice: l.unitPrice,
@@ -162,9 +171,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
+    // Stock guard: out-of-stock products (e.g. an OOS quiz recommendation)
+    // are never written into the cart group.
+    const inStockLines = lines.filter((line) => line.product.inStock !== false);
     setItems((prev) => [
       ...prev.filter((item) => item.groupId !== groupId),
-      ...lines.map((line) => ({
+      ...inStockLines.map((line) => ({
         ...line,
         groupId,
         lineId: `${groupId}::${line.product.id}::${line.variantLabel ?? "default"}`,

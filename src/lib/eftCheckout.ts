@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CartItem } from "@/context/CartContext";
 import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm } from "@/lib/checkoutSchema";
+import { trackEvent } from "@/lib/analytics";
 
 export const CHECKOUT_FORM_KEY = "rtt_checkout_form";
 export const EFT_SESSION_KEY = "rtt_eft_instructions";
@@ -101,6 +102,14 @@ export async function startEftCheckout({
   form,
 }: StartEftArgs): Promise<EftInstructionsState> {
   const totals = checkoutTotals(totalPrice);
+
+  trackEvent({
+    event: "checkout_started",
+    props: {
+      item_count: items.reduce((n, i) => n + i.quantity, 0),
+      order_value_zar: totals.grandTotal,
+    },
+  });
 
   const description = items
     .map((i) => `${i.product.name}${i.variantLabel ? ` (${i.variantLabel})` : ""} x${i.quantity}`)

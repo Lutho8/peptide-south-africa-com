@@ -33,6 +33,7 @@ export default function HeroShop() {
   const secondary = products.find((p) => p.id === "6") ?? products.find((p) => p.id === "3") ?? products[1];
 
   const handleAdd = (p: typeof hero) => {
+    if (!p.inStock) return;
     const v = p.variants?.[0];
     addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     toast({
@@ -148,6 +149,11 @@ export default function HeroShop() {
                     {p.tag}
                   </span>
                 )}
+                {!p.inStock && (
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground ring-1 ring-border">
+                    Out of Stock
+                  </span>
+                )}
                 <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
                   {idx === 0 ? "Weight Loss" : "Recovery"}
                 </span>
@@ -176,9 +182,10 @@ export default function HeroShop() {
                     </Link>
                     <button
                       onClick={() => handleAdd(p)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98]"
+                      disabled={!p.inStock}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      <ShoppingCart className="h-4 w-4" /> Start your protocol
+                      <ShoppingCart className="h-4 w-4" /> {p.inStock ? "Start your protocol" : "Out of Stock"}
                     </button>
                   </div>
                 </div>

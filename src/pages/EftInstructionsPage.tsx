@@ -17,6 +17,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import CheckoutStepper from "@/components/CheckoutStepper";
 import { formatZAR } from "@/lib/price";
 import { EFT_SESSION_KEY, type EftInstructionsState } from "@/lib/eftCheckout";
+import { trackEvent } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
 
 function useCopy(): [string | null, (key: string, value: string) => void] {
@@ -76,7 +77,14 @@ export default function EftInstructionsPage() {
   const location = useLocation();
   const { toast } = useToast();
   const [acknowledged, setAcknowledged] = useState(false);
-  const [copiedKey, copy] = useCopy();
+  const [copiedKey, copyRaw] = useCopy();
+
+  const copy = (key: string, value: string) => {
+    copyRaw(key, value);
+    if (key.startsWith("ref") && data) {
+      trackEvent({ event: "eft_reference_copied", props: { order_id: data.orderId } });
+    }
+  };
 
   const data: EftInstructionsState | null = useMemo(() => {
     const fromRouter = (location.state ?? null) as EftInstructionsState | null;
@@ -94,6 +102,12 @@ export default function EftInstructionsPage() {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [acknowledged]);
+
+  useEffect(() => {
+    if (data) {
+      trackEvent({ event: "eft_instructions_shown", props: { order_id: data.orderId, amount_zar: data.amount } });
+    }
+  }, [data]);
 
   if (!data) {
     return (
@@ -286,9 +300,9 @@ export default function EftInstructionsPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            Changed your mind?{" "}
+            Need to change something?{" "}
             <Link to="/checkout" className="font-semibold text-primary hover:underline">
-              Go back and pay by card instead
+              Go back to checkout
             </Link>
           </p>
         </div>

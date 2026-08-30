@@ -29,8 +29,9 @@ export default function ProductCard({ product }: { product: Product }) {
     threePack && singleVial ? singleVial.price * 3 - threePack.price : undefined;
 
   const handleAdd = () => {
+    // Out-of-stock products can never be purchased — the button is disabled,
+    // and this guard covers any stale UI that still fires the handler.
     if (!product.inStock) {
-      navigate(productUrl);
       return;
     }
     if (isGPTrack) {
@@ -160,10 +161,11 @@ export default function ProductCard({ product }: { product: Product }) {
           </Link>
           <button
             onClick={handleAdd}
-            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95"
+            disabled={!product.inStock}
+            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            {!product.inStock ? "Notify Me" : isGPTrack ? "Start Quiz" : "Add To Cart"}
+            {!product.inStock ? "Out of Stock" : isGPTrack ? "Start Quiz" : "Add To Cart"}
           </button>
         </div>
         {isGPTrack && product.inStock && (

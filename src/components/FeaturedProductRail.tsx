@@ -75,8 +75,8 @@ export default function FeaturedProductRail() {
                       <span className="inline-flex items-center gap-1 text-trust">
                         <ShieldCheck className="h-3 w-3" /> COA Verified
                       </span>
-                      <span className={lowStock ? "text-destructive" : "text-trust"}>
-                        {lowStock ? "Only 4 left" : "In stock · ships today"}
+                      <span className={!p.inStock ? "text-muted-foreground" : lowStock ? "text-destructive" : "text-trust"}>
+                        {!p.inStock ? "Out of stock" : lowStock ? "Only 4 left" : "In stock · ships today"}
                       </span>
                     </div>
 
@@ -91,10 +91,11 @@ export default function FeaturedProductRail() {
                       </div>
                       <button
                         onClick={() => addToCart(p)}
+                        disabled={!p.inStock}
                         aria-label={`Add ${p.name} to cart`}
-                        className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
+                        className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        <ShoppingCart className="h-3.5 w-3.5" /> Add
+                        <ShoppingCart className="h-3.5 w-3.5" /> {p.inStock ? "Add" : "Out of Stock"}
                       </button>
                     </div>
                   </div>

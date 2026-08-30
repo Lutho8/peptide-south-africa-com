@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import FreeShippingBar from "@/components/FreeShippingBar";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { trackEvent } from "@/lib/analytics";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 export default function CartPage() {
@@ -128,6 +129,14 @@ export default function CartPage() {
         {anchorSlug && cartUnits < 5 && (
           <Link
             to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : mp(`/build-your-stack?prefill=${anchorSlug}`)}
+            onClick={() =>
+              trackEvent(
+                cartUnits < 3
+                  ? { event: "cart_3pack_prompt_clicked", props: { anchor_slug: anchorSlug, cart_units: cartUnits } }
+                  : { event: "cart_upgrade_5pack_clicked", props: { anchor_slug: anchorSlug, cart_units: cartUnits } },
+              )
+            }
+            data-testid={cartUnits < 3 ? "cart-3pack-prompt" : "cart-upgrade-5pack"}
             className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-4"
           >
             <span>
@@ -139,7 +148,7 @@ export default function CartPage() {
               <span className="block text-sm text-muted-foreground">
                 {cartUnits < 3
                   ? "Lower cost per vial and stronger value on day one."
-                  : "Add 2 more vials now to unlock 20% bundle savings."}
+                  : `Add ${5 - cartUnits} more vial${5 - cartUnits === 1 ? "" : "s"} now to unlock 20% bundle savings.`}
               </span>
             </span>
             <ArrowRight className="h-5 w-5 shrink-0 text-primary" />

@@ -57,6 +57,11 @@ export default function CategoryShowcase({ eyebrow, title, blurb, productIds, sh
                     {p.tag}
                   </span>
                 )}
+                {!p.inStock && (
+                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                    Out of Stock
+                  </span>
+                )}
               </div>
               <p className="mt-1 line-clamp-2 text-sm text-white/75">{p.shortDescription}</p>
               <div className="mt-3 flex items-center justify-between">
