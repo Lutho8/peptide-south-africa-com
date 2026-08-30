@@ -7,6 +7,7 @@ export interface LastViewedProduct {
   image: string;
   price: number;
   track?: ProductTrack;
+  inStock?: boolean;
 }
 
 interface Ctx {

@@ -93,10 +93,10 @@ export interface Product {
 }
 
 // Build all variants first so we can derive priceRange consistently.
-const rt3Variants  = buildPackVariants("rt3-reta", 10, { p3: 3 });
+const rt3Variants  = buildPackVariants("rt3-reta", 10, { p1: 0, p3: 0 });
 const ghkVariants  = buildPackVariants("ghk-cu-50mg", 50, { p3: 2 });
-const tesVariants  = buildPackVariants("tesamorelin", 10, { p3: 2 });
-const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p3: 2 });
+const tesVariants  = buildPackVariants("tesamorelin", 10, { p1: 0, p3: 0 });
+const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p1: 0, p3: 0 });
 const motsVariants = buildPackVariants("mots-c", 10, { p3: 2 });
 const bpcVariants  = buildPackVariants("bpc-tb500-blend", 20, { p3: 2 });
 const glowVariants = buildPackVariants("glow70", 70, { p3: 3 });
@@ -143,8 +143,8 @@ export const products: Product[] = [
       { question: "How should I store this?", answer: "Refrigerate after reconstitution. Store lyophilized powder at -20°C." },
       { question: "Can I view the published report?", answer: "Yes. Janoshik task #61141 is available in the product gallery and public testing archive. It identifies Retatrutide 10mg; its batch is reported as Unknown, so it is not unique-vial authentication." },
     ],
-    inStock: true,
-    stock: 12,
+    inStock: false,
+    stock: 0,
   },
   {
     id: "2",
@@ -198,8 +198,8 @@ export const products: Product[] = [
       { question: "What category does Tesamorelin fall under?", answer: "It's classified as a GHRH analog, targeting the growth hormone axis." },
       { question: "Can I view the lab report?", answer: "Yes. Janoshik task #164644 is available in the product gallery and the public testing archive. The report identifies sample TSM10; its batch field is blank, so it should not be treated as unique-vial authentication." },
     ],
-    inStock: true,
-    stock: 4,
+    inStock: false,
+    stock: 0,
   },
   {
     id: "4",
@@ -227,7 +227,8 @@ export const products: Product[] = [
       { question: "Why is this marked Pre-Order?", answer: "TZ-2 is in high demand. Pre-orders guarantee your allocation from the next certified batch." },
       { question: "What does the published report cover?", answer: "Janoshik task #164662 appears in the product gallery and testing archive. It identifies sample T120 and reports 134.42 mg and 132.84 mg; its batch is Unknown and it does not identify a 20mg PSA lot." },
     ],
-    inStock: true,
+    inStock: false,
+    stock: 0,
   },
   {
     id: "5",

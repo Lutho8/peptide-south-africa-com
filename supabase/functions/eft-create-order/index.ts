@@ -7,6 +7,7 @@
 // instruction email, and returns the bank details for the instructions page.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { PRICING, quoteCheckout } from '../_shared/pricing.ts';
+import { validatePetsFulfilment } from '../_shared/pets-fulfilment.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -55,7 +56,7 @@ Deno.serve(async (req)=>{
       }, 503);
     }
     const body = await req.json().catch(()=>({}));
-    const { requestId, selections, firstName, lastName, email } = body ?? {};
+    const { requestId, selections, firstName, lastName, email, fulfilment } = body ?? {};
     if (typeof requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: 'invalid checkout request', code: 'BAD_REQUEST' }, 400);
     }
@@ -71,6 +72,20 @@ Deno.serve(async (req)=>{
         error: error instanceof Error ? error.message : 'Invalid cart selection',
         code: 'INVALID_CART'
       }, 400);
+    }
+    const petsCheckout = Array.isArray(selections) && selections.some((selection)=>
+      selection?.kind === 'item' && selection?.slug === 'pets-mobility-collagen'
+    );
+    let fulfilmentRow = null;
+    if (petsCheckout) {
+      try {
+        fulfilmentRow = validatePetsFulfilment(fulfilment, userId, String(email));
+      } catch (error) {
+        return json({
+          error: error instanceof Error ? error.message : 'Invalid delivery details',
+          code: 'INVALID_FULFILMENT'
+        }, 400);
+      }
     }
     // Service-role client is the only writer of the price-bearing order row.
     const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
@@ -124,6 +139,16 @@ Deno.serve(async (req)=>{
     }
     const orderId = order.id;
     const storedTotal = Number(order.total);
+    if (fulfilmentRow) {
+      const { error: fulfilmentErr } = await admin.from('order_fulfilment_details').upsert({
+        ...fulfilmentRow,
+        order_id: orderId
+      }, { onConflict: 'order_id' });
+      if (fulfilmentErr) {
+        console.error('order fulfilment insert failed:', fulfilmentErr.message);
+        return json({ error: 'Delivery details could not be saved. Please try again.' }, 500);
+      }
+    }
     const { data: existingOrder, error: existingOrderErr } = await admin.from('psa_orders').select('order_id, user_id, order_total, payment_method, payment_reference').eq('order_id', orderId).maybeSingle();
     if (existingOrderErr) {
       console.error('psa_orders idempotency lookup failed:', existingOrderErr.message);
@@ -199,6 +224,10 @@ Deno.serve(async (req)=>{
     // its _default renderer uses payload.subject / payload.text — so we send both the
     // structured fields and a pre-rendered subject/text. Gap noted for a dedicated template.
     const amountFormatted = `R${storedTotal.toFixed(2)}`;
+    const storefrontName = petsCheckout ? 'Peptides4Pets' : 'Peptide South Africa';
+    const dispatchLine = petsCheckout
+      ? `Once the matching deposit is verified, we'll confirm your order and queue it for local courier dispatch.`
+      : `Once the matching deposit is verified, we'll confirm your order and dispatch Monday–Wednesday in insulated cold-chain packaging.`;
     const eftText = [
       `Hi${customerName ? ' ' + customerName : ''},`,
       ``,
@@ -211,10 +240,9 @@ Deno.serve(async (req)=>{
       `Reference: ${paymentReference}`,
       ``,
       `Use the reference exactly as shown so our team can verify the matching bank deposit.`,
-      `Once the matching deposit is verified, we'll confirm your order and dispatch Monday–Wednesday`,
-      `in insulated cold-chain packaging.`,
+      dispatchLine,
       ``,
-      `— Peptide South Africa`
+      `— ${storefrontName}`
     ].join('\n');
     const { error: mailErr } = await admin.from('email_outbox').insert({
       user_id: userId,
@@ -227,6 +255,7 @@ Deno.serve(async (req)=>{
         items: order.order_description ?? null,
         total: storedTotal,
         currency: 'ZAR',
+        storefront: petsCheckout ? 'pets' : 'main',
         bank,
         subject: `EFT payment instructions — ${amountFormatted} · ref ${paymentReference}`,
         text: eftText

@@ -73,6 +73,7 @@ export default function ProductPage() {
       image: typeof product.image === "string" ? product.image : "",
       price: product.variants?.[0]?.price ?? product.price,
       track: product.track,
+      inStock: product.inStock,
     });
   }, [product, setLastViewed]);
 
@@ -422,7 +423,7 @@ export default function ProductPage() {
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
               >
                 {!product.inStock ? (
-                  "Pre-Order"
+                  "Pre-Order — Reserve Yours!"
                 ) : purchaseMode === "subscribe" ? (
                   subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
                 ) : added ? (

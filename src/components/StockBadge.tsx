@@ -10,7 +10,7 @@ interface Props {
 export default function StockBadge({ product, size = "sm", className = "" }: Props) {
   const text =
     !product.inStock
-      ? "Pre-Order — Reserve Yours"
+      ? "Pre-Order — Reserve Yours!"
       : typeof product.stock === "number" && product.stock <= 5
         ? `Only ${product.stock} left in stock`
         : "In Stock";

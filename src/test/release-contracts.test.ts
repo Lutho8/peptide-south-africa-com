@@ -69,14 +69,16 @@ describe("release contracts", () => {
     expect(migration).toContain("analytics_events_settlement_once_idx");
   });
 
-  it("gates native EFT deployment on an authenticated synthetic sandbox contract", () => {
+  it("gates the EFT contract on an isolated local Supabase stack", () => {
     const workflow = read(".github/workflows/eft-sandbox.yml");
     const contract = read("scripts/ci/eft-sandbox-contract.mjs");
     const config = read("supabase/config.toml");
-    expect(workflow).toContain("environment: eft-sandbox");
-    expect(workflow).toContain("supabase functions deploy eft-create-order");
-    expect(workflow.indexOf("Deploy native EFT order function to sandbox"))
+    expect(workflow).toContain("supabase start");
+    expect(workflow).toContain("supabase functions serve eft-create-order");
+    expect(workflow.indexOf("Serve the native EFT function locally"))
       .toBeLessThan(workflow.indexOf("Run authenticated EFT sandbox contract"));
+    expect(workflow).toContain('project_id = "eft-sandbox-ci"');
+    expect(workflow).toContain("supabase stop --no-backup");
     expect(workflow).toContain("version: 2.115.0");
     expect(config).toMatch(/\[functions\.eft-create-order\]\s+verify_jwt = true/);
     expect(contract).toContain("signInWithPassword");

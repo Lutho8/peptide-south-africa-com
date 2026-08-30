@@ -45,11 +45,17 @@ export default function FloatingProductFollower() {
 
   const visible = mounted && scrolled;
   const isGP = lastViewed.track === "GP";
+  const outOfStock = lastViewed.inStock === false;
   const priceLabel = isGP
     ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
     : display(lastViewed.price).primary;
 
   const handlePrimary = () => {
+    if (outOfStock) {
+      navigate(`/product/${lastViewed.slug}`);
+      dismiss();
+      return;
+    }
     if (isGP) {
       trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
       navigate(CONSULTATION_PATH);
@@ -109,12 +115,19 @@ export default function FloatingProductFollower() {
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <span className="font-mono text-sm font-bold text-foreground">{priceLabel}</span>
+            {outOfStock && (
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-destructive">
+                Pre-Order — Reserve Yours!
+              </span>
+            )}
             <button
               type="button"
               onClick={handlePrimary}
               className="inline-flex items-center gap-1 rounded-lg bg-hero-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              {isGP ? (
+              {outOfStock ? (
+                "Pre-Order — Reserve Yours!"
+              ) : isGP ? (
                 <>
                   <Stethoscope className="h-3.5 w-3.5" /> BOOK CONSULT
                 </>
