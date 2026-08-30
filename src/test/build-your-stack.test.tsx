@@ -68,18 +68,25 @@ describe("BuildYourStackPage", () => {
     expect(probe.dataset.bundleLines).toBe("5");
   });
 
-  it("quick-select curated stack fills all 5 slots and is immediately purchasable", () => {
+  it("quick-select curated stack skips out-of-stock items and is purchasable after picking a replacement", () => {
     renderBuilder();
     fireEvent.click(screen.getByRole("button", { name: /Longevity Stack/ }));
     const selects = screen.getAllByLabelText(/Vial \d+/) as HTMLSelectElement[];
+    // tesamorelin is out of stock — quick-select skips it and leaves the slot empty.
     expect(selects.map((s) => s.value)).toEqual([
       "klow80",
       "mots-c",
       "ghk-cu-50mg",
       "glow70",
-      "tesamorelin",
+      "",
     ]);
     const addButtons = screen.getAllByRole("button", { name: /Add 5-Pack/ });
+    expect((addButtons[0] as HTMLButtonElement).disabled).toBe(true);
+    // tesamorelin is listed but disabled while out of stock.
+    const lastSelect = selects[4];
+    const tesamorelinOption = Array.from(lastSelect.options).find((o) => o.value === "tesamorelin");
+    expect(tesamorelinOption?.disabled).toBe(true);
+    fireEvent.change(lastSelect, { target: { value: "kpv" } });
     expect((addButtons[0] as HTMLButtonElement).disabled).toBe(false);
     fireEvent.click(addButtons[0]);
     const probe = screen.getByTestId("cart-probe");

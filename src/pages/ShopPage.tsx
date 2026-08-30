@@ -109,13 +109,16 @@ export default function ShopPage() {
   }, 0);
 
   const addStackToCart = () => {
-    stackProducts.forEach((p) => {
+    // Skip out-of-stock items (e.g. weight-loss restock) — same pattern as
+    // FrequentlyBoughtTogether filtering on p.inStock.
+    const inStockProducts = stackProducts.filter((p) => p.inStock);
+    inStockProducts.forEach((p) => {
       const v = p.variants?.[0];
       addToCart(p, v ? { variantLabel: v.label, unitPrice: v.price } : undefined);
     });
     setIsCartOpen(true);
     sonnerToast.success("Stack added to cart", {
-      description: `${stackProducts.length} product${stackProducts.length === 1 ? "" : "s"} from your protocol.`,
+      description: `${inStockProducts.length} product${inStockProducts.length === 1 ? "" : "s"} from your protocol.`,
     });
   };
 

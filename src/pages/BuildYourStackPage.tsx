@@ -70,7 +70,8 @@ export default function BuildYourStackPage() {
     const stack = eligibleCuratedStacks.find((s) => s.id === stackId);
     if (!stack) return;
     if (size !== 5) switchSize(5);
-    setSlots(emptySlots(5, stack.slugs));
+    // Skip out-of-stock items — leave those slots empty for the user to fill.
+    setSlots(emptySlots(5, stack.slugs.filter((slug) => bySlug.get(slug)?.inStock)));
   };
 
   const handleAdd = () => {
@@ -191,7 +192,7 @@ export default function BuildYourStackPage() {
                 )}
                 {hasOOS && (
                   <p className="mt-1 text-[10px] font-medium text-amber-600">
-                    Includes items awaiting restock — swap after selecting
+                    Skips items awaiting restock — pick any replacement below
                   </p>
                 )}
               </button>

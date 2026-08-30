@@ -97,12 +97,17 @@ describe("pre-curated stacks", () => {
     }
   });
 
-  it("every stack component is in stock — stacks are one-tap purchasable", () => {
-    for (const stack of CURATED_STACKS) {
-      for (const p of resolveStackProducts(stack)) {
-        expect(p?.inStock, `${stack.name}: ${p?.slug}`).toBe(true);
-      }
-    }
+  it("pins which stack components are out of stock — restock tripwire", () => {
+    // Weight-loss restock (2026-08-29): tesamorelin is out of stock. Curated
+    // stacks keep listing it, but the builder's quick-select skips OOS items,
+    // so stacks are no longer one-tap purchasable until restock. Update this
+    // expectation when stock flips.
+    const oos = CURATED_STACKS.flatMap((stack) =>
+      resolveStackProducts(stack)
+        .filter((p): p is NonNullable<typeof p> => !!p && !p.inStock)
+        .map((p) => `${stack.id}:${p.slug}`),
+    );
+    expect(oos).toEqual(["recovery:tesamorelin", "longevity:tesamorelin"]);
   });
 
   it("Longevity Stack: R4,230 → R3,384 (save R846)", () => {
