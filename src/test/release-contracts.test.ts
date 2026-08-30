@@ -69,13 +69,19 @@ describe("release contracts", () => {
     expect(migration).toContain("analytics_events_settlement_once_idx");
   });
 
-  it("gates native EFT deployment on an authenticated synthetic sandbox contract", () => {
+  it("runs the authenticated EFT contract in an isolated local Supabase", () => {
     const workflow = read(".github/workflows/eft-sandbox.yml");
     const contract = read("scripts/ci/eft-sandbox-contract.mjs");
     const config = read("supabase/config.toml");
-    expect(workflow).toContain("environment: eft-sandbox");
-    expect(workflow).toContain("supabase functions deploy eft-create-order");
-    expect(workflow.indexOf("Deploy native EFT order function to sandbox"))
+    expect(workflow).toContain("Isolate the CI project from production");
+    expect(workflow).toContain('project_id = "eft-sandbox-ci"');
+    expect(workflow).toContain("Refusing to rewrite an unexpected Supabase project_id");
+    expect(workflow).toContain("supabase start");
+    expect(workflow).toContain("supabase functions serve eft-create-order");
+    expect(workflow).toContain("supabase stop --no-backup");
+    expect(workflow.indexOf("Isolate the CI project from production"))
+      .toBeLessThan(workflow.indexOf("Start isolated local Supabase"));
+    expect(workflow.indexOf("Serve the native EFT function locally"))
       .toBeLessThan(workflow.indexOf("Run authenticated EFT sandbox contract"));
     expect(workflow).toContain("version: 2.115.0");
     expect(config).toMatch(/\[functions\.eft-create-order\]\s+verify_jwt = true/);
@@ -97,7 +103,8 @@ describe("release contracts", () => {
     expect(contract).toContain('deleteRows("orders"');
     expect(contract).toContain("admin.auth.admin.deleteUser");
     expect(contract).not.toMatch(/console\.(?:log|error)\((?:first|replay|stored|.*\.data|.*\.bank)/);
-    expect(workflow).not.toMatch(/environment: eft-sandbox\s+env:/);
+    expect(workflow).not.toContain("supabase functions deploy");
+    expect(workflow).not.toMatch(/secrets\./);
   });
 
   it("publishes both the medical and supplier-report scope disclaimers", () => {
