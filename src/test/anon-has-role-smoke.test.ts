@@ -9,7 +9,11 @@ import { createClient } from "@supabase/supabase-js";
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anon = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 
-const runIf = url && anon ? describe : describe.skip;
+// The tracked .env ships a placeholder ("your-anon-key"); treat it as
+// unconfigured so the smoke test only runs against real credentials.
+const configured = url && anon && !anon.includes("your-anon-key");
+
+const runIf = configured ? describe : describe.skip;
 
 runIf("anon access to has_role-governed surfaces", () => {
   const supabase = createClient(url!, anon!, { auth: { persistSession: false } });

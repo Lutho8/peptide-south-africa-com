@@ -40,13 +40,17 @@ describe("Quiz deep-link routing", () => {
 
 describe("Quiz deep-link cart preservation", () => {
   for (const tc of QUIZ_OUTCOMES.filter((c) => c.expectedKind === "stack")) {
-    it(`"${tc.name}" — visiting /shop?stack=... and adding preserves all items`, () => {
+    it(`"${tc.name}" — visiting /shop?stack=... and adding preserves all in-stock items`, () => {
       // Parse the deep-link the way ShopPage does.
       const url = new URL(tc.expectedUrl(tc.expectedProductIds), "http://test.local");
       const stackIds = (url.searchParams.get("stack") ?? "").split(",").filter(Boolean);
       const byId = new Map(products.map((p) => [p.id, p]));
       const stackProducts = stackIds.map((id) => byId.get(id)!).filter(Boolean);
       expect(stackProducts.map((p) => p.id)).toEqual(tc.expectedProductIds);
+
+      // CartContext.addToCart hard-blocks out-of-stock products (e.g. rt3-reta),
+      // so only the in-stock portion of the stack is expected to land in the cart.
+      const expectedCartIds = tc.expectedProductIds.filter((id) => byId.get(id)!.inStock);
 
       const { result } = renderHook(() => useCart(), { wrapper });
       expect(result.current.items).toEqual([]);
@@ -59,8 +63,8 @@ describe("Quiz deep-link cart preservation", () => {
       });
 
       const cartIds = result.current.items.map((i) => i.product.id).sort();
-      expect(cartIds).toEqual([...tc.expectedProductIds].sort());
-      expect(result.current.totalItems).toBe(tc.expectedProductIds.length);
+      expect(cartIds).toEqual([...expectedCartIds].sort());
+      expect(result.current.totalItems).toBe(expectedCartIds.length);
     });
   }
 
