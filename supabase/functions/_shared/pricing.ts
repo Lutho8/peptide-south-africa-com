@@ -26,6 +26,7 @@ export const PRICING = {
     },
   },
   consultOnlySlugs: ["rt3-reta", "tz2-tirz"],
+  directOnlySlugs: ["pets-mobility-collagen"],
   packDiscounts: {
     3: 0.15,
     5: 0.20,
@@ -53,6 +54,7 @@ export const PRICING = {
     "glass-cartridge-3ml": 39,
     "peptide-pen-needles-10": 49,
     "insulin-syringes-5": 59,
+    "pets-mobility-collagen": 395,
   },
   explicitVariants: {
     "bac-water-bacteriostatic": {
@@ -76,6 +78,10 @@ export function catalogPrice(slug: string): number {
 
 export function isConsultOnlySlug(slug: string): boolean {
   return (PRICING.consultOnlySlugs as readonly string[]).includes(slug);
+}
+
+export function isDirectOnlySlug(slug: string): boolean {
+  return (PRICING.directOnlySlugs as readonly string[]).includes(slug);
 }
 
 function assertCheckoutEligible(slug: string): void {
@@ -113,6 +119,7 @@ export function quoteMixSlugs(slugs: string[], size: MixBundleSize) {
   if (slugs.length !== size) throw new Error(`A ${size}-pack needs exactly ${size} products`);
   const subtotal = slugs.reduce((sum, slug) => {
     assertCheckoutEligible(slug);
+    if (isDirectOnlySlug(slug)) throw new Error("This product is not eligible for peptide bundles");
     return sum + catalogPrice(slug);
   }, 0);
   const discountPct = PRICING.packDiscounts[size];

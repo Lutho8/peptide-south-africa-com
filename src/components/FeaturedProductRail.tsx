@@ -5,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import BookConsultLink from "@/components/BookConsultLink";
+import StockBadge from "@/components/StockBadge";
 import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 const FEATURED_IDS = ["1", "6", "7", "2", "4", "3"];
@@ -39,8 +40,7 @@ export default function FeaturedProductRail() {
 
         <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
           <div className="flex gap-4 snap-x snap-mandatory">
-            {featured.map((p, i) => {
-              const lowStock = i === 1; // fake scarcity on second card
+            {featured.map((p) => {
               const isGPTrack = p.track === "GP";
               return (
                 <article
@@ -78,9 +78,7 @@ export default function FeaturedProductRail() {
                       <span className="inline-flex items-center gap-1 text-trust">
                         <ShieldCheck className="h-3 w-3" /> COA Verified
                       </span>
-                      <span className={lowStock ? "text-destructive" : "text-trust"}>
-                        {lowStock ? "Only 4 left" : "In stock · ships today"}
-                      </span>
+                      <StockBadge product={p} />
                     </div>
 
                     <div className="mt-auto flex items-end justify-between pt-4">
@@ -98,7 +96,14 @@ export default function FeaturedProductRail() {
                           <p className="text-[10px] text-muted-foreground">{p.priceRange}</p>
                         )}
                       </div>
-                      {isGPTrack ? (
+                      {!p.inStock ? (
+                        <Link
+                          to={marketPath(`/product/${p.slug}`, market)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground transition-all hover:bg-muted"
+                        >
+                          Pre-Order — Reserve Yours!
+                        </Link>
+                      ) : isGPTrack ? (
                         <BookConsultLink className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95" />
                       ) : (
                         <button

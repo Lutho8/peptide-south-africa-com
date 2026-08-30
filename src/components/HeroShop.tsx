@@ -13,6 +13,7 @@ import {
 
 import { products } from "@/data/products";
 import ShaderBackdrop from "@/components/ShaderBackdrop";
+import StockBadge from "@/components/StockBadge";
 
 const HERO_VIDEO_SRC =
   "https://player.vimeo.com/progressive_redirect/playback/1197576794/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&signature=17601266ee7e2cb1ad78cd417676683352bfc62cb32be03b087f5ee446fd2484";
@@ -37,6 +38,10 @@ export default function HeroShop() {
   const secondary = products.find((p) => p.id === "6") ?? products.find((p) => p.id === "3") ?? products[1];
 
   const handleAdd = (p: typeof hero) => {
+    if (!p.inStock) {
+      navigate(`/product/${p.slug}`);
+      return;
+    }
     if (p.track === "GP") {
       trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
       navigate(CONSULTATION_PATH);
@@ -160,6 +165,7 @@ export default function HeroShop() {
                 <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
                   {idx === 0 ? "Weight Loss" : "Recovery"}
                 </span>
+                <StockBadge product={p} />
                 <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-semibold text-foreground">
                   <FlaskConical className="h-3 w-3 text-primary" /> ≥99% HPLC
                 </span>
@@ -190,7 +196,7 @@ export default function HeroShop() {
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98]"
                     >
                       {p.track === "GP" ? <Stethoscope className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-                      {p.track === "GP" ? "BOOK CONSULT" : "Add to Cart"}
+                      {!p.inStock ? "Notify Me" : p.track === "GP" ? "BOOK CONSULT" : "Add to Cart"}
                     </button>
                   </div>
                 </div>

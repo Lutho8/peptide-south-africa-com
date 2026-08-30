@@ -30,3 +30,6 @@ brand-guard-report/
 # Build-time prerender temp bundle
 .ssr-tmp/
 .vercel
+
+# Supabase CLI local state
+supabase/.temp/

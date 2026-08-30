@@ -50,6 +50,15 @@ describe("authoritative server pricing", () => {
     expect(quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1 }]).subtotal).toBe(630);
   });
 
+  it("prices the live Pets collagen product without accepting a client amount", () => {
+    const quote = quoteCheckout([
+      { kind: "item", slug: "pets-mobility-collagen", quantity: 1 },
+    ]);
+    expect(quote.subtotal).toBe(395);
+    expect(quote.shipping).toBe(89);
+    expect(quote.total).toBe(484);
+  });
+
   it("prices a 3-pack at exactly 15% off", () => {
     const quote = quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "3-Pack", quantity: 1 }]);
     expect(quote.subtotal).toBe(packPrice("ghk-cu-50mg", 3));
@@ -113,6 +122,12 @@ describe("authoritative server pricing", () => {
 
   it("rejects malformed bundle sizes instead of trusting a stale bundle", () => {
     expect(() => quoteCheckout([{ kind: "mix_bundle", size: 5, slugs: ["ghk-cu-50mg"] }])).toThrow(/exactly 5/);
+  });
+
+  it("keeps the Pets collagen product out of peptide bundle discounts", () => {
+    expect(() =>
+      quoteMixSlugs(Array(5).fill("pets-mobility-collagen"), 5),
+    ).toThrow(/not eligible for peptide bundles/);
   });
 
   it("rejects clinician-only products from direct items and research bundles", () => {

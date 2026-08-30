@@ -14,7 +14,7 @@ export default function StickyProductCTA({ product, variantLabel, price, added, 
   const { display } = useCurrency();
   const priceDisplay = display(price);
   const cta = !product.inStock
-    ? "Pre-Order"
+    ? "Pre-Order — Reserve Yours!"
     : product.track === "GP"
       ? "BOOK CONSULT"
       : added

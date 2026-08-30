@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { products, type Product } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
+import StockBadge from "@/components/StockBadge";
 import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 interface Props {
@@ -61,6 +62,9 @@ export default function CategoryShowcase({ eyebrow, title, blurb, productIds, sh
                 )}
               </div>
               <p className="mt-1 line-clamp-2 text-sm text-white/75">{p.shortDescription}</p>
+              <div className="mt-3">
+                <StockBadge product={p} />
+              </div>
               <div className="mt-3 flex items-center justify-between">
                 <span className="font-display text-base font-semibold">
                   {p.track === "GP" ? programPrice : (p.priceRange ?? format(p.price))}
