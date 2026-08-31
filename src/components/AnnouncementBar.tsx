@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { Truck, ShieldCheck, X } from "lucide-react";
+import { Truck, ShieldCheck, RefreshCw, X } from "lucide-react";
+import { PREORDER_MODE, PREORDER_BANNER_TEXT } from "@/lib/preorder";
 
-const ANNOUNCEMENT_STATE = "psa_announcement_dismissed_v4";
+const ANNOUNCEMENT_STATE = "psa_announcement_dismissed_v5";
 
 const messages = [
+  ...(PREORDER_MODE
+    ? [{ icon: RefreshCw, text: PREORDER_BANNER_TEXT }]
+    : []),
   {
     icon: Truck,
     text: "Free shipping across South Africa on orders over R1,500 — same-day dispatch from Cape Town",

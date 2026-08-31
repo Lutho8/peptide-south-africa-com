@@ -54,8 +54,8 @@ describe("vial branding — white + light-teal medical/luxury tokens", () => {
   });
 
   it("ProductCard wraps the vial image in the shared studio plate", () => {
-    // Use a guaranteed in-stock product: products[0] (rt3-reta) is out of
-    // stock, which changes the badge/CTA markup this snapshot covers.
+    // Pick any in-stock product (all are in stock; pre-order mode changes the
+    // badge markup, so this snapshot covers the pre-order badge).
     const product = products.find((p) => p.inStock)!;
     const { getByTestId } = render(
       withProviders(<ProductCard product={product} />),

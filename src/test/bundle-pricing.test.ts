@@ -96,18 +96,11 @@ describe("pre-curated stacks", () => {
     }
   });
 
-  it("every stack component is in stock except the weight-loss flagship (rt3-reta, awaiting restock)", () => {
-    // rt3-reta is temporarily out of stock (founder directive 2026-08-29) and
-    // appears in the fat-loss and performance stacks. The builder handles this:
-    // the stack card shows an "awaiting restock" note and the affected slot
-    // must be swapped before the bundle can be added to cart.
-    const TEMPORARILY_OUT_OF_STOCK = new Set(["rt3-reta"]);
+  it("every stack component is in stock (purchasable as pre-order during restock)", () => {
+    // rt3-reta is back in stock (pre-order mode, founder directive 2026-08-31);
+    // every stack component is purchasable.
     for (const stack of CURATED_STACKS) {
       for (const p of resolveStackProducts(stack)) {
-        if (p && TEMPORARILY_OUT_OF_STOCK.has(p.slug)) {
-          expect(p.inStock, `${stack.name}: ${p.slug}`).toBe(false);
-          continue;
-        }
         expect(p?.inStock, `${stack.name}: ${p?.slug}`).toBe(true);
       }
     }

@@ -58,7 +58,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
 <a
   class="relative overflow-hidden bg-vial-surface shadow-vial aspect-square rounded-t-lg ring-1 ring-vial-border"
   data-testid="vial-frame"
-  href="/product/ghk-cu-50mg"
+  href="/product/rt3-reta"
 >
   <span
     aria-hidden="true"
@@ -69,19 +69,24 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
     class="pointer-events-none absolute right-1 top-3 h-1.5 w-1.5 rounded-full bg-vial-accent-strong"
   />
   <img
-    alt="GHK-Cu 50 MG"
+    alt="RT3 (Reta)"
     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
     loading="lazy"
-    src="/src/assets/vials/ghk.jpg"
+    src="/src/assets/vials/rt3.jpg"
   />
+  <span
+    class="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+  >
+    Best Seller
+  </span>
   <span
     class="absolute right-3 top-3"
   >
     <span
-      class="inline-flex items-center gap-1 rounded-full font-semibold ring-1 bg-trust/10 text-trust ring-trust/20 px-2.5 py-1 text-[10px] "
+      class="inline-flex items-center gap-1 rounded-full font-semibold ring-1 bg-violet-500/10 text-violet-700 ring-violet-500/30 dark:text-violet-400 px-2.5 py-1 text-[10px] "
     >
       <svg
-        class="lucide lucide-circle-check h-3 w-3"
+        class="lucide lucide-clock h-3 w-3"
         fill="none"
         height="24"
         stroke="currentColor"
@@ -97,11 +102,11 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
           cy="12"
           r="10"
         />
-        <path
-          d="m9 12 2 2 4-4"
+        <polyline
+          points="12 6 12 12 16 14"
         />
       </svg>
-      In Stock
+      Pre-Order — Reserve Yours!
     </span>
   </span>
 </a>

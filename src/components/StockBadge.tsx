@@ -1,5 +1,6 @@
 import { CheckCircle2, AlertTriangle, Clock } from "lucide-react";
 import type { Product } from "@/data/products";
+import { PREORDER_MODE, PREORDER_BADGE_TEXT } from "@/lib/preorder";
 
 interface Props {
   product: Pick<Product, "inStock" | "stock">;
@@ -8,22 +9,25 @@ interface Props {
 }
 
 export default function StockBadge({ product, size = "sm", className = "" }: Props) {
-  const text =
-    !product.inStock
+  const text = PREORDER_MODE
+    ? PREORDER_BADGE_TEXT
+    : !product.inStock
       ? "Out of Stock"
       : typeof product.stock === "number" && product.stock <= 5
         ? `Only ${product.stock} left in stock`
         : "In Stock";
 
-  const Icon =
-    !product.inStock
+  const Icon = PREORDER_MODE
+    ? Clock
+    : !product.inStock
       ? Clock
       : typeof product.stock === "number" && product.stock <= 5
         ? AlertTriangle
         : CheckCircle2;
 
-  const tone =
-    !product.inStock
+  const tone = PREORDER_MODE
+    ? "bg-violet-500/10 text-violet-700 ring-violet-500/30 dark:text-violet-400"
+    : !product.inStock
       ? "bg-muted text-muted-foreground ring-border"
       : typeof product.stock === "number" && product.stock <= 5
         ? "bg-amber-500/10 text-amber-700 ring-amber-500/30 dark:text-amber-400"
