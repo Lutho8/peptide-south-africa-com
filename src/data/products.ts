@@ -95,7 +95,7 @@ export interface Product {
 // Build all variants first so we can derive priceRange consistently.
 const rt3Variants  = buildPackVariants("rt3-reta", 10, { p1: 0, p3: 0 });
 const ghkVariants  = buildPackVariants("ghk-cu-50mg", 50, { p3: 2 });
-const tesVariants  = buildPackVariants("tesamorelin", 10, { p1: 0, p3: 0 });
+const tesVariants  = buildPackVariants("tesamorelin", 5, { p1: 0, p3: 0 });
 const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p1: 0, p3: 0 });
 const motsVariants = buildPackVariants("mots-c", 10, { p3: 2 });
 const bpcVariants  = buildPackVariants("bpc-tb500-blend", 20, { p3: 2 });
@@ -185,7 +185,7 @@ export const products: Product[] = [
     category: "Growth Hormone",
     purity: "98.43–98.59% HPLC",
     storage: "Refrigerate after reconstitution.",
-    sku: "RTT-TES-10",
+    sku: "RTT-TES-5",
     casNumber: "106612-94-6",
     compoundClass: "GHRH analog",
     track: "RUO",

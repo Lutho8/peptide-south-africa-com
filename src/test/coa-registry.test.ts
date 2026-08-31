@@ -41,7 +41,7 @@ describe("COA registry", () => {
     const record = staticCoas.find((item) => item.shortCode === "t01");
     expect(record).toMatchObject({
       productSlug: "tesamorelin",
-      productSku: "RTT-TES-10",
+      productSku: "RTT-TES-5",
       taskNumber: "164644",
       sampleReference: "TSM10",
       verificationUrl: "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",

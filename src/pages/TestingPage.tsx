@@ -215,7 +215,7 @@ export default function TestingPage() {
                   type="text"
                   value={lookup}
                   onChange={(event) => setLookup(event.target.value)}
-                  placeholder="e.g. 164644, TSM10 or RTT-TES-10"
+                  placeholder="e.g. 164644, TSM10 or RTT-TES-5"
                   className="w-full rounded-lg border border-input bg-card py-3 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                 />
               </div>

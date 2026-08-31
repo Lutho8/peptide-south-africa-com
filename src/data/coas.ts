@@ -88,7 +88,7 @@ export const staticCoas: CoaRecord[] = [
     shortCode: "t01",
     productSlug: "tesamorelin",
     productName: "Tesamorelin",
-    productSku: "RTT-TES-10",
+    productSku: "RTT-TES-5",
     strength: "10 mg",
     labName: "Janoshik Analytical",
     taskNumber: "164644",
@@ -101,7 +101,7 @@ export const staticCoas: CoaRecord[] = [
       { label: "Reported purity", value: "98.589%; 98.425%" },
     ],
     sourceNote:
-      "This report identifies the submitted sample as TSM10 and names Zztai Peptide Ltd. as the client. Its batch field is blank, so it verifies the published lab report—not a unique PSA vial or lot.",
+      "This report identifies the submitted sample as TSM10 and names Zztai Peptide Ltd. as the client. The submitted sample was 10 mg; the PSA-listed product is 5 mg per vial. Its batch field is blank, so it verifies the published lab report—not a unique PSA vial or lot.",
   },
 ];
 

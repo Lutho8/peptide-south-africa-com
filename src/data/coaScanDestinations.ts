@@ -15,7 +15,7 @@ export const COA_SCAN_DESTINATIONS = {
     url: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
   },
   t01: {
-    product: "Tesamorelin 10 mg",
+    product: "Tesamorelin supplier source report",
     taskNumber: "164644",
     url: "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
   },
