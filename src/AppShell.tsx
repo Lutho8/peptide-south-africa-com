@@ -19,6 +19,7 @@ import DiscountPopup from "@/components/DiscountPopup";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LiveActivity from "@/components/LiveActivity";
+import PreferredSourcesButton from "@/components/PreferredSourcesButton";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
 // lazy modules before writing complete SEO HTML for public routes.
@@ -37,6 +38,7 @@ const FatLossProtocolPage = lazy(() => import("@/pages/FatLossProtocolPage"));
 const ResearchHubPage = lazy(() => import("@/pages/ResearchHubPage"));
 const BlogIndexPage = lazy(() => import("@/pages/BlogIndexPage"));
 const BlogPostPage = lazy(() => import("@/pages/BlogPostPage"));
+const EditorialPolicyPage = lazy(() => import("@/pages/EditorialPolicyPage"));
 const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
 const BuyRetatrutideSA = lazy(() => import("@/pages/BuyRetatrutideSA"));
 const BuyBpc157SA = lazy(() => import("@/pages/BuyBpc157SA"));
@@ -118,6 +120,7 @@ export default function AppShell() {
                 <Route path="/research" element={<ResearchHubPage />} />
                 <Route path="/blog" element={<BlogIndexPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
+                <Route path="/editorial-policy" element={<EditorialPolicyPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
                 <Route path="/buy-retatrutide-south-africa" element={<BuyRetatrutideSA />} />
                 <Route path="/buy-bpc-157-south-africa" element={<BuyBpc157SA />} />
@@ -141,6 +144,9 @@ export default function AppShell() {
                 </Routes>
               </Suspense>
             </main>
+            <div className="container px-4 py-8">
+              <PreferredSourcesButton />
+            </div>
             <Footer />
             <StickyMobileCTA />
             <FloatingProductFollower />

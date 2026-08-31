@@ -2,11 +2,14 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import BlogCard from "@/components/blog/BlogCard";
 import { posts } from "@/data/blog";
+import PreferredSourcesButton from "@/components/PreferredSourcesButton";
+import { getBlogImage } from "@/lib/blogImages";
 
 const SITE = "https://www.peptide-south-africa.com";
 
 export default function BlogIndexPage() {
   const sorted = [...posts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const imageUrl = new URL(getBlogImage("Clinical Research"), SITE).href;
   return (
     <>
       <Helmet>
@@ -16,9 +19,19 @@ export default function BlogIndexPage() {
           content="Honest, research-cited peptide guides from Cape Town. Protocols, bloodwork, dosing math, community and sourcing — built for South African biohackers."
         />
         <link rel="canonical" href={`${SITE}/blog`} />
+        <link rel="alternate" hrefLang="en-ZA" href={`${SITE}/blog`} />
+        <link rel="alternate" hrefLang="en" href={`${SITE}/blog`} />
+        <link rel="alternate" hrefLang="x-default" href={`${SITE}/blog`} />
         <meta property="og:title" content="Peptide research blog — Peptide South Africa" />
+        <meta property="og:description" content="Research-cited peptide guides, clinical study updates and sourcing standards for South African readers." />
         <meta property="og:url" content={`${SITE}/blog`} />
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Peptide South Africa" />
+        <meta property="og:locale" content="en_ZA" />
+        <meta property="og:image" content={imageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imageUrl} />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Blog",
@@ -47,6 +60,7 @@ export default function BlogIndexPage() {
             Educational deep-dives on protocols, bloodwork, dosing math and the Cape Town peptide
             community. Every post is research-cited and written for honest, GP-led practice.
           </p>
+          <PreferredSourcesButton compact className="mt-7 max-w-3xl" />
         </div>
       </section>
 

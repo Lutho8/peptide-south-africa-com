@@ -6,6 +6,8 @@ import BlogFAQ from "@/components/blog/BlogFAQ";
 import BlogCTA from "@/components/blog/BlogCTA";
 import BlogCard from "@/components/blog/BlogCard";
 import { getPost, getRelated } from "@/data/blog";
+import { getBlogImage } from "@/lib/blogImages";
+import PreferredSourcesButton from "@/components/PreferredSourcesButton";
 
 const SITE = "https://www.peptide-south-africa.com";
 
@@ -16,6 +18,7 @@ export default function BlogPostPage() {
 
   const related = getRelated(post.related);
   const url = `${SITE}/blog/${post.slug}`;
+  const imageUrl = new URL(getBlogImage(post.category), SITE).href;
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -24,9 +27,23 @@ export default function BlogPostPage() {
     description: post.metaDescription,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
-    author: { "@type": "Organization", name: "Peptide South Africa Editorial" },
-    publisher: { "@type": "Organization", name: "Peptide South Africa" },
-    mainEntityOfPage: url,
+    image: [imageUrl],
+    author: {
+      "@type": "Organization",
+      name: "Peptide South Africa Editorial",
+      url: `${SITE}/editorial-policy`,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${SITE}/#organization`,
+      name: "Peptide South Africa",
+      url: SITE,
+      logo: { "@type": "ImageObject", url: `${SITE}/logo-horizontal.png` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    isAccessibleForFree: true,
+    inLanguage: "en-ZA",
+    articleSection: post.category,
     keywords: post.keyword,
   };
 
@@ -49,12 +66,23 @@ export default function BlogPostPage() {
         <meta name="description" content={post.metaDescription} />
         <meta name="keywords" content={post.keyword} />
         <link rel="canonical" href={url} />
+        <link rel="alternate" hrefLang="en-ZA" href={url} />
+        <link rel="alternate" hrefLang="en" href={url} />
+        <link rel="alternate" hrefLang="x-default" href={url} />
         <meta property="og:title" content={post.metaTitle} />
         <meta property="og:description" content={post.metaDescription} />
         <meta property="og:url" content={url} />
         <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Peptide South Africa" />
+        <meta property="og:locale" content="en_ZA" />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:alt" content={`${post.category} article from Peptide South Africa`} />
         <meta property="article:published_time" content={post.publishedAt} />
         <meta property="article:modified_time" content={post.updatedAt} />
+        <meta property="article:section" content={post.category} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imageUrl} />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
         {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
       </Helmet>
@@ -77,14 +105,22 @@ export default function BlogPostPage() {
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                Updated {new Date(post.updatedAt).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" })}
+                Published {new Date(post.publishedAt).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" })}
               </span>
+              {post.updatedAt !== post.publishedAt && (
+                <span>
+                  Updated {new Date(post.updatedAt).toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" })}
+                </span>
+              )}
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
                 {post.readingMinutes} min read
               </span>
-              <span>By Peptide South Africa Editorial</span>
+              <Link to="/editorial-policy" className="hover:text-foreground hover:underline">
+                By Peptide South Africa Editorial
+              </Link>
             </div>
+            <PreferredSourcesButton compact className="mt-7" />
           </div>
         </header>
 

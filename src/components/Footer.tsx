@@ -83,6 +83,7 @@ export default function Footer() {
               <Link to="/research" className="hover:text-foreground">Research Hub</Link>
               <Link to="/testing" className="hover:text-foreground">Lab Testing &amp; COAs</Link>
               <Link to="/blog" className="hover:text-foreground">Blog</Link>
+              <Link to="/editorial-policy" className="hover:text-foreground">Editorial Policy</Link>
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
               <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
               <Link to="/community" className="hover:text-foreground">WhatsApp Community</Link>

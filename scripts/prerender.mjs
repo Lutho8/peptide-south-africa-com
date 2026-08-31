@@ -29,6 +29,7 @@ const staticRoutes = [
   "/shop",
   "/build-your-stack",
   "/blog",
+  "/editorial-policy",
   "/faq",
   "/research",
   "/fat-loss-protocol",
@@ -117,7 +118,9 @@ async function main() {
         // og:url, and crawlers may honour that first (homepage) tag.
         page = page.replace(/<title>.*?<\/title>/s, "");
         page = page.replace(/\n?\s*<link rel="canonical"[^>]*>/i, "");
-        page = page.replace(/\n?\s*<meta property="og:url"[^>]*>/i, "");
+        page = page.replace(/\n?\s*<link rel="alternate" hreflang="[^"]+"[^>]*>/gi, "");
+        page = page.replace(/\n?\s*<meta property="og:(?:title|description|url|type|site_name|locale|image)"[^>]*>/gi, "");
+        page = page.replace(/\n?\s*<meta name="twitter:(?:card|title|description|image)"[^>]*>/gi, "");
         page = page.replace(/\n?\s*<meta name="description"[^>]*>/i, "");
         page = page.replace("</head>", `    ${headTags}\n  </head>`);
       }

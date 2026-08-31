@@ -57,3 +57,4 @@ Disallow: /auth
 Disallow: /api/
 
 Sitemap: https://www.peptide-south-africa.com/sitemap.xml
+Sitemap: https://www.peptide-south-africa.com/news-sitemap.xml
