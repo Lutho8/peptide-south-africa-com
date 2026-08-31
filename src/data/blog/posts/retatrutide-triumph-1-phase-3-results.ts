@@ -5,21 +5,21 @@ export const post: BlogPost = {
   title: "Retatrutide TRIUMPH-1: 28.3% Weight Loss at 80 Weeks in Phase 3",
   metaTitle: "Retatrutide TRIUMPH-1 Phase 3 Results — 28.3% Weight Loss",
   metaDescription:
-    "Lilly's TRIUMPH-1 Phase 3 trial: retatrutide 12 mg drove 28.3% mean weight loss at 80 weeks and 30.3% at 104 weeks. Full data, safety and what it means.",
+    "Lilly's TRIUMPH-1 Phase 3 topline report: retatrutide 12 mg showed 28.3% mean weight loss at 80 weeks and 30.3% in a selected 104-week extension.",
   keyword: "retatrutide phase 3 results",
   publishedAt: "2026-06-12",
-  updatedAt: "2026-06-12",
+  updatedAt: "2026-08-31",
   readingMinutes: 7,
   category: "Clinical Research",
   hero: {
     eyebrow: "Clinical research update",
     summary:
-      "Eli Lilly's TRIUMPH-1 Phase 3 trial of retatrutide — a first-in-class GIP/GLP-1/glucagon triple agonist — delivered an average 28.3% weight loss at 80 weeks on the 12 mg dose, and 30.3% (85.0 lbs) at 104 weeks in the extension. Here is what the data show and what it changes for protocol design.",
+      "Eli Lilly's TRIUMPH-1 Phase 3 topline release reported an average 28.3% weight reduction at 80 weeks with retatrutide 12 mg. A selected extension subgroup averaged 30.3% at 104 weeks. Retatrutide remains investigational, and these trial doses are not a public treatment protocol.",
   },
   body: [
     {
       type: "p",
-      text: "On 21 May 2026, Eli Lilly released topline results from <strong>TRIUMPH-1</strong>, the Phase 3 pivotal obesity trial of <strong>retatrutide</strong>, an investigational once-weekly triple hormone receptor agonist that activates GIP, GLP-1 <em>and</em> glucagon receptors from a single molecule. All three doses (4 mg, 9 mg, 12 mg) met the primary and key secondary endpoints. The 12 mg arm produced an average <strong>28.3% body-weight reduction at 80 weeks</strong> and <strong>30.3% (85.0 lbs / 38.5 kg) at 104 weeks</strong> in a pre-specified extension — the largest weight loss reported to date for a non-surgical obesity therapy.<sup>1</sup>",
+      text: "On 21 May 2026, Eli Lilly released topline results from <strong>TRIUMPH-1</strong>, a Phase 3 obesity trial of <strong>retatrutide</strong>, an investigational once-weekly agonist of GIP, GLP-1 and glucagon receptors. All three doses met the reported primary and key secondary endpoints. The 12 mg arm showed an average <strong>28.3% body-weight reduction at 80 weeks</strong> under the efficacy estimand.<sup>1</sup> These are sponsor-reported topline results; a complete peer-reviewed Phase 3 paper was not available when this article was updated.",
     },
     { type: "h2", text: "Primary endpoint: 80-week efficacy estimand" },
     {
@@ -33,27 +33,27 @@ export const post: BlogPost = {
     },
     {
       type: "p",
-      text: "Categorical responder rates on retatrutide 12 mg were striking: <strong>62.5%</strong> of participants lost ≥25% of body weight, <strong>45.3%</strong> lost ≥30%, and <strong>27.2%</strong> lost ≥35%. <strong>65.3%</strong> of 12 mg participants reached a BMI under 30 — moving below the obesity threshold entirely — including 37.5% of those who started in class 3 obesity (BMI ≥40).<sup>1</sup>",
+      text: "Lilly reported the following categorical responder rates for retatrutide 12 mg: <strong>62.5%</strong> of participants lost ≥25% of body weight, <strong>45.3%</strong> lost ≥30%, and <strong>27.2%</strong> lost ≥35%. <strong>65.3%</strong> reached a BMI under 30, including 37.5% of those who started with class 3 obesity (BMI ≥40). Lilly notes that the overall BMI-under-30 analysis was not controlled for multiplicity and that the class 3 subgroup analysis was post hoc.<sup>1</sup>",
     },
     { type: "h2", text: "Extension to 104 weeks: continued weight loss" },
     {
       type: "p",
-      text: "532 participants with BMI ≥35 at baseline who completed 80 weeks entered a blinded extension to 104 weeks. Weight loss <em>continued</em> rather than plateauing: 12 mg → −30.3% (−85.0 lbs / −38.5 kg); 9 mg → −29.5%; 4 mg titrated to maximum tolerated dose → −27.9%. Even participants who crossed over from placebo to retatrutide MTD lost an average of −19.2% (−49.9 lbs) in just 24 weeks of active treatment.<sup>1</sup>",
+      text: "A pre-specified blinded extension enrolled 532 participants with baseline BMI ≥35 who completed 80 weeks on study drug without permanent dose reduction and met other extension criteria. In that selected subgroup, the 12 mg-to-maximum-tolerated-dose arm averaged −30.3% (−85.0 lbs / −38.5 kg) at 104 weeks; the 9 mg arm averaged −29.5% and the 4 mg arm, after escalation to a maximum tolerated dose, averaged −27.9%. The selection criteria mean these extension results should not be generalised to every participant or patient.<sup>1</sup>",
     },
-    { type: "h2", text: "The 4 mg dose: 19% weight loss with one escalation step" },
+    { type: "h2", text: "The 4 mg trial arm" },
     {
       type: "p",
-      text: "The most under-reported finding is the 4 mg arm. Reached with a single step-up from the 2 mg starting dose, 4 mg retatrutide delivered <strong>−19.0% weight loss at 80 weeks</strong> — roughly matching semaglutide 2.4 mg in STEP-1 (−14.9%) and approaching tirzepatide 15 mg in SURMOUNT-1 (−20.9%) — with a discontinuation rate (4.1%) <em>lower than placebo</em> (4.9%).<sup>1</sup> For protocols where tolerability and titration time matter, this is a clinically meaningful entry point.",
+      text: "The 4 mg randomised trial arm showed <strong>−19.0% weight reduction at 80 weeks</strong> under the efficacy estimand, with adverse-event discontinuation reported in 4.1% versus 4.9% for placebo.<sup>1</sup> This describes a controlled trial arm; it does not establish 4 mg as a safe starting dose, target or treatment plan outside the study.",
     },
     { type: "h2", text: "Cardiometabolic markers" },
     {
       type: "p",
-      text: "Beyond weight, retatrutide produced significant improvements from baseline across waist circumference (−24.1 cm on 12 mg), non-HDL cholesterol, triglycerides, systolic blood pressure and high-sensitivity C-reactive protein (hsCRP).<sup>1</sup> These are the markers we routinely include in <a href=\"/blog/peptide-bloodwork-markers-sa\">pre- and post-protocol bloodwork panels</a>.",
+      text: "Lilly reported improvements from baseline in waist circumference (−24.1 cm with 12 mg), non-HDL cholesterol, triglycerides, systolic blood pressure and high-sensitivity C-reactive protein (hsCRP).<sup>1</sup> The release did not provide complete effect estimates for every marker, so the clinical importance of those secondary findings requires fuller reporting.",
     },
     { type: "h2", text: "Safety and tolerability" },
     {
       type: "p",
-      text: "The adverse-event profile was consistent with the incretin class. Most common AEs on 12 mg (vs placebo) were nausea (42.4% vs 14.8%), diarrhoea (32.0% vs 13.5%), constipation (26.1% vs 10.9%) and vomiting (25.3% vs 4.8%). Two findings warrant specific mention:<sup>1</sup>",
+      text: "Lilly described the adverse-event types as generally consistent with other incretin-therapy trials. The most common events with 12 mg (vs placebo) were nausea (42.4% vs 14.8%), diarrhoea (32.0% vs 13.5%), constipation (26.1% vs 10.9%) and vomiting (25.3% vs 4.8%). Two other reported observations warrant mention:<sup>1</sup>",
     },
     {
       type: "p",
@@ -65,30 +65,30 @@ export const post: BlogPost = {
     },
     {
       type: "p",
-      text: "Discontinuation due to adverse events: 4.1% (4 mg), 6.9% (9 mg), 11.3% (12 mg), 4.9% (placebo). The 12 mg discontinuation rate is the meaningful trade-off for the additional weight loss — and is the reason a tolerability-led titration protocol matters.",
+      text: "Discontinuation due to adverse events was reported in 4.1% (4 mg), 6.9% (9 mg), 11.3% (12 mg) and 4.9% (placebo). The higher discontinuation percentage in the 12 mg arm is relevant to benefit–risk assessment; it does not supply a self-titration rule.",
     },
     { type: "h2", text: "How retatrutide compares to tirzepatide and semaglutide" },
     {
       type: "p",
-      text: "Cross-trial comparison is not the same as a head-to-head trial, but the directional gap is large. Tirzepatide 15 mg in SURMOUNT-1 produced −20.9% at 72 weeks; semaglutide 2.4 mg in STEP-1 produced −14.9% at 68 weeks. Retatrutide 12 mg in TRIUMPH-1 produced −28.3% at 80 weeks, and −30.3% at 104 weeks. The mechanistic difference is the glucagon receptor — adding glucagon agonism to GIP/GLP-1 appears to drive additional energy expenditure on top of appetite suppression.",
+      text: "Tirzepatide 15 mg in SURMOUNT-1 reported −20.9% at 72 weeks, semaglutide 2.4 mg in STEP 1 reported −14.9% at 68 weeks, and Lilly's TRIUMPH-1 release reported −28.3% with retatrutide 12 mg at 80 weeks.<sup>1,3,4</sup> These are cross-trial figures with different populations, durations and analysis methods. They do not prove comparative superiority or show how much of any difference is caused by glucagon-receptor activity. The direct TRIUMPH-5 trial is active and has not reported results.<sup>5</sup>",
     },
     {
       type: "p",
       text: "See our full <a href=\"/blog/tirzepatide-vs-semaglutide-comparison\">tirzepatide vs semaglutide comparison</a> for the dual- vs single-agonist data.",
     },
-    { type: "h2", text: "What this means for research-peptide protocols" },
+    { type: "h2", text: "What the topline results do—and do not—establish" },
     {
       type: "p",
-      text: "Retatrutide remains an investigational molecule — Lilly has not yet filed for regulatory approval, and it is legally available only via Lilly's own clinical trials. In the research-peptide context, the TRIUMPH-1 dataset gives us, for the first time, a Phase 3-grade dose-response curve to anchor protocol design: a tolerable 4 mg entry point, a 9 mg sweet spot, and a 12 mg ceiling that comes with a real GI-tolerability tax.",
+      text: "Retatrutide remains investigational. Lilly states that it is legally available only to participants in its clinical trials.<sup>1,6</sup> A positive topline release does not establish an approved indication, a product specification, a public dose schedule or the identity and sterility of products sold online.",
     },
     {
       type: "p",
-      text: "Our standing position on retatrutide protocols has not changed: 12-week structured cycles, GP-led oversight, baseline and 12-week bloodwork (HbA1c, lipid panel, hsCRP, liver enzymes, eGFR), titration step every 4 weeks unless symptoms dictate otherwise, and a planned taper rather than an abrupt stop. The TRIUMPH-1 dysesthesia and UTI signals are now on our standard monitoring checklist.",
+      text: "The study's dose escalation, laboratory schedule and 80-to-104-week follow-up belong to its controlled research protocol. They should not be converted into a shorter consumer 'cycle' or self-directed titration plan. In South Africa, SAHPRA warns against unregistered peptide products sold online and advises use of registered products through registered prescribers and licensed pharmacists.<sup>7</sup>",
     },
     { type: "h2", text: "What's next in the TRIUMPH programme" },
     {
       type: "p",
-      text: "TRIUMPH-2 (retatrutide in obesity with type 2 diabetes) and TRIUMPH-3 (obesity with established cardiovascular disease) are due to report later in 2026. The basket trials for knee osteoarthritis pain and moderate-to-severe obstructive sleep apnoea from TRIUMPH-1 will be released subsequently. Full TRIUMPH-1 data are scheduled for presentation at the 86th ADA Scientific Sessions.<sup>1</sup>",
+      text: "Lilly announced topline TRIUMPH-2 and TRIUMPH-3 results in July 2026.<sup>6</sup> The direct retatrutide-versus-tirzepatide TRIUMPH-5 study remains active and has not reported results.<sup>5</sup> Complete peer-reviewed reports and regulatory review remain more informative than sponsor releases for judging benefits, harms and applicability.",
     },
   ],
   citations: [
@@ -116,6 +116,21 @@ export const post: BlogPost = {
         "Wilding JPH et al. Once-Weekly Semaglutide in Adults with Overweight or Obesity (STEP-1). NEJM. 2021.",
       url: "https://www.nejm.org/doi/full/10.1056/NEJMoa2032183",
     },
+    {
+      id: "5",
+      label: "ClinicalTrials.gov. TRIUMPH-5: Retatrutide compared with tirzepatide in adults with obesity (NCT06662383).",
+      url: "https://clinicaltrials.gov/study/NCT06662383",
+    },
+    {
+      id: "6",
+      label: "Eli Lilly and Company. TRIUMPH-2 and TRIUMPH-3 Phase 3 topline results. July 2026.",
+      url: "https://investor.lilly.com/news-releases/news-release-details/lillys-triple-agonist-retatrutide-successful-two-additional",
+    },
+    {
+      id: "7",
+      label: "SAHPRA. Peptide Products — Public Information. 2026.",
+      url: "https://www.sahpra.org.za/peptide-products-public-information/",
+    },
   ],
   faqs: [
     {
@@ -124,19 +139,19 @@ export const post: BlogPost = {
     },
     {
       q: "How does 28.3% weight loss compare to bariatric surgery?",
-      a: "The TRIUMPH-1 12 mg arm delivered weight loss in the range historically associated with sleeve gastrectomy (typically 25–30% at 1–2 years). 45.3% of 12 mg participants reached ≥30% loss — the level Lilly explicitly frames as 'bariatric-surgery-like'.",
+      a: "Lilly noted that 45.3% of participants in the 12 mg arm reached at least 30% weight reduction. That sponsor framing does not make retatrutide equivalent to bariatric surgery: the interventions, populations, risks and evidence are different, and retatrutide remains unapproved.",
     },
     {
       q: "What's the safety signal to watch?",
-      a: "Class-typical GI effects (nausea, diarrhoea, constipation, vomiting) plus two retatrutide-specific signals: dysesthesia (~12% on 9–12 mg vs 0.9% placebo) and modestly elevated UTI rates. Both were generally mild-to-moderate and most cases resolved on treatment.",
+      a: "Lilly's topline report described gastrointestinal events, dysesthesia and urinary-tract-infection observations. Complete peer-reviewed safety reporting and regulatory review are still needed, and trial results do not establish safe self-use.",
     },
     {
       q: "Why does the 4 mg dose matter?",
-      a: "It delivered −19.0% weight loss with a single titration step and a discontinuation rate lower than placebo. For users who do not tolerate aggressive titration or do not need maximum weight reduction, 4 mg is a clinically meaningful, low-friction target.",
+      a: "The 4 mg randomised arm showed −19.0% weight reduction under the efficacy estimand and a 4.1% adverse-event discontinuation rate. It is a trial result, not an approved starting dose or consumer target.",
     },
     {
       q: "When will more retatrutide data be released?",
-      a: "TRIUMPH-2 (obesity + T2D) and TRIUMPH-3 (obesity + established CVD) are expected later in 2026, along with the TRIUMPH-1 basket data for knee OA pain and moderate-to-severe OSA, and full peer-reviewed publication.",
+      a: "Lilly announced TRIUMPH-2 and TRIUMPH-3 topline results in July 2026. The direct TRIUMPH-5 comparison and complete peer-reviewed reports remain pending.",
     },
   ],
   cta: "club",
