@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
 
 describe("Preferred Sources button", () => {
-  it("renders Google's official declarative publisher hook", () => {
-    const { container } = render(<PreferredSourcesButton />);
+  it("renders Google's preferred-source deep link", () => {
+    render(<PreferredSourcesButton />);
 
     expect(screen.getByText(/make us a preferred source on Google/i)).toBeInTheDocument();
-    const googleButton = container.querySelector("[google-add-preferred-source-btn]");
-    expect(googleButton).not.toBeNull();
-    expect(googleButton).toHaveAttribute("data-theme", "light");
-    expect(googleButton).toHaveAttribute("data-lang", "en");
+    const googleButton = screen.getByRole("link", { name: /add Peptide South Africa/i });
+    expect(googleButton).toHaveAttribute(
+      "href",
+      "https://www.google.com/preferences/source?q=peptide-south-africa.com",
+    );
+    expect(googleButton).toHaveAttribute("target", "_blank");
   });
 });

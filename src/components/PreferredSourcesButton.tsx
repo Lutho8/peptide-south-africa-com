@@ -1,24 +1,15 @@
-import { Sparkles } from "lucide-react";
+import { ExternalLink, Sparkles } from "lucide-react";
 
 type Props = {
   compact?: boolean;
   className?: string;
 };
 
-/**
- * Google-hosted Preferred Sources control.
- *
- * The unusual attribute is the official declarative hook documented by
- * Google. The publisher library loaded in index.html replaces this container
- * with its localized, account-aware button.
- */
-export default function PreferredSourcesButton({ compact = false, className = "" }: Props) {
-  const googleButtonAttributes = {
-    "google-add-preferred-source-btn": "",
-    "data-theme": "light",
-    "data-lang": "en",
-  } as React.HTMLAttributes<HTMLDivElement>;
+const PREFERRED_SOURCE_URL =
+  "https://www.google.com/preferences/source?q=peptide-south-africa.com";
 
+/** Google-documented deep link to the Preferred Sources selection screen. */
+export default function PreferredSourcesButton({ compact = false, className = "" }: Props) {
   return (
     <aside
       aria-label="Follow Peptide South Africa in Google"
@@ -41,7 +32,18 @@ export default function PreferredSourcesButton({ compact = false, className = ""
             </p>
           </div>
         </div>
-        <div className="shrink-0 pl-12 sm:pl-0" {...googleButtonAttributes} />
+        <div className="shrink-0 pl-12 sm:pl-0">
+          <a
+            href={PREFERRED_SOURCE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            aria-label="Add Peptide South Africa as a preferred source on Google"
+          >
+            Add as preferred source
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+          </a>
+        </div>
       </div>
     </aside>
   );
