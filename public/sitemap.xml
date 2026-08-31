@@ -455,6 +455,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-bloodwork-markers-sa" />
   </url>
   <url>
+    <loc>https://www.peptide-south-africa.com/blog/peptide-cheat-sheet-south-africa</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/peptide-cheat-sheet-south-africa" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/blog/peptide-cheat-sheet-south-africa" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/blog/peptide-cheat-sheet-south-africa" />
+  </url>
+  <url>
     <loc>https://www.peptide-south-africa.com/blog/peptide-community-south-africa</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -546,7 +555,7 @@
   </url>
   <url>
     <loc>https://www.peptide-south-africa.com/blog/retatrutide-vs-tirzepatide-comparison</loc>
-    <lastmod>2026-08-07</lastmod>
+    <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/blog/retatrutide-vs-tirzepatide-comparison" />

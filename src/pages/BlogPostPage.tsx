@@ -8,6 +8,7 @@ import BlogCard from "@/components/blog/BlogCard";
 import { getPost, getRelated } from "@/data/blog";
 import { getBlogImage } from "@/lib/blogImages";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
+import { toHeadingId } from "@/lib/blogHeadings";
 
 const SITE = "https://www.peptide-south-africa.com";
 
@@ -18,7 +19,8 @@ export default function BlogPostPage() {
 
   const related = getRelated(post.related);
   const url = `${SITE}/blog/${post.slug}`;
-  const imageUrl = new URL(getBlogImage(post.category), SITE).href;
+  const imageUrl = new URL(getBlogImage(post.category, post.slug), SITE).href;
+  const sections = post.body.filter((block) => block.type === "h2");
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -76,7 +78,7 @@ export default function BlogPostPage() {
         <meta property="og:site_name" content="Peptide South Africa" />
         <meta property="og:locale" content="en_ZA" />
         <meta property="og:image" content={imageUrl} />
-        <meta property="og:image:alt" content={`${post.category} article from Peptide South Africa`} />
+        <meta property="og:image:alt" content={post.title} />
         <meta property="article:published_time" content={post.publishedAt} />
         <meta property="article:modified_time" content={post.updatedAt} />
         <meta property="article:section" content={post.category} />
@@ -125,6 +127,37 @@ export default function BlogPostPage() {
         </header>
 
         <div className="container max-w-3xl px-4 py-12">
+          <figure className="mb-8 overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-card">
+            <img
+              src={getBlogImage(post.category, post.slug)}
+              alt={`${post.title} — evidence-led guide from Peptide South Africa`}
+              width={1200}
+              height={675}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="aspect-video w-full object-cover"
+            />
+            <figcaption className="border-t border-border px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+              Evidence-led educational overview. This image is illustrative and does not represent an approved treatment combination.
+            </figcaption>
+          </figure>
+
+          {sections.length > 2 && (
+            <nav aria-label="Article contents" className="mb-10 rounded-xl border border-border bg-muted/30 p-5">
+              <p className="mb-3 font-display text-sm font-bold text-foreground">On this page</p>
+              <ol className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                {sections.map((section) => (
+                  <li key={section.text}>
+                    <a className="text-accent hover:underline" href={`#${toHeadingId(section.text)}`}>
+                      {section.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+
           <BlogBody blocks={post.body} />
 
           {post.citations.length > 0 && (
@@ -158,9 +191,9 @@ export default function BlogPostPage() {
 
           <p className="mt-10 rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
             <strong>Disclaimer:</strong> Content is for educational and research purposes only and
-            does not constitute medical advice. Peptides discussed are not registered medicines in
-            South Africa for the indications mentioned; consult a registered medical practitioner
-            before starting any protocol.
+            does not constitute medical advice. Regulatory status and approved indications vary by
+            product and country. In South Africa, confirm a product in SAHPRA's register and consult
+            a registered medical practitioner before considering any treatment.
           </p>
         </div>
       </article>

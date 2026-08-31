@@ -7,7 +7,7 @@ export const post: BlogPost = {
   metaDescription: "Retatrutide is a triple GLP-1/GIP/glucagon agonist, tirzepatide a dual GLP-1/GIP agonist. Here's what their separate trial data shows — and why they haven't actually been compared head-to-head yet.",
   keyword: "retatrutide vs tirzepatide",
   publishedAt: "2026-08-07",
-  updatedAt: "2026-08-07",
+  updatedAt: "2026-08-31",
   readingMinutes: 6,
   category: "Comparison Guide",
   hero: {
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     { type: "callout", title: "The comparison everyone skips", text: "Retatrutide has not been compared to tirzepatide within a single randomized trial. Every 'retatrutide beats tirzepatide' claim you'll see is a cross-trial comparison — different trials, different participant populations, different durations. A dedicated head-to-head trial (TRIUMPH-5) is underway specifically to answer this properly. Until it reports, treat the percentage gap as suggestive, not settled." },
     { type: "h2", text: "Regulatory status" },
     { type: "p", text: "Tirzepatide is an approved medicine in several markets — as Mounjaro (type 2 diabetes, since 2022) and Zepbound (weight loss since 2023, obstructive sleep apnea since 2024) in the US, for example. Retatrutide remains investigational everywhere; it's still in Phase 3 trials and isn't approved as a therapeutic drug in any market yet." },
-    { type: "p", text: "In South Africa specifically, both compounds sit in the same practical bucket for most people: neither is a SAHPRA-registered finished medicine, and both are accessed through the research-peptide or GP-led compounding pathway rather than a standard pharmacy prescription. Tirzepatide's overseas approval status doesn't change how it's currently accessed locally." },
+    { type: "p", text: "In South Africa, the distinction is now explicit: SAHPRA publishes professional information for registered Mounjaro (tirzepatide) presentations, while retatrutide remains investigational and is not an approved finished medicine. Powdered or informally supplied products should not be treated as equivalent to a registered, prescription product. SAHPRA advises using legitimate products in original packaging, prescribed by registered healthcare professionals and dispensed by licensed pharmacists." },
     { type: "h2", text: "Side effects" },
     { type: "p", text: "Both compounds share a broadly similar side-effect profile, predominantly gastrointestinal — nausea, vomiting, diarrhea, and constipation, typically dose-dependent and most pronounced during dose escalation. Neither has shown a materially different safety signal from the other in their respective trials so far." },
     { type: "h2", text: "So which one should you research?" },
@@ -33,6 +33,8 @@ export const post: BlogPost = {
   citations: [
     { id: "1", label: "Jastreboff AM, Aronne LJ, Ahmad NN, et al. Tirzepatide Once Weekly for the Treatment of Obesity (SURMOUNT-1). N Engl J Med. 2022.", url: "https://pubmed.ncbi.nlm.nih.gov/35658024/" },
     { id: "2", label: "Jastreboff AM, Kaplan LM, Frías JP, et al. Triple–Hormone-Receptor Agonist Retatrutide for Obesity — A Phase 2 Trial. N Engl J Med. 2023.", url: "https://www.nejm.org/doi/full/10.1056/NEJMoa2301972" },
+    { id: "3", label: "SAHPRA. Mounjaro (tirzepatide) South African Professional Information. 2025.", url: "https://www.pi-pil-repository.sahpra.org.za/wp-content/uploads/2025/08/Final_PI_MOUNJARO.pdf" },
+    { id: "4", label: "SAHPRA. Peptide Products — Public Information. 2026.", url: "https://www.sahpra.org.za/peptide-products-public-information/" },
   ],
   faqs: [
     { q: "Has retatrutide been directly compared to tirzepatide in a trial?", a: "Not yet reported. The two have only been evaluated in separate trials with different populations and durations. A dedicated head-to-head trial, TRIUMPH-5, is underway specifically to make a direct comparison possible." },

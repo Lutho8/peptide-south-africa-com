@@ -4,6 +4,7 @@ export type Block =
   | { type: "h3"; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
+  | { type: "table"; headers: string[]; rows: string[][]; caption?: string }
   | { type: "callout"; title?: string; text: string }
   | { type: "quote"; text: string; cite?: string };
 

@@ -1,4 +1,5 @@
 import type { Block } from "@/data/blog/types";
+import { toHeadingId } from "@/lib/blogHeadings";
 
 export default function BlogBody({ blocks }: { blocks: Block[] }) {
   return (
@@ -7,15 +8,45 @@ export default function BlogBody({ blocks }: { blocks: Block[] }) {
         switch (b.type) {
           case "h2":
             return (
-              <h2 key={i} className="mt-10 mb-4 font-display text-3xl font-bold text-foreground">
+              <h2 id={toHeadingId(b.text)} key={i} className="scroll-mt-24 mt-10 mb-4 font-display text-3xl font-bold text-foreground">
                 {b.text}
               </h2>
             );
           case "h3":
             return (
-              <h3 key={i} className="mt-6 mb-3 font-display text-xl font-semibold text-foreground">
+              <h3 id={toHeadingId(b.text)} key={i} className="scroll-mt-24 mt-6 mb-3 font-display text-xl font-semibold text-foreground">
                 {b.text}
               </h3>
+            );
+          case "table":
+            return (
+              <div key={i} className="my-7 overflow-x-auto rounded-xl border border-border">
+                <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+                  {b.caption && <caption className="bg-muted/40 px-4 py-3 text-left font-semibold text-foreground">{b.caption}</caption>}
+                  <thead className="bg-primary/10 text-foreground">
+                    <tr>
+                      {b.headers.map((header) => (
+                        <th key={header} scope="col" className="border-b border-border px-4 py-3 font-semibold">
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {b.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex} className="border-b border-border/70 align-top last:border-0">
+                        {row.map((cell, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            className="px-4 py-3 leading-relaxed text-muted-foreground"
+                            dangerouslySetInnerHTML={{ __html: cell }}
+                          />
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             );
           case "p":
             return (

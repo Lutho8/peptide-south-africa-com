@@ -1,0 +1,156 @@
+import type { BlogPost } from "../types";
+
+export const post: BlogPost = {
+  slug: "peptide-cheat-sheet-south-africa",
+  title: "Peptide Cheat Sheet South Africa: What Each Does—and What Not to Pair Blindly",
+  metaTitle: "Peptide Cheat Sheet South Africa | Evidence & Pairings",
+  metaDescription: "An evidence-led South African peptide cheat sheet covering tirzepatide, retatrutide, GHK-Cu, KPV, BPC-157, TB-500, tesamorelin, ipamorelin, 5-Amino-1MQ and NAD+.",
+  keyword: "peptide cheat sheet South Africa",
+  publishedAt: "2026-08-31",
+  updatedAt: "2026-08-31",
+  readingMinutes: 10,
+  category: "Guides",
+  hero: {
+    eyebrow: "Evidence-led save sheet",
+    summary: "A practical map of the compounds circulating in peptide conversations—what human evidence supports, what remains experimental, and why a supplement list is not a universal safety protocol.",
+  },
+  body: [
+    {
+      type: "callout",
+      title: "The short answer",
+      text: "There is no evidence-based universal 'cofactor stack' that makes every peptide work better or removes its risks. Correcting a documented nutrient deficiency, maintaining adequate nutrition and following product-specific medical monitoring are different from automatically adding TUDCA, zinc, B vitamins, TMG or other supplements.",
+    },
+    {
+      type: "p",
+      text: "Peptide cheat sheets are popular because they compress a confusing market into a saveable list. The problem begins when mechanism, animal research and influencer experience are presented as if they were clinical instructions. This South African edition separates <strong>approved medicine</strong>, <strong>human clinical evidence</strong>, <strong>preclinical research</strong> and <strong>unproven pairing advice</strong>.",
+    },
+    {
+      type: "p",
+      text: "The local context matters. In 2026, the South African Health Products Regulatory Authority (SAHPRA) warned about unregistered peptide products marketed online and specifically named BPC-157, TB-500, ipamorelin and other compounds. SAHPRA advises patients to use registered products in original packaging, prescribed by registered healthcare professionals and dispensed by licensed pharmacists.<sup>1</sup>",
+    },
+    { type: "h2", text: "Peptide and metabolic compound cheat sheet" },
+    {
+      type: "table",
+      caption: "Evidence and pairing summary — not a dosing or treatment protocol",
+      headers: ["Compound", "What the evidence supports", "Pairing verdict", "South African relevance"],
+      rows: [
+        ["<strong>Tirzepatide</strong>", "Dual GIP/GLP-1 receptor agonist with large human trials and registered Mounjaro professional information in South Africa.<sup>2,3</sup>", "No universal electrolyte, B12, TUDCA or fibre stack. Hydration, diet and side-effect management should be individualised with the prescriber.", "Use the registered prescription product and licensed supply chain; powder products are not equivalent."],
+        ["<strong>Retatrutide</strong>", "Investigational GIP/GLP-1/glucagon agonist with Phase 2 and ongoing Phase 3 obesity research; it is not an approved medicine.<sup>4,5</sup>", "No validated cofactor stack. Supplements do not convert an investigational compound into an approved or predictable treatment.", "Do not confuse trial evidence with market authorisation."],
+        ["<strong>GHK-Cu</strong>", "Copper-binding peptide with a biological rationale and limited aesthetic clinical data; much of the regenerative evidence remains preclinical.<sup>6</sup>", "Vitamin C is involved in normal collagen synthesis, but that does not prove a GHK-Cu + collagen + zinc protocol. High-dose zinc can interfere with copper status.<sup>7,8</sup>", "Route, formulation and regulatory status matter; topical evidence cannot validate injectable use."],
+        ["<strong>KPV</strong>", "Anti-inflammatory tripeptide studied mainly in cells and animal models, including intestinal-inflammation research.<sup>9</sup>", "No human evidence establishes a KPV + probiotic + omega-3 + vitamin D stack.", "SAHPRA registration should be checked before any therapeutic claim or use."],
+        ["<strong>BPC-157</strong>", "Most evidence is laboratory or animal research. A 2025 systematic review found very limited human evidence and insufficient clinical safety data.<sup>10</sup>", "Collagen, protein, vitamin C and zinc support normal nutrition but are not proven to make BPC-157 safe or effective.", "Named in SAHPRA's warning about unlawfully marketed unregistered peptide products.<sup>1</sup>"],
+        ["<strong>TB-500 / thymosin-β4 research</strong>", "Thymosin-β4 has wound-healing research, but marketed TB-500 products should not be assumed equivalent to a studied pharmaceutical formulation.<sup>11</sup>", "No validated protein, collagen, vitamin C or magnesium stack exists for TB-500.", "TB-500 is specifically named in SAHPRA's 2026 public warning.<sup>1</sup>"],
+        ["<strong>Tesamorelin / ipamorelin</strong>", "Tesamorelin has a narrow FDA-approved indication for reducing excess abdominal fat in adults with HIV and lipodystrophy; ipamorelin is a different, unregistered growth-hormone secretagogue.<sup>12</sup>", "Magnesium, protein or vitamin D should not be presented as an evidence-based universal pairing. Tesamorelin requires indication-specific monitoring.", "Ipamorelin is named in SAHPRA's unregistered-peptide warning; do not group it with an approved tesamorelin product."],
+        ["<strong>5-Amino-1MQ</strong>", "Small-molecule NNMT inhibitor—not a peptide—with preclinical metabolic research but no established human weight-loss treatment protocol.<sup>13</sup>", "TMG, methylated B vitamins and L-carnitine are a speculative stack, not a clinically validated requirement.", "Any therapeutic product claim requires applicable SAHPRA authorisation."],
+        ["<strong>NAD+</strong>", "A cellular coenzyme, not a peptide. Human evidence for NAD-boosting interventions is developing, but wellness and anti-ageing claims often exceed clinical outcomes.<sup>14</sup>", "TMG, B12, folate and magnesium are not universal add-ons; assess diet, medicines and deficiencies individually.", "Route and product status matter. Evidence for oral precursors cannot automatically be applied to intravenous NAD+."],
+      ],
+    },
+    { type: "h2", text: "Retatrutide and tirzepatide: similar conversation, different status" },
+    {
+      type: "p",
+      text: "Both compounds act on incretin pathways, but they should not be treated as interchangeable. Tirzepatide is a registered prescription medicine in South Africa under Mounjaro professional information. Retatrutide remains an investigational triple-receptor agonist. Its trial results are scientifically important, but they do not establish a public self-treatment protocol.<sup>2–5</sup>",
+    },
+    {
+      type: "p",
+      text: "The original pairing list correctly notices that gastrointestinal symptoms and reduced intake can affect hydration and nutrition. The correction is that these effects are not proof that everyone needs electrolyte products, sublingual B12, TUDCA or a fixed fibre target. The 2026 tirzepatide label warns about gastrointestinal adverse reactions, acute kidney injury related to volume depletion and gallbladder disease; it directs clinical monitoring, not a universal supplement bundle.<sup>3</sup>",
+    },
+    {
+      type: "callout",
+      title: "What belongs next to an approved GLP-1/GIP treatment",
+      text: "A registered product, a qualified prescriber, medication review, nutrition appropriate to the individual, monitoring for persistent vomiting or dehydration, and prompt assessment of severe abdominal symptoms. Supplements belong only where diet, symptoms, laboratory results or a clinician identifies a reason.",
+    },
+    { type: "h2", text: "GHK-Cu: promising biology does not prove an injectable stack" },
+    {
+      type: "p",
+      text: "GHK-Cu binds copper and is studied in tissue remodelling and aesthetic medicine. A 2026 systematic review found 20 eligible studies, but 18 were preclinical and only two were randomised trials. That is a signal worth following—not a basis for claiming that injectable GHK-Cu plus collagen, vitamin C and zinc is an established protocol.<sup>6</sup>",
+    },
+    {
+      type: "p",
+      text: "Vitamin C is required for normal collagen synthesis, and zinc has recognised physiological roles. But more is not automatically better: the US National Institutes of Health notes that high zinc intake can inhibit copper absorption.<sup>7,8</sup> With a copper-binding compound, casually recommending zinc 'for balance' without assessing the person can be especially misleading.",
+    },
+    { type: "h2", text: "KPV: an anti-inflammatory research signal, not a proven gut protocol" },
+    {
+      type: "p",
+      text: "KPV is a three-amino-acid melanocortin-related peptide. Cell and animal studies report anti-inflammatory activity and intestinal uptake mechanisms, but this is not the same as evidence that KPV treats human gut disease or should be paired with probiotics, omega-3 or vitamin D.<sup>9</sup> Those interventions have separate evidence bases and should not be bundled simply because they share an inflammation narrative.",
+    },
+    { type: "h2", text: "BPC-157: animal healing research is not clinical proof" },
+    {
+      type: "p",
+      text: "BPC-157 is frequently described online as a tissue- and gut-healing peptide. The strongest responsible summary is narrower: preclinical findings are interesting, but human evidence and long-term safety data are inadequate. A systematic review in orthopaedic sports medicine found that nearly all included studies were preclinical.<sup>10</sup>",
+    },
+    {
+      type: "p",
+      text: "Protein, vitamin C and zinc can matter to normal wound healing when intake is inadequate. They do not validate BPC-157, prove that a marketed vial contains what it claims, or remove the regulatory and injection risks highlighted by SAHPRA.<sup>1,7,8</sup>",
+    },
+    { type: "h2", text: "TB-500: do not collapse thymosin-β4 research into a retail vial" },
+    {
+      type: "p",
+      text: "Thymosin-β4 has been studied in wound-healing contexts, including preclinical models and limited clinical development.<sup>11</sup> TB-500 is a marketed name used for related peptide products, but a retail research vial is not automatically equivalent to the exact substance, formulation, purity or route studied in a paper. SAHPRA specifically lists TB-500 among unregistered peptides promoted for recovery.<sup>1</sup>",
+    },
+    { type: "h2", text: "Tesamorelin and ipamorelin should not share one evidence label" },
+    {
+      type: "p",
+      text: "Tesamorelin is a growth-hormone-releasing factor analogue with a specific FDA indication: reducing excess abdominal fat in adults with HIV and lipodystrophy. Its prescribing information includes contraindications and monitoring considerations, including IGF-1 and glucose effects.<sup>12</sup> That does not make it a general recovery or weight-loss peptide.",
+    },
+    {
+      type: "p",
+      text: "Ipamorelin is a different compound and is named in SAHPRA's warning about unregistered peptides.<sup>1</sup> Combining the two under 'TESA / IPA' erases the difference between an indication-specific approved medicine in one jurisdiction and an unregistered secretagogue.",
+    },
+    { type: "h2", text: "5-Amino-1MQ: a small molecule, not a peptide" },
+    {
+      type: "p",
+      text: "5-Amino-1MQ is discussed as an inhibitor of nicotinamide N-methyltransferase (NNMT). Research into NNMT as a metabolic target is active, but recent reviews still frame clinical translation as an emerging opportunity rather than an established human fat-loss treatment.<sup>13</sup> Claims that it necessarily 'burns through methyl groups' and therefore requires TMG, methylated B vitamins and L-carnitine are mechanistic extrapolations, not a validated clinical protocol.",
+    },
+    { type: "h2", text: "NAD+: important biology, overextended wellness claims" },
+    {
+      type: "p",
+      text: "NAD+ is a coenzyme involved in cellular metabolism; it is not a peptide. A current systematic review describes promising preclinical biology but variable and still-limited human evidence for anti-ageing and wellness outcomes.<sup>14</sup> Evidence about oral NAD precursors, direct NAD administration and different routes should not be merged into one claim.",
+    },
+    {
+      type: "p",
+      text: "Magnesium, B12 and folate are essential nutrients, but supplementation is most defensible when intake, medicine use, symptoms or testing identifies a need. NIH guidance also notes that excessive supplemental magnesium can cause adverse effects and interact with medicines.<sup>15</sup>",
+    },
+    { type: "h2", text: "A safer pairing framework" },
+    {
+      type: "ol",
+      items: [
+        "<strong>Pair the claim with its evidence level:</strong> approved indication, human trial, animal study or mechanism only.",
+        "<strong>Pair the product with its regulatory record:</strong> check the exact brand, dosage form and registration—not only the ingredient name.",
+        "<strong>Pair treatment with qualified oversight:</strong> review diagnoses, medicines, contraindications and monitoring with a registered clinician.",
+        "<strong>Pair nutrition with an identified need:</strong> use diet history, symptoms and appropriate tests rather than a universal shopping list.",
+        "<strong>Do not pair unregistered injectables into stacks:</strong> combining unknowns compounds uncertainty about identity, sterility, interactions and long-term risk.",
+      ],
+    },
+    {
+      type: "callout",
+      title: "Save this rule",
+      text: "A plausible mechanism is not a protocol. A supplement is not a safety system. And a research result is not the same thing as a SAHPRA-registered treatment.",
+    },
+  ],
+  citations: [
+    { id: "1", label: "SAHPRA. Peptide Products — Public Information. 2026.", url: "https://www.sahpra.org.za/peptide-products-public-information/" },
+    { id: "2", label: "SAHPRA. Mounjaro (tirzepatide) South African Professional Information. 2025.", url: "https://www.pi-pil-repository.sahpra.org.za/wp-content/uploads/2025/08/Final_PI_MOUNJARO.pdf" },
+    { id: "3", label: "U.S. FDA. Mounjaro (tirzepatide) Prescribing Information. 2026.", url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215866s009lbl.pdf" },
+    { id: "4", label: "Jastreboff AM, Kaplan LM, Frías JP, et al. Triple–Hormone-Receptor Agonist Retatrutide for Obesity — A Phase 2 Trial. N Engl J Med. 2023.", url: "https://pubmed.ncbi.nlm.nih.gov/37366315/" },
+    { id: "5", label: "ClinicalTrials.gov. TRIUMPH-1: Retatrutide in participants with obesity or overweight (NCT05929066).", url: "https://clinicaltrials.gov/study/NCT05929066" },
+    { id: "6", label: "Mokhtar J, et al. The Regenerative Potential of GHK-Cu in Aesthetic Medicine. Aesthet Surg J. 2026.", url: "https://pubmed.ncbi.nlm.nih.gov/42619529/" },
+    { id: "7", label: "NIH Office of Dietary Supplements. Vitamin C — Health Professional Fact Sheet.", url: "https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/" },
+    { id: "8", label: "NIH Office of Dietary Supplements. Zinc — Health Professional Fact Sheet.", url: "https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/" },
+    { id: "9", label: "Dalmasso G, et al. PepT1-mediated tripeptide KPV uptake reduces intestinal inflammation. Gastroenterology. 2008.", url: "https://pubmed.ncbi.nlm.nih.gov/18061177/" },
+    { id: "10", label: "Emerging Use of BPC-157 in Orthopaedic Sports Medicine: A Systematic Review. 2025.", url: "https://pubmed.ncbi.nlm.nih.gov/40756949/" },
+    { id: "11", label: "Malinda KM, et al. The regenerative peptide thymosin β4 accelerates dermal healing in preclinical models and patients. 2012.", url: "https://pubmed.ncbi.nlm.nih.gov/23050815/" },
+    { id: "12", label: "U.S. FDA. EGRIFTA (tesamorelin) Prescribing Information.", url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/022505Orig1s010lbl.pdf" },
+    { id: "13", label: "Emerging opportunities for nicotinamide N-methyltransferase inhibitor clinical translation. 2026.", url: "https://pubmed.ncbi.nlm.nih.gov/42067476/" },
+    { id: "14", label: "NAD+ supplementation for anti-aging and wellness: systematic review of preclinical and clinical evidence. 2026.", url: "https://pubmed.ncbi.nlm.nih.gov/41655607/" },
+    { id: "15", label: "NIH Office of Dietary Supplements. Magnesium — Health Professional Fact Sheet.", url: "https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/" },
+  ],
+  faqs: [
+    { q: "What should I pair with a peptide?", a: "There is no universal evidence-based peptide cofactor stack. Pair any legitimate treatment with its approved indication, registered product, qualified prescriber and product-specific monitoring. Add nutrients only when diet, symptoms, medicines or testing identifies a need." },
+    { q: "Is tirzepatide registered in South Africa?", a: "SAHPRA publishes South African professional information for registered Mounjaro tirzepatide presentations. This does not make powdered or informally supplied tirzepatide equivalent to the registered prescription product." },
+    { q: "Are BPC-157 and TB-500 approved medicines in South Africa?", a: "SAHPRA's 2026 public warning names BPC-157 and TB-500 among unregistered peptide products being unlawfully marketed. Check SAHPRA's current register and use licensed healthcare and pharmacy channels." },
+    { q: "Does GHK-Cu need to be paired with zinc?", a: "No clinical guideline establishes a universal GHK-Cu and zinc protocol. High zinc intake can inhibit copper absorption, so 'balancing' a copper-binding compound with zinc should not be recommended without an individual clinical reason." },
+    { q: "Are 5-Amino-1MQ and NAD+ peptides?", a: "No. 5-Amino-1MQ is a small-molecule NNMT inhibitor, and NAD+ is a cellular coenzyme. They are often discussed in peptide communities but should not be classified as peptides." },
+  ],
+  cta: "club",
+  related: ["what-are-peptides-complete-guide", "retatrutide-vs-tirzepatide-comparison", "how-to-spot-a-legit-peptide-supplier"],
+};

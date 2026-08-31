@@ -10,8 +10,8 @@ export default function BlogCard({ post }: { post: Pick<BlogPost, "slug" | "titl
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-accent hover:shadow-card"
     >
       <img
-        src={getBlogImage(post.category)}
-        alt=""
+        src={getBlogImage(post.category, post.slug)}
+        alt={`${post.title} — ${post.category}`}
         loading="lazy"
         className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
       />
