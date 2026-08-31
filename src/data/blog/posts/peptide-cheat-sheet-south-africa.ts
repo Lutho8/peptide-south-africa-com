@@ -11,7 +11,7 @@ export const post: BlogPost = {
   readingMinutes: 10,
   category: "Guides",
   hero: {
-    eyebrow: "Evidence-led save sheet",
+    eyebrow: "South African evidence guide",
     summary: "A practical map of the compounds circulating in peptide conversations—what human evidence supports, what remains experimental, and why a supplement list is not a universal safety protocol.",
   },
   body: [
