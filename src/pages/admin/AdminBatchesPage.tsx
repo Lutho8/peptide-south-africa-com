@@ -152,7 +152,7 @@ export default function AdminBatchesPage() {
         />
         <input
           required
-          placeholder="Lot number — e.g. RTT-RT3-2607A"
+          placeholder="Lot number — e.g. RTT-GGG-2607A"
           value={form.lot_number}
           onChange={(e) => setForm({ ...form, lot_number: e.target.value })}
           className="rounded-lg border border-input bg-background px-3 py-2 font-mono text-sm uppercase"

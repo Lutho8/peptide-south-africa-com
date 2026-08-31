@@ -15,7 +15,7 @@ describe("COA registry", () => {
     {
       shortCode: "r01",
       productSlug: "rt3-reta",
-      productSku: "RTT-RT3-10",
+      productSku: "RTT-GGG-10",
       taskNumber: "61141",
       sampleReference: "Retatrutide 10mg",
       verificationUrl: "https://verify.janoshik.com/tests/61141_UMR871KAJ2N9",
@@ -23,7 +23,7 @@ describe("COA registry", () => {
     {
       shortCode: "z01",
       productSlug: "tz2-tirz",
-      productSku: "RTT-TZ2-20",
+      productSku: "RTT-TZ2-5",
       taskNumber: "164662",
       sampleReference: "T120",
       verificationUrl: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
@@ -55,7 +55,7 @@ describe("COA registry", () => {
     expect(getCoasForProduct("tesamorelin")[0].sourceNote).toContain("batch field is blank");
     expect(getCoasForProduct("mots-c")[0].sourceNote).toContain("batch is reported as Unknown");
     expect(getCoasForProduct("rt3-reta")[0].sourceNote).toContain("batch is reported as Unknown");
-    expect(getCoasForProduct("tz2-tirz")[0].sourceNote).toContain("does not identify a 20 mg PSA lot");
+    expect(getCoasForProduct("tz2-tirz")[0].sourceNote).toContain("the PSA-listed product is 5 mg per vial");
   });
 
   it("aligns the product purity display with the published report", () => {

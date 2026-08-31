@@ -101,7 +101,7 @@ export default function HomePage() {
       <CategoryShowcase
         eyebrow="Weight Loss"
         title="GLP-1 protocols that actually work."
-        blurb="Triple- and dual-agonist peptides for metabolic research — RT3, Tirzepatide and more."
+        blurb="Triple- and dual-agonist peptides for metabolic research — GGG-3, Tirzepatide and more."
         productIds={["1", "4"]}
         shopHref="/shop?category=GLP"
         accent="weight-loss"

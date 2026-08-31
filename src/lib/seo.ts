@@ -203,9 +203,9 @@ export const entityClusters = {
     title: "Fat Loss & Metabolic Health",
     links: [
       { label: "Fat Loss Protocol", href: "/fat-loss-protocol", description: "Our structured fat loss program using GLP-1 agonists and metabolic peptides." },
-      { label: "RT3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
+      { label: "GGG-3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
       { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist for metabolic research." },
-      { label: "Buy Retatrutide in South Africa", href: "/buy-retatrutide-south-africa", description: "ZAR pricing, HPLC-tested RT3, local Cape Town dispatch." },
+      { label: "Buy Retatrutide in South Africa", href: "/buy-retatrutide-south-africa", description: "ZAR pricing, HPLC-tested GGG-3, local Cape Town dispatch." },
       { label: "Buy Tirzepatide in South Africa", href: "/buy-tirzepatide-south-africa", description: "ZAR pricing, HPLC-tested TZ-2, local Cape Town dispatch." },
       { label: "Take the Quiz", href: "/quiz", description: "Get a personalized protocol recommendation based on your goals." },
     ],

@@ -12,7 +12,7 @@ interface Review {
 const reviewsData: Record<string, Review[]> = {
   "rt3-reta": [
     { name: "Jenn P.", date: "March 20, 2026", rating: 5, text: "Great Customer Service. Fast shipping. Responded within minutes when I contacted them with a question. Highly Recommend!", verified: true },
-    { name: "Delinah W.", date: "March 20, 2026", rating: 5, text: "Always great customer service with speedy replies and lightning fast processing and shipping. I started RT-3 several weeks ago, it's amazing and definitely living up to all the hype!", verified: true },
+    { name: "Delinah W.", date: "March 20, 2026", rating: 5, text: "Always great customer service with speedy replies and lightning fast processing and shipping. I started GGG-3 several weeks ago, it's amazing and definitely living up to all the hype!", verified: true },
     { name: "Jessie G.", date: "March 20, 2026", rating: 5, text: "Fast shipping and amazing customer service. Reached out and within minutes I had a response from them.", verified: true },
     { name: "Chris N.", date: "March 18, 2026", rating: 5, text: "Quality product, well packaged. COA included as promised. Will definitely be ordering again.", verified: true },
     { name: "Thabo M., Pretoria", date: "March 15, 2026", rating: 5, text: "Courier delivery in 2 days. Clean COA, accurate dosing. Very happy with the quality.", verified: true },

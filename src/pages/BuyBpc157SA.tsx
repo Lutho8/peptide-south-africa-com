@@ -74,7 +74,7 @@ export default function BuyBpc157SA() {
               <MapPin className="w-3 h-3" /> Cape Town, South Africa
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy BPC-157 in South Africa</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">Our BPC/TB-500 Blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — in a single 20mg vial. Both tested individually to ≥99% purity at Janoshik Analytical.</p>
+            <p className="text-lg text-muted-foreground max-w-2xl">Our BPC/TB-500 Blend combines two of the most extensively researched healing peptides — BPC-157 and TB-500 — in a single 10mg vial. Both tested individually to ≥99% purity at Janoshik Analytical.</p>
           </div>
 
           {/* Trust bar */}

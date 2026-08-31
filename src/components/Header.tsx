@@ -26,7 +26,7 @@ const DROPDOWNS: Dropdown[] = [
   {
     label: "Weight Loss",
     items: [
-      { label: "RT3 (Reta)", to: "/product/rt3-reta", desc: "Triple agonist · best seller" },
+      { label: "GGG-3", to: "/product/rt3-reta", desc: "Triple agonist · best seller" },
       { label: "TZ-2 (Tirzepatide)", to: "/product/tz2-tirz", desc: "Dual GLP-1 / GIP" },
       { label: "Fat-Loss Protocol", to: "/fat-loss-protocol", desc: "12-week guided program" },
       { label: "Shop all Weight Loss", to: "/shop?category=GLP" },

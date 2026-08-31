@@ -89,7 +89,7 @@ export function buildFallbackProtocol(answers: QuizProtocolAnswers, leadName: st
       fullPrice: PROGRAM_FULL,
       savings: PROGRAM_SAVING,
       peptides: [
-        { name: "RT3 (Reta)", dose: "Pending GP review", frequency: "Pending GP review", purpose: "Metabolic pathway" },
+        { name: "GGG-3", dose: "Pending GP review", frequency: "Pending GP review", purpose: "Metabolic pathway" },
         { name: "BPC/TB-500 Blend", dose: "Per approved protocol", frequency: "Per approved schedule", purpose: "Recovery pathway" },
       ],
       expectedResults: [

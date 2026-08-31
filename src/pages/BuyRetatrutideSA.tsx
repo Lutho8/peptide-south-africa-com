@@ -5,8 +5,8 @@ import { Shield, CheckCircle, Truck, MapPin, FlaskConical, ArrowRight } from "lu
 const PRODUCT_LD = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "RT3 (Retatrutide)",
-  "description": "Buy Retatrutide (RT3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier.",
+  "name": "GGG-3 (Retatrutide)",
+  "description": "Buy Retatrutide (GGG-3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier.",
   "brand": {
     "@type": "Brand",
     "name": "Peptide South Africa"
@@ -48,11 +48,11 @@ export default function BuyRetatrutideSA() {
   return (
     <>
       <SEO
-        title="Buy Retatrutide in South Africa | RT3 Research Peptide"
-        description="Buy Retatrutide (RT3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier."
+        title="Buy Retatrutide in South Africa | GGG-3 Research Peptide"
+        description="Buy Retatrutide (GGG-3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier."
         path="/buy-retatrutide-south-africa"
         type="product"
-        keywords="buy retatrutide south africa, retatrutide SA, RT3 peptide south africa, retatrutide ZAR, GLP-1 peptide south africa"
+        keywords="buy retatrutide south africa, retatrutide SA, GGG-3 peptide south africa, retatrutide ZAR, GLP-1 peptide south africa"
         jsonLd={[PRODUCT_LD, BREADCRUMB_LD]}
       />
 
@@ -74,7 +74,7 @@ export default function BuyRetatrutideSA() {
               <MapPin className="w-3 h-3" /> Cape Town, South Africa
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy Retatrutide in South Africa</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">Retatrutide (RT3) is a triple agonist targeting GLP-1, GIP, and glucagon receptors — making it one of the most researched metabolic compounds of 2025/2026. Each vial is HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
+            <p className="text-lg text-muted-foreground max-w-2xl">Retatrutide (GGG-3) is a triple agonist targeting GLP-1, GIP, and glucagon receptors — making it one of the most researched metabolic compounds of 2025/2026. Each vial is HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
           </div>
 
           {/* Trust bar */}
@@ -96,7 +96,7 @@ export default function BuyRetatrutideSA() {
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-card">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-foreground mb-1">RT3 (Retatrutide)</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">GGG-3 (Retatrutide)</h2>
                 <p className="text-sm text-muted-foreground">GLP-1 / GIP / Glucagon triple agonist</p>
               </div>
               <div className="text-right">
@@ -124,7 +124,7 @@ export default function BuyRetatrutideSA() {
               to="/product/rt3-reta"
               className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground font-semibold py-3 px-6 rounded-xl hover:bg-primary/90 transition-colors"
             >
-              View RT3 Product Page <ArrowRight className="w-4 h-4" />
+              View GGG-3 Product Page <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -143,7 +143,7 @@ export default function BuyRetatrutideSA() {
             <h2 className="text-xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-foreground mb-1">Is RT3 (Retatrutide) legal in South Africa?</h3>
+                <h3 className="font-semibold text-foreground mb-1">Is GGG-3 (Retatrutide) legal in South Africa?</h3>
                 <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes only and are not scheduled medicines under SAHPRA when used in a research context. They are not approved for therapeutic use without a practitioner.</p>
               </div>
               <div>
@@ -167,7 +167,7 @@ export default function BuyRetatrutideSA() {
               to="/product/rt3-reta"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-semibold py-3 px-8 rounded-xl hover:bg-primary/90 transition-colors"
             >
-              Order RT3 (Retatrutide) <ArrowRight className="w-4 h-4" />
+              Order GGG-3 (Retatrutide) <ArrowRight className="w-4 h-4" />
             </Link>
             <p className="text-xs text-muted-foreground mt-3">For research purposes only. Not for human therapeutic use.</p>
           </div>

@@ -66,7 +66,7 @@ export default function FloatingVial() {
               PEPTIDE SOUTH AFRICA
             </div>
             <div className="mx-auto mt-1 h-px w-8 bg-vial-accent-strong" />
-            <div className="mt-1 font-display text-[10px] font-bold text-vial-ink">RT3</div>
+            <div className="mt-1 font-display text-[10px] font-bold text-vial-ink">GGG-3</div>
             <div className="text-[6px] text-slate-500">≥99% HPLC</div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import type { Product } from "@/data/products";
 
 const PRODUCT_ALIASES: Record<string, string[]> = {
-  "rt3-reta": ["retatrutide", "rt3", "reta"],
+  "rt3-reta": ["retatrutide", "rt3", "reta", "ggg3"],
   "tz2-tirz": ["tirzepatide", "tz2", "tirz"],
   "bpc-tb500-blend": ["bpc157", "tb500", "bpc157tb500", "bpctb500", "healingstack"],
   "ghk-cu-50mg": ["ghkcu", "copperpeptide"],

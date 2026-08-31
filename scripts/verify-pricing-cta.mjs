@@ -40,8 +40,8 @@ async function run(viewport, label) {
   assert(home.includes("R1,999/month"), `${label}: homepage monthly price missing`);
   assert(home.includes("R4,999"), `${label}: homepage full-program price missing`);
   assert(home.includes("R997"), `${label}: homepage saving missing`);
-  assert(!home.includes("R1,250 – R3,188"), `${label}: homepage exposes the RT3 vial price range`);
-  assert(await page.getByRole("button", { name: /Add RT3 \(Reta\) to cart/i }).count() === 0, `${label}: homepage exposes an RT3 add-to-cart control`);
+  assert(!home.includes("R1,250 – R3,188"), `${label}: homepage exposes the GGG-3 vial price range`);
+  assert(await page.getByRole("button", { name: /Add GGG-3 to cart/i }).count() === 0, `${label}: homepage exposes a GGG-3 add-to-cart control`);
   assert(await page.getByRole("button", { name: /Add TZ-2 \(Tirz\) to cart/i }).count() === 0, `${label}: homepage exposes a TZ-2 add-to-cart control`);
   const homeConsults = page.getByRole("link", { name: /BOOK CONSULT/i });
   assert(await homeConsults.count() > 0, `${label}: homepage BOOK CONSULT missing`);
@@ -66,7 +66,7 @@ async function run(viewport, label) {
 
   await page.goto(`${baseURL}/product/rt3-reta`, { waitUntil: "networkidle" });
   await dismissOverlays(page);
-  assert(await page.getByRole("button", { name: /BOOK CONSULT/i }).count() > 0, `${label}: RT3 BOOK CONSULT missing`);
+  assert(await page.getByRole("button", { name: /BOOK CONSULT/i }).count() > 0, `${label}: GGG-3 BOOK CONSULT missing`);
 
   await page.goto(`${baseURL}/product/tz2-tirz`, { waitUntil: "networkidle" });
   await dismissOverlays(page);

@@ -96,9 +96,9 @@ export interface Product {
 const rt3Variants  = buildPackVariants("rt3-reta", 10, { p1: 0, p3: 0 });
 const ghkVariants  = buildPackVariants("ghk-cu-50mg", 50, { p3: 2 });
 const tesVariants  = buildPackVariants("tesamorelin", 5, { p1: 0, p3: 0 });
-const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p1: 0, p3: 0 });
+const tz2Variants  = buildPackVariants("tz2-tirz", 5, { p1: 0, p3: 0 });
 const motsVariants = buildPackVariants("mots-c", 10, { p3: 2 });
-const bpcVariants  = buildPackVariants("bpc-tb500-blend", 20, { p3: 2 });
+const bpcVariants  = buildPackVariants("bpc-tb500-blend", 10, { p3: 2 });
 const glowVariants = buildPackVariants("glow70", 70, { p3: 3 });
 const klowVariants = buildPackVariants("klow80", 80, { p3: 2 });
 const kpvVariants      = buildPackVariants("kpv", 10, { p3: 3 });
@@ -118,10 +118,10 @@ const bacWaterVariants: Variant[] = [
 export const products: Product[] = [
   {
     id: "1",
-    name: "RT3 (Reta)",
+    name: "GGG-3",
     slug: "rt3-reta",
     shortDescription: "Triple agonist targeting GLP-1, GIP, and glucagon receptors for metabolic research.",
-    description: "RT3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
+    description: "GGG-3 is a high-purity, fully lab-tested research peptide designed to target multiple metabolic pathways. It is a triple agonist of GLP-1, GIP, and glucagon receptors, making it a cutting-edge compound in the study of obesity, insulin resistance, and metabolic disorders.",
     price: catalogPrice("rt3-reta"),
     priceRange: rangeFromVariants(rt3Variants),
     image: productRt3,
@@ -129,7 +129,7 @@ export const products: Product[] = [
     tag: "Best Seller",
     purity: "99.060% HPLC",
     storage: "Refrigerate after reconstitution.",
-    sku: "RTT-RT3-10",
+    sku: "RTT-GGG-10",
     casNumber: "2381089-83-2",
     compoundClass: "GLP-1 / GIP / Glucagon triple agonist",
     track: "GP",
@@ -214,7 +214,7 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "99.867–99.899% published report",
     storage: "Refrigerate after reconstitution.",
-    sku: "RTT-TZ2-10",
+    sku: "RTT-TZ2-5",
     casNumber: "2023788-19-2",
     compoundClass: "GLP-1 / GIP dual agonist",
     track: "GP",
@@ -225,7 +225,7 @@ export const products: Product[] = [
     howItWorks: ["Select MG variant", "Store per guidelines", "Implement research protocol", "Track metabolic markers"],
     faqs: [
       { question: "Why is this marked Pre-Order?", answer: "TZ-2 is in high demand. Pre-orders guarantee your allocation from the next certified batch." },
-      { question: "What does the published report cover?", answer: "Janoshik task #164662 appears in the product gallery and testing archive. It identifies sample T120 and reports 134.42 mg and 132.84 mg; its batch is Unknown and it does not identify a 20mg PSA lot." },
+      { question: "What does the published report cover?", answer: "Janoshik task #164662 appears in the product gallery and testing archive. It identifies sample T120 and reports 134.42 mg and 132.84 mg; the submitted sample was 20 mg while the listed product is 5 mg per vial, and its batch is Unknown, so it does not identify a PSA lot." },
     ],
     inStock: false,
     stock: 0,
@@ -271,13 +271,13 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
-    sku: "RTT-BTB-20",
+    sku: "RTT-BTB-10",
     casNumber: "137525-51-0 / 77591-33-4",
     compoundClass: "BPC-157 + TB-500 healing blend",
     track: "RUO",
     variants: bpcVariants,
     benefits: ["Synergistic tissue repair", "Angiogenesis promotion", "Anti-inflammatory research", "Accelerated recovery studies"],
-    whatsIncluded: ["1x 20mg Blend vial", "Certificate of Analysis", "Batch certification", "Protocol guide"],
+    whatsIncluded: ["1x 10mg Blend vial", "Certificate of Analysis", "Batch certification", "Protocol guide"],
     whoItsFor: ["Tissue repair researchers", "Sports medicine labs", "Regenerative medicine studies"],
     howItWorks: ["Reconstitute the blend", "Follow healing protocol", "Track repair biomarkers", "Document recovery data"],
     faqs: [

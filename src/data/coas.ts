@@ -48,7 +48,7 @@ export const staticCoas: CoaRecord[] = [
     shortCode: "r01",
     productSlug: "rt3-reta",
     productName: "Retatrutide",
-    productSku: "RTT-RT3-10",
+    productSku: "RTT-GGG-10",
     strength: "10 mg",
     labName: "Janoshik Analytical",
     taskNumber: "61141",
@@ -68,7 +68,7 @@ export const staticCoas: CoaRecord[] = [
     shortCode: "z01",
     productSlug: "tz2-tirz",
     productName: "Tirzepatide",
-    productSku: "RTT-TZ2-20",
+    productSku: "RTT-TZ2-5",
     strength: "20 mg",
     labName: "Janoshik Analytical",
     taskNumber: "164662",
@@ -81,7 +81,7 @@ export const staticCoas: CoaRecord[] = [
       { label: "Reported purity", value: "99.867%; 99.899%" },
     ],
     sourceNote:
-      "This report identifies the submitted sample as T120, names Zztai Peptide Ltd. as the client, and reports 134.42 mg and 132.84 mg. Its batch is reported as Unknown and it does not identify a 20 mg PSA lot, so it verifies the published source report—not a unique PSA vial or lot.",
+      "This report identifies the submitted sample as T120, names Zztai Peptide Ltd. as the client, and reports 134.42 mg and 132.84 mg. The submitted sample was 20 mg; the PSA-listed product is 5 mg per vial. Its batch is reported as Unknown, so it verifies the published source report—not a unique PSA vial or lot.",
   },
   {
     id: "tesamorelin-164644",

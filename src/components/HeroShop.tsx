@@ -33,7 +33,7 @@ export default function HeroShop() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Hero featured products: RT3 (Weight Loss) + BPC/TB-500 (Recovery).
+  // Hero featured products: GGG-3 (Weight Loss) + BPC/TB-500 (Recovery).
   const hero = products.find((p) => p.id === "1") ?? products[0];
   const secondary = products.find((p) => p.id === "6") ?? products.find((p) => p.id === "3") ?? products[1];
 
