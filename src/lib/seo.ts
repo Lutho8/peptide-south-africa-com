@@ -2,6 +2,15 @@ const SITE_URL = "https://www.peptide-south-africa.com";
 const SITE_NAME = "Peptide South Africa";
 
 import { businessInfo, postalAddressSchema, PUBLISH_NAP } from "@/data/businessInfo";
+import { PREORDER_MODE } from "@/lib/preorder";
+
+/** schema.org availability — PreOrder for everything while the store is restocking. */
+const offerAvailability = (inStock: boolean) =>
+  PREORDER_MODE
+    ? "https://schema.org/PreOrder"
+    : inStock
+      ? "https://schema.org/InStock"
+      : "https://schema.org/OutOfStock";
 
 /** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
@@ -154,9 +163,7 @@ export function productSchema(product: {
           lowPrice,
           highPrice,
           offerCount: purchasable.length,
-          availability: product.inStock
-            ? "https://schema.org/InStock"
-            : "https://schema.org/OutOfStock",
+          availability: offerAvailability(product.inStock),
           seller: { "@id": `${SITE_URL}/#organization` },
         }
       : {
@@ -166,9 +173,7 @@ export function productSchema(product: {
           price: lowPrice,
           priceValidUntil: validUntil,
           itemCondition: "https://schema.org/NewCondition",
-          availability: product.inStock
-            ? "https://schema.org/InStock"
-            : "https://schema.org/OutOfStock",
+          availability: offerAvailability(product.inStock),
           areaServed: { "@type": "Country", name: "ZA" },
           seller: { "@id": `${SITE_URL}/#organization` },
           hasMerchantReturnPolicy: returnPolicy,

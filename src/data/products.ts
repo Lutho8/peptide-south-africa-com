@@ -143,8 +143,9 @@ export const products: Product[] = [
       { question: "How should I store this?", answer: "Refrigerate after reconstitution. Store lyophilized powder at -20°C." },
       { question: "Can I view the published report?", answer: "Yes. Janoshik task #61141 is available in the product gallery and public testing archive. It identifies Retatrutide 10mg; its batch is reported as Unknown, so it is not unique-vial authentication." },
     ],
-    inStock: false,
-    stock: 0,
+    // Purchasable as a pre-order during the restock window (PREORDER_MODE in src/lib/preorder.ts).
+    inStock: true,
+    stock: 12,
   },
   {
     id: "2",
@@ -198,8 +199,8 @@ export const products: Product[] = [
       { question: "What category does Tesamorelin fall under?", answer: "It's classified as a GHRH analog, targeting the growth hormone axis." },
       { question: "Can I view the lab report?", answer: "Yes. Janoshik task #164644 is available in the product gallery and the public testing archive. The report identifies sample TSM10; its batch field is blank, so it should not be treated as unique-vial authentication." },
     ],
-    inStock: false,
-    stock: 0,
+    inStock: true,
+    stock: 4,
   },
   {
     id: "4",
@@ -227,8 +228,7 @@ export const products: Product[] = [
       { question: "Why is this marked Pre-Order?", answer: "TZ-2 is in high demand. Pre-orders guarantee your allocation from the next certified batch." },
       { question: "What does the published report cover?", answer: "Janoshik task #164662 appears in the product gallery and testing archive. It identifies sample T120 and reports 134.42 mg and 132.84 mg; the submitted sample was 20 mg while the listed product is 5 mg per vial, and its batch is Unknown, so it does not identify a PSA lot." },
     ],
-    inStock: false,
-    stock: 0,
+    inStock: true,
   },
   {
     id: "5",

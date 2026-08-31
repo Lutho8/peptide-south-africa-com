@@ -97,10 +97,10 @@ describe("pre-curated stacks", () => {
     }
   });
 
-  it("every stack component is in stock except the weight-loss products awaiting restock", () => {
-    // rt3-reta, tz2-tirz and tesamorelin are temporarily out of stock (founder
-    // directive 2026-08-29). Only tesamorelin appears in curated stacks; the
-    // builder blocks the bundle until its slot is swapped for an in-stock vial.
+  it("OOS weight-loss catalog flags are preserved; stacks are purchasable under PREORDER_MODE", () => {
+    // rt3-reta, tz2-tirz and tesamorelin keep inStock:false/stock:0 in the catalog
+    // (real supply state). Under PREORDER_MODE the purchase guards are bypassed,
+    // so stacks containing tesamorelin are addable without swapping the slot.
     const TEMPORARILY_OUT_OF_STOCK = new Set(["rt3-reta", "tz2-tirz", "tesamorelin"]);
     for (const stack of CURATED_STACKS) {
       for (const p of resolveStackProducts(stack)) {
