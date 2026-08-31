@@ -83,7 +83,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
     class="absolute right-3 top-3"
   >
     <span
-      class="inline-flex items-center gap-1 rounded-full font-semibold ring-1 bg-muted text-muted-foreground ring-border px-2.5 py-1 text-[10px] "
+      class="inline-flex items-center gap-1 rounded-full font-semibold ring-1 bg-violet-500/10 text-violet-700 ring-violet-500/30 dark:text-violet-400 px-2.5 py-1 text-[10px] "
     >
       <svg
         class="lucide lucide-clock h-3 w-3"

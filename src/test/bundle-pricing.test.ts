@@ -97,17 +97,11 @@ describe("pre-curated stacks", () => {
     }
   });
 
-  it("OOS weight-loss catalog flags are preserved; stacks are purchasable under PREORDER_MODE", () => {
-    // rt3-reta, tz2-tirz and tesamorelin keep inStock:false/stock:0 in the catalog
-    // (real supply state). Under PREORDER_MODE the purchase guards are bypassed,
-    // so stacks containing tesamorelin are addable without swapping the slot.
-    const TEMPORARILY_OUT_OF_STOCK = new Set(["rt3-reta", "tz2-tirz", "tesamorelin"]);
+  it("every stack component is in stock (purchasable as pre-order during restock)", () => {
+    // rt3-reta, tz2-tirz and tesamorelin are back in stock as pre-orders
+    // (founder directive 2026-08-31); every stack component is purchasable.
     for (const stack of CURATED_STACKS) {
       for (const p of resolveStackProducts(stack)) {
-        if (p && TEMPORARILY_OUT_OF_STOCK.has(p.slug)) {
-          expect(p.inStock, `${stack.name}: ${p.slug}`).toBe(false);
-          continue;
-        }
         expect(p?.inStock, `${stack.name}: ${p?.slug}`).toBe(true);
       }
     }
