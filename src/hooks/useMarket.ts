@@ -2,7 +2,7 @@ export type Market = "default" | "de" | "za";
 
 export interface MarketInfo {
   market: Market;
-  lang: "en";
+  lang: "en-ZA";
   currency: "ZAR";
   basePath: "";
 }
@@ -11,7 +11,7 @@ export const SITE_URL = "https://www.peptide-south-africa.com";
 
 const INFO: MarketInfo = {
   market: "default",
-  lang: "en",
+  lang: "en-ZA",
   currency: "ZAR",
   basePath: "",
 };
