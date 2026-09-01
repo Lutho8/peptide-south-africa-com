@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
+  Stethoscope,
   Truck,
   FlaskConical,
   ShoppingCart,
@@ -11,6 +12,7 @@ import {
 import { products } from "@/data/products";
 import ShaderBackdrop from "@/components/ShaderBackdrop";
 import StockBadge from "@/components/StockBadge";
+import SupportVideosSection from "@/components/SupportVideosSection";
 
 const HERO_VIDEO_SRC =
   "https://player.vimeo.com/progressive_redirect/playback/1197576794/rendition/1080p/file.mp4%20%281080p%29.mp4?loc=external&signature=17601266ee7e2cb1ad78cd417676683352bfc62cb32be03b087f5ee446fd2484";
@@ -138,6 +140,8 @@ export default function HeroShop() {
               <CheckCircle2 className="h-3.5 w-3.5 text-[#55c8be]" /> Batch-linked reports where published
             </span>
           </motion.div>
+
+          <SupportVideosSection embeddedInHero />
         </div>
 
         {/* Two-column product cards (Whoosh-style) */}

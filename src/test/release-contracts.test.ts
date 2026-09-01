@@ -55,6 +55,17 @@ describe("release contracts", () => {
     expect(pricing).toContain("weight_loss_12_week_4999");
   });
 
+  it("keeps the testimonial videos embedded in the research-first hero", () => {
+    const hero = read("src/components/HeroShop.tsx");
+    const videoRail = read("src/components/SupportVideosSection.tsx");
+    const clips = read("src/data/testimonialClips.ts");
+
+    expect(hero).toContain("<SupportVideosSection embeddedInHero />");
+    expect(videoRail).toContain("Customer video stories");
+    expect(videoRail).toContain("Products are supplied for lawful laboratory research only.");
+    expect(clips.match(/id: "/g)).toHaveLength(5);
+  });
+
   it("keeps EFT creation server-priced and retry-idempotent", () => {
     const client = read("src/lib/eftCheckout.ts");
     const server = read("api/eft-create-order.ts");

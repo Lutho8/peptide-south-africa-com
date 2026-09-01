@@ -10,6 +10,10 @@ interface TileProps {
   eager?: boolean;
 }
 
+interface SupportVideosSectionProps {
+  embeddedInHero?: boolean;
+}
+
 function VideoTile({ clip, activeId, onUnmute, eager = false }: TileProps) {
   const ref = useRef<HTMLVideoElement | null>(null);
   const isUnmuted = activeId === clip.id;
@@ -60,6 +64,7 @@ function VideoTile({ clip, activeId, onUnmute, eager = false }: TileProps) {
       <video
         ref={ref}
         data-src={clip.src}
+        aria-label={`${clip.tag} customer video testimonial`}
         muted
         loop
         playsInline
@@ -90,7 +95,7 @@ function VideoTile({ clip, activeId, onUnmute, eager = false }: TileProps) {
   );
 }
 
-export default function SupportVideosSection() {
+export default function SupportVideosSection({ embeddedInHero = false }: SupportVideosSectionProps) {
   // Single-audio coordination: only one clip can be unmuted at a time.
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -98,40 +103,76 @@ export default function SupportVideosSection() {
     setActiveId(id || null);
   }, []);
 
-  return (
-    <section className="bg-background py-16 md:py-24">
-      <div className="container px-4">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            Real results
-          </span>
-          <h2 className="mt-2 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
-            The support people keep coming back to.
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground">
-            Clinician-reviewed protocols, transparent lab data, and a community that
-            shows up for each other — week after week.
-          </p>
-          <p className="mt-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            Tap any clip for sound · one plays at a time
-          </p>
-        </div>
+  const content = (
+    <>
+      <div className="mx-auto max-w-3xl text-center">
+        <span
+          className={`font-mono text-xs font-semibold uppercase tracking-[0.2em] ${
+            embeddedInHero ? "text-[#8de0d8]" : "text-primary"
+          }`}
+        >
+          Customer video stories
+        </span>
+        <h2
+          className={`mt-2 font-display font-bold leading-tight ${
+            embeddedInHero
+              ? "text-2xl text-white sm:text-3xl"
+              : "text-3xl text-foreground sm:text-4xl md:text-5xl"
+          }`}
+        >
+          Hear directly from our community.
+        </h2>
+        <p className={`mt-3 text-sm sm:text-base ${embeddedInHero ? "text-white/80" : "text-muted-foreground"}`}>
+          Short customer-recorded videos about their experience with Peptide South Africa.
+        </p>
+        <p
+          className={`mt-3 font-mono text-[10px] uppercase tracking-wider ${
+            embeddedInHero ? "text-white/65" : "text-muted-foreground"
+          }`}
+        >
+          Tap any clip for sound · one plays at a time
+        </p>
+      </div>
 
-        <div className="mt-10 -mx-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
-          <ul className="flex snap-x snap-mandatory gap-4 md:gap-6">
-            {CLIPS.map((c, idx) => (
-              <li
-                key={c.id}
-                className="w-[78%] flex-shrink-0 snap-center sm:w-[48%] md:w-[32%] lg:w-[22%]"
-              >
-                <VideoTile clip={c} activeId={activeId} onUnmute={handleUnmute} eager={idx === 0} />
+      <div className="mt-7 -mx-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <ul className="flex snap-x snap-mandatory gap-4 md:gap-6">
+          {CLIPS.map((c, idx) => (
+            <li
+              key={c.id}
+              className="w-[72%] flex-shrink-0 snap-center sm:w-[46%] md:w-[31%] lg:w-[22%]"
+            >
+              <VideoTile clip={c} activeId={activeId} onUnmute={handleUnmute} eager={idx === 0} />
+              {!embeddedInHero && (
                 <p className="mt-3 px-1 text-sm font-medium text-foreground">
                   {c.caption}
                 </p>
-              </li>
-            ))}
-          </ul>
-        </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <p className={`mx-auto mt-1 max-w-3xl text-center text-[11px] leading-relaxed ${embeddedInHero ? "text-white/65" : "text-muted-foreground"}`}>
+        Individual experiences are personal and are not evidence of product performance or intended-use guidance. Products are supplied for lawful laboratory research only.
+      </p>
+    </>
+  );
+
+  if (embeddedInHero) {
+    return (
+      <div
+        aria-label="Customer video testimonials"
+        className="mt-8 border-t border-white/15 pt-8 sm:mt-10 sm:pt-10"
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <section className="bg-background py-16 md:py-24" aria-label="Customer video testimonials">
+      <div className="container px-4">
+        {content}
       </div>
     </section>
   );
