@@ -92,7 +92,7 @@ export default function ProductCard({ product, recommendation = false }: { produ
             </span>
           )}
           <Link to="/testing" className="inline-flex items-center gap-1 rounded bg-trust/5 px-1.5 py-0.5 text-trust ring-1 ring-trust/15 hover:bg-trust/10">
-            <ShieldCheck className="h-3 w-3" /> Janoshik COA
+            <ShieldCheck className="h-3 w-3" /> Reports &amp; COAs
           </Link>
           <TrackBadge track={product.track} />
         </div>

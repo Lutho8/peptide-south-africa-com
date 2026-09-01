@@ -25,7 +25,7 @@ export const localBusinessSchema = {
   currenciesAccepted: "ZAR",
   paymentAccepted: "EFT, Direct bank transfer",
   description:
-    "GP-led, lab-tested peptide protocols for fat loss, healing, and performance. Same-day dispatch from Cape Town across South Africa.",
+    "Research-use peptide compounds with published analytical reports where available and local fulfilment from Cape Town across South Africa.",
   ...(businessInfo.email ? { email: businessInfo.email } : {}),
   address: postalAddressSchema(),
   geo: {
@@ -50,36 +50,36 @@ export const organizationSchema = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo-horizontal.png`,
   description:
-    "Peptide South Africa provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
+    "Peptide South Africa supplies research-use peptide compounds with batch documentation, transparent report scope and local support from Cape Town, South Africa.",
   areaServed: [{ "@type": "Country", name: "South Africa" }],
   knowsAbout: [
-    "Peptide therapy",
-    "Fat loss protocols",
+    "Peptide research",
+    "Metabolic pathway research",
     "Retatrutide",
     "BPC-157",
     "Tesamorelin",
     "GLP-1 receptor agonists",
     "Growth hormone releasing peptides",
-    "Personalized health protocols",
+    "Batch traceability",
   ],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Peptide Protocols & Research Compounds",
+    name: "Research Peptide Compounds",
     itemListElement: [
       {
         "@type": "OfferCatalog",
-        name: "Fat Loss Protocols",
-        description: "Personalized peptide protocols for targeted fat reduction using GLP-1 agonists.",
+        name: "Metabolic Research",
+        description: "Research compounds studied in GLP-1, GIP and glucagon receptor pathway models.",
       },
       {
         "@type": "OfferCatalog",
-        name: "Healing & Recovery",
-        description: "BPC-157 and tissue repair peptides for accelerated recovery.",
+        name: "Repair Signalling Research",
+        description: "BPC-157 and related compounds presented for laboratory repair-pathway research.",
       },
       {
         "@type": "OfferCatalog",
         name: "Growth Hormone",
-        description: "Tesamorelin and GHRH analogs for body composition research.",
+        description: "Tesamorelin and GHRH analogues for laboratory pathway research.",
       },
     ],
   },
@@ -94,7 +94,7 @@ export const websiteSchema = {
   inLanguage: "en-ZA",
   publisher: { "@id": `${SITE_URL}/#organization` },
   description:
-    "GP-led, lab-tested peptide protocols and research compounds for fat loss, healing and performance — Cape Town, South Africa.",
+    "Research-use peptide compounds with transparent testing records and local fulfilment — Cape Town, South Africa.",
 };
 
 export function productSchema(product: {
@@ -198,34 +198,34 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
 /** Entity relationship clusters for internal linking */
 export const entityClusters = {
   fatLoss: {
-    title: "Fat Loss & Metabolic Health",
+    title: "Metabolic Research",
     links: [
-      { label: "Fat Loss Protocol", href: "/fat-loss-protocol", description: "Our structured fat loss program using GLP-1 agonists and metabolic peptides." },
+      { label: "Metabolic Research Catalogue", href: "/shop?category=GLP", description: "Triple- and dual-agonist research compounds with clear product records." },
       { label: "GGG-3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
       { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist for metabolic research." },
       { label: "Buy Retatrutide in South Africa", href: "/buy-retatrutide-south-africa", description: "ZAR pricing, HPLC-tested GGG-3, local Cape Town dispatch." },
       { label: "Buy Tirzepatide in South Africa", href: "/buy-tirzepatide-south-africa", description: "ZAR pricing, HPLC-tested TZ-2, local Cape Town dispatch." },
-      { label: "Take the Quiz", href: "/quiz", description: "Get a personalized protocol recommendation based on your goals." },
+      { label: "Take the Research Quiz", href: "/quiz", description: "Organise the catalogue around a research area before reviewing individual products." },
     ],
   },
   healing: {
-    title: "Healing & Recovery",
+    title: "Repair Signalling Research",
     links: [
-      { label: "BPC-157", href: "/product/bpc-157", description: "Body Protection Compound for tissue repair and gut healing research." },
-      { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Copper peptide for wound healing and collagen synthesis." },
+      { label: "BPC-157", href: "/product/bpc-157", description: "Research compound studied in laboratory repair-signalling models." },
+      { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Copper peptide studied in collagen and cellular-response models." },
       { label: "Buy BPC-157 in South Africa", href: "/buy-bpc-157-south-africa", description: "ZAR pricing, HPLC-tested BPC/TB-500 blend, local dispatch." },
       { label: "Buy GHK-Cu in South Africa", href: "/buy-ghk-cu-south-africa", description: "ZAR pricing, HPLC-tested 50mg copper peptide vials." },
-      { label: "Research Hub", href: "/research", description: "Access 500+ citations and clinical data on healing peptides." },
+      { label: "Research Hub", href: "/research", description: "Explore compound profiles, literature links and research tools." },
     ],
   },
   growthHormone: {
-    title: "Growth Hormone & Performance",
+    title: "Growth-Hormone Pathway Research",
     links: [
       { label: "Tesamorelin", href: "/product/tesamorelin", description: "GHRH analog for growth hormone secretion studies." },
       { label: "MOTS-C", href: "/product/mots-c", description: "Mitochondrial peptide for metabolic and exercise research." },
       { label: "Buy MOTS-C in South Africa", href: "/buy-mots-c-south-africa", description: "ZAR pricing, HPLC-tested mitochondrial peptide, local Cape Town dispatch." },
       { label: "Buy Tesamorelin in South Africa", href: "/buy-tesamorelin-south-africa", description: "ZAR pricing, HPLC-tested GHRH analog, local Cape Town dispatch." },
-      { label: "About Our Protocols", href: "/about", description: "Learn about our evidence-based, GP-led approach." },
+      { label: "Research Standards", href: "/testing", description: "Review published analytical reports and their stated scope." },
     ],
   },
   trust: {
@@ -233,7 +233,7 @@ export const entityClusters = {
     links: [
       { label: "What Are Peptides? Complete Guide", href: "/blog/what-are-peptides-complete-guide", description: "The fundamentals — what peptides are, the main research categories, and sourcing standards." },
       { label: "About Us", href: "/about", description: "Our mission, team, and pharmaceutical-grade sourcing standards." },
-      { label: "FAQ", href: "/faq", description: "Common questions about peptides, shipping, and protocols." },
+      { label: "FAQ", href: "/faq", description: "Common questions about research-use products, documentation and shipping." },
       { label: "Research Hub", href: "/research", description: "Evidence-based research tools and peptide database." },
       { label: "Shipping Policy", href: "/shipping", description: "Same-day dispatch from Cape Town across South Africa." },
     ],

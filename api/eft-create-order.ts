@@ -4,6 +4,10 @@ import {
   quoteCheckout,
   type CheckoutSelection,
 } from "../supabase/functions/_shared/pricing.js";
+import {
+  CHECKOUT_CONSENT_STATEMENTS,
+  isValidCheckoutConsent,
+} from "../supabase/functions/_shared/checkout-consent.js";
 
 export const config = { runtime: "edge" };
 
@@ -44,6 +48,7 @@ export default async function handler(request: Request): Promise<Response> {
       firstName?: unknown;
       lastName?: unknown;
       email?: unknown;
+      consent?: unknown;
     } | null;
     const requestId = body?.requestId;
     if (typeof requestId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
@@ -51,6 +56,13 @@ export default async function handler(request: Request): Promise<Response> {
     }
     if (typeof body?.email !== "string" || !body.email.trim()) {
       return json({ error: "Email is required.", code: "BAD_REQUEST" }, 400);
+    }
+    const consent = body?.consent;
+    if (!isValidCheckoutConsent(consent)) {
+      return json({
+        error: "Please accept the required research-use acknowledgements before placing your order.",
+        code: "CONSENT_REQUIRED",
+      }, 400);
     }
 
     let quote;
@@ -73,6 +85,7 @@ export default async function handler(request: Request): Promise<Response> {
       discount_code: null,
       status: "pending",
       currency: PRICING.currency,
+      payment_provider: "eft_capitec",
       order_description: quote.description,
       shipping_country: PRICING.shipping.country,
       shipping_method: PRICING.shipping.method,
@@ -117,6 +130,44 @@ export default async function handler(request: Request): Promise<Response> {
       && String(order.order_description ?? "") === quote.description;
     if (!requestMatches) {
       return json({ error: "Checkout request conflicts with an earlier cart.", code: "ORDER_CONFLICT" }, 409);
+    }
+
+    const { data: existingConsent, error: consentLookupError } = await admin
+      .from("checkout_consents")
+      .select("user_id, policy_version, report_scope_version, marketing_consent")
+      .eq("order_id", order.id)
+      .maybeSingle();
+    if (consentLookupError) {
+      console.error("checkout consent lookup failed", consentLookupError.code);
+      return json({ error: "Your acknowledgements could not be recorded. Please try again." }, 500);
+    }
+    if (existingConsent) {
+      const consentMatches = existingConsent.user_id === userData.user.id
+        && existingConsent.policy_version === consent.policyVersion
+        && existingConsent.report_scope_version === consent.reportScopeVersion
+        && existingConsent.marketing_consent === consent.marketingConsent;
+      if (!consentMatches) {
+        return json({ error: "Checkout consent conflicts with an earlier request.", code: "ORDER_CONFLICT" }, 409);
+      }
+    } else {
+      const { error: consentInsertError } = await admin.from("checkout_consents").insert({
+        order_id: order.id,
+        user_id: userData.user.id,
+        policy_version: consent.policyVersion,
+        report_scope_version: consent.reportScopeVersion,
+        age_confirmed: consent.ageConfirmed,
+        research_use_acknowledged: consent.researchUseAcknowledged,
+        non_human_use_acknowledged: consent.nonHumanUseAcknowledged,
+        report_scope_acknowledged: consent.reportScopeAcknowledged,
+        marketing_consent: consent.marketingConsent,
+        client_accepted_at: consent.clientAcceptedAt,
+        statements: CHECKOUT_CONSENT_STATEMENTS,
+        source: "storefront_checkout",
+      });
+      if (consentInsertError) {
+        console.error("checkout consent insert failed", consentInsertError.code);
+        return json({ error: "Your acknowledgements could not be recorded. Please try again." }, 500);
+      }
     }
 
     // The existing settlement function remains the EFT-bank-details and email

@@ -71,7 +71,7 @@ export default function Footer() {
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Shop</h4>
             <div className="flex flex-col gap-2">
               <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
-              <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
+              <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Metabolic Research</Link>
               <Link to="/shop?category=Longevity" className="text-sm text-muted-foreground hover:text-foreground">Longevity</Link>
               <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Recovery</Link>
               <Link to="/shop?category=Skin+%26+Hair" className="text-sm text-muted-foreground hover:text-foreground">Skin &amp; Hair</Link>
@@ -85,10 +85,9 @@ export default function Footer() {
               <Link to="/blog" className="hover:text-foreground">Blog</Link>
               <Link to="/editorial-policy" className="hover:text-foreground">Editorial Policy</Link>
               <Link to="/faq" className="hover:text-foreground">FAQ</Link>
-              <Link to="/quiz" className="hover:text-foreground">Find My Protocol</Link>
+              <Link to="/quiz" className="hover:text-foreground">Research Quiz</Link>
               <Link to="/community" className="hover:text-foreground">WhatsApp Community</Link>
               <Link to="/reviews" className="font-semibold text-primary hover:text-foreground">Peptide South Africa Reviews</Link>
-              <Link to="/clinician" className="hover:text-foreground">For Clinicians</Link>
               <Link to="/affiliate" className="font-semibold text-primary hover:text-foreground">Affiliate Program</Link>
 
               <a href="https://capetownpeptideclub.co.za" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Cape Town Peptide Club ↗</a>
@@ -113,9 +112,9 @@ export default function Footer() {
         </div>
         <div className="mt-8 grid gap-3 border-t border-border pt-6 text-left sm:grid-cols-2">
           <div className="rounded-xl border border-border bg-background/60 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">Medical disclaimer</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">Research-use notice</p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Website content is general information only and is not medical advice, diagnosis or treatment. Clinician-guided products require an independent clinical review and, where applicable, a valid prescription. In an emergency, contact local emergency services.
+              Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption. Website content is general research information only and is not medical advice, diagnosis or treatment guidance.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-background/60 p-4">

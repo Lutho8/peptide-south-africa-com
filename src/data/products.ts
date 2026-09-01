@@ -132,7 +132,7 @@ export const products: Product[] = [
     sku: "RTT-GGG-10",
     casNumber: "2381089-83-2",
     compoundClass: "GLP-1 / GIP / Glucagon triple agonist",
-    track: "GP",
+    track: "RUO",
     variants: rt3Variants,
     benefits: ["Targets GLP-1, GIP & glucagon receptors", "Metabolic pathway research", "Insulin resistance studies", "Obesity research applications"],
     whatsIncluded: ["1x Research vial", "Published source lab report", "QR verification link", "Storage instructions"],
@@ -218,7 +218,7 @@ export const products: Product[] = [
     sku: "RTT-TZ2-5",
     casNumber: "2023788-19-2",
     compoundClass: "GLP-1 / GIP dual agonist",
-    track: "GP",
+    track: "RUO",
     variants: tz2Variants,
     benefits: ["Dual GIP/GLP-1 agonism", "Glucose homeostasis research", "Appetite regulation studies", "Body weight reduction research"],
     whatsIncluded: ["1x Research vial", "Published source lab report", "QR verification link", "Storage instructions"],
@@ -681,7 +681,6 @@ export const categories = [
 export const tracks: { value: "All" | ProductTrack; label: string; desc: string }[] = [
   { value: "All", label: "All", desc: "Show every product" },
   { value: "RUO", label: "Research (RUO)", desc: "Standard research-use checkout" },
-  { value: "GP",  label: "Clinical (GP-led)", desc: "Prescription — quiz → GP → partner pharmacy" },
 ];
 
 export function getProductsByTrack(track: "All" | ProductTrack): Product[] {

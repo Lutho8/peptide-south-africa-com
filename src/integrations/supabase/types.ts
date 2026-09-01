@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event: string
+          event_version: string
+          id: string
+          order_id: string | null
+          props: Json
+          session_id: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          event_version?: string
+          id?: string
+          order_id?: string | null
+          props?: Json
+          session_id: string
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          event_version?: string
+          id?: string
+          order_id?: string | null
+          props?: Json
+          session_id?: string
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_applications: {
         Row: {
           audience_size: string | null
@@ -88,6 +132,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      checkout_consents: {
+        Row: {
+          accepted_at: string
+          age_confirmed: boolean
+          client_accepted_at: string | null
+          created_at: string
+          id: number
+          marketing_consent: boolean
+          non_human_use_acknowledged: boolean
+          order_id: string
+          policy_version: string
+          report_scope_acknowledged: boolean
+          report_scope_version: string
+          research_use_acknowledged: boolean
+          source: string
+          statements: Json
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          age_confirmed: boolean
+          client_accepted_at?: string | null
+          created_at?: string
+          id?: never
+          marketing_consent?: boolean
+          non_human_use_acknowledged: boolean
+          order_id: string
+          policy_version: string
+          report_scope_acknowledged: boolean
+          report_scope_version: string
+          research_use_acknowledged: boolean
+          source?: string
+          statements: Json
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          age_confirmed?: boolean
+          client_accepted_at?: string | null
+          created_at?: string
+          id?: never
+          marketing_consent?: boolean
+          non_human_use_acknowledged?: boolean
+          order_id?: string
+          policy_version?: string
+          report_scope_acknowledged?: boolean
+          report_scope_version?: string
+          research_use_acknowledged?: boolean
+          source?: string
+          statements?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkout_consents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       community_join_rate: {
         Row: {

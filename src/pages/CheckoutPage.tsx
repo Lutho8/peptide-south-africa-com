@@ -4,7 +4,6 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock, Loader2, Landmark } from "lucide-react";
 import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
-import ExpressEftButton from "@/components/ExpressEftButton";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
@@ -16,6 +15,11 @@ import { currentOffer, trackEvent } from "@/lib/analytics";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
+import {
+  CHECKOUT_CONSENT_STATEMENTS,
+  CHECKOUT_POLICY_VERSION,
+  REPORT_SCOPE_VERSION,
+} from "../../supabase/functions/_shared/checkout-consent";
 import {
   CHECKOUT_FORM_KEY as FORM_KEY,
   EFT_SESSION_KEY,
@@ -32,6 +36,7 @@ const errCopy: Record<string, string> = {
   err_required: "Required",
   err_postal_sa: "Enter a 4-digit postal code",
   err_region_sa: "Select a province",
+  err_consent_required: "Required to place a research-use order",
 };
 
 const inputCls =
@@ -53,7 +58,20 @@ export default function CheckoutPage() {
       const raw = window.sessionStorage.getItem(FORM_KEY);
       if (!raw) return { ...emptyForm, email: user?.email ?? "" };
       const parsed = JSON.parse(raw) as Partial<CheckoutForm>;
-      return { ...emptyForm, ...parsed, email: parsed.email || user?.email || "" };
+      const versionMatches = parsed.consentPolicyVersion === CHECKOUT_POLICY_VERSION;
+      return {
+        ...emptyForm,
+        ...parsed,
+        ...(!versionMatches ? {
+          ageConfirmed: false,
+          researchUseAcknowledged: false,
+          nonHumanUseAcknowledged: false,
+          reportScopeAcknowledged: false,
+          marketingConsent: false,
+        } : {}),
+        consentPolicyVersion: CHECKOUT_POLICY_VERSION,
+        email: parsed.email || user?.email || "",
+      };
     } catch {
       return emptyForm;
     }
@@ -69,7 +87,7 @@ export default function CheckoutPage() {
     }
   }, [form]);
 
-  const setField = <K extends keyof CheckoutForm>(key: K, value: string) => {
+  const setField = <K extends keyof CheckoutForm>(key: K, value: CheckoutForm[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
@@ -154,21 +172,12 @@ export default function CheckoutPage() {
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-bold text-foreground">Almost there</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Two quick steps and your order ships from Cape Town.
+            Four clear steps to place your research order from Cape Town.
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
-            <div>
-              <ExpressEftButton />
-              <div className="mt-5 flex items-center gap-3">
-                <span className="h-px flex-1 bg-border" />
-                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or enter details manually</span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-            </div>
-
             <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="font-display text-base font-semibold text-foreground">
@@ -229,7 +238,63 @@ export default function CheckoutPage() {
 
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
-                  <Landmark className="h-4 w-4 text-primary" /> 3. Payment — EFT (direct bank transfer)
+                  3. Research purchase acknowledgement
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Please confirm each required statement. We save an immutable receipt with the policy version and acceptance time against your order.
+                </p>
+                <div className="mt-4 space-y-3">
+                  {([
+                    ["ageConfirmed", CHECKOUT_CONSENT_STATEMENTS.age],
+                    ["researchUseAcknowledged", CHECKOUT_CONSENT_STATEMENTS.researchUse],
+                    ["nonHumanUseAcknowledged", CHECKOUT_CONSENT_STATEMENTS.nonHumanUse],
+                    ["reportScopeAcknowledged", CHECKOUT_CONSENT_STATEMENTS.reportScope],
+                  ] as const).map(([key, label]) => (
+                    <label key={key} className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background p-3.5">
+                      <input
+                        type="checkbox"
+                        checked={form[key]}
+                        onChange={(event) => setField(key, event.target.checked)}
+                        aria-invalid={!!errors[key]}
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                      />
+                      <span className="text-xs leading-relaxed text-foreground">{label}</span>
+                    </label>
+                  ))}
+                </div>
+                {(
+                  errors.ageConfirmed
+                  || errors.researchUseAcknowledged
+                  || errors.nonHumanUseAcknowledged
+                  || errors.reportScopeAcknowledged
+                ) && (
+                  <p role="alert" className="mt-3 text-xs font-medium text-destructive">
+                    Confirm all four required statements to continue.
+                  </p>
+                )}
+
+                <div className="mt-5 border-t border-border pt-4">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Optional marketing consent
+                  </p>
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3.5">
+                    <input
+                      type="checkbox"
+                      checked={form.marketingConsent}
+                      onChange={(event) => setField("marketingConsent", event.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    />
+                    <span className="text-xs leading-relaxed text-foreground">{CHECKOUT_CONSENT_STATEMENTS.marketing}</span>
+                  </label>
+                </div>
+                <p className="mt-3 font-mono text-[10px] text-muted-foreground">
+                  Terms {CHECKOUT_POLICY_VERSION} · report scope {REPORT_SCOPE_VERSION}
+                </p>
+              </section>
+
+              <section className="rounded-lg border border-border bg-card p-6">
+                <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
+                  <Landmark className="h-4 w-4 text-primary" /> 4. Payment — EFT (direct bank transfer)
                 </h2>
                 <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary bg-primary/5 p-4 ring-2 ring-ring">
                   <Landmark className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

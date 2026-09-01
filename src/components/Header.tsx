@@ -3,7 +3,6 @@ import { Menu, X, ChevronDown, ShoppingCart, User } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 
 import { useCart } from "@/context/CartContext";
-import BookConsultLink from "@/components/BookConsultLink";
 import logoIcon from "@/assets/logo-icon.png";
 import logoHorizontal from "@/assets/logo-horizontal.png";
 
@@ -24,28 +23,28 @@ const DROPDOWNS: Dropdown[] = [
     ],
   },
   {
-    label: "Weight Loss",
+    label: "Metabolic Research",
     items: [
-      { label: "GGG-3", to: "/product/rt3-reta", desc: "Triple agonist · best seller" },
-      { label: "TZ-2 (Tirzepatide)", to: "/product/tz2-tirz", desc: "Dual GLP-1 / GIP" },
-      { label: "Fat-Loss Protocol", to: "/fat-loss-protocol", desc: "12-week guided program" },
-      { label: "Shop all Weight Loss", to: "/shop?category=GLP" },
+      { label: "GGG-3", to: "/product/rt3-reta", desc: "Triple-agonist research peptide" },
+      { label: "TZ-2 (Tirzepatide)", to: "/product/tz2-tirz", desc: "Dual-agonist research peptide" },
+      { label: "Research Quiz", to: "/quiz", desc: "Organise the catalogue" },
+      { label: "Shop Metabolic Research", to: "/shop?category=GLP" },
     ],
   },
   {
     label: "Wellness & Longevity",
     items: [
-      { label: "MOTS-C", to: "/product/mots-c", desc: "Mitochondrial peptide" },
-      { label: "KLOW80", to: "/product/klow80", desc: "Longevity blend" },
-      { label: "GHK-Cu", to: "/product/ghk-cu-50mg", desc: "Skin · hair · repair" },
+      { label: "MOTS-C", to: "/product/mots-c", desc: "Mitochondrial research peptide" },
+      { label: "KLOW80", to: "/product/klow80", desc: "Research peptide blend" },
+      { label: "GHK-Cu", to: "/product/ghk-cu-50mg", desc: "Copper peptide research" },
       { label: "Shop all Longevity", to: "/shop?category=Longevity" },
     ],
   },
   {
     label: "Recovery",
     items: [
-      { label: "BPC / TB-500 Blend", to: "/product/bpc-tb500-blend", desc: "Healing stack" },
-      { label: "Tesamorelin", to: "/product/tesamorelin", desc: "GH releasing" },
+      { label: "BPC / TB-500 Blend", to: "/product/bpc-tb500-blend", desc: "Repair-signalling research" },
+      { label: "Tesamorelin", to: "/product/tesamorelin", desc: "GHRH analogue research" },
       { label: "Shop all Recovery", to: "/shop?category=Healing" },
     ],
   },
@@ -169,11 +168,12 @@ export default function Header() {
           >
             <User className="h-5 w-5" />
           </Link>
-          <BookConsultLink
+          <Link
+            to="/quiz"
             className="inline-flex items-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
           >
-            BOOK CONSULT
-          </BookConsultLink>
+            RESEARCH QUIZ
+          </Link>
           <CartButton />
         </nav>
 
@@ -230,12 +230,13 @@ export default function Header() {
             <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-lg px-2 py-2 text-sm font-medium text-foreground hover:bg-muted">
               My Account
             </Link>
-            <BookConsultLink
+            <Link
+              to="/quiz"
               onClick={() => setMobileOpen(false)}
               className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow"
             >
-              BOOK CONSULT
-            </BookConsultLink>
+              RESEARCH QUIZ
+            </Link>
           </div>
         </nav>
       )}

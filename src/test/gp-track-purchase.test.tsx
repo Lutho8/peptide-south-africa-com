@@ -8,7 +8,7 @@ vi.mock("@/hooks/useAuth", () => ({
 
 import ProductCard from "@/components/ProductCard";
 import { CartProvider, useCart } from "@/context/CartContext";
-import { products } from "@/data/products";
+import { products, type Product } from "@/data/products";
 
 function RouteProbe() {
   const location = useLocation();
@@ -16,8 +16,8 @@ function RouteProbe() {
   return <output data-testid="route-probe">{location.pathname}{location.search}|{totalItems}</output>;
 }
 
-function renderCard(slug: string) {
-  const product = products.find((candidate) => candidate.slug === slug)!;
+function renderCard(slug: string, override?: Partial<Product>) {
+  const product = { ...products.find((candidate) => candidate.slug === slug)!, ...override };
   return render(
     <MemoryRouter initialEntries={["/shop"]}>
       <CartProvider>
@@ -29,16 +29,14 @@ function renderCard(slug: string) {
 }
 
 describe("GP-track purchase routing", () => {
-  it("routes a GP-track product into the canonical consultation journey without adding it directly", () => {
-    // rt3-reta is GP-track and purchasable again as a pre-order (founder
-    // directive 2026-08-31): the card's primary CTA is the consult journey.
-    renderCard("rt3-reta");
+  it("keeps the future GP-track route isolated from direct checkout", () => {
+    renderCard("rt3-reta", { track: "GP" });
     fireEvent.click(screen.getByRole("button", { name: /book consult/i }));
     expect(screen.getByTestId("route-probe")).toHaveTextContent("/quiz?intent=consult|0");
   });
 
-  it("still adds an RUO product directly to the cart", () => {
-    renderCard("ghk-cu-50mg");
+  it("adds a current RUO catalogue product directly to the cart", () => {
+    renderCard("rt3-reta");
     fireEvent.click(screen.getByRole("button", { name: /add to cart/i }));
     expect(screen.getByTestId("route-probe")).toHaveTextContent("/shop|1");
   });

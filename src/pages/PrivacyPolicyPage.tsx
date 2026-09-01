@@ -13,7 +13,7 @@ const privacySchema = {
   name: "Privacy Policy — Peptide South Africa",
   url: `${SITE_URL}/privacy`,
   description:
-    "POPIA-compliant Privacy Policy explaining how Peptide South Africa collects, uses, stores, and safeguards personal information.",
+    "Privacy Policy explaining how Peptide South Africa collects, uses, stores, and safeguards personal information under POPIA.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Privacy & Data Protection" },
@@ -23,8 +23,8 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       <SEO
-        title="Privacy Policy — POPIA Compliant"
-        description="How Peptide South Africa handles your personal information, compliant with South Africa's Protection of Personal Information Act (POPIA)."
+        title="Privacy Policy — POPIA Notice"
+        description="How Peptide South Africa handles personal information for research orders, accounts, the portal, analytics and communications under POPIA."
         path="/privacy"
         lang="en"
         alternates={buildAlternates("/privacy")}
@@ -34,7 +34,7 @@ export default function PrivacyPolicyPage() {
     <div className="container py-16">
       <div className="mx-auto max-w-3xl">
         <h1 className="font-display text-3xl font-bold text-foreground">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated: April 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated: 1 September 2026</p>
 
         <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
           <section>
@@ -51,14 +51,15 @@ export default function PrivacyPolicyPage() {
             <h2 className="font-display text-lg font-semibold text-foreground">2. Information We Collect</h2>
             <div className="mt-3 space-y-3">
               <h3 className="font-semibold text-foreground/80">Personal Information</h3>
-              <p>When you use our Website, take our quiz, register, or purchase services, we may collect:</p>
+              <p>When you use our Website, take our quiz, create an account, or place a research order, we may collect:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>Full name</li>
                 <li>Email address</li>
                 <li>Phone number / WhatsApp number</li>
                 <li>Shipping and billing address</li>
-                <li>Payment information (processed securely through third-party providers)</li>
-                <li>Health and wellness goals (as provided through our quiz and assessments)</li>
+                <li>EFT payment status, payment reference, order value, and transaction records (we do not collect your online-banking credentials)</li>
+                <li>Quiz responses used to organise research-catalogue information</li>
+                <li>Versioned checkout acknowledgements, including the required research-use statements and your separate optional marketing choice</li>
               </ul>
 
               <h3 className="font-semibold text-foreground/80">Automatically Collected Information</h3>
@@ -66,7 +67,8 @@ export default function PrivacyPolicyPage() {
               <ul className="list-disc space-y-1 pl-5">
                 <li>Device information (type, operating system, browser)</li>
                 <li>IP address and approximate location</li>
-                <li>Usage data (pages visited, time spent, clicks)</li>
+                <li>First-party lifecycle data such as product views, checkout starts, order milestones, portal activity, report opens, tracker hand-offs, and reorder starts</li>
+                <li>Session identifiers used to connect events within a visit</li>
                 <li>Cookies and similar tracking technologies</li>
               </ul>
             </div>
@@ -75,12 +77,14 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">3. How We Use Your Information</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5">
-              <li>Process and fulfil your orders and protocol subscriptions</li>
-              <li>Provide personalised protocol recommendations</li>
-              <li>Communicate order updates, check-in reminders, and support</li>
+              <li>Process and fulfil research orders, EFT payments, and optional supply reorders</li>
+              <li>Organise catalogue information from the research quiz without treating it as a medical assessment</li>
+              <li>Operate your Peptide SA portal, order timeline, consent receipts, report links, and support history</li>
+              <li>Maintain a versioned record of checkout acknowledgements linked to an order</li>
+              <li>Communicate order, payment, dispatch, documentation, and support updates</li>
               <li>Improve our Website, services, and user experience</li>
-              <li>Send promotional communications (you may opt out at any time)</li>
-              <li>Analyse trends and usage to develop new features and services</li>
+              <li>Send promotional communications only where you have made the separate optional marketing choice; you may withdraw it at any time</li>
+              <li>Measure first-order conversion, delivery operations, portal adoption, repeat purchasing, and service quality</li>
               <li>Comply with legal obligations under South African law</li>
               <li>Prevent fraud and enhance security</li>
             </ul>
@@ -92,7 +96,7 @@ export default function PrivacyPolicyPage() {
               <p>Our Website uses cookies and similar technologies to enhance your experience. Types of cookies we use:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li><strong className="text-foreground/80">Essential Cookies:</strong> Required for Website functionality, authentication, and security. Cannot be disabled.</li>
-                <li><strong className="text-foreground/80">Analytics Cookies:</strong> Help us understand how visitors interact with our Website, measure traffic, and improve performance.</li>
+                <li><strong className="text-foreground/80">Analytics Technologies:</strong> First-party events and, where enabled, analytics cookies help us understand how visitors interact with the store and portal.</li>
                 <li><strong className="text-foreground/80">Marketing Cookies:</strong> Used to deliver relevant advertisements and track campaign effectiveness.</li>
                 <li><strong className="text-foreground/80">Preference Cookies:</strong> Remember your settings and preferences for a personalised experience.</li>
               </ul>
@@ -106,13 +110,15 @@ export default function PrivacyPolicyPage() {
             <h2 className="font-display text-lg font-semibold text-foreground">5. Information Sharing and Disclosure</h2>
             <p className="mt-3">We do not sell your personal information. We may share your data with:</p>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li><strong className="text-foreground/80">Service Providers:</strong> Shipping carriers, payment processors, and analytics services that assist in our operations.</li>
-              <li><strong className="text-foreground/80">Protocol Advisors:</strong> To provide personalised protocol recommendations and support.</li>
+              <li><strong className="text-foreground/80">Service Providers:</strong> Hosting, database, authentication, email, support, analytics, EFT operations, and shipping providers that assist in our operations.</li>
               <li><strong className="text-foreground/80">Legal Authorities:</strong> When required by law, regulation, or legal process.</li>
               <li><strong className="text-foreground/80">Business Transfers:</strong> In connection with any merger, acquisition, or sale of assets.</li>
             </ul>
             <p className="mt-3">
               All third parties are required to protect your information and use it only for the purposes for which it was shared.
+            </p>
+            <p className="mt-3">
+              Store and portal analytics do not intentionally ingest private tracker notes, journal entries, or health records. Opening the separate tracker is recorded only as a hand-off event unless you separately choose to share data there.
             </p>
           </section>
 
@@ -126,7 +132,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-lg font-semibold text-foreground">7. Data Retention</h2>
             <p className="mt-3">
-              We retain your personal information only for as long as necessary to fulfil the purposes outlined in this policy, comply with legal obligations, resolve disputes, and enforce our agreements. When data is no longer needed, it is securely deleted or anonymised.
+              We retain personal information only for as long as necessary to fulfil the purposes outlined in this policy, maintain transaction and versioned acknowledgement records, comply with legal obligations, resolve disputes, and enforce our agreements. When data is no longer needed, it is securely deleted or anonymised.
             </p>
           </section>
 

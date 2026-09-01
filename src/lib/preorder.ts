@@ -8,4 +8,4 @@ export const PREORDER_MODE = true;
 
 export const PREORDER_BADGE_TEXT = "Pre-Order — Reserve Yours!";
 export const PREORDER_BANNER_TEXT =
-  "We are currently in a stage of restock our inventory!";
+  "Inventory restock in progress — products are available to reserve by pre-order.";

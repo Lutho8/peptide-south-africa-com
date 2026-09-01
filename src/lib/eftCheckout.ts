@@ -7,6 +7,10 @@ import {
   type CheckoutSelection,
   type MixBundleSize,
 } from "../../supabase/functions/_shared/pricing";
+import {
+  CHECKOUT_POLICY_VERSION,
+  REPORT_SCOPE_VERSION,
+} from "../../supabase/functions/_shared/checkout-consent";
 
 export const CHECKOUT_FORM_KEY = "rtt_checkout_form";
 export const EFT_SESSION_KEY = "rtt_eft_instructions";
@@ -35,6 +39,12 @@ export const emptyCheckoutForm: CheckoutForm = {
   city: "",
   region: "",
   postalCode: "",
+  ageConfirmed: false,
+  researchUseAcknowledged: false,
+  nonHumanUseAcknowledged: false,
+  reportScopeAcknowledged: false,
+  marketingConsent: false,
+  consentPolicyVersion: CHECKOUT_POLICY_VERSION,
 };
 
 /** Read the shopper's previously entered checkout details (session-scoped). */
@@ -44,7 +54,19 @@ export function loadSavedCheckoutForm(): CheckoutForm | null {
     const raw = window.sessionStorage.getItem(CHECKOUT_FORM_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<CheckoutForm>;
-    return { ...emptyCheckoutForm, ...parsed };
+    const versionMatches = parsed.consentPolicyVersion === CHECKOUT_POLICY_VERSION;
+    return {
+      ...emptyCheckoutForm,
+      ...parsed,
+      ...(!versionMatches ? {
+        ageConfirmed: false,
+        researchUseAcknowledged: false,
+        nonHumanUseAcknowledged: false,
+        reportScopeAcknowledged: false,
+        marketingConsent: false,
+      } : {}),
+      consentPolicyVersion: CHECKOUT_POLICY_VERSION,
+    };
   } catch {
     return null;
   }
@@ -115,6 +137,15 @@ export function getOrCreateEftRequestId(selections: CheckoutSelection[], form: C
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),
     },
+    consent: {
+      policyVersion: CHECKOUT_POLICY_VERSION,
+      reportScopeVersion: REPORT_SCOPE_VERSION,
+      ageConfirmed: form.ageConfirmed,
+      researchUseAcknowledged: form.researchUseAcknowledged,
+      nonHumanUseAcknowledged: form.nonHumanUseAcknowledged,
+      reportScopeAcknowledged: form.reportScopeAcknowledged,
+      marketingConsent: form.marketingConsent,
+    },
   });
   try {
     const raw = window.sessionStorage.getItem(EFT_REQUEST_KEY);
@@ -176,6 +207,16 @@ export async function startEftCheckout({
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
+      consent: {
+        ageConfirmed: form.ageConfirmed,
+        researchUseAcknowledged: form.researchUseAcknowledged,
+        nonHumanUseAcknowledged: form.nonHumanUseAcknowledged,
+        reportScopeAcknowledged: form.reportScopeAcknowledged,
+        marketingConsent: form.marketingConsent,
+        policyVersion: CHECKOUT_POLICY_VERSION,
+        reportScopeVersion: REPORT_SCOPE_VERSION,
+        clientAcceptedAt: new Date().toISOString(),
+      },
     }),
   });
   const data = await response.json().catch(() => null);

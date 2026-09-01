@@ -28,40 +28,40 @@ const shopFaqSchema = {
     },
     {
       "@type": "Question",
-      name: "Is buying research peptides in South Africa legal?",
-      acceptedAnswer: { "@type": "Answer", text: "Research peptides are sold for research purposes and are not SAHPRA-registered finished medicines. They're typically accessed via a GP-led protocol pathway or direct research-use purchase rather than a standard pharmacy prescription." },
+      name: "What does third-party tested mean?",
+      acceptedAnswer: { "@type": "Answer", text: "A third-party laboratory analysed the submitted sample using the tests shown in the published report. The report scope and sample reference are displayed so buyers can see exactly what was and was not tested." },
     },
     {
       "@type": "Question",
-      name: "Should I buy from a pure e-commerce supplier or a GP-supervised one?",
-      acceptedAnswer: { "@type": "Answer", text: "Purity testing and a Certificate of Analysis are essential but don't cover contraindication screening, individualized dosing, or bloodwork monitoring. See why GP-supervised protocols matter for the fuller picture." },
+      name: "Are products sold for human use?",
+      acceptedAnswer: { "@type": "Answer", text: "No. Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption." },
     },
   ],
 };
 
 const protocols = [
   {
-    title: "Fat Loss Protocol",
-    desc: "12-week guided program. Triple-agonist GLP-1 strategy + clinician check-ins.",
+    title: "Metabolic Research",
+    desc: "Triple- and dual-agonist compounds presented for laboratory pathway research.",
     icon: Flame,
-    href: "/fat-loss-protocol",
-    pill: "Most Popular",
+    href: "/shop?category=GLP",
+    pill: "Research area",
     accent: "from-primary/15 to-primary/5",
   },
   {
-    title: "Recovery & Healing",
-    desc: "BPC-157 + TB-500 stack for tissue repair, injury recovery, and performance.",
+    title: "Repair Signalling",
+    desc: "Research peptides studied in cellular repair, angiogenesis and response models.",
     icon: Activity,
-    href: "/quiz?goal=recovery",
-    pill: "Athlete Favourite",
+    href: "/shop?category=Healing",
+    pill: "Research area",
     accent: "from-trust/15 to-trust/5",
   },
   {
-    title: "Longevity & Aesthetics",
-    desc: "GHK-Cu, Epitalon and growth hormone secretagogues for skin, hair and cellular health.",
+    title: "Cellular & Longevity",
+    desc: "Compounds studied in mitochondrial, dermal and cellular signalling models.",
     icon: Sparkles,
-    href: "/quiz?goal=longevity",
-    pill: "New",
+    href: "/shop?category=Wellness%20%26%20Longevity",
+    pill: "Research area",
     accent: "from-badge/15 to-badge/5",
   },
 ];
@@ -235,22 +235,23 @@ export default function ShopPage() {
         <div className="container px-4 py-10 md:py-14">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-block rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              Lab-tested · ≥99% HPLC purity · Shipped from Cape Town across South Africa
+              Research-use only · Published analytical reports · Shipped across South Africa
             </span>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
               {shopCopy.h1}
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-              Every batch is third-party HPLC tested. Every protocol is built by a clinician.
-              Pick a single compound or commit to a full transformation.
+              Research-use compounds with clear identity, storage, report scope and batch documentation where published.
+              Browse by compound class or use the existing quiz to organise the catalogue.
             </p>
 
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-              <BookConsultLink
+              <Link
+                to="/quiz"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 sm:w-auto"
               >
-                BOOK CONSULT <ArrowRight className="h-4 w-4" />
-              </BookConsultLink>
+                Open research quiz <ArrowRight className="h-4 w-4" />
+              </Link>
               <a
                 href="#products"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted sm:w-auto"
@@ -260,12 +261,12 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* Trust strip — directly counters Vril/Peptide Supply credibility */}
+          {/* Research supplier trust strip */}
           <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { icon: FlaskConical, label: "≥99% HPLC", sub: "Every batch" },
-              { icon: ShieldCheck, label: "COA on every product", sub: "3rd-party verified" },
-              { icon: MapPin, label: "Ships across SA", sub: "Same-day dispatch" },
+              { icon: FlaskConical, label: "HPLC results", sub: "Where published" },
+              { icon: ShieldCheck, label: "Reports linked", sub: "Scope disclosed" },
+              { icon: MapPin, label: "Ships across SA", sub: "From Cape Town" },
               { icon: Truck, label: "Free shipping", sub: "On orders over R1,500" },
             ].map((t, i) => (
               <div
@@ -289,13 +290,13 @@ export default function ShopPage() {
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
               <span className="font-mono text-xs font-medium uppercase tracking-wider text-primary">
-                Guided Programs
+                Research Catalogue
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">
-                Start with a Protocol — not a Vial
+                Start with the research area
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Outcomes-led programs that combine the right compounds, dosing schedule, and check-ins.
+                Organise the catalogue by pathway, then review the exact compound and documentation available.
               </p>
             </div>
           </div>
@@ -336,7 +337,7 @@ export default function ShopPage() {
                 {activeCategory === "All" ? "All Research Peptides" : activeCategory}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? "product" : "products"} · all third-party HPLC tested ·{" "}
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} · published analytical records and scope shown where available ·{" "}
                 <Link to="/testing" className="font-semibold text-primary hover:underline">View testing methodology</Link>
               </p>
             </div>
@@ -367,10 +368,10 @@ export default function ShopPage() {
             </Link>
           </div>
 
-          {/* Track filter — Research vs Clinical pathway */}
+          {/* Research-use filter */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Pathway
+              Use
             </span>
             {tracks.map((t) => (
               <button
@@ -465,12 +466,12 @@ export default function ShopPage() {
               <p className="text-sm text-muted-foreground">Metabolic/GLP-1 compounds, healing peptides, growth-hormone secretagogues, and longevity/mitochondrial peptides each work through different pathways. See our full breakdown in <Link to="/blog/what-are-peptides-complete-guide" className="text-primary hover:underline">what are peptides</Link> for an overview of every category before choosing.</p>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-1">Is buying research peptides in South Africa legal?</h3>
-              <p className="text-sm text-muted-foreground">Research peptides are sold for research purposes and are not SAHPRA-registered finished medicines. They're typically accessed via a GP-led protocol pathway or direct research-use purchase rather than a standard pharmacy prescription.</p>
+              <h3 className="font-semibold text-foreground mb-1">What does third-party tested mean?</h3>
+              <p className="text-sm text-muted-foreground">A third-party laboratory analysed the submitted sample using the methods and tests shown in the report. We display the source or lot reference and a scope notice so you can see exactly what was and was not tested.</p>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-1">Should I buy from a pure e-commerce supplier or a GP-supervised one?</h3>
-              <p className="text-sm text-muted-foreground">Purity testing and a Certificate of Analysis are essential but don't cover contraindication screening, individualized dosing, or bloodwork monitoring. See <Link to="/blog/why-gp-supervised-peptide-protocols-matter" className="text-primary hover:underline">why GP-supervised protocols matter</Link> for the fuller picture.</p>
+              <h3 className="font-semibold text-foreground mb-1">Are products sold for human use?</h3>
+              <p className="text-sm text-muted-foreground">No. Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption. Checkout requires an explicit acknowledgement for every order.</p>
             </div>
           </div>
         </div>
@@ -480,16 +481,16 @@ export default function ShopPage() {
       <section className="bg-hero-gradient py-12">
         <div className="container px-4 text-center">
           <h2 className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
-            Not sure which compound is right for you?
+            Need a clearer place to start?
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-sm text-primary-foreground/80">
-            Take a 2-minute quiz and get a personalized protocol — built around your goal, body and lifestyle.
+            Use the existing quiz to organise the research catalogue, then review each product's identity, storage and published documentation.
           </p>
           <Link
             to="/quiz"
             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-card px-8 py-3.5 font-semibold text-foreground shadow-card transition-all hover:shadow-card-hover active:scale-95"
           >
-            Start Free Assessment <ArrowRight className="h-4 w-4" />
+            Open Research Quiz <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

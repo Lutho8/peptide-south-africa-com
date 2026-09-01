@@ -10,7 +10,9 @@ const messages = [
     : []),
   {
     icon: Truck,
-    text: "Free shipping across South Africa on orders over R1,500 — same-day dispatch from Cape Town",
+    text: PREORDER_MODE
+      ? "Free shipping across South Africa on orders over R1,500 — dispatch begins when stock lands"
+      : "Free shipping across South Africa on orders over R1,500 — same-day dispatch from Cape Town",
   },
   {
     icon: ShieldCheck,

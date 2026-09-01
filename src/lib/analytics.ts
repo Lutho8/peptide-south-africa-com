@@ -12,7 +12,12 @@ type OfferProps = {
 export type AnalyticsEvent =
   | { event: "book_consult_clicked" | "consultation_started" | "consultation_qualified" | "program_selected"; props: OfferProps }
   | { event: "checkout_started"; props: { displayed_price_zar: number; item_count: number; offer_id?: string } }
-  | { event: "eft_instructions_shown"; props: { order_id: string; server_confirmed_amount_zar: number; displayed_price_zar?: number; offer_id?: string } };
+  | { event: "eft_instructions_shown"; props: { order_id: string; server_confirmed_amount_zar: number; displayed_price_zar?: number; offer_id?: string } }
+  | { event: "portal_viewed"; props: { order_count: number; latest_stage: string } }
+  | { event: "portal_orders_viewed"; props: { order_count: number } }
+  | { event: "portal_tracker_opened"; props: { placement: "portal" | "storefront" } }
+  | { event: "portal_coa_opened"; props: { placement: "portal" | "order" } }
+  | { event: "reorder_started"; props: { order_id: string; item_count: number } };
 
 const SESSION_KEY = "psa_analytics_sid";
 const OFFER_KEY = "psa_selected_offer";
@@ -58,8 +63,11 @@ export function trackEvent(event: AnalyticsEvent): void {
       const table = (supabase as unknown as { from: (name: string) => { insert: (row: unknown) => Promise<unknown> } }).from("analytics_events");
       await table.insert({
         event: event.event,
+        event_version: "1.0",
+        source: "storefront",
         session_id: sessionId(),
         user_id: data.session?.user.id ?? null,
+        order_id: "order_id" in event.props ? event.props.order_id : null,
         props: event.props,
       });
     } catch {

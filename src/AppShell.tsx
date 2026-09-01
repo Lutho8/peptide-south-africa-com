@@ -18,7 +18,6 @@ import PostAddUpsellModal from "@/components/PostAddUpsellModal";
 import DiscountPopup from "@/components/DiscountPopup";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import LiveActivity from "@/components/LiveActivity";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
@@ -66,6 +65,7 @@ const AdminFAQsPage = lazy(() => import("@/pages/admin/AdminFAQsPage"));
 const AdminSEOReindexPage = lazy(() => import("@/pages/admin/AdminSEOReindexPage"));
 const AdminBatchesPage = lazy(() => import("@/pages/admin/AdminBatchesPage"));
 const AdminCustomersPage = lazy(() => import("@/pages/admin/AdminCustomersPage"));
+const AdminLifecyclePage = lazy(() => import("@/pages/admin/AdminLifecyclePage"));
 
 /**
  * Router-agnostic application shell. Wrapped by <BrowserRouter> in the browser
@@ -140,6 +140,7 @@ export default function AppShell() {
                 <Route path="/admin/seo-reindex" element={<AdminSEOReindexPage />} />
                 <Route path="/admin/batches" element={<AdminBatchesPage />} />
                 <Route path="/admin/customers" element={<AdminCustomersPage />} />
+                <Route path="/admin/lifecycle" element={<AdminLifecyclePage />} />
                 <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
@@ -153,7 +154,6 @@ export default function AppShell() {
             <FloatingTrustBadge />
             <CookieConsent />
             <WhatsAppButton />
-            <LiveActivity />
             <Analytics />
           </LastViewedProductProvider>
         </CartProvider>

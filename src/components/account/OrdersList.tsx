@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { products, getProductBySlug } from "@/data/products";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 interface OrderRow {
   id: string;
@@ -81,6 +82,7 @@ export default function OrdersList() {
       return;
     }
     setReordering(order.id);
+    trackEvent({ event: "reorder_started", props: { order_id: order.id, item_count: parsed.length } });
     let added = 0;
     for (const line of parsed) {
       const product = getProductBySlug(line.slug);

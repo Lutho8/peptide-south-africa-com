@@ -2,10 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  Star,
   CheckCircle2,
-  Stethoscope,
-  Sparkles,
   Truck,
   FlaskConical,
   ShoppingCart,
@@ -96,9 +93,8 @@ export default function HeroShop() {
             transition={{ duration: 0.6, delay: 0.05 }}
             className="mt-4 font-display text-[2.25rem] font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] sm:text-5xl lg:text-6xl"
           >
-            South Africa&rsquo;s{" "}
-            <span className="bg-gradient-to-r from-[#5eead4] to-[#00d4aa] bg-clip-text text-transparent">peptide-first telehealth</span>{" "}
-            platform.
+            Premium research peptides.{" "}
+            <span className="bg-gradient-to-r from-[#8de0d8] to-[#55c8be] bg-clip-text text-transparent">Batch documented.</span>
           </motion.h1>
 
           <motion.p
@@ -107,7 +103,7 @@ export default function HeroShop() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mx-auto mt-3 max-w-2xl text-[15px] font-semibold leading-relaxed text-white/90 sm:mt-4 sm:text-lg"
           >
-            We focus on getting you results through clinician-guided pathways.
+            High-purity research compounds with clear batch documentation, published source reports and nationwide fulfilment.
           </motion.p>
 
           {/* One clear next step for first-time visitors */}
@@ -121,7 +117,7 @@ export default function HeroShop() {
               to="/quiz"
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-hero-gradient px-7 py-3.5 text-base font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] sm:w-auto"
             >
-              New to peptides? Start here <ArrowRight className="h-5 w-5" />
+              Use the research quiz <ArrowRight className="h-5 w-5" />
             </Link>
           </motion.div>
 
@@ -136,10 +132,10 @@ export default function HeroShop() {
             </span>
             <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free shipping over R1,500</span>
             <span className="inline-flex items-center gap-1">
-              <Stethoscope className="h-3.5 w-3.5" /> HPCSA-registered GP review on all orders
+              <FlaskConical className="h-3.5 w-3.5" /> Research use only · not for human consumption
             </span>
             <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" /> 4.9 · 1,200+
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#55c8be]" /> Batch-linked reports where published
             </span>
           </motion.div>
         </div>
@@ -163,7 +159,7 @@ export default function HeroShop() {
                   </span>
                 )}
                 <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-                  {idx === 0 ? "Weight Loss" : "Recovery"}
+                  {idx === 0 ? "Metabolic research" : "Recovery research"}
                 </span>
                 <StockBadge product={p} />
                 <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-semibold text-foreground">

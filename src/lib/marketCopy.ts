@@ -13,16 +13,16 @@ const COPY: Record<Page, PageCopy> = {
   home: {
     title: "Research Peptides Cape Town | Peptide South Africa",
     description:
-      "99%+ HPLC-verified research peptides — Retatrutide, Tirzepatide, BPC-157, GHK-Cu. COA on every batch, same-day Cape Town courier.",
+      "Research-use peptides with published analytical reports and clear source or lot scope where available. Local fulfilment from Cape Town across South Africa.",
     h1: "Premium Research Peptides — Cape Town, South Africa",
-    sub: "99%+ HPLC purity. COA on every batch. Same-day local courier dispatch nationwide.",
+    sub: "Research-use only. Published reports where available. Local courier delivery across South Africa.",
   },
   shop: {
     title: "Shop Research Peptides | Fast SA Delivery | Peptide South Africa",
     description:
-      "HPLC-verified research peptides with same-day SA courier. Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, Tesamorelin & blends.",
+      "Browse research-use peptides with compound details, storage guidance and published analytical reports where available. Delivery across South Africa.",
     h1: "Shop Research Peptides",
-    sub: "HPLC-verified · COA on every batch · Same-day SA dispatch",
+    sub: "Research-use only · Report scope shown · Delivery across South Africa",
   },
 
   productSuffix: { title: "Research Peptide", description: "" },

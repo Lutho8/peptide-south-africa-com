@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import {
   ArrowRight,
   CheckCircle,
-  Star,
   Shield,
   Clock,
   Target,
@@ -17,61 +16,50 @@ import {
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
 import HeroShop from "@/components/HeroShop";
-import SupportVideosSection from "@/components/SupportVideosSection";
 import TextUsSection from "@/components/TextUsSection";
 import CategoryShowcase from "@/components/CategoryShowcase";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
-import CustomerProofStrip from "@/components/CustomerProofStrip";
 import EcosystemSection from "@/components/EcosystemSection";
-import WaitlistSection from "@/components/WaitlistSection";
 import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
 import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
-import BookConsultLink from "@/components/BookConsultLink";
-import WeightLossPricing from "@/components/WeightLossPricing";
 
-const results = [
-  { icon: Flame, title: "Visceral Fat Loss", desc: "Targeted reduction in stubborn belly and organ fat" },
-  { icon: Dumbbell, title: "Guaranteed Healing", desc: "Accelerated recovery from injury and tissue repair" },
-  { icon: Heart, title: "Better Recovery", desc: "Enhanced athletic performance and faster bounce-back" },
-  { icon: Sparkles, title: "Clear Skin & Hair Growth", desc: "Visible improvement in skin clarity and hair thickness" },
-  { icon: Leaf, title: "Gut Health & Immunity", desc: "Strengthened immune system and digestive function" },
-  { icon: Brain, title: "Mental Clarity", desc: "Sharper focus and improved cognitive performance" },
+const researchAreas = [
+  { icon: Flame, title: "Metabolic Pathways", desc: "Laboratory models involving energy regulation and receptor signalling" },
+  { icon: Dumbbell, title: "Repair Signalling", desc: "Research into cellular repair, angiogenesis and tissue-response pathways" },
+  { icon: Heart, title: "Recovery Models", desc: "Analytical work involving inflammatory and recovery-related markers" },
+  { icon: Sparkles, title: "Dermal Research", desc: "Models involving collagen signalling, copper peptides and cellular renewal" },
+  { icon: Leaf, title: "Immune Signalling", desc: "Research involving mucosal, innate and adaptive immune pathways" },
+  { icon: Brain, title: "Neuro Research", desc: "Laboratory models involving neuropeptide and cellular communication pathways" },
 ];
 
-const testimonials = [
+const buyingStandards = [
   {
-    name: "Michael T.",
-    location: "Cape Town, ZA",
-    text: "I lost 8 kg in 6 weeks. The protocol was so simple — no guessing, no confusion. Just followed the plan and the results came.",
-    rating: 5,
-    result: "Lost 8 kg in 6 weeks",
+    title: "Batch produced. Batch documented.",
+    text: "Reports are connected to the source sample or published lot and presented with a clear scope notice.",
+    result: "Traceable documentation",
   },
   {
-    name: "Lerato P.",
-    location: "Cape Town, ZA",
-    text: "The protocol was clear from day one. Lab results to back it up. Down two dress sizes in 10 weeks with no guesswork.",
-    rating: 5,
-    result: "Down 2 dress sizes",
+    title: "Research information without guesswork.",
+    text: "Product pages prioritise compound identity, research context, storage, batch information and fulfilment details.",
+    result: "Clear product records",
   },
   {
-    name: "James K.",
-    location: "Durban, ZA",
-    text: "My recovery time between training sessions dropped dramatically. I'm performing better at 38 than I did at 28.",
-    rating: 5,
-    result: "50% faster recovery",
+    title: "Local support after checkout.",
+    text: "The branded portal keeps orders, acknowledgements, source reports and the Peptide SA tracker within one connected journey.",
+    result: "Store · portal · tracker",
   },
 ];
 
 const whyItWorks = [
-  { title: "Pharmaceutical-Grade Quality", desc: "Every compound meets the highest international pharmaceutical standards." },
-  { title: "No Random Products", desc: "You get a structured protocol, not a shopping cart of guesses." },
-  { title: "No Guessing Doses", desc: "Exact dosing schedules tailored to your body and goals." },
-  { title: "No Trial and Error", desc: "Proven protocols based on clinical research and real results." },
-  { title: "Structured System", desc: "Week-by-week guidance so you always know what to do next." },
-  { title: "Personalized Approach", desc: "Your protocol is built around YOUR body, goals, and lifestyle." },
+  { title: "Research-Grade Presentation", desc: "Professional packaging, storage information and lot-level records." },
+  { title: "Batch Transparency", desc: "Published source and batch reports show what was submitted and tested." },
+  { title: "Clear Report Scope", desc: "Every report is presented without claiming tests or conclusions it does not contain." },
+  { title: "Independent Verification", desc: "Third-party analytical reports are published where available." },
+  { title: "Connected Records", desc: "Orders, receipts, documents and tracker access stay connected in your portal." },
+  { title: "Dependable Support", desc: "Local order, batch, shipping and research-use support from Cape Town." },
 ];
 
 export default function HomePage() {
@@ -92,30 +80,27 @@ export default function HomePage() {
       {/* ===================== HERO (shop-first) ===================== */}
       <HeroShop />
 
-      {/* ===================== SUPPORT VIDEOS RAIL ===================== */}
-      <SupportVideosSection />
-
       {/* ===================== CATEGORY SHOWCASES (Whoosh-style) ===================== */}
       <CategoryShowcase
-        eyebrow="Weight Loss"
-        title="GLP-1 protocols that actually work."
-        blurb="Triple- and dual-agonist peptides for metabolic research — GGG-3, Tirzepatide and more."
+        eyebrow="Metabolic Research"
+        title="Compounds for advanced pathway research."
+        blurb="Triple- and dual-agonist research peptides presented with clear compound, storage and batch information."
         productIds={["1", "4"]}
         shopHref="/shop?category=GLP"
         accent="weight-loss"
       />
       <CategoryShowcase
         eyebrow="Wellness & Longevity"
-        title="Live longer. Recover smarter."
-        blurb="Mitochondrial peptides and longevity blends researched by the world's top biohackers."
+        title="Mitochondrial and cellular research."
+        blurb="Research peptides and blends studied in laboratory models involving cellular energy, signalling and longevity pathways."
         productIds={["5", "8", "2"]}
         shopHref="/shop?category=Longevity"
         accent="longevity"
       />
       <CategoryShowcase
         eyebrow="Recovery"
-        title="Heal faster. Train harder."
-        blurb="Healing-stack peptides used in clinical recovery and tissue-repair research."
+        title="Repair and recovery pathway research."
+        blurb="Research compounds studied in laboratory models involving repair signalling, angiogenesis and cellular response."
         productIds={["6", "3"]}
         shopHref="/shop?category=Healing"
         accent="recovery"
@@ -135,14 +120,14 @@ export default function HomePage() {
                 Not sure where to start?
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Answer 6 quick questions and we'll build a peptide stack for your exact goal — ready to add to cart in one tap.
+                Answer six quick questions to organise the catalogue around your area of research. The existing quiz remains your guided starting point.
               </p>
             </div>
             <Link
               to="/quiz"
               className="inline-flex items-center gap-2 rounded-xl bg-hero-gradient px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              Take the 60-second quiz <ArrowRight className="h-4 w-4" />
+              Open the research quiz <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -153,9 +138,6 @@ export default function HomePage() {
 
       {/* ===================== TEXT US (WhatsApp) ===================== */}
       <TextUsSection />
-
-      {/* ===================== REAL CUSTOMERS ===================== */}
-      <CustomerProofStrip />
 
       {/* ===================== HOW IT WORKS ===================== */}
       <section className="border-y border-border bg-background py-16 md:py-20">
@@ -174,20 +156,20 @@ export default function HomePage() {
               {
                 step: "1",
                 icon: Target,
-                title: "Answer a Few Questions",
-                desc: "Tell us about your goals, lifestyle, and what you've tried before. Takes under 2 minutes.",
+                title: "Define the Research Area",
+                desc: "Use the quiz or browse by compound class to organise the catalogue around the pathway you are studying.",
               },
               {
                 step: "2",
                 icon: Shield,
-                title: "Get Your Protocol",
-                desc: "Receive a personalized protocol designed specifically for your body and objectives.",
+                title: "Review the Documentation",
+                desc: "Compare identity, batch information, storage guidance and the exact scope of published analytical reports.",
               },
               {
                 step: "3",
                 icon: Clock,
-                title: "Start Your Transformation",
-                desc: "Begin your guided journey with weekly support, tracking, and expert guidance.",
+                title: "Order and Keep Records",
+                desc: "Follow checkout through fulfilment, retain your consent receipt and continue into the branded tracker.",
               },
             ].map((s, i) => (
               <div key={i} className="flex flex-col items-center text-center">
@@ -204,11 +186,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 text-center">
-            <BookConsultLink
+            <Link
+              to="/shop"
               className="inline-flex items-center gap-2 rounded-lg bg-hero-gradient px-8 py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
             >
-              BOOK CONSULT <ArrowRight className="h-4 w-4" />
-            </BookConsultLink>
+              Browse research compounds <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -218,13 +201,13 @@ export default function HomePage() {
         <div className="container px-4">
           <div className="mb-12 text-center">
             <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              Flagship Program
+              Research Supply Standard
             </span>
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              12-Week Fat Loss Protocol
+              Clear records from catalogue to delivery
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-              A complete, guided transformation system — not a product. Everything you need, mapped out week by week.
+              A connected research buying experience built around identity, batch transparency, careful fulfilment and durable order records.
             </p>
           </div>
 
@@ -233,16 +216,16 @@ export default function HomePage() {
               {/* What's Included */}
               <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
                 <h3 className="mb-5 font-display text-xl font-semibold text-foreground">
-                  What's Included
+                  Included with the experience
                 </h3>
                 <ul className="space-y-4">
                   {[
-                    "Personalized protocol plan",
-                    "Monthly supply (guided system)",
-                    "Weekly check-ins & guidance",
-                    "Progress tracking dashboard",
-                    "WhatsApp support access",
-                    "Dosing schedules & timelines",
+                    "Research-use-only product labelling",
+                    "Published source or batch reports where available",
+                    "Clear report-scope notices",
+                    "Versioned checkout acknowledgement receipt",
+                    "Order and fulfilment timeline",
+                    "Branded tracker hand-off",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-trust" />
@@ -255,10 +238,10 @@ export default function HomePage() {
               {/* Results You Can Expect */}
               <div className="rounded-2xl border border-border bg-background p-6 shadow-card sm:p-8">
                 <h3 className="mb-5 font-display text-xl font-semibold text-foreground">
-                  Results You Can Expect
+                  Research areas represented
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {results.map((r, i) => (
+                  {researchAreas.map((r, i) => (
                     <div key={i} className="text-center">
                       <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                         <r.icon className="h-5 w-5 text-primary" />
@@ -270,11 +253,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Pricing */}
-            <div className="mt-8"><WeightLossPricing /></div>
-
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              ⚡ Limited spots available for personalized onboarding
+            <p className="mt-8 text-center text-xs text-muted-foreground">
+              Products are supplied for lawful laboratory research only and are not for human or animal use or consumption.
             </p>
           </div>
         </div>
@@ -285,25 +265,20 @@ export default function HomePage() {
         <div className="container px-4">
           <div className="mb-12 text-center">
             <span className="text-sm font-medium uppercase tracking-wider text-primary">
-              Real Clients, Real Results
+              The Buying Standard
             </span>
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              What Our Clients Say
+              What a credible research supplier should make clear
             </h2>
           </div>
 
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
-            {testimonials.map((t, i) => (
+            {buyingStandards.map((t, i) => (
               <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
-                <div className="mb-3 flex gap-1">
-                  {Array(t.rating).fill(null).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-badge text-badge" />
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground">"{t.text}"</p>
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <h3 className="mt-4 font-display text-lg font-bold text-foreground">{t.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{t.text}</p>
                 <div className="mt-4 border-t border-border pt-3">
-                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.location}</p>
                   <span className="mt-2 inline-block rounded-full bg-trust/10 px-3 py-1 text-xs font-semibold text-trust">
                     {t.result}
                   </span>
@@ -324,7 +299,7 @@ export default function HomePage() {
               The Difference
             </span>
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground sm:text-3xl">
-              Why This Works When Other Approaches Fail
+              Built for research integrity and repeatable operations
             </h2>
           </div>
 
@@ -356,7 +331,7 @@ export default function HomePage() {
               Peptide Research Hub
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-              Access our comprehensive database of 98+ peptides with clinical research, dosage calculators, stack builders, and scientific literature — free for the research community.
+              Explore compound profiles, research summaries, literature links and record-keeping tools in one branded resource for the research community.
             </p>
             <Link
               to="/research"
@@ -370,7 +345,7 @@ export default function HomePage() {
 
       {/* ===================== ENTITY LINKS ===================== */}
       <RelatedContent
-        title="Explore By Goal"
+        title="Explore Research Areas"
         links={[
           ...entityClusters.fatLoss.links.slice(0, 2),
           entityClusters.fatLoss.links.find(l => l.href === "/buy-retatrutide-south-africa")!,
@@ -383,9 +358,6 @@ export default function HomePage() {
 
       {/* ===================== ECOSYSTEM ===================== */}
       <EcosystemSection />
-
-      {/* ===================== WAITLIST ===================== */}
-      <WaitlistSection />
 
       {/* ===================== BOTTOM CTA ===================== */}
       <section className="bg-hero-gradient py-14 md:py-20">

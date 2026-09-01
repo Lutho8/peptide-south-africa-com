@@ -1,4 +1,4 @@
-import { Microscope, FileCheck2, ShieldCheck, FlaskConical, Stethoscope, ClipboardList, Thermometer, Lock } from "lucide-react";
+import { Microscope, FileCheck2, ShieldCheck, FlaskConical, ClipboardList, Thermometer, Lock } from "lucide-react";
 
 interface Props {
   /** "full" for homepage hero section, "compact" for PDP inline panel. */
@@ -9,14 +9,14 @@ interface Props {
 const PILLARS = [
   {
     icon: Microscope,
-    title: "Scientific Oversight",
+    title: "Quality-Controlled Supply",
     detail:
-      "Every protocol is reviewed by a registered medical doctor before dispatch. Compound selection, dosing windows, and stack interactions are signed off — not auto-generated.",
-    proof: "HPCSA-registered GP review on file",
+      "Research materials are handled against documented quality-control steps, with professional packaging and lot-level records retained for traceability.",
+    proof: "Consistency · handling · traceability",
   },
   {
     icon: FileCheck2,
-    title: "Independent Lab Testing",
+    title: "Batch Transparency",
     detail:
       "Published reports show the exact lab, task or lot reference and the tests actually recorded. Supplier-sample reports are clearly distinguished from PSA production lots.",
     proof: "Source report · scope note · QR path",
@@ -36,11 +36,11 @@ const PILLARS = [
     proof: "2–8 °C controlled handoff",
   },
   {
-    icon: Stethoscope,
-    title: "Medical Pathway",
+    icon: Microscope,
+    title: "Research-Use Standard",
     detail:
-      "Prescription-track compounds (GLP-1s, growth-hormone secretagogues) route through GP consultation and partner pharmacy dispensing — never direct-to-consumer for Schedule items.",
-    proof: "GP → script → SAHPRA-compliant pharmacy",
+      "Products are supplied solely for lawful laboratory research. Product pages focus on compound identity, research context, storage and the documentation actually available.",
+    proof: "Research only · no human-use guidance",
   },
   {
     icon: Lock,
@@ -65,7 +65,7 @@ export default function TrustComplianceSection({ variant = "full", className = "
                 Why this peptide costs what it costs
               </span>
               <h3 className="font-display text-lg font-bold text-foreground">
-                Clinical-grade compounding, not grey-market vials.
+                High-purity research materials. Clear documentation.
               </h3>
             </div>
           </div>
@@ -100,11 +100,10 @@ export default function TrustComplianceSection({ variant = "full", className = "
             <FlaskConical className="h-3 w-3" /> Trust & Compliance Architecture
           </span>
           <h2 className="mt-4 font-display text-3xl font-bold text-foreground sm:text-4xl">
-            Built like a pharmacy. Priced like one too.
+            Built around consistency, traceability and research integrity.
           </h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-            Peptide South Africa is the only SA-based platform combining GP-led oversight, independently
-            verified purity, and documented operational controls. Here's what your money buys beyond the vial.
+            A research-first supply standard built on batch documentation, careful handling, transparent report scope and dependable local support.
           </p>
         </div>
 

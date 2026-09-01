@@ -107,10 +107,11 @@ describe("release contracts", () => {
     expect(workflow).not.toMatch(/secrets\./);
   });
 
-  it("publishes both the medical and supplier-report scope disclaimers", () => {
+  it("publishes both the research-use and supplier-report scope notices", () => {
     const footer = read("src/components/Footer.tsx");
     const terms = read("src/pages/TermsPage.tsx");
-    expect(footer).toContain("Medical disclaimer");
+    expect(footer).toContain("Research-use notice");
+    expect(footer).toContain("not for human or animal use or consumption");
     expect(footer).toContain("A published supplier COA verifies the submitted supplier sample");
     expect(terms).toContain("Website content is general information only and is not medical advice");
     expect(terms).toContain("does not authenticate an individual vial");

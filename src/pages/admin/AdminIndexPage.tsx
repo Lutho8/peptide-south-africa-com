@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageSquareQuote, HelpCircle, Database, ExternalLink, Search, FlaskConical, Users } from "lucide-react";
+import { MessageSquareQuote, HelpCircle, Database, ExternalLink, Search, FlaskConical, Users, Activity } from "lucide-react";
 
 interface LogRow {
   id: string;
@@ -37,6 +37,7 @@ export default function AdminIndexPage() {
 
   const cards = [
     { to: "/admin/customers", icon: Users, title: "Customers (CRM)", desc: "Enriched lifetime records, segments, tags, timeline, manual credits." },
+    { to: "/admin/lifecycle", icon: Activity, title: "Lifecycle Analytics", desc: "Storefront, consent, order, portal, tracker and repeat-purchase signals." },
     { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },
     { to: "/admin/testimonials", icon: MessageSquareQuote, title: "Testimonials", desc: "Manage social proof shown across the site." },
     { to: "/admin/faqs", icon: HelpCircle, title: "Product FAQs", desc: "Edit the global FAQ accordion on every product page." },
