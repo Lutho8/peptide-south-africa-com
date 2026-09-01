@@ -15,7 +15,7 @@ interface SEOProps {
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   keywords?: string;
-  lang?: "en";
+  lang?: "en-ZA" | "en";
   alternates?: { hrefLang: string; href: string }[];
 }
 
@@ -28,7 +28,7 @@ export default function SEO({
   noindex = false,
   jsonLd,
   keywords = DEFAULT_KEYWORDS,
-  lang = "en",
+  lang = "en-ZA",
   alternates,
 }: SEOProps) {
   const url = `${SITE_URL}${path}`;
