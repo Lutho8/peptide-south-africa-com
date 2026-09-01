@@ -3,14 +3,14 @@ const SITE_NAME = "Peptide South Africa";
 
 import { businessInfo, postalAddressSchema, PUBLISH_NAP } from "@/data/businessInfo";
 
-/** LocalBusiness + MedicalBusiness schema — Cape Town, South Africa. */
+/** LocalBusiness schema — Cape Town, South Africa. */
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "@id": `${SITE_URL}/#localbusiness`,
   name: businessInfo.legalName,
   url: SITE_URL,
-  image: "https://peptide-south-africa.com/apple-touch-icon.png",
+  image: `${SITE_URL}/apple-touch-icon.png`,
   telephone: businessInfo.telephone,
   priceRange: "R500 - R4000",
   currenciesAccepted: "ZAR",
@@ -39,6 +39,7 @@ export const organizationSchema = {
   "@id": `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
+  logo: `${SITE_URL}/logo-horizontal.png`,
   description:
     "Peptide South Africa provides GP-led, personalized peptide protocols and lab-tested research compounds for fat loss, healing, and performance — based in Cape Town, South Africa.",
   areaServed: [{ "@type": "Country", name: "South Africa" }],
@@ -85,14 +86,6 @@ export const websiteSchema = {
   publisher: { "@id": `${SITE_URL}/#organization` },
   description:
     "GP-led, lab-tested peptide protocols and research compounds for fat loss, healing and performance — Cape Town, South Africa.",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${SITE_URL}/shop?q={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
 };
 
 export function productSchema(product: {
