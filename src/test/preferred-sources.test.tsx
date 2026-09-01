@@ -14,4 +14,15 @@ describe("Preferred Sources button", () => {
     );
     expect(googleButton).toHaveAttribute("target", "_blank");
   });
+
+  it("loads Google's preferred-source client once for progressive enhancement", () => {
+    render(<PreferredSourcesButton />);
+    render(<PreferredSourcesButton compact />);
+
+    const scripts = document.querySelectorAll(
+      'script[src="https://news.google.com/swg/js/v1/publisher.js"]',
+    );
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0]).toHaveAttribute("preferred-sources-control", "manual");
+  });
 });
