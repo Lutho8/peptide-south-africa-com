@@ -7,7 +7,6 @@ import JsonLd from "@/components/JsonLd";
 import QuizResultBanner from "@/components/QuizResultBanner";
 import { products, categories, tracks, getProductsByCategory, type ProductTrack } from "@/data/products";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
-import MediaLogos from "@/components/MediaLogos";
 import SEO from "@/components/SEO";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
@@ -283,9 +282,6 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
-
-      {/* ============ AS SEEN IN ============ */}
-      <MediaLogos variant="muted" />
 
       {/* ============ PROTOCOLS (Maximus-style) ============ */}
       <section className="bg-background py-12 md:py-16">
