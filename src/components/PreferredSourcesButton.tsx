@@ -1,3 +1,4 @@
+import { useEffect, type MouseEvent } from "react";
 import { ExternalLink, Sparkles } from "lucide-react";
 
 type Props = {
@@ -7,9 +8,50 @@ type Props = {
 
 const PREFERRED_SOURCE_URL =
   "https://www.google.com/preferences/source?q=peptide-south-africa.com";
+const PREFERRED_SOURCE_SCRIPT = "https://news.google.com/swg/js/v1/publisher.js";
+
+type PreferredSourceClient = {
+  init: (options: { theme: "light" | "dark"; lang: string }) => void;
+  addPreferredSource: () => void;
+};
+
+declare global {
+  interface Window {
+    PREFERRED_SOURCE?: Array<(client: PreferredSourceClient) => void>;
+  }
+}
+
+let preferredSourceClient: PreferredSourceClient | null = null;
+let preferredSourceLoaderStarted = false;
+
+function loadPreferredSourceClient() {
+  if (typeof window === "undefined" || preferredSourceLoaderStarted) return;
+
+  preferredSourceLoaderStarted = true;
+  window.PREFERRED_SOURCE = window.PREFERRED_SOURCE || [];
+  window.PREFERRED_SOURCE.push((client) => {
+    client.init({ theme: "light", lang: "en" });
+    preferredSourceClient = client;
+  });
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = PREFERRED_SOURCE_SCRIPT;
+  script.setAttribute("preferred-sources-control", "manual");
+  document.head.appendChild(script);
+}
 
 /** Google-documented deep link to the Preferred Sources selection screen. */
 export default function PreferredSourcesButton({ compact = false, className = "" }: Props) {
+  useEffect(loadPreferredSourceClient, []);
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!preferredSourceClient) return;
+
+    event.preventDefault();
+    preferredSourceClient.addPreferredSource();
+  };
+
   return (
     <aside
       aria-label="Follow Peptide South Africa in Google"
@@ -37,6 +79,7 @@ export default function PreferredSourcesButton({ compact = false, className = ""
             href={PREFERRED_SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleClick}
             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             aria-label="Add Peptide South Africa as a preferred source on Google"
           >
