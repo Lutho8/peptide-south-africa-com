@@ -16,14 +16,12 @@ import {
 } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import RelatedContent from "@/components/RelatedContent";
-import MediaLogos from "@/components/MediaLogos";
 import HeroShop from "@/components/HeroShop";
 import SupportVideosSection from "@/components/SupportVideosSection";
 import TextUsSection from "@/components/TextUsSection";
 import CategoryShowcase from "@/components/CategoryShowcase";
 import FeaturedProductRail from "@/components/FeaturedProductRail";
 import CustomerProofStrip from "@/components/CustomerProofStrip";
-import SectionReveal from "@/components/SectionReveal";
 import EcosystemSection from "@/components/EcosystemSection";
 import WaitlistSection from "@/components/WaitlistSection";
 import { organizationSchema, websiteSchema, localBusinessSchema, entityClusters } from "@/lib/seo";
@@ -158,11 +156,6 @@ export default function HomePage() {
 
       {/* ===================== REAL CUSTOMERS ===================== */}
       <CustomerProofStrip />
-
-      {/* ===================== AS SEEN IN ===================== */}
-      <SectionReveal>
-        <MediaLogos variant="muted" />
-      </SectionReveal>
 
       {/* ===================== HOW IT WORKS ===================== */}
       <section className="border-y border-border bg-background py-16 md:py-20">
