@@ -29,7 +29,12 @@ export default function BlogPostPage() {
     description: post.metaDescription,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
-    image: [imageUrl],
+    image: {
+      "@type": "ImageObject",
+      url: imageUrl,
+      width: 1200,
+      height: 675,
+    },
     author: {
       "@type": "Organization",
       name: "Peptide South Africa Editorial",
@@ -47,6 +52,7 @@ export default function BlogPostPage() {
     inLanguage: "en-ZA",
     articleSection: post.category,
     keywords: post.keyword,
+    citation: post.citations.map((citation) => citation.url),
   };
 
   const faqSchema = post.faqs.length
