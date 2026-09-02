@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { getPost } from "@/data/blog";
 import { getBlogImage } from "@/lib/blogImages";
@@ -40,5 +41,12 @@ describe("South Africa GLP-1 recall publisher contract", () => {
     const image = getBlogImage(post?.category ?? "", post?.slug);
     expect(image).not.toBe(getBlogImage(post?.category ?? ""));
     expect(image).toContain("south-africa-glp-1-recall-2026-1200x675");
+  });
+
+  it("keeps editorial and research routes free of the tracker interruption", () => {
+    const popupSource = readFileSync("src/components/DiscountPopup.tsx", "utf8");
+    expect(popupSource).toContain('"/blog"');
+    expect(popupSource).toContain('"/research"');
+    expect(popupSource).toContain('"/editorial-policy"');
   });
 });

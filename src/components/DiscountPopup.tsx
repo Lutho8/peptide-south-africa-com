@@ -10,7 +10,16 @@ export default function DiscountPopup() {
   const location = useLocation();
 
   useEffect(() => {
-    const suppressed = ["/checkout", "/cart", "/account", "/auth", "/quiz"].some((path) =>
+    const suppressed = [
+      "/checkout",
+      "/cart",
+      "/account",
+      "/auth",
+      "/quiz",
+      "/blog",
+      "/research",
+      "/editorial-policy",
+    ].some((path) =>
       location.pathname.startsWith(path),
     );
     if (suppressed || localStorage.getItem(POPUP_DISMISSED_KEY)) {
