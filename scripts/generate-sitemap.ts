@@ -172,10 +172,10 @@ const feedXml = [
 ].join("\n");
 writeFileSync(resolve("public/feed.xml"), feedXml);
 
-const cutoff = new Date();
-cutoff.setUTCDate(cutoff.getUTCDate() - 2);
+const NEWS_WINDOW_MS = 48 * 60 * 60 * 1000;
+const cutoff = Date.now() - NEWS_WINDOW_MS;
 const freshPosts = sortedBlogPosts.filter(
-  (post) => new Date(`${post.publishedAt}T23:59:59Z`).getTime() >= cutoff.getTime(),
+  (post) => new Date(`${post.publishedAt}T08:00:00+02:00`).getTime() >= cutoff,
 );
 const newsXml = [
   `<?xml version="1.0" encoding="UTF-8"?>`,
