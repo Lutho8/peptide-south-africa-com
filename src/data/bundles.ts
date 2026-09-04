@@ -43,22 +43,3 @@ export const BUNDLE_MAP: Record<string, BundleHint[]> = {
     { slug: "glow70", reason: "Aging + skin renewal" },
   ],
 };
-
-/** Accessories suggested after any add-to-cart. Real products in shop; if absent, no-op. */
-export const POST_ADD_ACCESSORIES: BundleHint[] = [
-  { slug: "bac-water-bacteriostatic", reason: "Required to reconstitute your peptide" },
-  { slug: "alcohol-swabs-20", reason: "Keep every reconstitution aseptic" },
-  { slug: "insulin-syringes-5", reason: "Accurate small-volume dosing" },
-  { slug: "peptide-pen-needles-10", reason: "For pen-based protocols" },
-];
-
-/**
- * Universal reconstitution supplies surfaced on the checkout order summary
- * ("Add reconstitution supplies" rail). Kept intentionally short — 3 items —
- * so it never dominates the summary column on mobile.
- */
-export const CHECKOUT_SUPPLIES_SLUGS: string[] = [
-  "bac-water-bacteriostatic",
-  "alcohol-swabs-20",
-  "insulin-syringes-5",
-];

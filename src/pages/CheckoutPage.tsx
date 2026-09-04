@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock, Loader2, Landmark } from "lucide-react";
-import CheckoutSuppliesRail from "@/components/CheckoutSuppliesRail";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
@@ -365,8 +364,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-
-            <CheckoutSuppliesRail />
           </aside>
         </div>
 

@@ -49,19 +49,9 @@ export const PRICING = {
     epitalon: 855,
     selank: 740,
     semax: 740,
-    "bac-water-bacteriostatic": 89,
-    "alcohol-swabs-20": 59,
-    "glass-cartridge-3ml": 39,
-    "peptide-pen-needles-10": 49,
-    "insulin-syringes-5": 59,
     "pets-mobility-collagen": 395,
   },
-  explicitVariants: {
-    "bac-water-bacteriostatic": {
-      "10ml": 199,
-      "3ml": 89,
-    },
-  },
+  explicitVariants: {},
 } as const;
 
 export type CatalogSlug = keyof typeof PRICING.catalog;

@@ -134,4 +134,16 @@ describe("authoritative server pricing", () => {
     expect(() => quoteCheckout([{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }])).toThrow(/requires a consultation/);
     expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70", "klow80"], 5)).toThrow(/requires a consultation/);
   });
+
+  it("rejects included fulfilment supplies as standalone checkout items", () => {
+    for (const slug of [
+      "bac-water-bacteriostatic",
+      "alcohol-swabs-20",
+      "glass-cartridge-3ml",
+      "peptide-pen-needles-10",
+      "insulin-syringes-5",
+    ]) {
+      expect(() => quoteCheckout([{ kind: "item", slug, quantity: 1 }])).toThrow(/Unknown product/);
+    }
+  });
 });

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { X, Check, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { products } from "@/data/products";
-import { BUNDLE_MAP, POST_ADD_ACCESSORIES } from "@/data/bundles";
+import { BUNDLE_MAP } from "@/data/bundles";
 
 const SESSION_KEY = "psa_postadd_shown";
 
@@ -35,16 +35,13 @@ export default function PostAddUpsellModal() {
 
   if (!open || !anchorSlug) return null;
 
-  const hints = BUNDLE_MAP[anchorSlug] ?? POST_ADD_ACCESSORIES;
+  const hints = BUNDLE_MAP[anchorSlug] ?? [];
   const picks = hints
     .map((h) => products.find((p) => p.slug === h.slug))
     .filter((p): p is NonNullable<typeof p> => !!p && p.inStock)
     .slice(0, 1);
 
-  if (picks.length === 0) {
-    setOpen(false);
-    return null;
-  }
+  if (picks.length === 0) return null;
 
   const addOne = (slug: string) => {
     const p = products.find((x) => x.slug === slug);
