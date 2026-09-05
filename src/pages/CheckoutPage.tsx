@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock, Loader2, Landmark } from "lucide-react";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
+import PackSuppliesRail from "@/components/PackSuppliesRail";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -364,6 +365,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+            <PackSuppliesRail />
           </aside>
         </div>
 

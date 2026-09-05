@@ -135,7 +135,7 @@ describe("authoritative server pricing", () => {
     expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70", "klow80"], 5)).toThrow(/requires a consultation/);
   });
 
-  it("rejects included fulfilment supplies as standalone checkout items", () => {
+  it("permits pack supplies only with a qualifying peptide pack", () => {
     for (const slug of [
       "bac-water-bacteriostatic",
       "alcohol-swabs-20",
@@ -143,7 +143,23 @@ describe("authoritative server pricing", () => {
       "peptide-pen-needles-10",
       "insulin-syringes-5",
     ]) {
-      expect(() => quoteCheckout([{ kind: "item", slug, quantity: 1 }])).toThrow(/Unknown product/);
+      expect(() => quoteCheckout([{ kind: "item", slug, quantity: 1 }])).toThrow(/only be ordered with/);
     }
+  });
+
+  it("prices the 3-pack BAC-water recommendation and caps it server-side", () => {
+    const selections = [
+      { kind: "item" as const, slug: "ghk-cu-50mg", variantLabel: "3-Pack", quantity: 1 },
+      { kind: "item" as const, slug: "bac-water-bacteriostatic", quantity: 2 },
+    ];
+    expect(quoteCheckout(selections).subtotal).toBe(packPrice("ghk-cu-50mg", 3) + 178);
+    expect(() => quoteCheckout([...selections.slice(0, 1), { kind: "item", slug: "bac-water-bacteriostatic", quantity: 3 }])).toThrow(/exceeds the allowance/);
+  });
+
+  it("uses 3 BAC-water units for a 5-pack and 5 for a 10-pack", () => {
+    const five = Array(5).fill("ghk-cu-50mg");
+    const ten = Array(10).fill("ghk-cu-50mg");
+    expect(() => quoteCheckout([{ kind: "mix_bundle", size: 5, slugs: five }, { kind: "item", slug: "bac-water-bacteriostatic", quantity: 3 }])).not.toThrow();
+    expect(() => quoteCheckout([{ kind: "mix_bundle", size: 10, slugs: ten }, { kind: "item", slug: "bac-water-bacteriostatic", quantity: 5 }])).not.toThrow();
   });
 });

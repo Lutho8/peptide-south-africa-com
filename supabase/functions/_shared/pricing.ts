@@ -49,6 +49,11 @@ export const PRICING = {
     epitalon: 855,
     selank: 740,
     semax: 740,
+    "bac-water-bacteriostatic": 89,
+    "alcohol-swabs-20": 59,
+    "glass-cartridge-3ml": 39,
+    "peptide-pen-needles-10": 49,
+    "insulin-syringes-5": 59,
     "pets-mobility-collagen": 395,
   },
   explicitVariants: {},
@@ -56,6 +61,29 @@ export const PRICING = {
 
 export type CatalogSlug = keyof typeof PRICING.catalog;
 export type MixBundleSize = 5 | 10;
+
+/**
+ * Fulfilment supplies are deliberately absent from the public catalogue. They
+ * may only be ordered alongside a qualifying peptide pack at checkout.
+ */
+export const PACK_SUPPLY_SLUGS = [
+  "bac-water-bacteriostatic",
+  "alcohol-swabs-20",
+  "glass-cartridge-3ml",
+  "peptide-pen-needles-10",
+  "insulin-syringes-5",
+] as const;
+
+export type PackSupplySlug = typeof PACK_SUPPLY_SLUGS[number];
+
+export function isPackSupplySlug(slug: string): slug is PackSupplySlug {
+  return (PACK_SUPPLY_SLUGS as readonly string[]).includes(slug);
+}
+
+/** BAC-water quantity recommended for each qualifying peptide pack. */
+export function recommendedBacWaterQuantity(pack: 3 | 5 | 10): number {
+  return ({ 3: 2, 5: 3, 10: 5 } as const)[pack];
+}
 
 export const roundRand = (amount: number) => Math.round(amount);
 export const roundCents = (amount: number) => Math.round(amount * 100) / 100;
@@ -109,6 +137,7 @@ export function quoteMixSlugs(slugs: string[], size: MixBundleSize) {
   if (slugs.length !== size) throw new Error(`A ${size}-pack needs exactly ${size} products`);
   const subtotal = slugs.reduce((sum, slug) => {
     assertCheckoutEligible(slug);
+    if (isPackSupplySlug(slug)) throw new Error("Pack supplies cannot be included in a peptide bundle");
     if (isDirectOnlySlug(slug)) throw new Error("This product is not eligible for peptide bundles");
     return sum + catalogPrice(slug);
   }, 0);
@@ -135,6 +164,8 @@ export function quoteCheckout(selections: CheckoutSelection[]): ServerCheckoutQu
   let subtotal = 0;
   let savings = 0;
   const descriptions: string[] = [];
+  const supplyQuantities = new Map<PackSupplySlug, number>();
+  const qualifyingPacks: Array<3 | 5 | 10> = [];
 
   for (const selection of selections) {
     const quantity = selection.quantity ?? 1;
@@ -143,6 +174,11 @@ export function quoteCheckout(selections: CheckoutSelection[]): ServerCheckoutQu
       assertCheckoutEligible(selection.slug);
       const amount = variantPrice(selection.slug, selection.variantLabel);
       const pack = variantPack(selection.variantLabel);
+      if (isPackSupplySlug(selection.slug)) {
+        supplyQuantities.set(selection.slug, (supplyQuantities.get(selection.slug) ?? 0) + quantity);
+      } else if (pack === 3) {
+        qualifyingPacks.push(...Array(quantity).fill(3));
+      }
       subtotal += amount * quantity;
       savings += Math.max(0, catalogPrice(selection.slug) * pack - amount) * quantity;
       descriptions.push(`${selection.slug}${selection.variantLabel ? ` (${selection.variantLabel})` : ""} x${quantity}`);
@@ -152,10 +188,23 @@ export function quoteCheckout(selections: CheckoutSelection[]): ServerCheckoutQu
       const quote = quoteMixSlugs(selection.slugs, selection.size);
       subtotal += quote.total * quantity;
       savings += quote.savings * quantity;
+      qualifyingPacks.push(...Array(quantity).fill(selection.size));
       descriptions.push(`${selection.size}-Pack (${selection.slugs.join(", ")}) x${quantity}`);
       continue;
     }
     throw new Error("Invalid cart line");
+  }
+
+  if (supplyQuantities.size > 0 && qualifyingPacks.length === 0) {
+    throw new Error("Pack supplies can only be ordered with a 3-, 5-, or 10-pack peptide purchase");
+  }
+  const standardSupplyLimit = qualifyingPacks.length;
+  const bacWaterLimit = qualifyingPacks.reduce((total, pack) => total + recommendedBacWaterQuantity(pack), 0);
+  for (const [slug, quantity] of supplyQuantities) {
+    const limit = slug === "bac-water-bacteriostatic" ? bacWaterLimit : standardSupplyLimit;
+    if (quantity > limit) {
+      throw new Error(`${slug} exceeds the allowance for the selected peptide packs`);
+    }
   }
 
   subtotal = roundCents(subtotal);
