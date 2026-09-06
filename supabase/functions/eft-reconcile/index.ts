@@ -1,10 +1,13 @@
 // EFT reconciliation endpoint.
 // Ingests Capitec bank deposits (parsed from bank notification emails or a manual CSV
 // paste), dedupes them into bank_deposits, and auto-matches them against psa_orders
-// rows with payment_status='awaiting_eft'. On match: order → complete + confirmation email.
+// rows with payment_status='awaiting_eft'. On match: order → complete + confirmation
+// email + orders.status → 'paid' + Meta Purchase event (the only place Purchase fires
+// from, since this is the point money is confirmed in the bank account).
 // Auth: shared-secret header 'x-eft-secret' (timing-safe compare against EFT_RECONCILE_SECRET).
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { sendMetaCapiEvent } from '../_shared/metaCapi.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -150,6 +153,34 @@ Deno.serve(async (req) => {
         .from('bank_deposits')
         .update({ status: 'matched', matched_order_id: String(order.order_id) })
         .eq('id', dep.id);
+
+      // Mirror the confirmed payment onto the storefront's own orders row
+      // (order_id carries the same UUID as orders.id — see eft-create-order),
+      // which drives OrderStatusPage and the customer_profiles/retention
+      // triggers that key off orders.status = 'paid'.
+      const { error: ordersUpdateErr } = await supabase
+        .from('orders')
+        .update({ status: 'paid', paid_at: now })
+        .eq('id', order.order_id)
+        .eq('status', 'pending');
+      if (ordersUpdateErr) {
+        console.error('orders payment-status sync failed:', ordersUpdateErr.message);
+        await supabase.from('integration_logs').insert({
+          integration: 'eft', action: 'reconcile',
+          status: 'orders_status_sync_failed',
+          payload: { orderId: order.order_id, error: ordersUpdateErr.message },
+        });
+      }
+
+      // The only code path allowed to emit Meta's Purchase event: this runs
+      // exactly once per order (guarded by the awaiting_eft → complete
+      // transition above), only after a real bank deposit has settled it.
+      await sendMetaCapiEvent({
+        eventName: 'Purchase',
+        eventId: `purchase-${order.order_id}`,
+        customData: { value: actual, currency: 'ZAR' },
+        userData: { email: order.customer_email ?? undefined },
+      });
 
       // Order-confirmation email.
       const recipient = order.customer_email;

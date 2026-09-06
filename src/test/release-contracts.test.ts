@@ -118,6 +118,26 @@ describe("release contracts", () => {
     expect(workflow).not.toMatch(/secrets\./);
   });
 
+  it("only fires Meta Purchase from confirmed bank settlement, never from order creation", () => {
+    const orderCreation = read("api/eft-create-order.ts");
+    const analytics = read("src/lib/analytics.ts");
+    const relay = read("api/meta-capi.ts");
+    const reconcile = read("supabase/functions/eft-reconcile/index.ts");
+
+    // Order creation / EFT-instructions-shown must never claim Purchase.
+    expect(orderCreation).not.toMatch(/sendMetaCapiEvent|eventName:\s*['"]Purchase['"]/);
+    expect(analytics).not.toMatch(/eft_instructions_shown['"]?\s*:\s*['"]Purchase['"]/);
+
+    // The public relay must allowlist Lead/InitiateCheckout only.
+    expect(relay).toContain('new Set(["Lead", "InitiateCheckout"])');
+
+    // The bank-settlement step is the sole place Purchase is emitted from,
+    // guarded by the same awaiting_eft -> complete transition that settles
+    // the order (so it cannot fire twice or fire on an unsettled order).
+    expect(reconcile).toContain("eventName: 'Purchase'");
+    expect(reconcile).toContain(".eq('payment_status', 'awaiting_eft')");
+  });
+
   it("publishes both the research-use and supplier-report scope notices", () => {
     const footer = read("src/components/Footer.tsx");
     const terms = read("src/pages/TermsPage.tsx");
