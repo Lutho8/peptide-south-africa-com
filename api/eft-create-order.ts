@@ -4,6 +4,7 @@ import {
   quoteCheckout,
   type CheckoutSelection,
 } from "../supabase/functions/_shared/pricing.js";
+import { sendMetaCapiEvent } from "./_shared/metaCapi.js";
 import {
   CHECKOUT_CONSENT_STATEMENTS,
   isValidCheckoutConsent,
@@ -195,6 +196,26 @@ export default async function handler(request: Request): Promise<Response> {
         code: settlement?.code ?? "EFT_START_FAILED",
       }, settlementResponse.status >= 400 ? settlementResponse.status : 502);
     }
+
+    // Fired server-side with the authoritative order amount and a
+    // deterministic event_id (`purchase-<order id>`) that the browser Pixel
+    // also uses for this same order, so Meta dedupes the two into one
+    // conversion instead of double counting.
+    // Awaited (not fire-and-forget): Vercel Edge Functions don't guarantee
+    // in-flight promises survive after the response is returned.
+    await sendMetaCapiEvent({
+      eventName: "Purchase",
+      eventId: `purchase-${order.id}`,
+      eventSourceUrl: request.headers.get("referer") ?? undefined,
+      customData: { value: quote.total, currency: PRICING.currency },
+      userData: {
+        email: body.email,
+        fbp: request.headers.get("cookie")?.match(/(?:^|; )_fbp=([^;]*)/)?.[1],
+        fbc: request.headers.get("cookie")?.match(/(?:^|; )_fbc=([^;]*)/)?.[1],
+        clientIpAddress: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+        clientUserAgent: request.headers.get("user-agent") ?? undefined,
+      },
+    });
 
     return json({ ...settlement, order_id: order.id, amount: quote.total });
   } catch (error) {

@@ -106,6 +106,47 @@ export function currentOffer(): OfferProps | null {
   }
 }
 
+/** Deterministic for Purchase (matches the server-side CAPI call fired from
+ * api/eft-create-order.ts for the same order), random for everything else. */
+function metaEventId(event: AnalyticsEvent): string {
+  if (event.event === "eft_instructions_shown") return `purchase-${event.props.order_id}`;
+  return typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+}
+
+function readCookie(name: string): string | undefined {
+  try {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+    return match ? decodeURIComponent(match[1]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Server-side Conversions API coverage for browser-only standard events
+ * (Lead, InitiateCheckout). Purchase is sent authoritatively from
+ * api/eft-create-order.ts instead, which holds the confirmed order amount. */
+async function sendCapiRelay(eventName: string, eventId: string, customData: Record<string, unknown>): Promise<void> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    await fetch("/api/meta-capi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        eventName,
+        eventId,
+        eventSourceUrl: window.location.href,
+        email: data.session?.user.email,
+        fbp: readCookie("_fbp"),
+        fbc: readCookie("_fbc"),
+        customData,
+      }),
+    });
+  } catch {
+    // Conversions API relay must never interrupt the customer journey.
+  }
+}
+
 function metaPixelProps(event: AnalyticsEvent): Record<string, unknown> {
   switch (event.event) {
     case "checkout_started":
@@ -121,15 +162,21 @@ function metaPixelProps(event: AnalyticsEvent): Record<string, unknown> {
 
 export function trackEvent(event: AnalyticsEvent): void {
   if (typeof window === "undefined" || import.meta.env.MODE === "test") return;
+  const standardEvent = META_STANDARD_EVENT[event.event];
+  const eventId = standardEvent ? metaEventId(event) : undefined;
   try {
     if (window.fbq) {
-      const standardEvent = META_STANDARD_EVENT[event.event];
       const props = metaPixelProps(event);
-      if (standardEvent) window.fbq("track", standardEvent, props);
+      if (standardEvent) window.fbq("track", standardEvent, props, eventId ? { eventID: eventId } : undefined);
       else window.fbq("trackCustom", event.event, props);
     }
   } catch {
     // Pixel measurement must never interrupt the customer journey.
+  }
+  // Purchase is relayed server-side from api/eft-create-order.ts instead,
+  // using the same `purchase-<order id>` event_id for Meta-side dedup.
+  if (standardEvent && eventId && event.event !== "eft_instructions_shown") {
+    void sendCapiRelay(standardEvent, eventId, metaPixelProps(event));
   }
   void (async () => {
     try {
