@@ -30,11 +30,15 @@ declare global {
 }
 
 /** Meta standard-event mapping. Unlisted events fire as trackCustom so they
- * still show up in Events Manager without polluting Meta's standard-event set. */
+ * still show up in Events Manager without polluting Meta's standard-event set.
+ * Purchase is deliberately absent: EFT instructions being shown is not
+ * confirmed revenue, so `eft_instructions_shown` fires as a custom event
+ * instead (see metaPixelProps) and is never relayed to Meta with a value. The
+ * only code path allowed to emit Purchase is the EFT payment-confirmation
+ * step (supabase/functions/eft-reconcile), once a bank deposit settles. */
 const META_STANDARD_EVENT: Partial<Record<AnalyticsEvent["event"], string>> = {
   book_consult_clicked: "Lead",
   checkout_started: "InitiateCheckout",
-  eft_instructions_shown: "Purchase",
 };
 
 let pixelInitAttempted = false;
@@ -106,10 +110,7 @@ export function currentOffer(): OfferProps | null {
   }
 }
 
-/** Deterministic for Purchase (matches the server-side CAPI call fired from
- * api/eft-create-order.ts for the same order), random for everything else. */
-function metaEventId(event: AnalyticsEvent): string {
-  if (event.event === "eft_instructions_shown") return `purchase-${event.props.order_id}`;
+function metaEventId(): string {
   return typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 }
 
@@ -123,8 +124,8 @@ function readCookie(name: string): string | undefined {
 }
 
 /** Server-side Conversions API coverage for browser-only standard events
- * (Lead, InitiateCheckout). Purchase is sent authoritatively from
- * api/eft-create-order.ts instead, which holds the confirmed order amount. */
+ * (Lead, InitiateCheckout only — /api/meta-capi rejects anything else,
+ * including Purchase, which only fires from EFT reconciliation). */
 async function sendCapiRelay(eventName: string, eventId: string, customData: Record<string, unknown>): Promise<void> {
   try {
     const { data } = await supabase.auth.getSession();
@@ -152,7 +153,9 @@ function metaPixelProps(event: AnalyticsEvent): Record<string, unknown> {
     case "checkout_started":
       return { value: event.props.displayed_price_zar, currency: "ZAR", content_ids: event.props.offer_id ? [event.props.offer_id] : undefined, num_items: event.props.item_count };
     case "eft_instructions_shown":
-      return { value: event.props.server_confirmed_amount_zar, currency: "ZAR", content_ids: event.props.offer_id ? [event.props.offer_id] : undefined };
+      // No value/currency: EFT instructions being shown is not confirmed
+      // revenue. Purchase fires separately once the bank deposit settles.
+      return { content_ids: event.props.offer_id ? [event.props.offer_id] : undefined };
     case "book_consult_clicked":
       return { value: event.props.displayed_price_zar, currency: "ZAR", content_ids: [event.props.offer_id] };
     default:
@@ -163,7 +166,7 @@ function metaPixelProps(event: AnalyticsEvent): Record<string, unknown> {
 export function trackEvent(event: AnalyticsEvent): void {
   if (typeof window === "undefined" || import.meta.env.MODE === "test") return;
   const standardEvent = META_STANDARD_EVENT[event.event];
-  const eventId = standardEvent ? metaEventId(event) : undefined;
+  const eventId = standardEvent ? metaEventId() : undefined;
   try {
     if (window.fbq) {
       const props = metaPixelProps(event);
@@ -173,9 +176,9 @@ export function trackEvent(event: AnalyticsEvent): void {
   } catch {
     // Pixel measurement must never interrupt the customer journey.
   }
-  // Purchase is relayed server-side from api/eft-create-order.ts instead,
-  // using the same `purchase-<order id>` event_id for Meta-side dedup.
-  if (standardEvent && eventId && event.event !== "eft_instructions_shown") {
+  // Only Lead/InitiateCheckout are relayed through this browser-fired path —
+  // /api/meta-capi rejects everything else, including Purchase.
+  if (standardEvent && eventId) {
     void sendCapiRelay(standardEvent, eventId, metaPixelProps(event));
   }
   void (async () => {
