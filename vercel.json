@@ -2,13 +2,52 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/5-pack", "destination": "/build-your-stack", "permanent": true },
+    { "source": "/pets", "destination": "https://pets.peptide-south-africa.com/", "permanent": true },
+    { "source": "/pets/:path*", "destination": "https://pets.peptide-south-africa.com/:path*", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/v/:code", "destination": "/api/coa-scan?code=:code" },
-    { "source": "/pets", "destination": "https://pets.peptide-south-africa.com/" },
-    { "source": "/pets/:path*", "destination": "https://pets.peptide-south-africa.com/:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/cart", "destination": "/index.html" },
+    { "source": "/checkout", "destination": "/index.html" },
+    { "source": "/checkout/:path*", "destination": "/index.html" },
+    { "source": "/order/:id", "destination": "/index.html" },
+    { "source": "/track-order", "destination": "/index.html" },
+    { "source": "/account", "destination": "/index.html" },
+    { "source": "/auth", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" }
   ],
   "headers": [
+    {
+      "source": "/cart/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/checkout/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/order/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/track-order/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/account/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/auth/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
     {
       "source": "/(.*)",
       "headers": [

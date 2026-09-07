@@ -174,6 +174,54 @@ describe("release contracts", () => {
     expect(testingPage).toContain("<Suspense");
   });
 
+  it("returns real 404 responses instead of rewriting every unknown URL to the SPA", () => {
+    const vercelConfig = JSON.parse(read("vercel.json"));
+    const custom404 = read("public/404.html");
+
+    expect(vercelConfig.rewrites).not.toContainEqual({
+      source: "/(.*)",
+      destination: "/index.html",
+    });
+    expect(vercelConfig.rewrites).toEqual(
+      expect.arrayContaining([
+        { source: "/cart", destination: "/index.html" },
+        { source: "/checkout/:path*", destination: "/index.html" },
+        { source: "/order/:id", destination: "/index.html" },
+        { source: "/admin/:path*", destination: "/index.html" },
+      ]),
+    );
+    expect(vercelConfig.redirects).toEqual(
+      expect.arrayContaining([
+        { source: "/5-pack", destination: "/build-your-stack", permanent: true },
+        { source: "/pets", destination: "https://pets.peptide-south-africa.com/", permanent: true },
+      ]),
+    );
+    for (const route of ["cart", "checkout", "order", "track-order", "account", "auth", "admin"]) {
+      expect(vercelConfig.headers).toContainEqual({
+        source: `/${route}/:path*`,
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      });
+    }
+    expect(custom404).toContain('content="noindex, follow"');
+    expect(custom404).toContain("Page not found");
+  });
+
+  it("uses the www host consistently in public URLs and structured data", () => {
+    const publicUrlSources = [
+      "src/pages/BuyBpc157SA.tsx",
+      "src/pages/BuyGhkCuSA.tsx",
+      "src/pages/BuyMotsCSA.tsx",
+      "src/pages/BuyRetatrutideSA.tsx",
+      "src/pages/BuyTesamorelinSA.tsx",
+      "src/pages/BuyTirzepatideSA.tsx",
+      "src/pages/CheckoutSuccessPage.tsx",
+      "src/components/CoaLabelStudio.tsx",
+    ].map(read).join("\n");
+
+    expect(publicUrlSources).not.toContain("https://peptide-south-africa.com");
+    expect(publicUrlSources).toContain("https://www.peptide-south-africa.com");
+  });
+
   it("keeps public routes code-split and enforces the production bundle budget", () => {
     const appShell = read("src/AppShell.tsx");
     const clientEntry = read("src/main.tsx");

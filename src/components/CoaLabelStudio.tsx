@@ -13,7 +13,7 @@ export interface LabelStudioRecord {
 
 type MediaPreset = "nelko" | "brother";
 
-const CANONICAL_ORIGIN = "https://peptide-south-africa.com";
+const CANONICAL_ORIGIN = "https://www.peptide-south-africa.com";
 
 const PRESETS: Record<MediaPreset, {
   label: string;

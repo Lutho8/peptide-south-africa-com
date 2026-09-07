@@ -56,7 +56,7 @@ export default function CheckoutSuccessPage() {
 
   const code = useReferralCode();
   const [copied, setCopied] = useState(false);
-  const refLink = `https://peptide-south-africa.com/?ref=${code}`;
+  const refLink = `https://www.peptide-south-africa.com/?ref=${code}`;
   const shareText = `I've just started a physician-guided peptide protocol with Peptide South Africa — GP-reviewed, ≥99% lab-tested, COA in the box. My link gets you 10% off your first order: ${refLink}`;
 
   const copyLink = async () => {
