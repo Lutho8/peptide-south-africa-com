@@ -5,10 +5,12 @@ import communityImage from "@/assets/funnel-hero-4.jpg";
 import sourcingImage from "@/assets/funnel-hero-5.jpg";
 import peptideCheatSheetImage from "@/assets/blog/peptide-cheat-sheet-south-africa-1200x675.webp";
 import southAfricaGlp1RecallImage from "@/assets/blog/south-africa-glp-1-recall-2026-1200x675.webp";
+import southAfricaMedicineImportRulesImage from "@/assets/blog/south-africa-medicine-import-rules-2026-1200x675.webp";
 
 const imagesBySlug: Record<string, string> = {
   "peptide-cheat-sheet-south-africa": peptideCheatSheetImage,
   "south-africa-glp-1-recall-2026": southAfricaGlp1RecallImage,
+  "south-africa-medicine-import-rules-2026": southAfricaMedicineImportRulesImage,
 };
 
 const imagesByCategory: Record<string, string> = {
