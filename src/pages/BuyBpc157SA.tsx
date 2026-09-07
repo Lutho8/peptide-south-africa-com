@@ -24,7 +24,7 @@ const PRODUCT_LD = {
     "seller": {
       "@type": "Organization",
       "name": "Peptide South Africa",
-      "url": "https://peptide-south-africa.com"
+      "url": "https://www.peptide-south-africa.com"
     }
   },
   "additionalProperty": [
@@ -38,8 +38,8 @@ const BREADCRUMB_LD = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://peptide-south-africa.com" },
-    { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://peptide-south-africa.com/shop" },
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.peptide-south-africa.com" },
+    { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.peptide-south-africa.com/shop" },
     { "@type": "ListItem", "position": 3, "name": "Buy BPC-157 in South Africa" }
   ]
 };

@@ -9,7 +9,7 @@ on:
       target-url:
         description: 'Base URL to test (full suite)'
         required: false
-        default: 'https://peptide-south-africa.com'
+        default: 'https://www.peptide-south-africa.com'
       suite:
         description: 'smoke | full'
         required: false
@@ -47,14 +47,14 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.suite == 'full'
         working-directory: ${{ steps.qadir.outputs.dir }}
         env:
-          BASE_URL: ${{ github.event.inputs.target-url || 'https://peptide-south-africa.com' }}
+          BASE_URL: ${{ github.event.inputs.target-url || 'https://www.peptide-south-africa.com' }}
         run: npx playwright test tests/inventory.spec.ts --project=chromium
 
       - name: Run smoke suite (push/PR)
         if: github.event_name != 'workflow_dispatch'
         working-directory: ${{ steps.qadir.outputs.dir }}
         env:
-          BASE_URL: https://peptide-south-africa.com
+          BASE_URL: https://www.peptide-south-africa.com
         run: npx playwright test --grep @smoke --project=chromium
 
       - name: Run full suite (manual dispatch)
