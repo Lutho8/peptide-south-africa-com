@@ -9,6 +9,8 @@ import southAfricaMedicineImportRulesImage from "@/assets/blog/south-africa-medi
 import peptidesSouthAfricanSportWada2026Image from "@/assets/blog/peptides-south-african-sport-wada-2026-1200x675.webp";
 
 const imagesBySlug: Record<string, string> = {
+  "glp-1-blood-tests-women-south-africa": new URL('../assets/blog/glp-1-blood-tests-women-1200x675.webp', import.meta.url).href,
+  "glp-1-blood-tests-men-south-africa": new URL('../assets/blog/glp-1-blood-tests-men-1200x675.webp', import.meta.url).href,
   "peptide-cheat-sheet-south-africa": peptideCheatSheetImage,
   "south-africa-glp-1-recall-2026": southAfricaGlp1RecallImage,
   "south-africa-medicine-import-rules-2026": southAfricaMedicineImportRulesImage,
