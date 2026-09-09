@@ -223,12 +223,14 @@ describe("release contracts", () => {
   });
 
   it("keeps public routes code-split and enforces the production bundle budget", () => {
+    const htmlShell = read("index.html");
     const appShell = read("src/AppShell.tsx");
     const clientEntry = read("src/main.tsx");
     const prerender = read("scripts/prerender.mjs");
     const packageJson = read("package.json");
     const bundleBudget = read("scripts/check-bundle-budget.mjs");
 
+    expect(htmlShell).not.toMatch(/<noscript>[\s\S]*?<h1(?:\s|>)/);
     expect(appShell).not.toMatch(/^import .*@\/pages\//m);
     expect(appShell.match(/lazy\(\(\) => import\("@\/pages\//g)?.length).toBeGreaterThanOrEqual(40);
     expect(prerender).toContain("data-prerender-path");
