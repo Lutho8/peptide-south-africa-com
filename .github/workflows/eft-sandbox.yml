@@ -212,6 +212,7 @@ jobs:
               ");",
               "alter table public.psa_orders enable row level security;",
               "grant all on public.psa_orders to service_role;",
+              "grant select, insert, update, delete on public.bank_deposits to service_role;",
               "grant select, insert, update, delete on public.integration_logs to service_role;",
               "",
             ].join("\n"),
