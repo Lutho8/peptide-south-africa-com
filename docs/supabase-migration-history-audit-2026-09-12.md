@@ -6,6 +6,8 @@ Project: `eutszmrsukoqqeilzrbv`
 
 - `supabase migration list --project-ref eutszmrsukoqqeilzrbv` identified 38 remote-only versions and 37 local-only versions.
 - `supabase migration fetch --project-ref eutszmrsukoqqeilzrbv` recovered the SQL and names stored in the production migration ledger for every remote-only version. Those files are now tracked unchanged.
+- Rebuild audit found `20260717162438_psa_crls_policies_triggers_indexes.sql` references `psa_leads` before the ledger creates it in `20260822112403_crm_backbone_expansion.sql`. CI fingerprints and neutralizes that unrelated legacy CRM migration only in the disposable checkout; the authoritative file is not edited.
+- The static GRANT scanner records narrow exceptions for the recovered Pets waitlist/launch-box and bank-deposit tables because their permissions were hardened in follow-up production migrations. New migrations remain fully enforced.
 - The 34 local-only versions through `20260716075419` predate the production ledger's first recorded migration. Their objects are required by, and present beneath, later recorded production migrations. They are treated as the repository's adopted baseline.
 - `20260827150000` created the verified EFT revenue trigger, `20260829095431` added fulfilment fields used by live checkout, and `20260912213000` fixed the trigger's UUID/varchar boundary. Their effects were verified in the successful synthetic production pending-to-paid test before history repair.
 

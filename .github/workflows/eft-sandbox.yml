@@ -119,6 +119,27 @@ jobs:
             ].join("\n"),
           );
 
+          const legacyCrmPolicyPath = "supabase/migrations/20260717162438_psa_crls_policies_triggers_indexes.sql";
+          const legacyCrmPolicy = fs.readFileSync(legacyCrmPolicyPath, "utf8");
+          for (const marker of [
+            'DROP POLICY IF EXISTS "Allow anonymous lead capture" ON psa_leads',
+            "CREATE TRIGGER psa_event_to_lead_sync",
+            "CREATE INDEX IF NOT EXISTS idx_psa_leads_email",
+          ]) {
+            if (!legacyCrmPolicy.includes(marker)) {
+              throw new Error(`Refusing to neutralize unexpected legacy CRM migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            legacyCrmPolicyPath,
+            [
+              "-- CI-only no-op: production recorded this migration before psa_leads existed in its ledger.",
+              "-- The later CRM backbone owns those tables and the EFT contract does not use them.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+
           const crmMigrationPath = "supabase/migrations/20260815164711_secure_internal_crm_views_and_queue_functions.sql";
           const crmMigration = fs.readFileSync(crmMigrationPath, "utf8");
           const expectedCrmMarkers = [
