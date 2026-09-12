@@ -99,10 +99,27 @@ Deno.serve(async (req) => {
     }
 
     // ── 2. Match sweep over ALL unmatched deposits ──────────────────────────
-    const { data: unmatched } = await supabase
+    const submittedReferences = deposits
+      .map((deposit: { reference?: unknown }) => deposit?.reference)
+      .filter((reference: unknown): reference is string => typeof reference === 'string' && reference.length > 0);
+    if (verifyReference) submittedReferences.push(String(body.reference));
+    if (verifyOrderId) {
+      const { data: target } = await supabase
+        .from('psa_orders')
+        .select('payment_reference')
+        .eq('order_id', verifyOrderId)
+        .maybeSingle();
+      if (target?.payment_reference) submittedReferences.push(String(target.payment_reference));
+    }
+
+    let unmatchedQuery = supabase
       .from('bank_deposits')
       .select('id, amount, reference, payer_name, raw')
       .eq('status', 'unmatched');
+    if (submittedReferences.length > 0) {
+      unmatchedQuery = unmatchedQuery.in('reference', [...new Set(submittedReferences)]);
+    }
+    const { data: unmatched } = await unmatchedQuery;
 
     for (const dep of unmatched ?? []) {
       const ref = normaliseRef(dep.reference);
