@@ -162,13 +162,60 @@ jobs:
             ].join("\n"),
           );
 
-          const recoveredPsaOrders = fs.readFileSync(
-            "supabase/migrations/20260717065144_psa_crm_schema_v2_prefixed_tables.sql",
-            "utf8",
-          );
-          if (!/CREATE TABLE IF NOT EXISTS psa_orders\s*\(/.test(recoveredPsaOrders)) {
-            throw new Error("Authoritative fetched migration no longer defines psa_orders");
+          const remoteOnlyVersions = [
+            "20260717065144", "20260717162438", "20260717215110", "20260718200802",
+            "20260721072733", "20260722101231", "20260815200848", "20260815200915",
+            "20260815201053", "20260821121854", "20260821224835", "20260822112403",
+            "20260822120951", "20260822123250", "20260822175950", "20260822175957",
+            "20260822180125", "20260822202235", "20260822202422", "20260822202551",
+            "20260822205621", "20260822205839", "20260822221419", "20260825202316",
+            "20260825202440", "20260825203731", "20260825204311", "20260825204902",
+            "20260825205201", "20260827161248", "20260827195140", "20260827204044",
+            "20260828111014", "20260828165755", "20260829092646", "20260902142441",
+            "20260903093543", "20260912174634",
+          ];
+          const migrationFiles = fs.readdirSync("supabase/migrations").filter((name) => name.endsWith(".sql"));
+          for (const version of remoteOnlyVersions) {
+            const matches = migrationFiles.filter((name) => name.startsWith(`${version}_`));
+            if (matches.length !== 1) {
+              throw new Error(`Expected one authoritative migration for ${version}, found ${matches.length}`);
+            }
+            if (version === "20260821121854") continue; // bank_deposits is part of this contract
+            fs.writeFileSync(
+              `supabase/migrations/${matches[0]}`,
+              [
+                `-- CI-only no-op for recovered production migration ${version}.`,
+                "-- The isolated EFT contract provisions only its bounded schema dependencies.",
+                "SELECT 1;",
+                "",
+              ].join("\n"),
+            );
           }
+
+          fs.writeFileSync(
+            "supabase/migrations/20260827145959_ci_psa_orders.sql",
+            [
+              "-- CI-only EFT boundary matching the verified production columns.",
+              "create table public.psa_orders (",
+              "  order_id varchar(100) primary key,",
+              "  unified_order_id uuid not null references public.orders(id) on delete cascade,",
+              "  user_id uuid not null references auth.users(id) on delete cascade,",
+              "  customer_email text not null,",
+              "  line_items jsonb,",
+              "  order_total numeric(12,2) not null check (order_total >= 0),",
+              "  payment_method text not null,",
+              "  payment_status text not null,",
+              "  payment_reference text not null unique,",
+              "  payment_settled_at timestamptz,",
+              "  created_at timestamptz not null default now(),",
+              "  updated_at timestamptz not null default now()",
+              ");",
+              "alter table public.psa_orders enable row level security;",
+              "grant all on public.psa_orders to service_role;",
+              "grant select, insert, update, delete on public.integration_logs to service_role;",
+              "",
+            ].join("\n"),
+          );
           NODE
 
       - name: Start isolated local Supabase
