@@ -111,7 +111,8 @@ Deno.serve(async (req) => {
       const { data: orders } = await supabase
         .from('psa_orders')
         .select('order_id, unified_order_id, user_id, customer_email, line_items, order_total, payment_reference')
-        .eq('payment_status', 'awaiting_eft');
+        .eq('payment_status', 'awaiting_eft')
+        .eq('payment_reference', String(dep.reference));
 
       const order = (orders ?? []).find((o) => normaliseRef(o.payment_reference) === ref);
       if (!order) { summary.still_unmatched++; continue; }
