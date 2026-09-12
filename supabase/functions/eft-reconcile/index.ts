@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     // ── 2. Match sweep over ALL unmatched deposits ──────────────────────────
     const { data: unmatched } = await supabase
       .from('bank_deposits')
-      .select('id, amount, reference')
+      .select('id, amount, reference, payer_name, raw')
       .eq('status', 'unmatched');
 
     for (const dep of unmatched ?? []) {
@@ -172,15 +172,23 @@ Deno.serve(async (req) => {
         });
       }
 
-      // The only code path allowed to emit Meta's Purchase event: this runs
+      // Secret-authenticated synthetic payment smoke tests exercise the full
+      // settlement path without corrupting production revenue attribution.
+      const isSyntheticSmoke =
+        dep.payer_name === 'PSA SYNTHETIC PAID ORDER SMOKE' &&
+        dep.raw?.synthetic_test === true;
+
+      // The only real-payment code path allowed to emit Meta's Purchase event: this runs
       // exactly once per order (guarded by the awaiting_eft → complete
       // transition above), only after a real bank deposit has settled it.
-      await sendMetaCapiEvent({
-        eventName: 'Purchase',
-        eventId: `purchase-${order.order_id}`,
-        customData: { value: actual, currency: 'ZAR' },
-        userData: { email: order.customer_email ?? undefined },
-      });
+      if (!isSyntheticSmoke) {
+        await sendMetaCapiEvent({
+          eventName: 'Purchase',
+          eventId: `purchase-${order.order_id}`,
+          customData: { value: actual, currency: 'ZAR' },
+          userData: { email: order.customer_email ?? undefined },
+        });
+      }
 
       // Order-confirmation email.
       const recipient = order.customer_email;
@@ -213,7 +221,7 @@ Deno.serve(async (req) => {
       await supabase.from('integration_logs').insert({
         integration: 'eft', action: 'reconcile',
         status: 'matched',
-        payload: { orderId: order.order_id, depositId: dep.id, amount: actual, reference: ref },
+        payload: { orderId: order.order_id, depositId: dep.id, amount: actual, reference: ref, synthetic_test: isSyntheticSmoke },
       });
 
       summary.matched++;
