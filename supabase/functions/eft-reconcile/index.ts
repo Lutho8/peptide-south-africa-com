@@ -55,13 +55,14 @@ Deno.serve(async (req) => {
     duplicates: number;
     matched: number;
     still_unmatched: number;
+    errors: string[];
     order_state?: {
       order_id: string;
       payment_reference: string | null;
       payment_status: string;
       payment_settled_at: string | null;
     } | null;
-  } = { ok: true, inserted: 0, duplicates: 0, matched: 0, still_unmatched: 0 };
+  } = { ok: true, inserted: 0, duplicates: 0, matched: 0, still_unmatched: 0, errors: [] };
 
   try {
     const body = await req.json().catch(() => ({}));
@@ -125,11 +126,16 @@ Deno.serve(async (req) => {
       const ref = normaliseRef(dep.reference);
       if (!ref) { summary.still_unmatched++; continue; }
 
-      const { data: orders } = await supabase
+      const { data: orders, error: ordersError } = await supabase
         .from('psa_orders')
         .select('order_id, user_id, customer_email, line_items, order_total, payment_reference')
         .eq('payment_status', 'awaiting_eft')
         .eq('payment_reference', String(dep.reference));
+      if (ordersError) {
+        summary.errors.push(`order lookup: ${ordersError.message}`);
+        summary.still_unmatched++;
+        continue;
+      }
 
       const order = (orders ?? []).find((o) => normaliseRef(o.payment_reference) === ref);
       if (!order) { summary.still_unmatched++; continue; }
@@ -162,6 +168,7 @@ Deno.serve(async (req) => {
 
       if (updErr || !settledOrder) {
         console.error('psa_orders settle failed:', updErr?.message ?? 'order was already settled');
+        summary.errors.push(`settlement: ${updErr?.message ?? 'order was already settled'}`);
         summary.still_unmatched++;
         continue;
       }
