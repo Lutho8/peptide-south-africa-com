@@ -3,6 +3,7 @@
   "redactSecrets": true,
   "scope": "database",
   "loadOrder": [
+    "_cluster/prerequisites.sql",
     "public/default_privileges.sql",
     "tracker/default_privileges.sql",
     "private/schema.sql",
@@ -202,6 +203,7 @@
   "profile": "supabase",
   "defaultOwner": "postgres",
   "files": [
+    "_cluster/prerequisites.sql",
     "_cluster/extensions/pg_cron.sql",
     "_cluster/extensions/pg_net.sql",
     "_cluster/extensions/pgcrypto.sql",
