@@ -32,6 +32,7 @@ export default async function handler(request: Request): Promise<Response> {
     const supabaseUrl = requiredEnv("SUPABASE_URL");
     const anonKey = requiredEnv("SUPABASE_ANON_KEY");
     const serviceRoleKey = requiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+    const checkoutStoreSecret = requiredEnv("CHECKOUT_STORE_SECRET");
     const token = authHeader.slice("Bearer ".length);
     const authClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
@@ -181,6 +182,7 @@ export default async function handler(request: Request): Promise<Response> {
       headers: {
         Authorization: authHeader,
         apikey: serviceRoleKey,
+        "x-checkout-store-secret": checkoutStoreSecret,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

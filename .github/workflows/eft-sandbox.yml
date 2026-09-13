@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/eft-sandbox.yml"
+      - "api/eft-create-order.ts"
       - "package.json"
       - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
@@ -22,6 +23,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/eft-sandbox.yml"
+      - "api/eft-create-order.ts"
       - "package.json"
       - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
@@ -140,6 +142,10 @@ jobs:
             printf 'EFT_SANDBOX_SUPABASE_URL=%s\n' "$API_URL"
             printf 'EFT_SANDBOX_PUBLISHABLE_KEY=%s\n' "$ANON_KEY"
             printf 'EFT_SANDBOX_SERVICE_ROLE_KEY=%s\n' "$SERVICE_ROLE_KEY"
+            printf 'SUPABASE_URL=%s\n' "$API_URL"
+            printf 'SUPABASE_ANON_KEY=%s\n' "$ANON_KEY"
+            printf 'SUPABASE_SERVICE_ROLE_KEY=%s\n' "$SERVICE_ROLE_KEY"
+            printf 'CHECKOUT_STORE_SECRET=%s\n' 'eft-ci-approved-storefront-secret'
           } >> "$GITHUB_ENV"
 
       - name: Serve the native EFT functions locally
@@ -150,6 +156,7 @@ jobs:
             'EFT_ACCOUNT_NAME=PSA CI Sandbox' \
             'EFT_ACCOUNT_NUMBER=0000000000' \
             'EFT_BRANCH_CODE=000000' \
+            'CHECKOUT_STORE_SECRET=eft-ci-approved-storefront-secret' \
             'EFT_RECONCILE_SECRET=eft-ci-reconcile-secret' > "$env_file"
           chmod 600 "$env_file"
 
@@ -161,6 +168,7 @@ jobs:
             status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
               --request POST \
               --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
+              --header 'x-checkout-store-secret: eft-ci-approved-storefront-secret' \
               --header 'Content-Type: application/json' \
               --data '{}' \
               "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-create-order" || true)"
@@ -195,8 +203,9 @@ jobs:
 
       - name: Run authenticated EFT sandbox contract
         env:
+          EFT_SANDBOX_CHECKOUT_STORE_SECRET: eft-ci-approved-storefront-secret
           EFT_SANDBOX_RECONCILE_SECRET: eft-ci-reconcile-secret
-        run: node scripts/ci/eft-sandbox-contract.mjs
+        run: npx vite-node scripts/ci/eft-sandbox-contract.mjs
 
       - name: Show local function logs on failure
         if: failure()
