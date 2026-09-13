@@ -254,7 +254,7 @@ export default function HomePage() {
             </div>
 
             <p className="mt-8 text-center text-xs text-muted-foreground">
-              Products are supplied for lawful laboratory research only and are not for human or animal use or consumption.
+              Products are supplied for lawful laboratory research only and are not for human use or consumption. Animal findings describe published study models, not veterinary treatment directions.
             </p>
           </div>
         </div>

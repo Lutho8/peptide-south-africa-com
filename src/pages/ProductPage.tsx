@@ -264,6 +264,29 @@ export default function ProductPage() {
                 : product.description}
             </p>
 
+            {product.researchReferences && product.researchReferences.length > 0 && (
+              <div className="mt-5 rounded-xl border border-border bg-muted/35 p-4">
+                <p className="text-sm font-semibold text-foreground">Research behind this story</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  These links describe preclinical animal or laboratory findings. They do not establish outcomes in people.
+                </p>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {product.researchReferences.map((reference) => (
+                    <li key={reference.url}>
+                      <a
+                        href={reference.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                      >
+                        {reference.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
             {isGPTrack ? (
               <div className="mt-6"><WeightLossPricing /></div>

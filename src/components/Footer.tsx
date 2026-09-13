@@ -114,7 +114,7 @@ export default function Footer() {
           <div className="rounded-xl border border-border bg-background/60 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">Research-use notice</p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption. Website content is general research information only and is not medical advice, diagnosis or treatment guidance.
+              Products are supplied solely for lawful laboratory research and are not for human use or consumption. Animal findings describe published study models, not veterinary treatment directions. Website content is general research information only and is not medical advice, diagnosis or treatment guidance.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-background/60 p-4">
