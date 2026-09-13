@@ -148,6 +148,33 @@ describe("release contracts", () => {
     expect(contract).toContain("deployed Vercel");
   });
 
+  it("routes scheduled canary failures into one actionable operations incident", () => {
+    const workflow = read(".github/workflows/eft-sandbox.yml");
+    expect(workflow).toContain("issues: write");
+    expect(workflow).toContain("needs.local-contract.result == 'failure'");
+    expect(workflow).toContain("github.event_name == 'schedule'");
+    expect(workflow).toContain("github.event_name == 'workflow_dispatch'");
+    expect(workflow).toContain("Checkout canary failure");
+    expect(workflow).toContain("gh issue list");
+    expect(workflow).toContain("gh issue comment");
+    expect(workflow).toContain("gh issue create");
+    expect(workflow).toContain("actions/runs/${{ github.run_id }}");
+  });
+
+  it("uses Weight Loss as the customer-facing GLP category name", () => {
+    const categorySurfaces = [
+      "src/pages/ShopPage.tsx",
+      "src/pages/HomePage.tsx",
+      "src/components/Header.tsx",
+      "src/components/Footer.tsx",
+      "src/components/HeroShop.tsx",
+      "src/lib/seo.ts",
+    ].map(read).join("\n");
+    expect(categorySurfaces).toContain("Weight Loss");
+    expect(categorySurfaces).not.toContain("Metabolic Research");
+    expect(categorySurfaces).toContain("/shop?category=GLP");
+  });
+
   it("only fires Meta Purchase from confirmed bank settlement, never from order creation", () => {
     const orderCreation = read("api/eft-create-order.ts");
     const analytics = read("src/lib/analytics.ts");

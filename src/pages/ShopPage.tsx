@@ -39,7 +39,7 @@ const shopFaqSchema = {
 
 const protocols = [
   {
-    title: "Metabolic Research",
+    title: "Weight Loss",
     desc: "Triple- and dual-agonist compounds presented for laboratory pathway research.",
     icon: Flame,
     href: "/shop?category=GLP",

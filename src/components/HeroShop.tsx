@@ -154,7 +154,7 @@ export default function HeroShop() {
                   </span>
                 )}
                 <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-                  {idx === 0 ? "Metabolic research" : "Recovery research"}
+                  {idx === 0 ? "Weight loss" : "Recovery research"}
                 </span>
                 <StockBadge product={p} />
                 <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-semibold text-foreground">
