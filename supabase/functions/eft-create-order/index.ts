@@ -28,10 +28,10 @@ Deno.serve(async (req)=>{
   });
   try {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    if (!serviceRoleKey || req.headers.get('apikey') !== serviceRoleKey) return json({
-      error: 'This checkout endpoint is available only through an approved storefront.',
-      code: 'TRUSTED_ORIGIN_REQUIRED'
-    }, 403);
+    if (!serviceRoleKey) return json({
+      error: 'Checkout is temporarily unavailable. Please try again.',
+      code: 'CHECKOUT_NOT_CONFIGURED'
+    }, 503);
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) return json({
       error: 'Your session has expired. Please sign in again.',

@@ -58,8 +58,9 @@ describe("research checkout consent", () => {
     expect(source).toContain("selections: body.selections");
     expect(source).toContain("apikey: serviceRoleKey");
     const edgeSource = fs.readFileSync(path.resolve(process.cwd(), "supabase/functions/eft-create-order/index.ts"), "utf8");
-    expect(edgeSource).toContain("TRUSTED_ORIGIN_REQUIRED");
-    expect(edgeSource).toContain("req.headers.get('apikey') !== serviceRoleKey");
+    expect(edgeSource).toContain("CHECKOUT_NOT_CONFIGURED");
+    expect(edgeSource).toContain("authHeader?.startsWith('Bearer ')");
+    expect(edgeSource).not.toContain("req.headers.get('apikey') !== serviceRoleKey");
   });
 
   it("uses a new idempotency key when the optional marketing choice changes", () => {
