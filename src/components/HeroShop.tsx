@@ -3,7 +3,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
-  Stethoscope,
   Truck,
   FlaskConical,
   ShoppingCart,
@@ -21,9 +20,6 @@ const HERO_VIDEO_POSTER =
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useToast } from "@/hooks/use-toast";
-import { CONSULTATION_PATH } from "@/components/BookConsultLink";
-import { offerProps, trackEvent } from "@/lib/analytics";
-import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 export default function HeroShop() {
   const reduce = useReducedMotion();
@@ -39,11 +35,6 @@ export default function HeroShop() {
   const handleAdd = (p: typeof hero) => {
     if (!p.inStock) {
       navigate(`/product/${p.slug}`);
-      return;
-    }
-    if (p.track === "GP") {
-      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
-      navigate(CONSULTATION_PATH);
       return;
     }
     const v = p.variants?.[0];
@@ -179,9 +170,7 @@ export default function HeroShop() {
                   <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{p.shortDescription}</p>
                   <div className="mt-3 flex items-baseline gap-2">
                     <span className="font-display text-xl font-bold text-foreground">
-                      {p.track === "GP"
-                        ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month or ${formatZarWhole(PRICING.programOffers.full12Week.amount)}/12 weeks`
-                        : (p.priceRange ?? format(p.price))}
+                      {p.priceRange ?? format(p.price)}
                     </span>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -195,8 +184,8 @@ export default function HeroShop() {
                       onClick={() => handleAdd(p)}
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98]"
                     >
-                      {p.track === "GP" ? <Stethoscope className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-                      {!p.inStock ? "Notify Me" : p.track === "GP" ? "BOOK CONSULT" : "Add to Cart"}
+                      <ShoppingCart className="h-4 w-4" />
+                      {!p.inStock ? "Notify Me" : "Add to Cart"}
                     </button>
                   </div>
                 </div>

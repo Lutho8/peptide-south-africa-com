@@ -28,10 +28,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
 import { getCoasForProduct } from "@/data/coas";
-import { CONSULTATION_PATH } from "@/components/BookConsultLink";
-import { offerProps, trackEvent } from "@/lib/analytics";
-import WeightLossPricing from "@/components/WeightLossPricing";
-import { PRICING, WEIGHT_LOSS_SAVING } from "../../supabase/functions/_shared/pricing";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -88,11 +84,10 @@ export default function ProductPage() {
     );
   }
 
-  const isGPTrack = product.track === "GP";
   const subDiscountPct = 12;
   const basePrice = product.variants ? product.variants[selectedVariant].price : product.price;
   const currentPrice =
-    purchaseMode === "subscribe" && !isGPTrack
+    purchaseMode === "subscribe"
       ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
       : basePrice;
   const selectedVariantMeta = product.variants?.[selectedVariant];
@@ -120,11 +115,6 @@ export default function ProductPage() {
     // UI (e.g. StickyProductCTA) somehow fires this handler.
     if (!product.inStock) return;
     const variantLabel = product.variants?.[selectedVariant]?.label;
-    if (isGPTrack) {
-      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
-      navigate(CONSULTATION_PATH);
-      return;
-    }
     if (purchaseMode === "subscribe") {
       if (!user) {
         navigate(`/auth?redirect=/product/${product.slug}`);
@@ -168,17 +158,7 @@ export default function ProductPage() {
 
   return (
     <div>
-      <JsonLd data={isGPTrack ? {
-        "@context": "https://schema.org",
-        "@type": "Service",
-        name: `${product.name} clinician-guided weight-loss pathway`,
-        description: `${product.name} is available through a clinician-guided pathway with eligibility review before prescription or fulfilment.`,
-        areaServed: { "@type": "Country", name: "South Africa" },
-        offers: [
-          { "@type": "Offer", sku: PRICING.programOffers.monthly.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.monthly.amount, name: "Monthly plan" },
-          { "@type": "Offer", sku: PRICING.programOffers.full12Week.offerId, priceCurrency: "ZAR", price: PRICING.programOffers.full12Week.amount, name: "Full 12-week program", description: `Save R${WEIGHT_LOSS_SAVING} compared with three monthly payments` },
-        ],
-      } : productSchema({ ...product, variants: product.variants })} />
+      <JsonLd data={productSchema({ ...product, variants: product.variants })} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -189,12 +169,8 @@ export default function ProductPage() {
         })),
       }} />
       <SEO
-        title={isGPTrack
-          ? `${product.name} South Africa | Clinician-Guided Pathway`
-          : `${product.name} South Africa | Research Peptide Supplier`}
-        description={isGPTrack
-          ? `${product.name} clinician-guided pathway with eligibility review before prescription or fulfilment. Published supplier source reports where available and South African delivery.`
-          : `${product.shortDescription || product.description.slice(0, 140)} Published supplier source reports where available. Ships across South Africa.`}
+        title={`${product.name} South Africa | Research Peptide Supplier`}
+        description={`${product.shortDescription || product.description.slice(0, 140)} Published supplier source reports where available. Ships across South Africa.`}
         path={marketPath(`/product/${product.slug}`, market)}
         lang={lang}
         image={typeof product.image === "string" ? product.image : undefined}
@@ -259,9 +235,7 @@ export default function ProductPage() {
             )}
 
             <p className="mt-4 text-muted-foreground">
-              {isGPTrack
-                ? `${product.name} is offered through a clinician-guided pathway. A registered clinician reviews suitability before any prescription or fulfilment.`
-                : product.description}
+              {product.description}
             </p>
 
             {product.researchReferences && product.researchReferences.length > 0 && (
@@ -288,9 +262,7 @@ export default function ProductPage() {
             )}
 
             {/* Pack Selector — 3-Pack is variants[0] so it's the pre-selected default */}
-            {isGPTrack ? (
-              <div className="mt-6"><WeightLossPricing /></div>
-            ) : product.variants && product.variants.length > 0 && (
+            {product.variants && product.variants.length > 0 && (
               <div className="mt-6">
                 <label className="text-sm font-semibold text-foreground">Choose your pack</label>
                 <div className="mt-2 flex flex-col gap-2">
@@ -381,7 +353,7 @@ export default function ProductPage() {
             </div>
 
             {/* Purchase mode — Subscribe & save */}
-            {product.inStock && !isGPTrack && (
+            {product.inStock && (
               <div className="mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-card shadow-card">
                 <div className="flex items-center justify-between bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary">
                   <span>Subscription request</span>
@@ -442,8 +414,7 @@ export default function ProductPage() {
             )}
 
             {/* Primary CTA — Add to Cart */}
-            {!isGPTrack && (
-              <button
+            <button
                 onClick={handleAdd}
                 disabled={!product.inStock || subBusy}
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
@@ -457,8 +428,7 @@ export default function ProductPage() {
                 ) : (
                   "Add to Cart"
                 )}
-              </button>
-            )}
+            </button>
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
@@ -493,18 +463,14 @@ export default function ProductPage() {
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Beginner information</p>
             <h2 className="mt-2 font-display text-2xl font-bold text-foreground">New to this product? Start here.</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {isGPTrack
-                ? "A clear overview of the clinician-review pathway and what happens before fulfilment."
-                : "A quick overview of what is included, who normally researches it and how the order process works."}
+              A quick overview of what is included, who normally researches it and how the order process works.
             </p>
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
                 <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
                 <ul className="mt-3 flex flex-col gap-2">
-                  {(isGPTrack
-                    ? ["Clinician eligibility review", "Eligible prescribed product after approval", "Published supplier source report, where available", "Storage and delivery guidance"]
-                    : product.whatsIncluded).map((item, i) => (
+                  {product.whatsIncluded.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
                     </li>
@@ -514,9 +480,7 @@ export default function ProductPage() {
               <div>
                 <h3 className="font-display text-base font-semibold text-foreground">Who It's For</h3>
                 <ul className="mt-3 flex flex-col gap-2">
-                  {(isGPTrack
-                    ? ["Customers seeking a clinician-reviewed pathway", "People who understand approval is not guaranteed", "Customers prepared to disclose relevant medical information securely"]
-                    : product.whoItsFor).map((item, i) => (
+                  {product.whoItsFor.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
                     </li>
@@ -528,9 +492,7 @@ export default function ProductPage() {
             <div className="mt-6 border-t border-border pt-5">
               <h3 className="font-display text-base font-semibold text-foreground">How It Works</h3>
               <ol className="mt-3 grid gap-2">
-                {(isGPTrack
-                  ? ["Complete the medical quiz", "A registered clinician reviews eligibility", "Eligible orders proceed with a valid prescription", "Use the tracker and follow-up pathway"]
-                  : product.howItWorks).map((item, i) => (
+                {product.howItWorks.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
                     {item}
@@ -591,9 +553,7 @@ export default function ProductPage() {
       <section className="border-t border-border py-8">
         <div className="container">
           <p className="text-center text-xs text-muted-foreground">
-            {isGPTrack
-              ? "Available only through clinician review. Supply is subject to clinical eligibility and a valid prescription; no medical outcome is guaranteed."
-              : "For research purposes only. Not for human use or consumption."}
+            For research purposes only. Not for human use or consumption.
           </p>
         </div>
       </section>

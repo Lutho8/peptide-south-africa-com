@@ -64,6 +64,10 @@ export default async function handler(request: Request): Promise<Response> {
         code: "CONSENT_REQUIRED",
       }, 400);
     }
+    if ((body?.selections ?? []).some((selection) =>
+      selection.kind === "item" && selection.slug.startsWith("pets-"))) {
+      return json({ error: "Please place Pets orders through the Pets store.", code: "INVALID_CART" }, 400);
+    }
 
     let quote;
     try {
@@ -155,10 +159,10 @@ export default async function handler(request: Request): Promise<Response> {
         user_id: userData.user.id,
         policy_version: consent.policyVersion,
         report_scope_version: consent.reportScopeVersion,
-        age_confirmed: consent.ageConfirmed,
-        research_use_acknowledged: consent.researchUseAcknowledged,
-        non_human_use_acknowledged: consent.nonHumanUseAcknowledged,
-        report_scope_acknowledged: consent.reportScopeAcknowledged,
+        age_confirmed: consent.researchPurchaseAcknowledged,
+        research_use_acknowledged: consent.researchPurchaseAcknowledged,
+        non_human_use_acknowledged: consent.researchPurchaseAcknowledged,
+        report_scope_acknowledged: consent.researchPurchaseAcknowledged,
         marketing_consent: consent.marketingConsent,
         client_accepted_at: consent.clientAcceptedAt,
         statements: CHECKOUT_CONSENT_STATEMENTS,
@@ -176,13 +180,12 @@ export default async function handler(request: Request): Promise<Response> {
       method: "POST",
       headers: {
         Authorization: authHeader,
-        apikey: anonKey,
+        apikey: serviceRoleKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        orderId: order.id,
-        amount: quote.total,
-        itemName: quote.description.slice(0, 100),
+        requestId,
+        selections: body.selections,
         firstName: typeof body.firstName === "string" ? body.firstName : "",
         lastName: typeof body.lastName === "string" ? body.lastName : "",
         email: body.email,

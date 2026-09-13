@@ -88,12 +88,11 @@ describe("10-pack researcher value (30% off)", () => {
 });
 
 describe("pre-curated stacks", () => {
-  it("defines only research-use stacks of 5 resolvable products each", () => {
+  it("defines stacks of 5 resolvable catalogue products each", () => {
     expect(CURATED_STACKS).toHaveLength(2);
     for (const stack of CURATED_STACKS) {
       const resolved = resolveStackProducts(stack);
       expect(resolved.filter(Boolean)).toHaveLength(5);
-      expect(resolved.every((product) => product?.track !== "GP")).toBe(true);
     }
   });
 

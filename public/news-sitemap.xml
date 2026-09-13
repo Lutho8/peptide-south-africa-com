@@ -1,36 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-  <url>
-    <loc>https://www.peptide-south-africa.com/blog/glp-1-blood-tests-men-south-africa</loc>
-    <news:news>
-      <news:publication>
-        <news:name>Peptide South Africa</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-09-09</news:publication_date>
-      <news:title>GLP-1 Blood Tests for Men in South Africa: Metabolic Health, Hormones and the First Appointment</news:title>
-    </news:news>
-  </url>
-  <url>
-    <loc>https://www.peptide-south-africa.com/blog/glp-1-blood-tests-women-south-africa</loc>
-    <news:news>
-      <news:publication>
-        <news:name>Peptide South Africa</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-09-09</news:publication_date>
-      <news:title>GLP-1 Blood Tests for Women Aged 26–45 in South Africa: What to Discuss Before Treatment</news:title>
-    </news:news>
-  </url>
-  <url>
-    <loc>https://www.peptide-south-africa.com/blog/peptides-south-african-sport-wada-2026</loc>
-    <news:news>
-      <news:publication>
-        <news:name>Peptide South Africa</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-09-09</news:publication_date>
-      <news:title>Peptides in South African Sport: BPC-157, TB-500 and the 2026 WADA Rules</news:title>
-    </news:news>
-  </url>
 </urlset>

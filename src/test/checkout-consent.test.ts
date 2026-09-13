@@ -16,24 +16,16 @@ const completeForm: CheckoutForm = {
   city: "Cape Town",
   region: "Western Cape",
   postalCode: "8001",
-  ageConfirmed: true,
-  researchUseAcknowledged: true,
-  nonHumanUseAcknowledged: true,
-  reportScopeAcknowledged: true,
+  researchPurchaseAcknowledged: true,
   marketingConsent: false,
   consentPolicyVersion: CHECKOUT_POLICY_VERSION,
 };
 
 describe("research checkout consent", () => {
-  it.each([
-    "ageConfirmed",
-    "researchUseAcknowledged",
-    "nonHumanUseAcknowledged",
-    "reportScopeAcknowledged",
-  ] as const)("requires %s", (field) => {
-    const result = validateCheckout({ ...completeForm, [field]: false });
+  it("requires the consolidated research purchase acknowledgement", () => {
+    const result = validateCheckout({ ...completeForm, researchPurchaseAcknowledged: false });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.errors[field]).toBe("err_consent_required");
+    if (!result.ok) expect(result.errors.researchPurchaseAcknowledged).toBe("err_consent_required");
   });
 
   it("keeps marketing consent optional and records versioned policy identifiers", () => {
@@ -60,6 +52,14 @@ describe("research checkout consent", () => {
       .toBeLessThan(source.indexOf('.from("orders")'));
     expect(source).toContain('payment_provider: "eft_capitec"');
     expect(source).toContain("existingConsent.marketing_consent === consent.marketingConsent");
+    expect(source).toContain("age_confirmed: consent.researchPurchaseAcknowledged");
+    expect(source).toContain("research_use_acknowledged: consent.researchPurchaseAcknowledged");
+    expect(source).toContain("requestId,");
+    expect(source).toContain("selections: body.selections");
+    expect(source).toContain("apikey: serviceRoleKey");
+    const edgeSource = fs.readFileSync(path.resolve(process.cwd(), "supabase/functions/eft-create-order/index.ts"), "utf8");
+    expect(edgeSource).toContain("TRUSTED_ORIGIN_REQUIRED");
+    expect(edgeSource).toContain("req.headers.get('apikey') !== serviceRoleKey");
   });
 
   it("uses a new idempotency key when the optional marketing choice changes", () => {

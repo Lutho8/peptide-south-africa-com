@@ -1,4 +1,4 @@
-export const CHECKOUT_POLICY_VERSION = "research-checkout-2026-09-01";
+export const CHECKOUT_POLICY_VERSION = "research-checkout-2026-09-13";
 export const REPORT_SCOPE_VERSION = "batch-report-scope-2026-09-01";
 
 export const CHECKOUT_CONSENT_STATEMENTS = {
@@ -15,10 +15,7 @@ export const CHECKOUT_CONSENT_STATEMENTS = {
 } as const;
 
 export type CheckoutConsentInput = {
-  ageConfirmed: boolean;
-  researchUseAcknowledged: boolean;
-  nonHumanUseAcknowledged: boolean;
-  reportScopeAcknowledged: boolean;
+  researchPurchaseAcknowledged: boolean;
   marketingConsent: boolean;
   policyVersion: string;
   reportScopeVersion: string;
@@ -29,10 +26,7 @@ export function isValidCheckoutConsent(value: unknown): value is CheckoutConsent
   if (!value || typeof value !== "object") return false;
   const consent = value as Partial<CheckoutConsentInput>;
   if (
-    consent.ageConfirmed !== true
-    || consent.researchUseAcknowledged !== true
-    || consent.nonHumanUseAcknowledged !== true
-    || consent.reportScopeAcknowledged !== true
+    consent.researchPurchaseAcknowledged !== true
     || typeof consent.marketingConsent !== "boolean"
     || consent.policyVersion !== CHECKOUT_POLICY_VERSION
     || consent.reportScopeVersion !== REPORT_SCOPE_VERSION

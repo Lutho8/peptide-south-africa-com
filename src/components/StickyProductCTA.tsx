@@ -1,6 +1,5 @@
 import { useCurrency } from "@/context/CurrencyContext";
 import type { Product } from "@/data/products";
-import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 interface Props {
   product: Product;
@@ -15,9 +14,7 @@ export default function StickyProductCTA({ product, variantLabel, price, added, 
   const priceDisplay = display(price);
   const cta = !product.inStock
     ? "Pre-Order — Reserve Yours!"
-    : product.track === "GP"
-      ? "BOOK CONSULT"
-      : added
+    : added
         ? "✓ Added"
         : "Add to Cart";
 
@@ -38,11 +35,9 @@ export default function StickyProductCTA({ product, variantLabel, price, added, 
           <p className="truncate text-xs font-semibold text-foreground">{product.name}</p>
           <p className="flex items-baseline gap-1.5">
             <span className="font-display text-sm font-bold text-foreground">
-              {product.track === "GP"
-                ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
-                : priceDisplay.primary}
+              {priceDisplay.primary}
             </span>
-            {product.track !== "GP" && variantLabel && (
+            {variantLabel && (
               <span className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                 {variantLabel}
               </span>

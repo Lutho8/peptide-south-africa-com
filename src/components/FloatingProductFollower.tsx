@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { X, Stethoscope, ShoppingCart } from "lucide-react";
+import { X, ShoppingCart } from "lucide-react";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useCart } from "@/context/CartContext";
-import { CONSULTATION_PATH } from "@/components/BookConsultLink";
-import { offerProps, trackEvent } from "@/lib/analytics";
-import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 /**
  * Site-wide floating follower card for the last-viewed product.
@@ -44,21 +41,13 @@ export default function FloatingProductFollower() {
   if (pathname.includes(`/product/${lastViewed.slug}`)) return null;
 
   const visible = mounted && scrolled;
-  const isGP = lastViewed.track === "GP";
   const outOfStock = lastViewed.inStock === false;
-  const priceLabel = isGP
-    ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
-    : display(lastViewed.price).primary;
+  const priceLabel = display(lastViewed.price).primary;
 
   const handlePrimary = () => {
     if (outOfStock) {
       navigate(`/product/${lastViewed.slug}`);
       dismiss();
-      return;
-    }
-    if (isGP) {
-      trackEvent({ event: "book_consult_clicked", props: offerProps("monthly") });
-      navigate(CONSULTATION_PATH);
       return;
     }
     // Minimal cart payload — uses canonical price; real variant selection lives on PDP.
@@ -95,7 +84,7 @@ export default function FloatingProductFollower() {
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="font-mono text-[10px] uppercase tracking-wider text-primary">
-                {isGP ? "GP-prescribed" : "Continue browsing"}
+                Continue browsing
               </p>
               <Link
                 to={`/product/${lastViewed.slug}`}
@@ -127,10 +116,6 @@ export default function FloatingProductFollower() {
             >
               {outOfStock ? (
                 "Pre-Order — Reserve Yours!"
-              ) : isGP ? (
-                <>
-                  <Stethoscope className="h-3.5 w-3.5" /> BOOK CONSULT
-                </>
               ) : (
                 <>
                   <ShoppingCart className="h-3.5 w-3.5" /> Add to cart

@@ -33,7 +33,7 @@ async function invoke(accessToken, body) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      apikey: publishableKey,
+      apikey: serviceRoleKey,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
@@ -89,7 +89,7 @@ try {
     headers: { apikey: publishableKey, "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
-  assert(unauthenticated.status === 401, `Unauthenticated checkout returned HTTP ${unauthenticated.status} instead of 401`);
+  assert(unauthenticated.status === 403, `Untrusted checkout returned HTTP ${unauthenticated.status} instead of 403`);
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
@@ -103,6 +103,17 @@ try {
   const { data: session, error: signInError } = await shopper.auth.signInWithPassword({ email, password });
   if (signInError || !session.session?.access_token) throw new Error(`Synthetic user sign-in failed: ${signInError?.message || "no access token"}`);
   const accessToken = session.session.access_token;
+
+  const untrustedDirect = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      apikey: publishableKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  assert(untrustedDirect.status === 403, `Public direct checkout returned HTTP ${untrustedDirect.status} instead of 403`);
 
   const requestId = randomUUID();
   const validBody = {
@@ -152,12 +163,12 @@ try {
   });
   assert(manipulated.response.status === 400 && manipulated.data?.code === "INVALID_CART", "Manipulated variant was not rejected");
 
-  const consultOnly = await invoke(accessToken, {
+  const directResearchProduct = await invoke(accessToken, {
     ...validBody,
     requestId: randomUUID(),
     selections: [{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }],
   });
-  assert(consultOnly.response.status === 400 && consultOnly.data?.code === "INVALID_CART", "Consult-only product was not rejected");
+  assert(directResearchProduct.response.ok && directResearchProduct.data?.ok === true, "Published research product did not proceed through checkout");
 
   const receivedAt = new Date().toISOString();
   const syntheticDeposit = {

@@ -23,10 +23,7 @@ export type CheckoutForm = {
   city: string;
   region: string;
   postalCode: string;
-  ageConfirmed: boolean;
-  researchUseAcknowledged: boolean;
-  nonHumanUseAcknowledged: boolean;
-  reportScopeAcknowledged: boolean;
+  researchPurchaseAcknowledged: boolean;
   marketingConsent: boolean;
   consentPolicyVersion: string;
 };
@@ -47,10 +44,7 @@ export const saSchema = z.object({
       (v) => SA_PROVINCES.some((p) => p.toLowerCase() === v.trim().toLowerCase()),
       "err_region_sa",
     ),
-  ageConfirmed: z.literal(true, { errorMap: () => ({ message: "err_consent_required" }) }),
-  researchUseAcknowledged: z.literal(true, { errorMap: () => ({ message: "err_consent_required" }) }),
-  nonHumanUseAcknowledged: z.literal(true, { errorMap: () => ({ message: "err_consent_required" }) }),
-  reportScopeAcknowledged: z.literal(true, { errorMap: () => ({ message: "err_consent_required" }) }),
+  researchPurchaseAcknowledged: z.literal(true, { errorMap: () => ({ message: "err_consent_required" }) }),
   marketingConsent: z.boolean(),
   consentPolicyVersion: z.literal(CHECKOUT_POLICY_VERSION),
 });

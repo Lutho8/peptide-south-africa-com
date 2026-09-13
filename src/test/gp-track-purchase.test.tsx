@@ -28,11 +28,11 @@ function renderCard(slug: string, override?: Partial<Product>) {
   );
 }
 
-describe("GP-track purchase routing", () => {
-  it("keeps the future GP-track route isolated from direct checkout", () => {
+describe("catalogue purchase routing", () => {
+  it("allows a legacy GP-labelled product to use direct checkout", () => {
     renderCard("rt3-reta", { track: "GP" });
-    fireEvent.click(screen.getByRole("button", { name: /book consult/i }));
-    expect(screen.getByTestId("route-probe")).toHaveTextContent("/quiz?intent=consult|0");
+    fireEvent.click(screen.getByRole("button", { name: /add to cart/i }));
+    expect(screen.getByTestId("route-probe")).toHaveTextContent("/shop|1");
   });
 
   it("adds a current RUO catalogue product directly to the cart", () => {
