@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from "node:crypto";
+import { spawn } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 import storefrontHandler from "../../api/eft-create-order.ts";
 import {
@@ -20,6 +21,7 @@ const runId = (process.env.GITHUB_RUN_ID || Date.now().toString()).replace(/[^0-
 const email = `eft-contract+${runId}-${randomBytes(4).toString("hex")}@example.invalid`;
 const password = `CI-${randomBytes(24).toString("base64url")}!aA1`;
 const reconcileSecret = requiredEnv("EFT_SANDBOX_RECONCILE_SECRET");
+const storefrontUrl = process.env.EFT_SANDBOX_STOREFRONT_URL?.replace(/\/$/, "") || null;
 
 const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -34,15 +36,54 @@ const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 
+async function invokeDeployedStorefront(accessToken, body) {
+  const statusMarker = "__EFT_CANARY_HTTP_STATUS__";
+  const command = process.platform === "win32" ? "npx.cmd" : "npx";
+  const args = ["--yes", "vercel@59.16.0", "curl", "/api/eft-create-order", "--deployment", storefrontUrl, "--yes", "--", "--silent", "--show-error", "--request", "POST", "--header", `Authorization: Bearer ${accessToken}`, "--header", "Content-Type: application/json", "--data-binary", JSON.stringify(body), "--write-out", `\n${statusMarker}%{http_code}`];
+
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      env: process.env,
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("error", reject);
+    child.on("close", (code) => resolve({ code, stdout, stderr }));
+  });
+
+  if (result.code !== 0) {
+    throw new Error(`Vercel canary request failed: ${result.stderr.trim() || `exit ${result.code}`}`);
+  }
+  const markerIndex = result.stdout.lastIndexOf(statusMarker);
+  assert(markerIndex >= 0, "Vercel canary response did not include an HTTP status");
+  const responseBody = result.stdout.slice(0, markerIndex).trim();
+  const status = Number.parseInt(result.stdout.slice(markerIndex + statusMarker.length).trim(), 10);
+  assert(Number.isInteger(status), "Vercel canary response returned an invalid HTTP status");
+  const data = responseBody ? JSON.parse(responseBody) : null;
+  return { response: { status, ok: status >= 200 && status < 300 }, data };
+}
+
 async function invokeStorefront(accessToken, body) {
-  const response = await storefrontHandler(new Request("http://localhost/api/eft-create-order", {
+  if (storefrontUrl) return invokeDeployedStorefront(accessToken, body);
+  const request = new Request(`${storefrontUrl || "http://localhost"}/api/eft-create-order`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
-  }));
+  });
+  const response = await storefrontHandler(request);
   const data = await response.json().catch(() => null);
   return { response, data };
 }
@@ -266,7 +307,7 @@ try {
   if (finalRevenueError) throw new Error(`Final revenue-event count failed: ${finalRevenueError.message}`);
   assert(finalRevenueCount === 2, "Deposit replay duplicated derived revenue events");
 
-  console.log("EFT sandbox contract passed: storefront API to Edge checkout and synthetic pending-to-paid settlement verified end to end.");
+  console.log(`EFT sandbox contract passed: ${storefrontUrl ? "deployed Vercel" : "local storefront"} API to Edge checkout and synthetic pending-to-paid settlement verified end to end.`);
 } catch (error) {
   contractError = error;
 } finally {

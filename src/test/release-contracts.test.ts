@@ -127,7 +127,25 @@ describe("release contracts", () => {
     expect(contract).toContain("admin.auth.admin.deleteUser");
     expect(contract).not.toMatch(/console\.(?:log|error)\((?:first|replay|stored|.*\.data|.*\.bank)/);
     expect(workflow).not.toContain("supabase functions deploy");
-    expect(workflow).not.toMatch(/secrets\./);
+    const secretReferences = [...workflow.matchAll(/secrets\.([A-Z0-9_]+)/g)].map((match) => match[1]);
+    expect(new Set(secretReferences)).toEqual(new Set(["VERCEL_TOKEN"]));
+    expect(workflow).not.toMatch(/secrets\.(?:SUPABASE|EFT|CHECKOUT)/);
+  });
+
+  it("runs a disposable deployed checkout canary on a schedule", () => {
+    const workflow = read(".github/workflows/eft-sandbox.yml");
+    const contract = read("scripts/ci/eft-sandbox-contract.mjs");
+    expect(workflow).toContain('cron: "17 4 * * *"');
+    expect(workflow).toContain("cloudflared-linux-amd64");
+    expect(workflow).toContain("sha256sum --check --strict");
+    expect(workflow).toContain("Deploy disposable Vercel checkout canary");
+    expect(workflow).toContain('github.ref == \'refs/heads/main\'');
+    expect(workflow).toContain("--project \"$VERCEL_PROJECT_ID\"");
+    expect(workflow).toContain("EFT_CANARY_DEPLOYMENT_ID=$canary_id");
+    expect(workflow).toContain('remove "$canary_deployment"');
+    expect(contract).toContain('"vercel@59.16.0"');
+    expect(contract).toContain('"--deployment"');
+    expect(contract).toContain("deployed Vercel");
   });
 
   it("only fires Meta Purchase from confirmed bank settlement, never from order creation", () => {
