@@ -13,6 +13,7 @@ const serviceRoleKey = requiredEnv("EFT_SANDBOX_SERVICE_ROLE_KEY");
 const runId = (process.env.GITHUB_RUN_ID || Date.now().toString()).replace(/[^0-9A-Za-z-]/g, "");
 const email = `eft-contract+${runId}-${randomBytes(4).toString("hex")}@example.invalid`;
 const password = `CI-${randomBytes(24).toString("base64url")}!aA1`;
+const reconcileSecret = requiredEnv("EFT_SANDBOX_RECONCILE_SECRET");
 
 const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -34,6 +35,20 @@ async function invoke(accessToken, body) {
       Authorization: `Bearer ${accessToken}`,
       apikey: publishableKey,
       "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json().catch(() => null);
+  return { response, data };
+}
+
+async function reconcile(body) {
+  const response = await fetch(`${supabaseUrl}/functions/v1/eft-reconcile`, {
+    method: "POST",
+    headers: {
+      apikey: publishableKey,
+      "Content-Type": "application/json",
+      "x-eft-secret": reconcileSecret,
     },
     body: JSON.stringify(body),
   });
@@ -144,7 +159,85 @@ try {
   });
   assert(consultOnly.response.status === 400 && consultOnly.data?.code === "INVALID_CART", "Consult-only product was not rejected");
 
-  console.log("EFT sandbox contract passed: authenticated pricing, persistence, idempotency and manipulation guards verified.");
+  const receivedAt = new Date().toISOString();
+  const syntheticDeposit = {
+    amount: first.data.amount,
+    reference: first.data.payment_reference,
+    payer_name: "PSA SYNTHETIC PAID ORDER SMOKE",
+    received_at: receivedAt,
+    raw: { synthetic_test: true, source: "eft-sandbox-contract" },
+  };
+
+  const mismatch = await reconcile({
+    order_id: first.data.order_id,
+    reference: first.data.payment_reference,
+    deposits: [{ ...syntheticDeposit, amount: first.data.amount - 1 }],
+  });
+  assert(mismatch.response.status === 200 && mismatch.data?.ok === true, "Amount-mismatch reconciliation failed unexpectedly");
+  assert(mismatch.data?.matched === 0 && mismatch.data?.still_unmatched === 1, "Amount mismatch was not left unmatched");
+  assert(mismatch.data?.order_state?.payment_status === "awaiting_eft", "Amount mismatch changed payment status");
+
+  const paid = await reconcile({
+    order_id: first.data.order_id,
+    reference: first.data.payment_reference,
+    deposits: [syntheticDeposit],
+  });
+  assert(paid.response.status === 200 && paid.data?.ok === true, `Paid reconciliation returned HTTP ${paid.response.status}`);
+  assert(paid.data?.inserted === 1 && paid.data?.matched === 1, "Valid deposit did not settle exactly one order");
+  assert(paid.data?.order_state?.payment_status === "complete", "CRM order did not reach complete");
+  assert(paid.data?.order_state?.payment_settled_at, "CRM order has no settlement timestamp");
+
+  const { data: paidOrder, error: paidOrderError } = await admin
+    .from("orders")
+    .select("status, paid_at")
+    .eq("id", first.data.order_id)
+    .single();
+  if (paidOrderError || !paidOrder) throw new Error(`Paid storefront order lookup failed: ${paidOrderError?.message || "not found"}`);
+  assert(paidOrder.status === "paid" && paidOrder.paid_at, "Storefront order did not reach paid with paid_at");
+
+  const { data: revenueEvents, error: revenueError } = await admin
+    .from("analytics_events")
+    .select("event, props")
+    .eq("props->>order_id", first.data.order_id)
+    .in("event", ["bank_deposit_verified", "payin_completed"]);
+  if (revenueError) throw new Error(`Revenue-event lookup failed: ${revenueError.message}`);
+  assert(revenueEvents?.length === 2, `Expected two derived revenue events, received ${revenueEvents?.length || 0}`);
+  assert(new Set(revenueEvents.map(({ event }) => event)).size === 2, "Derived revenue events were duplicated");
+
+  const { data: confirmation, error: confirmationError } = await admin
+    .from("email_outbox")
+    .select("template, status")
+    .eq("idempotency_key", `order_confirmation:${first.data.order_id}`)
+    .single();
+  if (confirmationError || !confirmation) throw new Error(`Confirmation lookup failed: ${confirmationError?.message || "not found"}`);
+  assert(confirmation.template === "order_confirmation" && confirmation.status === "queued", "Order confirmation was not queued");
+
+  const { data: fulfilment, error: fulfilmentError } = await admin
+    .from("integration_logs")
+    .select("status, payload")
+    .eq("integration", "eft")
+    .eq("action", "reconcile")
+    .eq("status", "matched")
+    .contains("payload", { orderId: first.data.order_id, synthetic_test: true });
+  if (fulfilmentError) throw new Error(`Fulfilment lookup failed: ${fulfilmentError.message}`);
+  assert(fulfilment?.length === 1, "Synthetic fulfilment record was not written exactly once");
+
+  const replayDeposit = await reconcile({
+    order_id: first.data.order_id,
+    reference: first.data.payment_reference,
+    deposits: [syntheticDeposit],
+  });
+  assert(replayDeposit.data?.duplicates === 1 && replayDeposit.data?.matched === 0, "Duplicate deposit was not deduplicated");
+
+  const { count: finalRevenueCount, error: finalRevenueError } = await admin
+    .from("analytics_events")
+    .select("id", { count: "exact", head: true })
+    .eq("props->>order_id", first.data.order_id)
+    .in("event", ["bank_deposit_verified", "payin_completed"]);
+  if (finalRevenueError) throw new Error(`Final revenue-event count failed: ${finalRevenueError.message}`);
+  assert(finalRevenueCount === 2, "Deposit replay duplicated derived revenue events");
+
+  console.log("EFT sandbox contract passed: checkout and synthetic pending-to-paid settlement verified end to end.");
 } catch (error) {
   contractError = error;
 } finally {

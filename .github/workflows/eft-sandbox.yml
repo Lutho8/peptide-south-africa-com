@@ -13,6 +13,8 @@ on:
       - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
+      - "supabase/functions/eft-reconcile/**"
+      - "supabase/functions/_shared/metaCapi.ts"
   push:
     branches: [main]
     paths:
@@ -24,6 +26,8 @@ on:
       - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
+      - "supabase/functions/eft-reconcile/**"
+      - "supabase/functions/_shared/metaCapi.ts"
 
 permissions:
   contents: read
@@ -115,6 +119,27 @@ jobs:
             ].join("\n"),
           );
 
+          const legacyCrmPolicyPath = "supabase/migrations/20260717162438_psa_crls_policies_triggers_indexes.sql";
+          const legacyCrmPolicy = fs.readFileSync(legacyCrmPolicyPath, "utf8");
+          for (const marker of [
+            'DROP POLICY IF EXISTS "Allow anonymous lead capture" ON psa_leads',
+            "CREATE TRIGGER psa_event_to_lead_sync",
+            "CREATE INDEX IF NOT EXISTS idx_psa_leads_email",
+          ]) {
+            if (!legacyCrmPolicy.includes(marker)) {
+              throw new Error(`Refusing to neutralize unexpected legacy CRM migration; missing ${marker}`);
+            }
+          }
+          fs.writeFileSync(
+            legacyCrmPolicyPath,
+            [
+              "-- CI-only no-op: production recorded this migration before psa_leads existed in its ledger.",
+              "-- The later CRM backbone owns those tables and the EFT contract does not use them.",
+              "SELECT 1;",
+              "",
+            ].join("\n"),
+          );
+
           const crmMigrationPath = "supabase/migrations/20260815164711_secure_internal_crm_views_and_queue_functions.sql";
           const crmMigration = fs.readFileSync(crmMigrationPath, "utf8");
           const expectedCrmMarkers = [
@@ -137,46 +162,57 @@ jobs:
             ].join("\n"),
           );
 
-          const migrationFiles = fs.readdirSync("supabase/migrations")
-            .filter((name) => name.endsWith(".sql"));
-          const hasTrackedPsaOrdersSchema = migrationFiles.some((name) => {
-            const sql = fs.readFileSync(`supabase/migrations/${name}`, "utf8");
-            return /create\s+table\s+(?:if\s+not\s+exists\s+)?public\.psa_orders\b/i.test(sql);
-          });
-          if (hasTrackedPsaOrdersSchema) {
-            throw new Error("A tracked psa_orders schema now exists; remove the CI bootstrap and review its compatibility");
-          }
-
-          const analyticsMigrationPath = "supabase/migrations/20260827150000_pricing_analytics_events.sql";
-          const analyticsMigration = fs.readFileSync(analyticsMigrationPath, "utf8");
-          for (const marker of [
-            "drop trigger if exists emit_verified_eft_revenue_events on public.psa_orders",
-            "after update of payment_status on public.psa_orders",
-          ]) {
-            if (!analyticsMigration.includes(marker)) {
-              throw new Error(`Refusing to bootstrap psa_orders for an unexpected analytics migration; missing ${marker}`);
+          const remoteOnlyVersions = [
+            "20260717065144", "20260717162438", "20260717215110", "20260718200802",
+            "20260721072733", "20260722101231", "20260815200848", "20260815200915",
+            "20260815201053", "20260821121854", "20260821224835", "20260822112403",
+            "20260822120951", "20260822123250", "20260822175950", "20260822175957",
+            "20260822180125", "20260822202235", "20260822202422", "20260822202551",
+            "20260822205621", "20260822205839", "20260822221419", "20260825202316",
+            "20260825202440", "20260825203731", "20260825204311", "20260825204902",
+            "20260825205201", "20260827161248", "20260827195140", "20260827204044",
+            "20260828111014", "20260828165755", "20260829092646", "20260902142441",
+            "20260903093543", "20260912174634",
+          ];
+          const migrationFiles = fs.readdirSync("supabase/migrations").filter((name) => name.endsWith(".sql"));
+          for (const version of remoteOnlyVersions) {
+            const matches = migrationFiles.filter((name) => name.startsWith(`${version}_`));
+            if (matches.length !== 1) {
+              throw new Error(`Expected one authoritative migration for ${version}, found ${matches.length}`);
             }
+            if (version === "20260821121854") continue; // bank_deposits is part of this contract
+            fs.writeFileSync(
+              `supabase/migrations/${matches[0]}`,
+              [
+                `-- CI-only no-op for recovered production migration ${version}.`,
+                "-- The isolated EFT contract provisions only its bounded schema dependencies.",
+                "SELECT 1;",
+                "",
+              ].join("\n"),
+            );
           }
 
           fs.writeFileSync(
             "supabase/migrations/20260827145959_ci_psa_orders.sql",
             [
-              "-- CI-only bootstrap for production schema drift: psa_orders is not represented in tracked migrations.",
+              "-- CI-only EFT boundary matching the verified production columns.",
               "create table public.psa_orders (",
-              "  order_id uuid primary key references public.orders(id) on delete cascade,",
+              "  order_id varchar(100) primary key,",
               "  unified_order_id uuid not null references public.orders(id) on delete cascade,",
               "  user_id uuid not null references auth.users(id) on delete cascade,",
               "  customer_email text not null,",
-              "  line_items text,",
+              "  line_items jsonb,",
               "  order_total numeric(12,2) not null check (order_total >= 0),",
               "  payment_method text not null,",
               "  payment_status text not null,",
               "  payment_reference text not null unique,",
+              "  payment_settled_at timestamptz,",
               "  created_at timestamptz not null default now(),",
               "  updated_at timestamptz not null default now()",
               ");",
               "alter table public.psa_orders enable row level security;",
               "grant all on public.psa_orders to service_role;",
+              "grant select, insert, update, delete on public.bank_deposits to service_role;",
               "grant select, insert, update, delete on public.integration_logs to service_role;",
               "",
             ].join("\n"),
@@ -215,7 +251,8 @@ jobs:
           printf '%s\n' \
             'EFT_ACCOUNT_NAME=PSA CI Sandbox' \
             'EFT_ACCOUNT_NUMBER=0000000000' \
-            'EFT_BRANCH_CODE=000000' > "$env_file"
+            'EFT_BRANCH_CODE=000000' \
+            'EFT_RECONCILE_SECRET=eft-ci-reconcile-secret' > "$env_file"
           chmod 600 "$env_file"
 
           nohup supabase functions serve eft-create-order --env-file "$env_file" \
@@ -230,16 +267,38 @@ jobs:
               --data '{}' \
               "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-create-order" || true)"
             if [ "$status" = "401" ]; then
-              exit 0
+              break
             fi
             sleep 1
           done
 
-          sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
-          echo "Local EFT function did not become ready" >&2
-          exit 1
+          if [ "$status" != "401" ]; then
+            sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
+            echo "Local EFT create-order function did not become ready" >&2
+            exit 1
+          fi
+
+          for attempt in {1..60}; do
+            reconcile_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+              --request POST \
+              --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
+              --header 'Content-Type: application/json' \
+              --data '{}' \
+              "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-reconcile" || true)"
+            if [ "$reconcile_status" = "401" ]; then
+              break
+            fi
+            sleep 1
+          done
+          if [ "$reconcile_status" != "401" ]; then
+            sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
+            echo "Local EFT reconciler auth gate returned $reconcile_status instead of 401" >&2
+            exit 1
+          fi
 
       - name: Run authenticated EFT sandbox contract
+        env:
+          EFT_SANDBOX_RECONCILE_SECRET: eft-ci-reconcile-secret
         run: node scripts/ci/eft-sandbox-contract.mjs
 
       - name: Show local function logs on failure
