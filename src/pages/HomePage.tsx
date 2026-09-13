@@ -82,7 +82,7 @@ export default function HomePage() {
 
       {/* ===================== CATEGORY SHOWCASES (Whoosh-style) ===================== */}
       <CategoryShowcase
-        eyebrow="Metabolic Research"
+        eyebrow="Weight Loss"
         title="Compounds for advanced pathway research."
         blurb="Triple- and dual-agonist research peptides presented with clear compound, storage and batch information."
         productIds={["1", "4"]}

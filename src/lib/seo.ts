@@ -68,7 +68,7 @@ export const organizationSchema = {
     itemListElement: [
       {
         "@type": "OfferCatalog",
-        name: "Metabolic Research",
+        name: "Weight Loss",
         description: "Research compounds studied in GLP-1, GIP and glucagon receptor pathway models.",
       },
       {
@@ -198,9 +198,9 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
 /** Entity relationship clusters for internal linking */
 export const entityClusters = {
   fatLoss: {
-    title: "Metabolic Research",
+    title: "Weight Loss",
     links: [
-      { label: "Metabolic Research Catalogue", href: "/shop?category=GLP", description: "Triple- and dual-agonist research compounds with clear product records." },
+      { label: "Weight Loss Catalogue", href: "/shop?category=GLP", description: "Triple- and dual-agonist research compounds with clear product records." },
       { label: "GGG-3 (Retatrutide)", href: "/product/rt3-reta", description: "Triple agonist targeting GLP-1, GIP, and glucagon receptors." },
       { label: "TZ-2 (Tirzepatide)", href: "/product/tz2-tirz", description: "Dual GIP/GLP-1 receptor agonist for metabolic research." },
       { label: "Buy Retatrutide in South Africa", href: "/buy-retatrutide-south-africa", description: "ZAR pricing, HPLC-tested GGG-3, local Cape Town dispatch." },

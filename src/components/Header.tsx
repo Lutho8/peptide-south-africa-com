@@ -23,12 +23,12 @@ const DROPDOWNS: Dropdown[] = [
     ],
   },
   {
-    label: "Metabolic Research",
+    label: "Weight Loss",
     items: [
       { label: "GGG-3", to: "/product/rt3-reta", desc: "Triple-agonist research peptide" },
       { label: "TZ-2 (Tirzepatide)", to: "/product/tz2-tirz", desc: "Dual-agonist research peptide" },
       { label: "Research Quiz", to: "/quiz", desc: "Organise the catalogue" },
-      { label: "Shop Metabolic Research", to: "/shop?category=GLP" },
+      { label: "Shop Weight Loss", to: "/shop?category=GLP" },
     ],
   },
   {

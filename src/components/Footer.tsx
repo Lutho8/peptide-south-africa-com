@@ -71,7 +71,7 @@ export default function Footer() {
             <h4 className="mb-3 font-display text-sm font-semibold text-foreground">Shop</h4>
             <div className="flex flex-col gap-2">
               <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground">All Products</Link>
-              <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Metabolic Research</Link>
+              <Link to="/shop?category=GLP" className="text-sm text-muted-foreground hover:text-foreground">Weight Loss</Link>
               <Link to="/shop?category=Longevity" className="text-sm text-muted-foreground hover:text-foreground">Longevity</Link>
               <Link to="/shop?category=Healing" className="text-sm text-muted-foreground hover:text-foreground">Recovery</Link>
               <Link to="/shop?category=Skin+%26+Hair" className="text-sm text-muted-foreground hover:text-foreground">Skin &amp; Hair</Link>

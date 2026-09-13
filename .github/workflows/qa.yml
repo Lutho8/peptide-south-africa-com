@@ -2,7 +2,7 @@ name: QA
 
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main]
   pull_request:
   workflow_dispatch:
     inputs:
@@ -14,6 +14,10 @@ on:
         description: 'smoke | full'
         required: false
         default: 'full'
+
+concurrency:
+  group: qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   qa:

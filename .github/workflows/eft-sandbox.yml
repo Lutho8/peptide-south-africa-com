@@ -41,6 +41,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: eft-sandbox-contract-${{ github.workflow }}-${{ github.ref }}
@@ -323,3 +324,30 @@ jobs:
             kill "$(cat "$RUNNER_TEMP/eft-function.pid")" 2>/dev/null || true
           fi
           supabase stop --no-backup
+
+  notify-operations:
+    name: Alert operations when the deployed checkout canary fails
+    if: >-
+      always() &&
+      needs.local-contract.result == 'failure' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    needs: local-contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update the checkout canary incident
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title='Checkout canary failure'
+          body="The deployed checkout canary failed on ${GITHUB_REF_NAME} at ${RUN_URL}. Review the failed step, preserve cleanup evidence, and assign an owner before closing this incident."
+          issue_number="$(gh issue list --repo "$GH_REPO" --state open --search "$title in:title" \
+            --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)"
+
+          if [ -n "$issue_number" ]; then
+            gh issue comment "$issue_number" --repo "$GH_REPO" --body "$body"
+          else
+            gh issue create --repo "$GH_REPO" --title "$title" --body "$body"
+          fi
