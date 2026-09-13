@@ -89,7 +89,7 @@ try {
     headers: { apikey: publishableKey, "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
-  assert(unauthenticated.status === 401, `Unauthenticated checkout returned HTTP ${unauthenticated.status} instead of 401`);
+  assert(unauthenticated.status === 403, `Untrusted checkout returned HTTP ${unauthenticated.status} instead of 403`);
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
