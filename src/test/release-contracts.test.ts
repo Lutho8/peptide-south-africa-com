@@ -103,6 +103,7 @@ describe("release contracts", () => {
     expect(workflow).toContain("version: 2.117.0");
     expect(config).toContain("[db.migrations]");
     expect(config).toContain('schema_paths = ["./schemas/**/*.sql"]');
+    expect(read("supabase/roles.sql")).toContain("CREATE ROLE crm_reader NOLOGIN");
     expect(config).toMatch(/\[experimental\.pgdelta\]\s+enabled = true/);
     expect(config).toMatch(/\[functions\.eft-create-order\]\s+verify_jwt = true/);
     expect(baselineGuard).toContain('"_cluster/misc.sql"');

@@ -6,6 +6,7 @@ import { resolve } from "node:path";
 const root = resolve("supabase/schemas");
 const manifestPath = resolve(root, ".pgdelta-export.json");
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+const rolesSql = readFileSync(resolve("supabase/roles.sql"), "utf8");
 
 const fail = (message) => {
   console.error(`Declarative baseline invalid: ${message}`);
@@ -15,6 +16,7 @@ const fail = (message) => {
 if (manifest.formatVersion !== 1) fail(`unsupported manifest format ${manifest.formatVersion}`);
 if (manifest.scope !== "database") fail(`unexpected export scope ${manifest.scope}`);
 if (manifest.redactSecrets !== true) fail("export was not generated with secret redaction enabled");
+if (!/CREATE ROLE crm_reader NOLOGIN/i.test(rolesSql)) fail("crm_reader is missing from roles.sql");
 
 const loadOrder = manifest.loadOrder ?? [];
 const files = manifest.files ?? [];

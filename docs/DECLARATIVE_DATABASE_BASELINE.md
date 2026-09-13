@@ -1,6 +1,7 @@
 # Declarative database baseline
 
-`supabase/schemas/` is the source of truth for database structure. Historical
+`supabase/schemas/` is the source of truth for database structure, while
+`supabase/roles.sql` declares custom cluster roles needed by that structure. Historical
 files in `supabase/migrations/` remain the immutable deployment ledger and must
 not be edited to make a disposable database pass.
 
@@ -20,7 +21,7 @@ migrations.
 
 ## Making a schema change
 
-1. Edit the applicable file under `supabase/schemas/`.
+1. Edit the applicable file under `supabase/schemas/` (or `supabase/roles.sql` for a custom role).
 2. Generate the migration with strict coverage:
 
    ```bash

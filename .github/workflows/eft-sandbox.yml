@@ -12,6 +12,7 @@ on:
       - "scripts/ci/verify-declarative-baseline.mjs"
       - "supabase/config.toml"
       - "supabase/schemas/**"
+      - "supabase/roles.sql"
       - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
@@ -27,6 +28,7 @@ on:
       - "scripts/ci/verify-declarative-baseline.mjs"
       - "supabase/config.toml"
       - "supabase/schemas/**"
+      - "supabase/roles.sql"
       - "supabase/migrations/**"
       - "supabase/functions/_shared/pricing.ts"
       - "supabase/functions/eft-create-order/**"
@@ -74,7 +76,7 @@ jobs:
           if git cat-file -e "$DIFF_BASE:supabase/schemas/.pgdelta-export.json" 2>/dev/null; then
             changed="$(git diff --name-only "$DIFF_BASE" "${{ github.sha }}")"
             migrations_changed="$(printf '%s\n' "$changed" | grep -c '^supabase/migrations/' || true)"
-            schemas_changed="$(printf '%s\n' "$changed" | grep -c '^supabase/schemas/' || true)"
+            schemas_changed="$(printf '%s\n' "$changed" | grep -Ec '^supabase/(schemas/|roles\.sql$)' || true)"
             if { [ "$migrations_changed" -gt 0 ] && [ "$schemas_changed" -eq 0 ]; } || \
                { [ "$schemas_changed" -gt 0 ] && [ "$migrations_changed" -eq 0 ]; }; then
               echo "Schema drift guard: change supabase/schemas and supabase/migrations together." >&2
