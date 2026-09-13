@@ -32,6 +32,11 @@ Deno.serve(async (req)=>{
       error: 'Checkout is temporarily unavailable. Please try again.',
       code: 'CHECKOUT_NOT_CONFIGURED'
     }, 503);
+    const checkoutStoreSecret = Deno.env.get('CHECKOUT_STORE_SECRET');
+    if (!checkoutStoreSecret || req.headers.get('x-checkout-store-secret') !== checkoutStoreSecret) return json({
+      error: 'This checkout endpoint is available only through an approved storefront.',
+      code: 'TRUSTED_ORIGIN_REQUIRED'
+    }, 403);
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) return json({
       error: 'Your session has expired. Please sign in again.',
