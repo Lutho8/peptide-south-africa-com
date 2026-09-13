@@ -276,8 +276,18 @@ jobs:
             echo 'Vercel canary deployment did not return an HTTPS URL' >&2
             exit 1
           fi
-          echo "EFT_SANDBOX_STOREFRONT_URL=$canary_url" >> "$GITHUB_ENV"
-          echo "EFT_CANARY_DEPLOYMENT_URL=$canary_url" >> "$GITHUB_ENV"
+          {
+            echo "EFT_SANDBOX_STOREFRONT_URL=$canary_url"
+            echo "EFT_CANARY_DEPLOYMENT_URL=$canary_url"
+          } >> "$GITHUB_ENV"
+
+          canary_id="$(npx --yes vercel@59.16.0 inspect "$canary_url" --json | node -e \
+            "let input='';process.stdin.on('data',chunk=>input+=chunk).on('end',()=>process.stdout.write(JSON.parse(input).id||''));")"
+          if ! [[ "$canary_id" =~ ^dpl_ ]]; then
+            echo 'Vercel canary deployment did not return a deployment ID' >&2
+            exit 1
+          fi
+          echo "EFT_CANARY_DEPLOYMENT_ID=$canary_id" >> "$GITHUB_ENV"
 
       - name: Run authenticated EFT sandbox contract
         env:
@@ -301,8 +311,9 @@ jobs:
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          if [ -n "${EFT_CANARY_DEPLOYMENT_URL:-}" ] && [ -n "${VERCEL_TOKEN:-}" ]; then
-            npx --yes vercel@59.16.0 remove "$EFT_CANARY_DEPLOYMENT_URL" \
+          canary_deployment="${EFT_CANARY_DEPLOYMENT_ID:-${EFT_CANARY_DEPLOYMENT_URL:-}}"
+          if [ -n "$canary_deployment" ] && [ -n "${VERCEL_TOKEN:-}" ]; then
+            npx --yes vercel@59.16.0 remove "$canary_deployment" \
               --yes || true
           fi
           if [ -f "$RUNNER_TEMP/cloudflared.pid" ]; then

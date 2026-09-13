@@ -141,7 +141,8 @@ describe("release contracts", () => {
     expect(workflow).toContain("Deploy disposable Vercel checkout canary");
     expect(workflow).toContain('github.ref == \'refs/heads/main\'');
     expect(workflow).toContain("--project \"$VERCEL_PROJECT_ID\"");
-    expect(workflow).toContain('remove "$EFT_CANARY_DEPLOYMENT_URL"');
+    expect(workflow).toContain("EFT_CANARY_DEPLOYMENT_ID=$canary_id");
+    expect(workflow).toContain('remove "$canary_deployment"');
     expect(contract).toContain('"vercel@59.16.0"');
     expect(contract).toContain('"--deployment"');
     expect(contract).toContain("deployed Vercel");
