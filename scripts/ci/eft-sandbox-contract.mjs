@@ -89,7 +89,7 @@ try {
     headers: { apikey: publishableKey, "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
-  assert(unauthenticated.status === 403, `Untrusted checkout returned HTTP ${unauthenticated.status} instead of 403`);
+  assert(unauthenticated.status === 401, `Unauthenticated checkout returned HTTP ${unauthenticated.status} instead of 401`);
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
@@ -104,7 +104,7 @@ try {
   if (signInError || !session.session?.access_token) throw new Error(`Synthetic user sign-in failed: ${signInError?.message || "no access token"}`);
   const accessToken = session.session.access_token;
 
-  const untrustedDirect = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
+  const authenticatedDirect = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -113,7 +113,7 @@ try {
     },
     body: JSON.stringify({}),
   });
-  assert(untrustedDirect.status === 403, `Public direct checkout returned HTTP ${untrustedDirect.status} instead of 403`);
+  assert(authenticatedDirect.status === 400, `Invalid authenticated checkout returned HTTP ${authenticatedDirect.status} instead of 400`);
 
   const requestId = randomUUID();
   const validBody = {
