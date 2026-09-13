@@ -35,6 +35,21 @@ Then require both:
 1. migration list has identical local and remote version columns;
 2. `supabase db push --dry-run --skip-vault` reports no pending migrations.
 
+## Execution record
+
+Executed on 2026-09-13 against project `eutszmrsukoqqeilzrbv` after PR #49's
+disposable EFT sandbox contract and all repository checks passed. The CLI
+reported all 37 versions repaired to `applied` with `repairAll: false`.
+
+Post-repair verification passed:
+
+1. `supabase migration list --project-ref eutszmrsukoqqeilzrbv` returned an
+   identical non-empty local and remote value for every migration version;
+2. `supabase db push --project-ref eutszmrsukoqqeilzrbv --dry-run --skip-vault`
+   returned `upToDate: true` with empty migrations, seeds, and roles arrays.
+
+No schema SQL was executed and no application or customer data was changed.
+
 ## Rollback
 
 History repair is metadata-only. If audit verification fails, run `supabase migration repair --status reverted` for exactly the versions above. This does not roll back schema objects; it restores their prior unrecorded ledger state.
