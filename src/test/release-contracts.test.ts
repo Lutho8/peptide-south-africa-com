@@ -175,6 +175,16 @@ describe("release contracts", () => {
     expect(categorySurfaces).toContain("/shop?category=GLP");
   });
 
+  it("runs one authoritative QA workflow per PR commit", () => {
+    const workflow = read(".github/workflows/qa.yml");
+    expect(workflow).toMatch(/push:\s+branches: \[main\]/);
+    expect(workflow).not.toContain("'feat/**'");
+    expect(workflow).toContain("pull_request:");
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("github.event.pull_request.number || github.ref");
+    expect(workflow).toContain("cancel-in-progress: true");
+  });
+
   it("only fires Meta Purchase from confirmed bank settlement, never from order creation", () => {
     const orderCreation = read("api/eft-create-order.ts");
     const analytics = read("src/lib/analytics.ts");
