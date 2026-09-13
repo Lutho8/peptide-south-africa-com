@@ -7,6 +7,10 @@ const root = resolve("supabase/schemas");
 const manifestPath = resolve(root, ".pgdelta-export.json");
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const rolesSql = readFileSync(resolve("supabase/roles.sql"), "utf8");
+const eftRevenueTriggerSql = readFileSync(
+  resolve(root, "public/functions/emit_verified_eft_revenue_events.sql"),
+  "utf8",
+);
 
 const fail = (message) => {
   console.error(`Declarative baseline invalid: ${message}`);
@@ -17,6 +21,9 @@ if (manifest.formatVersion !== 1) fail(`unsupported manifest format ${manifest.f
 if (manifest.scope !== "database") fail(`unexpected export scope ${manifest.scope}`);
 if (manifest.redactSecrets !== true) fail("export was not generated with secret redaction enabled");
 if (!/CREATE ROLE crm_reader NOLOGIN/i.test(rolesSql)) fail("crm_reader is missing from roles.sql");
+if (!/where id = new\.order_id::uuid/i.test(eftRevenueTriggerSql)) {
+  fail("EFT settlement analytics trigger is missing the legacy order_id UUID cast");
+}
 
 const loadOrder = manifest.loadOrder ?? [];
 const files = manifest.files ?? [];

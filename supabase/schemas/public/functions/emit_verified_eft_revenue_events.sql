@@ -8,7 +8,7 @@ declare
   settled_user_id uuid;
 begin
   if old.payment_status = 'awaiting_eft' and new.payment_status = 'complete' then
-    select user_id into settled_user_id from public.orders where id = new.order_id;
+    select user_id into settled_user_id from public.orders where id = new.order_id::uuid;
     insert into public.analytics_events (event, session_id, user_id, props)
     values
       ('bank_deposit_verified', 'server:' || new.order_id::text, settled_user_id,
