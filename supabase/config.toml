@@ -1,5 +1,11 @@
 project_id = "eutszmrsukoqqeilzrbv"
 
+[db.migrations]
+schema_paths = ["./schemas/**/*.sql"]
+
+[experimental.pgdelta]
+enabled = true
+
 [functions.generate-protocol]
 verify_jwt = false
 

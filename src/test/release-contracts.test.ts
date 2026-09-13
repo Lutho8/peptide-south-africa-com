@@ -80,22 +80,34 @@ describe("release contracts", () => {
     expect(migration).toContain("analytics_events_settlement_once_idx");
   });
 
-  it("runs the authenticated EFT contract in an isolated local Supabase", () => {
+  it("runs the authenticated EFT contract from an isolated declarative baseline", () => {
     const workflow = read(".github/workflows/eft-sandbox.yml");
     const contract = read("scripts/ci/eft-sandbox-contract.mjs");
+    const baselineGuard = read("scripts/ci/verify-declarative-baseline.mjs");
     const config = read("supabase/config.toml");
-    expect(workflow).toContain("Isolate the CI project from production");
-    expect(workflow).toContain('project_id = "eft-sandbox-ci"');
+    expect(workflow).toContain("Verify declarative production baseline");
+    expect(workflow).toContain('project_id = "eft-declarative-sandbox-ci"');
     expect(workflow).toContain("Refusing to rewrite an unexpected Supabase project_id");
+    expect(workflow).toContain("supabase db schema declarative sync");
+    expect(workflow).toContain("--strict-coverage");
+    expect(workflow).toContain('mv supabase/migrations "$RUNNER_TEMP/production-migrations"');
+    expect(workflow).not.toContain("CI-only no-op for recovered production migration");
+    expect(workflow).not.toContain("20260827145959_ci_psa_orders.sql");
     expect(workflow).toContain("supabase start");
     expect(workflow).toContain("supabase functions serve eft-create-order");
     expect(workflow).toContain("supabase stop --no-backup");
-    expect(workflow.indexOf("Isolate the CI project from production"))
+    expect(workflow.indexOf("Build a clean migration from the declarative baseline"))
       .toBeLessThan(workflow.indexOf("Start isolated local Supabase"));
-    expect(workflow.indexOf("Serve the native EFT function locally"))
+    expect(workflow.indexOf("Serve the native EFT functions locally"))
       .toBeLessThan(workflow.indexOf("Run authenticated EFT sandbox contract"));
-    expect(workflow).toContain("version: 2.115.0");
+    expect(workflow).toContain("version: 2.117.0");
+    expect(config).toContain("[db.migrations]");
+    expect(config).toContain('schema_paths = ["./schemas/**/*.sql"]');
+    expect(read("supabase/roles.sql")).toContain("CREATE ROLE crm_reader NOLOGIN");
+    expect(config).toMatch(/\[experimental\.pgdelta\]\s+enabled = true/);
     expect(config).toMatch(/\[functions\.eft-create-order\]\s+verify_jwt = true/);
+    expect(baselineGuard).toContain('"_cluster/misc.sql"');
+    expect(baselineGuard).toContain("operational scheduler state");
     expect(contract).toContain("signInWithPassword");
     expect(contract).toContain("Unauthenticated checkout returned HTTP");
     expect(contract).toContain("example.invalid");
