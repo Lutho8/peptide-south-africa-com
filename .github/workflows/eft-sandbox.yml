@@ -278,12 +278,18 @@ jobs:
             exit 1
           fi
 
-          reconcile_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
-            --request POST \
-            --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
-            --header 'Content-Type: application/json' \
-            --data '{}' \
-            "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-reconcile" || true)"
+          for attempt in {1..60}; do
+            reconcile_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+              --request POST \
+              --header "apikey: $EFT_SANDBOX_PUBLISHABLE_KEY" \
+              --header 'Content-Type: application/json' \
+              --data '{}' \
+              "$EFT_SANDBOX_SUPABASE_URL/functions/v1/eft-reconcile" || true)"
+            if [ "$reconcile_status" = "401" ]; then
+              break
+            fi
+            sleep 1
+          done
           if [ "$reconcile_status" != "401" ]; then
             sed -n '1,200p' "$RUNNER_TEMP/eft-function.log"
             echo "Local EFT reconciler auth gate returned $reconcile_status instead of 401" >&2
