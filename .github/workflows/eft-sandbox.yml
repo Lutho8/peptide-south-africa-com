@@ -1,6 +1,8 @@
 name: EFT sandbox contract
 
 on:
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
   pull_request:
     branches: [main]
@@ -48,7 +50,7 @@ jobs:
   local-contract:
     name: Verify EFT contract from declarative production baseline
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -201,10 +203,89 @@ jobs:
             exit 1
           fi
 
+      - name: Install pinned Cloudflare tunnel client
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location \
+            --output "$RUNNER_TEMP/cloudflared" \
+            https://github.com/cloudflare/cloudflared/releases/download/2026.9.0/cloudflared-linux-amd64
+          printf '%s  %s\n' \
+            '53b7a7a5420d188758d24341294acb0d1bca54296548ac05e38811a694ac6134' \
+            "$RUNNER_TEMP/cloudflared" | sha256sum --check --strict
+          chmod 700 "$RUNNER_TEMP/cloudflared"
+
+      - name: Expose the disposable Supabase API to the canary deployment
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          nohup "$RUNNER_TEMP/cloudflared" tunnel --url "$EFT_SANDBOX_SUPABASE_URL" --no-autoupdate \
+            > "$RUNNER_TEMP/cloudflared.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/cloudflared.pid"
+
+          tunnel_url=''
+          for attempt in {1..60}; do
+            tunnel_url="$(grep -Eo 'https://[-a-z0-9]+\.trycloudflare\.com' "$RUNNER_TEMP/cloudflared.log" | head -n 1 || true)"
+            if [ -n "$tunnel_url" ]; then
+              break
+            fi
+            sleep 1
+          done
+          if [ -z "$tunnel_url" ]; then
+            sed -n '1,160p' "$RUNNER_TEMP/cloudflared.log"
+            echo 'Disposable Supabase tunnel did not become ready' >&2
+            exit 1
+          fi
+
+          for attempt in {1..30}; do
+            status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$tunnel_url/auth/v1/health" || true)"
+            if [ "$status" = "200" ]; then
+              break
+            fi
+            sleep 1
+          done
+          if [ "$status" != "200" ]; then
+            echo "Disposable Supabase tunnel health returned $status" >&2
+            exit 1
+          fi
+          echo "EFT_CANARY_SUPABASE_URL=$tunnel_url" >> "$GITHUB_ENV"
+
+      - name: Deploy disposable Vercel checkout canary
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          : "${VERCEL_TOKEN:?Missing VERCEL_TOKEN repository secret}"
+          : "${VERCEL_ORG_ID:?Missing VERCEL_ORG_ID repository variable}"
+          : "${VERCEL_PROJECT_ID:?Missing VERCEL_PROJECT_ID repository variable}"
+
+          canary_url="$(npx --yes vercel@59.16.0 deploy . \
+            --yes \
+            --project "$VERCEL_PROJECT_ID" \
+            --env "SUPABASE_URL=$EFT_CANARY_SUPABASE_URL" \
+            --env "SUPABASE_ANON_KEY=$EFT_SANDBOX_PUBLISHABLE_KEY" \
+            --env "SUPABASE_SERVICE_ROLE_KEY=$EFT_SANDBOX_SERVICE_ROLE_KEY" \
+            --env 'CHECKOUT_STORE_SECRET=eft-ci-approved-storefront-secret' \
+            --build-env "VITE_SUPABASE_URL=$EFT_CANARY_SUPABASE_URL" \
+            --build-env "VITE_SUPABASE_PUBLISHABLE_KEY=$EFT_SANDBOX_PUBLISHABLE_KEY" \
+            --build-env 'VITE_SUPABASE_PROJECT_ID=eft-declarative-sandbox-ci')"
+          if ! [[ "$canary_url" =~ ^https:// ]]; then
+            echo 'Vercel canary deployment did not return an HTTPS URL' >&2
+            exit 1
+          fi
+          echo "EFT_SANDBOX_STOREFRONT_URL=$canary_url" >> "$GITHUB_ENV"
+          echo "EFT_CANARY_DEPLOYMENT_URL=$canary_url" >> "$GITHUB_ENV"
+
       - name: Run authenticated EFT sandbox contract
         env:
           EFT_SANDBOX_CHECKOUT_STORE_SECRET: eft-ci-approved-storefront-secret
           EFT_SANDBOX_RECONCILE_SECRET: eft-ci-reconcile-secret
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: npx vite-node scripts/ci/eft-sandbox-contract.mjs
 
       - name: Show local function logs on failure
@@ -215,7 +296,18 @@ jobs:
       - name: Tear down the isolated Supabase stack
         if: always()
         shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
+          if [ -n "${EFT_CANARY_DEPLOYMENT_URL:-}" ] && [ -n "${VERCEL_TOKEN:-}" ]; then
+            npx --yes vercel@59.16.0 remove "$EFT_CANARY_DEPLOYMENT_URL" \
+              --yes || true
+          fi
+          if [ -f "$RUNNER_TEMP/cloudflared.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/cloudflared.pid")" 2>/dev/null || true
+          fi
           if [ -f "$RUNNER_TEMP/eft-function.pid" ]; then
             kill "$(cat "$RUNNER_TEMP/eft-function.pid")" 2>/dev/null || true
           fi
