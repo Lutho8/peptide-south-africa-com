@@ -34,8 +34,8 @@ function emptySlots(size: MixBundleSize, prefill: Slot[] = []): Slot[] {
 export default function BuildYourStackPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("prefill") ?? "";
-  // Deep-links (cart upsell, quiz stack) must not prefill an out-of-stock or
-  // clinician-guided product — the slot would be unpurchasable on arrival.
+  // Deep-links (cart upsell, quiz stack) must not prefill a separately reserved
+  // or clinician-guided product — the slot would be unpurchasable on arrival.
   const validPrefill = selectableProducts.some((p) => p.slug === prefillSlug && p.inStock !== false)
     ? prefillSlug
     : "";
@@ -87,8 +87,8 @@ export default function BuildYourStackPage() {
     }
     if (outOfStockSlots.length > 0) {
       toast({
-        title: "Swap out-of-stock items to continue",
-        description: "One or more selected vials are currently out of stock — highlighted below.",
+        title: "Reserve these items separately",
+        description: "One or more selected vials must be reserved separately — highlighted below.",
         variant: "destructive",
       });
       return;
@@ -240,7 +240,7 @@ export default function BuildYourStackPage() {
                         {selectableProducts.map((sp) => (
                           <option key={sp.slug} value={sp.slug} disabled={!sp.inStock}>
                             {sp.name}
-                            {!sp.inStock ? " (out of stock)" : ""}
+                            {!sp.inStock ? " (reserve separately)" : ""}
                           </option>
                         ))}
                       </select>
@@ -259,7 +259,7 @@ export default function BuildYourStackPage() {
                   </div>
                   {oos && (
                     <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-amber-600">
-                      <Info className="h-3.5 w-3.5" /> {p!.name} is out of stock — swap it to continue.
+                      <Info className="h-3.5 w-3.5" /> {p!.name} is available to reserve separately — swap it to continue.
                     </p>
                   )}
                 </div>

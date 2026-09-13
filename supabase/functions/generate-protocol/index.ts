@@ -175,7 +175,7 @@ function buildProtocol(
           "Weekly WhatsApp tips",
           "Reconstitution & storage guide",
         ],
-        weeklySchedule: "Sunday: TZ-2 injection (titrated). Daily: BPC-157 subcutaneous or oral. Recommended: Protein-forward meals, 8,000 steps/day minimum, 2x strength training.",
+        weeklySchedule: "Sunday: TZ-2 clinician-guided schedule. BPC-157: include only inside the authorised research design, using the route and handling method specified by that protocol. Recommended: protein-forward meals, 8,000 steps/day minimum, 2x strength training.",
         warnings: [
           "Start at lowest dose to assess tolerance",
           "Common initial side effects: mild nausea, reduced appetite (usually resolve in 3-5 days)",
@@ -235,7 +235,7 @@ function buildProtocol(
         peptides: [
           { name: "GLOW Blend (GHK-Cu + TB-500 + BPC-157)", dose: "2,330mcg/day", frequency: "Daily subcutaneous", purpose: "Comprehensive tissue regeneration, anti-inflammatory, wound healing" },
           { name: "Thymosin Alpha-1", dose: "1.6mg", frequency: "Twice weekly", purpose: "Immune modulation, reduces autoimmune flares, supports recovery" },
-          { name: "BPC-157 (additional oral)", dose: "500mcg/day", frequency: "Daily oral", purpose: "Gut barrier repair, systemic healing via oral route" },
+          { name: "BPC-157 research vial", dose: "Defined by authorised study design", frequency: "Per study protocol", purpose: "Gut-barrier and repair-pathway research" },
         ],
         expectedResults: [
           { icon: "shield", label: "60-80% reduction in chronic pain" },
@@ -251,11 +251,11 @@ function buildProtocol(
           "Sleep optimization stack",
           "Priority WhatsApp support",
         ],
-        weeklySchedule: "Daily: GLOW Blend injection + oral BPC-157. Monday & Thursday: Thymosin Alpha-1. Recommended: Low-impact training (swimming, cycling), daily stretching, infrared sauna 3x/week.",
+        weeklySchedule: "Daily: GLOW Blend study arm plus BPC-157 research arm. Monday & Thursday: Thymosin Alpha-1 research arm. Keep route and schedule inside the authorised study protocol.",
         warnings: [
           "If you have active cancer or are immunosuppressed, consult your oncologist before Thymosin Alpha-1",
           "Do not combine with NSAIDs during first 4 weeks (reduces peptide effectiveness)",
-          "Oral BPC-157 should be taken on an empty stomach for optimal absorption",
+          "BPC-157 is supplied as lyophilised synthetic powder in a vial, not as a premixed liquid or dropper product",
         ],
       };
     } else {

@@ -154,7 +154,8 @@ describe("release contracts", () => {
     const footer = read("src/components/Footer.tsx");
     const terms = read("src/pages/TermsPage.tsx");
     expect(footer).toContain("Research-use notice");
-    expect(footer).toContain("not for human or animal use or consumption");
+    expect(footer).toContain("not for human use or consumption");
+    expect(footer).toContain("Animal findings describe published study models, not veterinary treatment directions");
     expect(footer).toContain("A published supplier COA verifies the submitted supplier sample");
     expect(terms).toContain("Website content is general information only and is not medical advice");
     expect(terms).toContain("does not authenticate an individual vial");

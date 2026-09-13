@@ -34,7 +34,7 @@ const shopFaqSchema = {
     {
       "@type": "Question",
       name: "Are products sold for human use?",
-      acceptedAnswer: { "@type": "Answer", text: "No. Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption." },
+      acceptedAnswer: { "@type": "Answer", text: "No. Products are supplied solely for lawful laboratory research and are not for human use or consumption. Animal findings describe published study models, not veterinary treatment directions." },
     },
   ],
 };
@@ -108,7 +108,7 @@ export default function ShopPage() {
   }, 0);
 
   const addStackToCart = () => {
-    // Skip out-of-stock items — the cart guard would drop them anyway, but
+    // Skip items that require a separate reservation — the cart guard would drop them anyway, but
     // filtering here keeps the confirmation toast count honest.
     const purchasable = stackProducts.filter((p) => p.inStock);
     purchasable.forEach((p) => {
@@ -117,7 +117,7 @@ export default function ShopPage() {
     });
     if (purchasable.length === 0) {
       sonnerToast.error("Stack unavailable", {
-        description: "Every product in this protocol is currently out of stock.",
+        description: "Every product in this protocol must be reserved separately right now.",
       });
       return;
     }
@@ -471,7 +471,7 @@ export default function ShopPage() {
             </div>
             <div>
               <h3 className="font-semibold text-foreground mb-1">Are products sold for human use?</h3>
-              <p className="text-sm text-muted-foreground">No. Products are supplied solely for lawful laboratory research and are not for human or animal use or consumption. Checkout requires an explicit acknowledgement for every order.</p>
+              <p className="text-sm text-muted-foreground">No. Products are supplied solely for lawful laboratory research and are not for human use or consumption. Animal findings describe published study models, not veterinary treatment directions. Checkout requires an explicit acknowledgement for every order.</p>
             </div>
           </div>
         </div>
