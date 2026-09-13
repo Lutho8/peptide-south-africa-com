@@ -40,9 +40,7 @@ async function run(viewport, label) {
   assert(home.includes("R1,999/month"), `${label}: homepage monthly price missing`);
   assert(home.includes("R4,999"), `${label}: homepage full-program price missing`);
   assert(home.includes("R997"), `${label}: homepage saving missing`);
-  assert(!home.includes("R1,250 – R3,188"), `${label}: homepage exposes the GGG-3 vial price range`);
-  assert(await page.getByRole("button", { name: /Add GGG-3 to cart/i }).count() === 0, `${label}: homepage exposes a GGG-3 add-to-cart control`);
-  assert(await page.getByRole("button", { name: /Add TZ-2 \(Tirz\) to cart/i }).count() === 0, `${label}: homepage exposes a TZ-2 add-to-cart control`);
+  assert(await page.getByRole("button", { name: /Add GGG-3 to cart/i }).count() > 0, `${label}: homepage GGG-3 direct-purchase control missing`);
   const homeConsults = page.getByRole("link", { name: /BOOK CONSULT/i });
   assert(await homeConsults.count() > 0, `${label}: homepage BOOK CONSULT missing`);
   for (let index = 0; index < await homeConsults.count(); index++) {
@@ -66,11 +64,11 @@ async function run(viewport, label) {
 
   await page.goto(`${baseURL}/product/rt3-reta`, { waitUntil: "networkidle" });
   await dismissOverlays(page);
-  assert(await page.getByRole("button", { name: /BOOK CONSULT/i }).count() > 0, `${label}: GGG-3 BOOK CONSULT missing`);
+  assert(await page.getByRole("button", { name: /^Add to Cart$/i }).count() > 0, `${label}: GGG-3 direct-purchase control missing`);
 
   await page.goto(`${baseURL}/product/tz2-tirz`, { waitUntil: "networkidle" });
   await dismissOverlays(page);
-  assert(await page.getByRole("button", { name: /BOOK CONSULT/i }).count() > 0, `${label}: TZ-2 BOOK CONSULT missing`);
+  assert(await page.getByRole("button", { name: /^Add to Cart$/i }).count() > 0, `${label}: TZ-2 direct-purchase control missing`);
 
   await page.goto(`${baseURL}/build-your-stack`, { waitUntil: "networkidle" });
   await dismissOverlays(page);
@@ -97,6 +95,7 @@ async function run(viewport, label) {
   const checkoutCopy = await page.locator("body").innerText();
   assert(checkoutCopy.includes("Pay directly from your banking app"), `${label}: banking-app wording missing`);
   assert(checkoutCopy.includes("no card fees"), `${label}: no-card-fees wording missing`);
+  assert(await page.getByRole("checkbox").count() === 2, `${label}: checkout must show one required and one optional consent checkbox`);
   assert(!/PayFast|Visa|Mastercard|SnapScan|Zapper|Mobicred|Masterpass/.test(checkoutCopy), `${label}: legacy payment language present`);
   await page.screenshot({ path: `${outputDir}/checkout-${label}.png`, fullPage: true });
 

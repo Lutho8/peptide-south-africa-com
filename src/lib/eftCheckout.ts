@@ -39,10 +39,7 @@ export const emptyCheckoutForm: CheckoutForm = {
   city: "",
   region: "",
   postalCode: "",
-  ageConfirmed: false,
-  researchUseAcknowledged: false,
-  nonHumanUseAcknowledged: false,
-  reportScopeAcknowledged: false,
+  researchPurchaseAcknowledged: false,
   marketingConsent: false,
   consentPolicyVersion: CHECKOUT_POLICY_VERSION,
 };
@@ -59,10 +56,7 @@ export function loadSavedCheckoutForm(): CheckoutForm | null {
       ...emptyCheckoutForm,
       ...parsed,
       ...(!versionMatches ? {
-        ageConfirmed: false,
-        researchUseAcknowledged: false,
-        nonHumanUseAcknowledged: false,
-        reportScopeAcknowledged: false,
+        researchPurchaseAcknowledged: false,
         marketingConsent: false,
       } : {}),
       consentPolicyVersion: CHECKOUT_POLICY_VERSION,
@@ -140,10 +134,7 @@ export function getOrCreateEftRequestId(selections: CheckoutSelection[], form: C
     consent: {
       policyVersion: CHECKOUT_POLICY_VERSION,
       reportScopeVersion: REPORT_SCOPE_VERSION,
-      ageConfirmed: form.ageConfirmed,
-      researchUseAcknowledged: form.researchUseAcknowledged,
-      nonHumanUseAcknowledged: form.nonHumanUseAcknowledged,
-      reportScopeAcknowledged: form.reportScopeAcknowledged,
+      researchPurchaseAcknowledged: form.researchPurchaseAcknowledged,
       marketingConsent: form.marketingConsent,
     },
   });
@@ -208,10 +199,7 @@ export async function startEftCheckout({
       lastName: form.lastName,
       email: form.email,
       consent: {
-        ageConfirmed: form.ageConfirmed,
-        researchUseAcknowledged: form.researchUseAcknowledged,
-        nonHumanUseAcknowledged: form.nonHumanUseAcknowledged,
-        reportScopeAcknowledged: form.reportScopeAcknowledged,
+        researchPurchaseAcknowledged: form.researchPurchaseAcknowledged,
         marketingConsent: form.marketingConsent,
         policyVersion: CHECKOUT_POLICY_VERSION,
         reportScopeVersion: REPORT_SCOPE_VERSION,

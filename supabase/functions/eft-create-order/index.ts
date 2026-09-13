@@ -27,6 +27,11 @@ Deno.serve(async (req)=>{
     headers: corsHeaders
   });
   try {
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!serviceRoleKey || req.headers.get('apikey') !== serviceRoleKey) return json({
+      error: 'This checkout endpoint is available only through an approved storefront.',
+      code: 'TRUSTED_ORIGIN_REQUIRED'
+    }, 403);
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) return json({
       error: 'Your session has expired. Please sign in again.',
@@ -56,7 +61,7 @@ Deno.serve(async (req)=>{
       }, 503);
     }
     const body = await req.json().catch(()=>({}));
-    const { requestId, selections, firstName, lastName, email, fulfilment } = body ?? {};
+    const { requestId, orderId: requestedOrderId, selections, firstName, lastName, email, fulfilment } = body ?? {};
     if (typeof requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: 'invalid checkout request', code: 'BAD_REQUEST' }, 400);
     }
@@ -74,7 +79,7 @@ Deno.serve(async (req)=>{
       }, 400);
     }
     const petsCheckout = Array.isArray(selections) && selections.some((selection)=>
-      selection?.kind === 'item' && selection?.slug === 'pets-mobility-collagen'
+      selection?.kind === 'item' && typeof selection?.slug === 'string' && selection.slug.startsWith('pets-')
     );
     let fulfilmentRow = null;
     if (petsCheckout) {
@@ -88,7 +93,7 @@ Deno.serve(async (req)=>{
       }
     }
     // Service-role client is the only writer of the price-bearing order row.
-    const admin = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+    const admin = createClient(Deno.env.get('SUPABASE_URL'), serviceRoleKey);
     const orderPayload = {
       user_id: userId,
       checkout_request_id: requestId,
@@ -103,13 +108,21 @@ Deno.serve(async (req)=>{
       shipping_currency: PRICING.currency,
       free_shipping_applied: quote.freeShippingApplied
     };
-    let { data: order, error: orderLookupErr } = await admin.from('orders')
-      .select('id, user_id, total, currency, order_description')
-      .eq('checkout_request_id', requestId)
-      .maybeSingle();
+    if (requestedOrderId != null && (typeof requestedOrderId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestedOrderId))) {
+      return json({ error: 'invalid existing order', code: 'BAD_REQUEST' }, 400);
+    }
+    let orderQuery = admin.from('orders')
+      .select('id, user_id, total, currency, order_description');
+    orderQuery = requestedOrderId
+      ? orderQuery.eq('id', requestedOrderId)
+      : orderQuery.eq('checkout_request_id', requestId);
+    let { data: order, error: orderLookupErr } = await orderQuery.maybeSingle();
     if (orderLookupErr) {
       console.error('authoritative order lookup failed:', orderLookupErr.message);
       return json({ error: 'Order could not be created. Please try again.' }, 500);
+    }
+    if (!order && requestedOrderId) {
+      return json({ error: 'Existing order could not be verified.', code: 'ORDER_NOT_FOUND' }, 404);
     }
     if (!order) {
       const inserted = await admin.from('orders').insert(orderPayload)

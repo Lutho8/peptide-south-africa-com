@@ -30,7 +30,7 @@ export default function FrequentlyBoughtTogether({ slug, variant = "default" }: 
   }
   const picks: Product[] = merged
     .map((h) => products.find((p) => p.slug === h.slug))
-    .filter((p): p is Product => !!p && p.inStock && p.track !== "GP")
+    .filter((p): p is Product => !!p && p.inStock)
     .slice(0, 2);
   const hints = merged;
 

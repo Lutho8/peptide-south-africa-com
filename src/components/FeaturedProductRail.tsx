@@ -4,9 +4,7 @@ import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useMarket, marketPath } from "@/hooks/useMarket";
-import BookConsultLink from "@/components/BookConsultLink";
 import StockBadge from "@/components/StockBadge";
-import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 const FEATURED_IDS = ["1", "6", "7", "2", "4", "3"];
 
@@ -41,7 +39,6 @@ export default function FeaturedProductRail() {
         <div className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin]">
           <div className="flex gap-4 snap-x snap-mandatory">
             {featured.map((p) => {
-              const isGPTrack = p.track === "GP";
               return (
                 <article
                   key={p.id}
@@ -84,15 +81,9 @@ export default function FeaturedProductRail() {
                     <div className="mt-auto flex items-end justify-between pt-4">
                       <div>
                         <p className="font-display text-lg font-bold text-foreground">
-                          {isGPTrack
-                            ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month`
-                            : format(p.price)}
+                          {format(p.price)}
                         </p>
-                        {isGPTrack ? (
-                          <p className="text-[10px] text-muted-foreground">
-                            or {formatZarWhole(PRICING.programOffers.full12Week.amount)} for 12 weeks
-                          </p>
-                        ) : p.priceRange && (
+                        {p.priceRange && (
                           <p className="text-[10px] text-muted-foreground">{p.priceRange}</p>
                         )}
                       </div>
@@ -103,8 +94,6 @@ export default function FeaturedProductRail() {
                         >
                           Pre-Order — Reserve Yours!
                         </Link>
-                      ) : isGPTrack ? (
-                        <BookConsultLink className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95" />
                       ) : (
                         <button
                           onClick={() => addToCart(p)}

@@ -50,13 +50,15 @@ describe("authoritative server pricing", () => {
     expect(quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1 }]).subtotal).toBe(630);
   });
 
-  it("prices the live Pets collagen product without accepting a client amount", () => {
-    const quote = quoteCheckout([
-      { kind: "item", slug: "pets-mobility-collagen", quantity: 1 },
-    ]);
-    expect(quote.subtotal).toBe(395);
-    expect(quote.shipping).toBe(89);
-    expect(quote.total).toBe(484);
+  it.each([
+    ["pets-bpc-157", 895],
+    ["pets-kpv", 795],
+    ["pets-recovery-blend", 1195],
+    ["pets-immune-thymogen", 845],
+    ["pets-mobility-collagen", 395],
+  ])("prices the live Pets product %s without accepting a client amount", (slug, amount) => {
+    const quote = quoteCheckout([{ kind: "item", slug, quantity: 1 }]);
+    expect(quote.subtotal).toBe(amount);
   });
 
   it("prices a 3-pack at exactly 15% off", () => {
@@ -124,15 +126,14 @@ describe("authoritative server pricing", () => {
     expect(() => quoteCheckout([{ kind: "mix_bundle", size: 5, slugs: ["ghk-cu-50mg"] }])).toThrow(/exactly 5/);
   });
 
-  it("keeps the Pets collagen product out of peptide bundle discounts", () => {
-    expect(() =>
-      quoteMixSlugs(Array(5).fill("pets-mobility-collagen"), 5),
-    ).toThrow(/not eligible for peptide bundles/);
+  it.each(PRICING.directOnlySlugs)("keeps the Pets product %s out of peptide bundle discounts", (slug) => {
+    expect(() => quoteMixSlugs(Array(5).fill(slug), 5)).toThrow(/not eligible for peptide bundles/);
   });
 
-  it("rejects clinician-only products from direct items and research bundles", () => {
-    expect(() => quoteCheckout([{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }])).toThrow(/requires a consultation/);
-    expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70", "klow80"], 5)).toThrow(/requires a consultation/);
+  it("allows every published peptide to proceed through direct checkout", () => {
+    expect(() => quoteCheckout([{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }])).not.toThrow();
+    expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70", "klow80"], 5)).not.toThrow();
+    expect(PRICING.consultOnlySlugs).toHaveLength(0);
   });
 
   it("permits pack supplies only with a qualifying peptide pack", () => {

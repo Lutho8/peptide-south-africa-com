@@ -12,8 +12,6 @@ import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { pageCopy } from "@/lib/marketCopy";
 import { useCart } from "@/context/CartContext";
 import { toast as sonnerToast } from "sonner";
-import BookConsultLink from "@/components/BookConsultLink";
-import { formatZarWhole, PRICING } from "../../supabase/functions/_shared/pricing";
 
 const SITE_URL = "https://www.peptide-south-africa.com";
 
@@ -99,7 +97,6 @@ export default function ShopPage() {
     const byId = new Map(products.map((p) => [p.id, p]));
     return stackIds.map((id) => byId.get(id)).filter((p): p is typeof products[number] => !!p);
   }, [stackIds]);
-  const stackRequiresConsult = stackProducts.some((product) => product.track === "GP");
   const stackSubtotal = stackProducts.reduce((sum, product) => sum + (product.variants?.[0]?.price ?? product.price), 0);
   const stackSaving = stackProducts.reduce((sum, product) => {
     const variant = product.variants?.[0];
@@ -200,23 +197,15 @@ export default function ShopPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-foreground">
-                    {stackRequiresConsult
-                      ? `${formatZarWhole(PRICING.programOffers.monthly.amount)}/month or ${formatZarWhole(PRICING.programOffers.full12Week.amount)}/12 weeks`
-                      : `Combined subtotal R${stackSubtotal.toLocaleString("en-ZA")}`}
+                    Combined subtotal R{stackSubtotal.toLocaleString("en-ZA")}
                   </p>
-                  {!stackRequiresConsult && stackSaving > 0 && <p className="text-xs font-semibold text-trust">Save R{stackSaving.toLocaleString("en-ZA")}</p>}
-                  {stackRequiresConsult ? (
-                    <BookConsultLink className="mt-2 inline-flex items-center justify-center rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow">
-                      BOOK CONSULT
-                    </BookConsultLink>
-                  ) : (
+                  {stackSaving > 0 && <p className="text-xs font-semibold text-trust">Save R{stackSaving.toLocaleString("en-ZA")}</p>}
                     <button
                       onClick={addStackToCart}
                       className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient px-5 py-3 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98]"
                     >
                       <ShoppingCart className="h-4 w-4" /> Add to Cart
                     </button>
-                  )}
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

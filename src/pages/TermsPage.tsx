@@ -42,7 +42,7 @@ export default function TermsPage() {
         <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm leading-relaxed text-foreground">
           <p className="font-semibold">Important medical and product-use notice</p>
           <p className="mt-2 text-muted-foreground">
-            Website content is general information only and is not medical advice, diagnosis or treatment. Research catalogue products are supplied only for their stated research purpose. Clinician-guided products require an independent clinical assessment and, where applicable, a valid prescription; eligibility and outcomes are never guaranteed.
+            Website content is general information only and is not medical advice, diagnosis or treatment. Research catalogue products are supplied only for their stated research purpose.
           </p>
         </div>
 

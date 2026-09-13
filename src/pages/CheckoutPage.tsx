@@ -63,10 +63,7 @@ export default function CheckoutPage() {
         ...emptyForm,
         ...parsed,
         ...(!versionMatches ? {
-          ageConfirmed: false,
-          researchUseAcknowledged: false,
-          nonHumanUseAcknowledged: false,
-          reportScopeAcknowledged: false,
+          researchPurchaseAcknowledged: false,
           marketingConsent: false,
         } : {}),
         consentPolicyVersion: CHECKOUT_POLICY_VERSION,
@@ -241,35 +238,28 @@ export default function CheckoutPage() {
                   3. Research purchase acknowledgement
                 </h2>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Please confirm each required statement. We save an immutable receipt with the policy version and acceptance time against your order.
+                  Confirm the combined statement below. We save an immutable receipt with the policy version, full statement text and acceptance time against your order.
                 </p>
                 <div className="mt-4 space-y-3">
-                  {([
-                    ["ageConfirmed", CHECKOUT_CONSENT_STATEMENTS.age],
-                    ["researchUseAcknowledged", CHECKOUT_CONSENT_STATEMENTS.researchUse],
-                    ["nonHumanUseAcknowledged", CHECKOUT_CONSENT_STATEMENTS.nonHumanUse],
-                    ["reportScopeAcknowledged", CHECKOUT_CONSENT_STATEMENTS.reportScope],
-                  ] as const).map(([key, label]) => (
-                    <label key={key} className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background p-3.5">
-                      <input
-                        type="checkbox"
-                        checked={form[key]}
-                        onChange={(event) => setField(key, event.target.checked)}
-                        aria-invalid={!!errors[key]}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-                      />
-                      <span className="text-xs leading-relaxed text-foreground">{label}</span>
-                    </label>
-                  ))}
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background p-3.5">
+                    <input
+                      type="checkbox"
+                      checked={form.researchPurchaseAcknowledged}
+                      onChange={(event) => setField("researchPurchaseAcknowledged", event.target.checked)}
+                      aria-invalid={!!errors.researchPurchaseAcknowledged}
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    />
+                    <span className="space-y-2 text-xs leading-relaxed text-foreground">
+                      <span className="block">{CHECKOUT_CONSENT_STATEMENTS.age}</span>
+                      <span className="block">{CHECKOUT_CONSENT_STATEMENTS.researchUse}</span>
+                      <span className="block">{CHECKOUT_CONSENT_STATEMENTS.nonHumanUse}</span>
+                      <span className="block">{CHECKOUT_CONSENT_STATEMENTS.reportScope}</span>
+                    </span>
+                  </label>
                 </div>
-                {(
-                  errors.ageConfirmed
-                  || errors.researchUseAcknowledged
-                  || errors.nonHumanUseAcknowledged
-                  || errors.reportScopeAcknowledged
-                ) && (
+                {errors.researchPurchaseAcknowledged && (
                   <p role="alert" className="mt-3 text-xs font-medium text-destructive">
-                    Confirm all four required statements to continue.
+                    Confirm the research purchase acknowledgement to continue.
                   </p>
                 )}
 

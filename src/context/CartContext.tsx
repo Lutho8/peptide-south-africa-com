@@ -87,7 +87,7 @@ function loadPersistedItems(): CartItem[] {
     // Basic shape validation to avoid crashes if the schema drifts.
     const valid = parsed.filter(
       (i): i is CartItem =>
-        !!i && typeof i === "object" && !!i.product && i.product.track !== "GP" && typeof i.lineId === "string" && typeof i.quantity === "number",
+        !!i && typeof i === "object" && !!i.product && typeof i.lineId === "string" && typeof i.quantity === "number",
     );
     const bundleIds = [...new Set(valid.flatMap((item) => item.bundleId ? [item.bundleId] : []))];
     const repricedBundles = new Map<string, number[]>();
@@ -153,7 +153,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 
   const addToCart = useCallback((product: Product, opts: AddToCartOptions = {}) => {
-    if (product.track === "GP") return;
     // Stock guard: a product explicitly marked out of stock can never enter
     // the cart, regardless of which UI triggered the add. (`=== false` so
     // synthetic payloads without the field, e.g. FloatingProductFollower,
@@ -186,7 +185,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       if (inStockLines.length === 0) return bundleId;
       if (inStockLines.length !== 5 && inStockLines.length !== 10) throw new Error("Invalid bundle size");
-      if (inStockLines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to a research bundle");
       const size = inStockLines.length as MixBundleSize;
       const quote = quoteMixSlugs(inStockLines.map((line) => line.product.slug), size);
       const multiplier = 1 - PRICING.packDiscounts[size];
@@ -218,7 +216,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const replaceCartGroup = useCallback((groupId: string, lines: CartGroupLineInput[]) => {
-    if (lines.some((line) => line.product.track === "GP")) throw new Error("Clinician-guided products cannot be added to the cart");
     // Stock guard: out-of-stock products (e.g. an OOS quiz recommendation)
     // are never written into the cart group.
     const inStockLines = lines.filter((line) => line.product.inStock !== false);

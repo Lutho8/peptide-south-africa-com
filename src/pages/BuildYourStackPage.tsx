@@ -21,7 +21,7 @@ import { formatZarWhole } from "../../supabase/functions/_shared/pricing";
 /** One selector slot: a product slug or empty. */
 type Slot = string | "";
 
-const selectableProducts = products.filter((product) => product.track !== "GP");
+const selectableProducts = products;
 const selectableSlugs = new Set(selectableProducts.map((product) => product.slug));
 const eligibleCuratedStacks = CURATED_STACKS.filter((stack) => stack.slugs.every((slug) => selectableSlugs.has(slug)));
 
@@ -34,8 +34,7 @@ function emptySlots(size: MixBundleSize, prefill: Slot[] = []): Slot[] {
 export default function BuildYourStackPage() {
   const [searchParams] = useSearchParams();
   const prefillSlug = searchParams.get("prefill") ?? "";
-  // Deep-links (cart upsell, quiz stack) must not prefill a separately reserved
-  // or clinician-guided product — the slot would be unpurchasable on arrival.
+  // Deep-links (cart upsell, quiz stack) only prefill published, available products.
   const validPrefill = selectableProducts.some((p) => p.slug === prefillSlug && p.inStock !== false)
     ? prefillSlug
     : "";

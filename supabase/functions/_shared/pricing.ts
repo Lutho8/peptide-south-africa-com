@@ -25,8 +25,14 @@ export const PRICING = {
       label: "Full 12-week program",
     },
   },
-  consultOnlySlugs: ["rt3-reta", "tz2-tirz"],
-  directOnlySlugs: ["pets-mobility-collagen"],
+  consultOnlySlugs: [],
+  directOnlySlugs: [
+    "pets-bpc-157",
+    "pets-kpv",
+    "pets-recovery-blend",
+    "pets-immune-thymogen",
+    "pets-mobility-collagen",
+  ],
   packDiscounts: {
     3: 0.15,
     5: 0.20,
@@ -54,6 +60,10 @@ export const PRICING = {
     "glass-cartridge-3ml": 39,
     "peptide-pen-needles-10": 49,
     "insulin-syringes-5": 59,
+    "pets-bpc-157": 895,
+    "pets-kpv": 795,
+    "pets-recovery-blend": 1195,
+    "pets-immune-thymogen": 845,
     "pets-mobility-collagen": 395,
   },
   explicitVariants: {},
@@ -102,12 +112,6 @@ export function isDirectOnlySlug(slug: string): boolean {
   return (PRICING.directOnlySlugs as readonly string[]).includes(slug);
 }
 
-function assertCheckoutEligible(slug: string): void {
-  if (isConsultOnlySlug(slug)) {
-    throw new Error("This clinician-guided product requires a consultation");
-  }
-}
-
 export function packPrice(slug: string, pack: 1 | 3): number {
   const single = catalogPrice(slug);
   return pack === 1 ? single : roundRand(single * pack * (1 - PRICING.packDiscounts[3]));
@@ -136,7 +140,6 @@ export function variantPack(variantLabel?: string | null): number {
 export function quoteMixSlugs(slugs: string[], size: MixBundleSize) {
   if (slugs.length !== size) throw new Error(`A ${size}-pack needs exactly ${size} products`);
   const subtotal = slugs.reduce((sum, slug) => {
-    assertCheckoutEligible(slug);
     if (isPackSupplySlug(slug)) throw new Error("Pack supplies cannot be included in a peptide bundle");
     if (isDirectOnlySlug(slug)) throw new Error("This product is not eligible for peptide bundles");
     return sum + catalogPrice(slug);
@@ -171,7 +174,6 @@ export function quoteCheckout(selections: CheckoutSelection[]): ServerCheckoutQu
     const quantity = selection.quantity ?? 1;
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) throw new Error("Invalid quantity");
     if (selection.kind === "item") {
-      assertCheckoutEligible(selection.slug);
       const amount = variantPrice(selection.slug, selection.variantLabel);
       const pack = variantPack(selection.variantLabel);
       if (isPackSupplySlug(selection.slug)) {
