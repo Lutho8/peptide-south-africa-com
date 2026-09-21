@@ -182,7 +182,7 @@ export default function BlogPostPage() {
           )}
 
           <BlogFAQ faqs={post.faqs} />
-          <BlogCTA variant={post.cta} />
+          {post.cta !== "none" && <BlogCTA variant={post.cta} />}
 
           <aside className="mt-12 border-t border-border pt-10">
             <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">

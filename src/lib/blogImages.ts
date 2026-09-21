@@ -11,8 +11,10 @@ import peptidesSouthAfricanSportWada2026Image from "@/assets/blog/peptides-south
 import bloodTestsWomenImage from "@/assets/blog/glp-1-blood-tests-women-1200x675.webp";
 import bloodTestsMenImage from "@/assets/blog/glp-1-blood-tests-men-1200x675.webp";
 import safetyReportingImage from "@/assets/blog/glp-1-safety-reporting-1200x675.webp";
+import surgeryPlanImage from "@/assets/blog/glp-1-surgery-south-africa-1200x675.webp";
 
 const imagesBySlug: Record<string, string> = {
+  "glp-1-surgery-south-africa": surgeryPlanImage,
   "glp-1-abdominal-pain-sahpra-reporting": safetyReportingImage,
   "glp-1-blood-tests-women-south-africa": bloodTestsWomenImage,
   "glp-1-blood-tests-men-south-africa": bloodTestsMenImage,

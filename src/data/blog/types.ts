@@ -19,7 +19,7 @@ export interface FAQ {
   a: string;
 }
 
-export type CTAVariant = "club";
+export type CTAVariant = "club" | "none";
 
 export interface BlogPost {
   slug: string;
