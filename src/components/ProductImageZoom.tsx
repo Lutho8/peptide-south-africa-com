@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { ZoomIn, X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ProductPicture from "@/components/ProductPicture";
+import type { ProductImageSources } from "@/data/products";
 import {
   VIAL_TEST_ID,
   vialZoomFrameClasses,
@@ -12,6 +14,7 @@ import {
 interface Props {
   src: string;
   alt: string;
+  sources?: ProductImageSources;
   media?: Array<{
     src: string;
     alt: string;
@@ -21,7 +24,7 @@ interface Props {
   }>;
 }
 
-export default function ProductImageZoom({ src, alt, media }: Props) {
+export default function ProductImageZoom({ src, alt, sources, media }: Props) {
   const [zoomed, setZoomed] = useState(false);
   const [origin, setOrigin] = useState("center center");
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -115,7 +118,7 @@ export default function ProductImageZoom({ src, alt, media }: Props) {
           >
             <span aria-hidden className={vialAccentBarLgClasses} />
             <span aria-hidden className={vialAccentDotLgClasses} />
-            <img src={active.src} alt={active.alt} className={`h-full w-full ${active.fit === "contain" ? "object-contain bg-white" : "object-cover"}`} />
+            <ProductPicture src={active.src} sources={activeIndex === 0 ? sources : undefined} sizes="(min-width: 1024px) 50vw, 100vw" alt={active.alt} className={`h-full w-full ${active.fit === "contain" ? "object-contain bg-white" : "object-cover"}`} />
             {navigation}
             <div className={vialZoomChipClasses}>
               <ZoomIn className="h-3.5 w-3.5" /> Tap to zoom
@@ -140,8 +143,10 @@ export default function ProductImageZoom({ src, alt, media }: Props) {
               onClick={(e) => { e.stopPropagation(); setLightboxZoomed(!lightboxZoomed); }}
               onTouchMove={lightboxZoomed ? handleTouchMove : undefined}
             >
-              <img
+              <ProductPicture
                 src={active.src}
+                sources={activeIndex === 0 ? sources : undefined}
+                sizes="100vw"
                 alt={active.alt}
                 className="h-full w-full object-contain transition-transform duration-300 ease-out"
                 style={{
@@ -173,8 +178,10 @@ export default function ProductImageZoom({ src, alt, media }: Props) {
       >
         <span aria-hidden className={`${vialAccentBarLgClasses} z-10`} />
         <span aria-hidden className={`${vialAccentDotLgClasses} z-10`} />
-        <img
+        <ProductPicture
           src={active.src}
+          sources={activeIndex === 0 ? sources : undefined}
+          sizes="(min-width: 1024px) 50vw, 100vw"
           alt={active.alt}
           className={active.fit === "contain"
             ? "h-full w-full object-contain bg-white transition-transform duration-300 ease-out"

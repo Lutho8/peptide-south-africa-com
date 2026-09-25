@@ -1,11 +1,21 @@
 import productRt3 from "@/assets/vials/rt3.jpg";
 import productGhk from "@/assets/vials/ghk-copper-blue.webp";
+import productGhkAvif from "@/assets/vials/ghk-copper-blue.avif";
+import productGhkAvif320 from "@/assets/vials/ghk-copper-blue-320.avif";
+import productGhkAvif640 from "@/assets/vials/ghk-copper-blue-640.avif";
+import productGhkWebp320 from "@/assets/vials/ghk-copper-blue-320.webp";
+import productGhkWebp640 from "@/assets/vials/ghk-copper-blue-640.webp";
 import productTesa from "@/assets/vials/tesa.jpg";
 import productTz2 from "@/assets/vials/tz2.jpg";
 import productMots from "@/assets/vials/mots.jpg";
 import productBpc from "@/assets/vials/bpc.jpg";
 import productGlow from "@/assets/vials/glow.jpg";
 import productKlow from "@/assets/vials/klow-copper-blue.webp";
+import productKlowAvif from "@/assets/vials/klow-copper-blue.avif";
+import productKlowAvif320 from "@/assets/vials/klow-copper-blue-320.avif";
+import productKlowAvif640 from "@/assets/vials/klow-copper-blue-640.avif";
+import productKlowWebp320 from "@/assets/vials/klow-copper-blue-320.webp";
+import productKlowWebp640 from "@/assets/vials/klow-copper-blue-640.webp";
 import productKpv from "@/assets/vials/kpv.jpg";
 import productTha1 from "@/assets/vials/tha1.jpg";
 import productAra290 from "@/assets/vials/ara290.jpg";
@@ -53,6 +63,12 @@ function rangeFromVariants(variants: Variant[]): string {
 
 export type ProductTrack = "RUO" | "GP";
 
+export interface ProductImageSources {
+  avif?: { src: string; srcSet?: string };
+  webp?: { src: string; srcSet?: string };
+  sizes?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -64,6 +80,7 @@ export interface Product {
   /** Optional pre-formatted ZAR range, e.g. "R1,250 – R8,950". */
   priceRange?: string;
   image: string;
+  imageSources?: ProductImageSources;
   category: string;
   tag?: string;
   benefits: string[];
@@ -146,6 +163,17 @@ export const products: Product[] = [
     price: catalogPrice("ghk-cu-50mg"),
     priceRange: rangeFromVariants(ghkVariants),
     image: productGhk,
+    imageSources: {
+      avif: {
+        src: productGhkAvif,
+        srcSet: `${productGhkAvif320} 320w, ${productGhkAvif640} 640w, ${productGhkAvif} 1254w`,
+      },
+      webp: {
+        src: productGhk,
+        srcSet: `${productGhkWebp320} 320w, ${productGhkWebp640} 640w, ${productGhk} 1254w`,
+      },
+      sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
+    },
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -316,6 +344,17 @@ export const products: Product[] = [
     price: catalogPrice("klow80"),
     priceRange: rangeFromVariants(klowVariants),
     image: productKlow,
+    imageSources: {
+      avif: {
+        src: productKlowAvif,
+        srcSet: `${productKlowAvif320} 320w, ${productKlowAvif640} 640w, ${productKlowAvif} 1254w`,
+      },
+      webp: {
+        src: productKlow,
+        srcSet: `${productKlowWebp320} 320w, ${productKlowWebp640} 640w, ${productKlow} 1254w`,
+      },
+      sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
+    },
     category: "Wellness & Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
