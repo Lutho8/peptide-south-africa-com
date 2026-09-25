@@ -81,6 +81,21 @@ describe("vial branding — white + light-teal medical/luxury tokens", () => {
     expect(frame).toMatchSnapshot();
   });
 
+  it("uses AVIF with responsive WebP fallback for optimized product imagery", () => {
+    const product = products.find((item) => item.slug === "ghk-cu-50mg")!;
+    const { container } = render(withProviders(<ProductCard product={product} />));
+    const picture = container.querySelector("picture");
+    const sources = picture?.querySelectorAll("source");
+
+    expect(sources).toHaveLength(2);
+    expect(sources?.[0]).toHaveAttribute("type", "image/avif");
+    expect(sources?.[0].getAttribute("srcset")).toContain("320w");
+    expect(sources?.[0].getAttribute("srcset")).toContain("640w");
+    expect(sources?.[0].getAttribute("srcset")).toContain("1254w");
+    expect(sources?.[1]).toHaveAttribute("type", "image/webp");
+    expect(picture?.querySelector("img")).toHaveAttribute("src", product.image);
+  });
+
   it("shared vialDesign module exposes stable token strings", async () => {
     const mod = await import("@/lib/vialDesign");
     // Every frame variant carries the studio-plate essentials.
