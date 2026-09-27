@@ -1,0 +1,33 @@
+name: Catalogue release verification
+on:
+  push:
+    branches: [fix/sa-stock-pack-checkout-20260927]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: catalogue-release-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Package source and installed dependencies for isolated verification
+        run: |
+          tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=dist --exclude='*.log' -czf /tmp/psa-source.tgz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: psa-verification-source
+          path: /tmp/psa-source.tgz
+          retention-days: 2
+      - name: Unit tests
+        run: npm test
+      - name: Build without production side effects
+        run: npm run build
