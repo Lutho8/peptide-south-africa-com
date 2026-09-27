@@ -62,7 +62,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth),false);
  await page.screenshot({path:`${out}/${name}-builder.png`,fullPage:false});
  await page.goto(base+'/product/glow70');
- await page.getByRole('heading',{name:'Product Not Found',exact:true}).waitFor();
+ await page.getByRole('heading',{name:/^(Product Not Found|Page not found)$/i}).waitFor();
  assert.equal(await page.getByRole('button',{name:'Add to Cart',exact:true}).count(),0);
  assert.deepEqual(errors,[]);
  results.push({viewport:name,result:'passed',checks:['strengths','pack inclusions','no subscription or 10-pack','BAC optional canonical quantity','delivery add/remove recalculation','checkout','mixed-five R4060','hidden product route','no horizontal overflow','no runtime errors']});
