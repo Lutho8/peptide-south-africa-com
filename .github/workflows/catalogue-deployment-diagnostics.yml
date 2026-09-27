@@ -1,0 +1,29 @@
+name: Read catalogue deployment failure
+on:
+  push:
+    branches: [chore/inspect-catalogue-deployment-20260927]
+permissions:
+  contents: read
+jobs:
+  read-build-log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Inspect failed preview without deploying or changing settings
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          : "${VERCEL_TOKEN:?Existing VERCEL_TOKEN is not available}"
+          printf 'Configured team ID: %s\nConfigured project ID: %s\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID"
+          npx --yes vercel@59.16.0 inspect dpl_GzHYU4yGYKxGgF2xuPcK3TAve5zQ --logs 2>&1 | tee /tmp/vercel-catalogue-build.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: catalogue-vercel-build-log
+          path: /tmp/vercel-catalogue-build.log
+          retention-days: 2
