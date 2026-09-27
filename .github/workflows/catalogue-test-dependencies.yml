@@ -1,0 +1,32 @@
+name: Prepare isolated catalogue test tools
+on:
+  push:
+    branches: [chore/catalogue-test-dependencies-20260927]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare browser
+        run: npx playwright install chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/psa-browsers
+      - name: Export isolated test tools only
+        run: |
+          tar -czf /tmp/psa-dependencies.tgz node_modules
+          tar -czf /tmp/psa-browsers.tgz -C /tmp psa-browsers
+      - uses: actions/upload-artifact@v4
+        with:
+          name: psa-isolated-test-tools
+          path: |
+            /tmp/psa-dependencies.tgz
+            /tmp/psa-browsers.tgz
+          retention-days: 1
