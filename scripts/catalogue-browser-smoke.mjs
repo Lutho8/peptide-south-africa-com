@@ -19,8 +19,18 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await context.addInitScript(()=>{localStorage.setItem('psa.tracker-bonus.seen','1');});
  const page=await context.newPage();
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(base+'/product/bac-water-bacteriostatic');
+ await page.getByTestId('selected-inclusions').waitFor();
+ assert.match(await page.getByTestId('selected-inclusions').innerText(),/10 ml per vial, sold separately/);
+ assert.equal(await page.getByRole('button',{name:/3-Pack|5-Pack/}).count(),0);
+ await page.getByRole('button',{name:'Add to Cart',exact:true}).first().click();
+ await page.goto(base+'/cart');
+ await page.getByTestId('cart-subtotal').waitFor();
+ assert.match(await page.getByTestId('cart-subtotal').innerText(),/210/);
+ await page.getByRole('button',{name:'Remove BAC water',exact:true}).click();
  await page.goto(base+'/product/tesamorelin');
  await page.getByRole('heading',{name:'Tesamorelin 5 mg',exact:true}).waitFor();
+ assert.equal(await page.locator('img[src*="tesamorelin-5mg.webp"]').count()>0,true);
  const close=page.getByRole('button',{name:/close/i});
  if (await close.count()) {for(const b of await close.all()) if(await b.isVisible()) await b.click();}
  assert.match(await page.getByTestId('selected-inclusions').innerText(),/3 vials; 5 mg in each/);
@@ -49,6 +59,12 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.match(await page.getByTestId('pack-supplies-rail').innerText(),/3 vials/);
  await page.getByRole('button',{name:'Remove BAC water',exact:true}).click();
  assert.match(await page.locator('body').innerText(),/R89|R89.00/);
+ const recommendation=page.getByTestId('pack-supplies-rail');
+ assert.equal(await recommendation.getByRole('link',{name:'View BAC water 10 ml product'}).getAttribute('href'),'/product/bac-water-bacteriostatic');
+ await recommendation.getByRole('button',{name:'Add BAC water 10 ml',exact:true}).click();
+ assert.match(await page.getByTestId('checkout-total').innerText(),/1[,\s]306/);
+ await recommendation.getByRole('button',{name:'Remove BAC water',exact:true}).click();
+ assert.match(await page.getByTestId('checkout-total').innerText(),/1[,\s]096/);
  await page.screenshot({path:`${out}/${name}-checkout.png`,fullPage:false});
  await page.goto(base+'/build-your-stack');
  await page.getByLabel('Vial 1',{exact:true}).waitFor();
@@ -65,7 +81,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await page.getByRole('heading',{name:/^(Product Not Found|Page not found)$/i}).waitFor();
  assert.equal(await page.getByRole('button',{name:'Add to Cart',exact:true}).count(),0);
  assert.deepEqual(errors,[]);
- results.push({viewport:name,result:'passed',checks:['strengths','pack inclusions','no subscription or 10-pack','BAC optional canonical quantity','delivery add/remove recalculation','checkout','mixed-five R4060','hidden product route','no horizontal overflow','no runtime errors']});
+ results.push({viewport:name,result:'passed',checks:['strengths','Tesamorelin 5 mg branded artwork','pack inclusions','no subscription or 10-pack','BAC standalone purchase','BAC optional canonical quantity','BAC checkout recommendation add/remove','delivery add/remove recalculation','checkout','mixed-five R4060','hidden product route','no horizontal overflow','no runtime errors']});
  await context.close();
 }
 fs.writeFileSync(`${out}/summary.json`,JSON.stringify(results,null,2));
