@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash
 concurrency:
   group: catalogue-release-${{ github.ref }}
   cancel-in-progress: true
@@ -22,11 +25,28 @@ jobs:
           cache: npm
       - run: npm ci
       - name: TypeScript
-        run: npx tsc --noEmit -p tsconfig.app.json
+        run: |
+          npx tsc --noEmit -p tsconfig.app.json
+          npx tsc --noEmit -p tsconfig.api.json
       - name: All unit tests
         run: npm test 2>&1 | tee /tmp/catalogue-unit-tests.log
       - name: Build without production side effects
         run: npm run build 2>&1 | tee /tmp/catalogue-build.log
+      - name: Verify native Vercel API compilation without deployment
+        env:
+          VERCEL_TELEMETRY_DISABLED: 1
+        run: |
+          mkdir -p .vercel
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('.vercel/project.json', JSON.stringify({projectId:'prj_5BvjL0zY2hVAdlhpJ9DXYedY9MsQ',orgId:'team_JzyUL68zQD7Lo7gKWPiWxar7',projectName:'peptide-south-africa-com',settings:{framework:'vite',buildCommand:'npm run build',outputDirectory:'dist',installCommand:'npm ci',nodeVersion:'22.x',rootDirectory:null}}));
+          writeFileSync('.vercel/.env.preview.local', 'VERCEL_ENV=preview\n');
+          NODE
+          npx --yes vercel@59.16.0 build --no-color 2>&1 | tee /tmp/catalogue-vercel-build.log
+          if grep -Eq 'error TS[0-9]+:' /tmp/catalogue-vercel-build.log; then
+            echo 'Vercel emitted TypeScript diagnostics; release blocked.'
+            exit 1
+          fi
       - name: Install test browser
         run: npx playwright install --with-deps chromium
       - name: Desktop and mobile read-only browser verification
@@ -44,6 +64,7 @@ jobs:
           path: |
             /tmp/catalogue-unit-tests.log
             /tmp/catalogue-build.log
+            /tmp/catalogue-vercel-build.log
             /tmp/catalogue-browser.log
             /tmp/catalogue-preview.log
             /tmp/psa-browser-results/
