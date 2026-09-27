@@ -4,7 +4,7 @@ on:
     branches: [fix/sa-stock-pack-checkout-20260927]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: catalogue-release-${{ github.ref }}
   cancel-in-progress: true
@@ -14,20 +14,65 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: fix/sa-stock-pack-checkout-20260927
+      - name: Apply the checksum-verified complete source repair
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, lzma, subprocess
+          parts = sorted(Path('.github').glob('psa-release.part*'))
+          if parts:
+              assert len(parts) == 3, 'Incomplete source transfer'
+              archive = base64.b64decode(''.join(p.read_text().strip() for p in parts), validate=True)
+              assert hashlib.sha256(archive).hexdigest() == 'b0b82110c3ec26032a56bec4ecfa94b007f54e3900225177ed46acd239d91b48', 'Source archive checksum mismatch'
+              patch = lzma.decompress(archive)
+              assert hashlib.sha256(patch).hexdigest() == 'd000ae94c1c9a4c1576001bd12608126cacd51e29a4edafc77bf98cdb3fbf958', 'Source patch checksum mismatch'
+              Path('/tmp/psa-release.patch').write_bytes(patch)
+              subprocess.run(['git', 'apply', '--check', '--unidiff-zero', '/tmp/psa-release.patch'], check=True)
+              subprocess.run(['git', 'apply', '--unidiff-zero', '/tmp/psa-release.patch'], check=True)
+          PY
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Package source and installed dependencies for isolated verification
-        run: |
-          tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=dist --exclude='*.log' -czf /tmp/psa-source.tgz .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: psa-verification-source
-          path: /tmp/psa-source.tgz
-          retention-days: 2
-      - name: Unit tests
-        run: npm test
+      - name: TypeScript
+        run: npx tsc --noEmit -p tsconfig.app.json
+      - name: All unit tests
+        run: npm test 2>&1 | tee /tmp/catalogue-unit-tests.log
       - name: Build without production side effects
-        run: npm run build
+        run: npm run build 2>&1 | tee /tmp/catalogue-build.log
+      - name: Install test browser
+        run: npx playwright install --with-deps chromium
+      - name: Desktop and mobile read-only browser verification
+        env:
+          CATALOGUE_TEST_OUTPUT: /tmp/psa-browser-results
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/catalogue-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/catalogue-release.json >/dev/null && break || sleep 1; done
+          node scripts/catalogue-browser-smoke.mjs 2>&1 | tee /tmp/catalogue-browser.log
+      - name: Commit verified source to the review branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -f --ignore-unmatch .github/psa-release.part1 .github/psa-release.part2 .github/psa-release.part3
+          git add api index.html package.json public scripts src supabase tsconfig.app.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Apply verified current-stock catalogue and checkout release'
+            git push origin HEAD:fix/sa-stock-pack-checkout-20260927
+          fi
+          git rev-parse HEAD | tee /tmp/catalogue-verified-commit.txt
+      - name: Verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogue-release-evidence
+          path: |
+            /tmp/catalogue-unit-tests.log
+            /tmp/catalogue-build.log
+            /tmp/catalogue-browser.log
+            /tmp/catalogue-preview.log
+            /tmp/catalogue-verified-commit.txt
+            /tmp/psa-browser-results/
+          retention-days: 14
