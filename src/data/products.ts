@@ -14,6 +14,8 @@ import productPinealon from "@/assets/vials/pinealon.jpg";
 import productEpitalon from "@/assets/vials/epitalon.jpg";
 import productSelank from "@/assets/vials/selank.jpg";
 import productSemax from "@/assets/vials/semax.jpg";
+import { packSupplies } from "./packSupplies";
+import { BAC_SLUG, isLivePeptide, liveListing } from "../../supabase/functions/_shared/catalog-release";
 import { catalogPrice, packPrice } from "../../supabase/functions/_shared/pricing";
 
 // All prices are in ZAR. Single-market site (South Africa).
@@ -21,7 +23,7 @@ import { catalogPrice, packPrice } from "../../supabase/functions/_shared/pricin
 export interface Variant {
   label: string;
   price: number; // ZAR
-  /** Vials per pack (3, 5, 10). When set, the card renders pack-pricing UI. */
+  /** Vials per pack (1, 3, 5). When set, the card renders pack-pricing UI. */
   pack?: number;
   /** mg per vial — used to compute per-mg pricing for pack variants. */
   mgPerVial?: number;
@@ -56,6 +58,8 @@ export type ProductTrack = "RUO" | "GP";
 export interface Product {
   id: string;
   name: string;
+  strength?: string;
+  documentationPending?: boolean;
   slug: string;
   shortDescription: string;
   description: string;
@@ -92,12 +96,12 @@ export interface Product {
 const rt3Variants  = buildPackVariants("rt3-reta", 10, { p1: 0, p3: 0 });
 const ghkVariants  = buildPackVariants("ghk-cu-50mg", 50, { p3: 2 });
 const tesVariants  = buildPackVariants("tesamorelin", 5, { p1: 0, p3: 0 });
-const tz2Variants  = buildPackVariants("tz2-tirz", 5, { p1: 0, p3: 0 });
+const tz2Variants  = buildPackVariants("tz2-tirz", 10, { p1: 0, p3: 0 });
 const motsVariants = buildPackVariants("mots-c", 10, { p3: 2 });
 const bpcVariants  = buildPackVariants("bpc-tb500-blend", 10, { p3: 2 });
 const glowVariants = buildPackVariants("glow70", 70, { p3: 3 });
 const klowVariants = buildPackVariants("klow80", 80, { p3: 2 });
-const kpvVariants      = buildPackVariants("kpv", 10, { p3: 3 });
+const kpvVariants      = buildPackVariants("kpv", 5, { p3: 3 });
 const tha1Variants     = buildPackVariants("thymosin-alpha-1", 5, { p3: 2 });
 const ara290Variants   = buildPackVariants("ara-290", 16, { p3: 3 });
 const ss31Variants     = buildPackVariants("ss-31", 10, { p3: 2 });
@@ -105,7 +109,7 @@ const pinealonVariants = buildPackVariants("pinealon", 10, { p3: 3 });
 const epitalonVariants = buildPackVariants("epitalon", 10, { p3: 3 });
 const selankVariants   = buildPackVariants("selank", 10, { p3: 3 });
 const semaxVariants    = buildPackVariants("semax", 10, { p3: 3 });
-export const products: Product[] = [
+const sourceProducts: Product[] = [
   {
     id: "1",
     name: "GGG-3",
@@ -205,7 +209,7 @@ export const products: Product[] = [
     tag: "Pre-Order",
     purity: "99.867–99.899% published report",
     storage: "Refrigerate after reconstitution.",
-    sku: "RTT-TZ2-5",
+    sku: "RTT-TZ2-10",
     casNumber: "2023788-19-2",
     compoundClass: "GLP-1 / GIP dual agonist",
     track: "RUO",
@@ -345,7 +349,7 @@ export const products: Product[] = [
     category: "Recovery",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution. Lyophilised vial stable 2–8°C.",
-    sku: "PSA-KPV-10",
+    sku: "PSA-KPV-5",
     casNumber: "67247-12-5",
     compoundClass: "α-MSH tripeptide fragment",
     track: "RUO",
@@ -551,6 +555,50 @@ export const products: Product[] = [
   },
 ];
 
+
+/** Current offers are explicit-strength listings. Historical orders are untouched. */
+export const products: Product[] = [
+  ...sourceProducts.filter((p) => isLivePeptide(p.slug)).map((p): Product => {
+    const listing = liveListing(p.slug)!;
+    const variants: Variant[] = ([3, 5, 1] as const).map((pack) => ({
+      label: pack === 1 ? "Single Vial" : `${pack}-Pack`, pack,
+      mgPerVial: listing.mgPerVial, price: packPrice(p.slug, pack),
+    }));
+    const documentationPending = !["rt3-reta", "mots-c"].includes(p.slug);
+    return {
+      ...p, name: listing.name, sku: listing.sku, strength: listing.strength,
+      price: listing.price, priceRange: rangeFromVariants(variants), variants,
+      // Purchases are not a physical stock count. Preserve availability/preorder
+      // without borrowing numeric stock counts from another strength.
+      stock: undefined, documentationPending,
+      image: p.slug === "tesamorelin" ? "/products/tesamorelin-5mg.svg"
+        : p.slug === "kpv" ? "/products/kpv-5mg.svg" : p.image,
+      purity: documentationPending ? undefined : p.purity,
+      description: p.slug === "klow80"
+        ? "KLOW is an 80 mg peptide blend per vial: GHK-Cu 50 mg + TB-500 10 mg + BPC-157 10 mg + KPV 10 mg. Supplied for laboratory research. It is not the GLOW blend."
+        : p.slug === "kpv" ? p.description.replace(/10\s?mg/gi, "5 mg") : p.description,
+      whatsIncluded: ["Sealed peptide vials in the selected pack quantity", "BAC water sold separately; no reconstitution kit included", "Storage information"],
+      faqs: [...p.faqs.filter((f) => !/purity|COA|report|guarantee|certified/i.test(f.question + f.answer)),
+        { question: "What does the pack contain?", answer: `Each vial contains ${listing.strength}. A 3-pack contains 3 vials; a 5-pack contains 5 vials. BAC water is optional and sold separately at R210 per 10 ml vial.` },
+        { question: "Does a lab report match this offer?", answer: documentationPending
+          ? "A matching-strength report is pending. Historical source reports remain in the testing archive and do not authenticate this offered strength, vial or lot."
+          : "A source report for this nominal strength is linked. Check the named sample and batch scope; it does not authenticate an individual PSA vial or lot." }],
+    };
+  }),
+  packSupplies[BAC_SLUG],
+];
+export function productInclusions(product: Product, pack = 1): string[] {
+  if (product.slug === BAC_SLUG) return ["1 sealed BAC water vial, 10 ml", "Sold separately; not included in peptide packs", "No peptide vials or other accessories included"];
+  const quantity = [1, 3, 5].includes(pack) ? pack : 1;
+  return [
+    `${quantity} sealed ${product.name} vial${quantity === 1 ? "" : "s"} - ${product.strength} in EACH vial`,
+    "Peptide-only purchase: BAC water and reconstitution accessories are not included",
+    "Optional BAC water 10 ml: R210 per vial, added separately at checkout",
+    product.documentationPending ? "Matching-strength lab documentation pending; historical reports remain in the testing archive" : "Published source report: check its sample and batch scope",
+    "Storage information",
+  ];
+}
+
 export const categories = [
   "All",
   "GLP",
@@ -559,6 +607,7 @@ export const categories = [
   "Recovery",
   "Skin & Hair",
   "Wellness & Longevity",
+  "Supplies",
 ];
 
 export const tracks: { value: "All" | ProductTrack; label: string; desc: string }[] = [

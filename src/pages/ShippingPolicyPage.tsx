@@ -12,7 +12,7 @@ const shippingSchema = {
   name: "Shipping Policy — Peptide South Africa",
   url: `${SITE_URL}/shipping`,
   description:
-    "Peptide South Africa shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping over R1,500.",
+    "Peptide South Africa shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping from R1,500 after discounts and paid add-ons.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -23,7 +23,7 @@ export default function ShippingPolicyPage() {
     <>
       <SEO
         title="Shipping Policy — South Africa"
-        description="Same-day dispatch from Cape Town before 14:00 SAST. Aramex / PEP Paxi 1–5 business days. Free shipping over R1,500. Discreet, unbranded packaging."
+        description="Same-day dispatch from Cape Town before 14:00 SAST. Aramex / PEP Paxi 1–5 business days. Free shipping from R1,500 after discounts and paid add-ons. Discreet, unbranded packaging."
         path="/shipping"
         lang="en"
         alternates={buildAlternates("/shipping")}

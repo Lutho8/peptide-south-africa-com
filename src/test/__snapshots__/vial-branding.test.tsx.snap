@@ -69,7 +69,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
     class="pointer-events-none absolute right-1 top-3 h-1.5 w-1.5 rounded-full bg-vial-accent-strong"
   />
   <img
-    alt="GGG-3"
+    alt="Retatrutide (GGG-3) 10 mg"
     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
     loading="lazy"
     src="/src/assets/vials/rt3.jpg"

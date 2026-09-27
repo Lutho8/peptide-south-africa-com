@@ -118,7 +118,7 @@ describe("release contracts", () => {
     const contract = read("scripts/ci/eft-sandbox-contract.mjs");
     expect(contract).toContain("amount: 1");
     expect(contract).toContain("unitPrice: 1");
-    expect(contract).toContain("Server amount mismatch: expected 719");
+    expect(contract).toContain("Server amount mismatch: expected 789");
     expect(contract).toContain("ORDER_CONFLICT");
     expect(contract).toContain("INVALID_CART");
     expect(contract).toContain('deleteRows("email_outbox"');

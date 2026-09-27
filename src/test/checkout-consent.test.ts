@@ -25,7 +25,7 @@ describe("research checkout consent", () => {
   it("requires the consolidated research purchase acknowledgement", () => {
     const result = validateCheckout({ ...completeForm, researchPurchaseAcknowledged: false });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.errors.researchPurchaseAcknowledged).toBe("err_consent_required");
+    if (result.ok === false) expect(result.errors.researchPurchaseAcknowledged).toBe("err_consent_required");
   });
 
   it("keeps marketing consent optional and records versioned policy identifiers", () => {
@@ -41,7 +41,7 @@ describe("research checkout consent", () => {
       consentPolicyVersion: "research-checkout-2026-01-01",
     });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.errors.consentPolicyVersion).toBeDefined();
+    if (result.ok === false) expect(result.errors.consentPolicyVersion).toBeDefined();
   });
 
   it("enforces and records the same consent contract at the server boundary", () => {

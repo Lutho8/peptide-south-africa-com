@@ -1,3 +1,4 @@
+import { CATALOG_VERSION, validateStorefrontRequest } from "../supabase/functions/_shared/catalog-release.ts";
 import { createClient } from "@supabase/supabase-js";
 import {
   PRICING,
@@ -44,6 +45,7 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     const body = await request.json().catch(() => null) as {
+      catalogVersion?: unknown;
       requestId?: unknown;
       selections?: CheckoutSelection[];
       firstName?: unknown;
@@ -51,6 +53,9 @@ export default async function handler(request: Request): Promise<Response> {
       email?: unknown;
       consent?: unknown;
     } | null;
+    try { validateStorefrontRequest((body ?? {}) as Record<string, unknown>); } catch (error) {
+      return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409);
+    }
     const requestId = body?.requestId;
     if (typeof requestId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: "Invalid checkout request.", code: "BAD_REQUEST" }, 400);
@@ -187,6 +192,7 @@ export default async function handler(request: Request): Promise<Response> {
       },
       body: JSON.stringify({
         requestId,
+        catalogVersion: CATALOG_VERSION,
         selections: body.selections,
         firstName: typeof body.firstName === "string" ? body.firstName : "",
         lastName: typeof body.lastName === "string" ? body.lastName : "",

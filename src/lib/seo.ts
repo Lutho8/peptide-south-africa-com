@@ -109,9 +109,8 @@ export function productSchema(product: {
   sku?: string;
   variants?: { label: string; price: number; pack?: number }[];
 }) {
-  // Prices are ZAR. The store sells packs; the lowest sellable price is the
-  // 3-Pack, so that (not the single-vial anchor) is the schema's headline price.
-  const purchasable = (product.variants ?? []).filter((v) => (v.pack ?? 1) > 1);
+  // Publish precisely the current purchasable single/3/5-vial offers.
+  const purchasable = (product.variants ?? []).filter((v) => [1, 3, 5].includes(v.pack ?? 1));
   const packPrices = purchasable.map((v) => v.price);
   const lowPrice = packPrices.length ? Math.min(...packPrices) : Math.round(product.price);
   const highPrice = packPrices.length ? Math.max(...packPrices) : Math.round(product.price);
@@ -156,6 +155,8 @@ export function productSchema(product: {
           lowPrice,
           highPrice,
           offerCount: purchasable.length,
+          offers: purchasable.map(v => ({ "@type": "Offer", name: `${product.name} - ${v.label}`, price: v.price, priceCurrency: "ZAR", availability: offerAvailability(product.inStock), url: `${SITE_URL}/product/${product.slug}` })),
+          areaServed: { "@type": "Country", name: "ZA" },
           availability: offerAvailability(product.inStock),
           seller: { "@id": `${SITE_URL}/#organization` },
         }
@@ -211,7 +212,7 @@ export const entityClusters = {
   healing: {
     title: "Repair Signalling Research",
     links: [
-      { label: "BPC-157", href: "/product/bpc-157", description: "Research compound studied in laboratory repair-signalling models." },
+      { label: "BPC-157", href: "/product/bpc-tb500-blend", description: "Research compound studied in laboratory repair-signalling models." },
       { label: "GHK-Cu", href: "/product/ghk-cu-50mg", description: "Copper peptide studied in collagen and cellular-response models." },
       { label: "Buy BPC-157 in South Africa", href: "/buy-bpc-157-south-africa", description: "ZAR pricing, HPLC-tested BPC/TB-500 blend, local dispatch." },
       { label: "Buy GHK-Cu in South Africa", href: "/buy-ghk-cu-south-africa", description: "ZAR pricing, HPLC-tested 50mg copper peptide vials." },

@@ -1,67 +1,26 @@
-import { Plus } from "lucide-react";
-import { useMemo } from "react";
+import { Plus, Minus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
-import { packSupplies, PACK_SUPPLY_SLUGS } from "@/data/packSupplies";
-import { recommendedBacWaterQuantity, type PackSupplySlug } from "../../supabase/functions/_shared/pricing";
-
-function qualifyingPacks(items: ReturnType<typeof useCart>["items"]): Array<3 | 5 | 10> {
-  const packs: Array<3 | 5 | 10> = [];
-  const seenBundles = new Set<string>();
-  for (const item of items) {
-    if (item.bundleId) {
-      if (seenBundles.has(item.bundleId)) continue;
-      seenBundles.add(item.bundleId);
-      const size = items.filter((candidate) => candidate.bundleId === item.bundleId).length;
-      if (size === 5 || size === 10) packs.push(size);
-      continue;
-    }
-    if (/^3-pack$/i.test(item.variantLabel ?? "")) packs.push(...Array(item.quantity).fill(3));
-  }
-  return packs;
-}
-
+import { packSupplies } from "@/data/packSupplies";
+import { BAC_SLUG, BAC_NOTICE } from "../../supabase/functions/_shared/catalog-release";
 export default function PackSuppliesRail() {
-  const { items, addToCart } = useCart();
+  const { items, addToCart, updateQuantity, removeFromCart } = useCart();
   const { format } = useCurrency();
-  const packs = useMemo(() => qualifyingPacks(items), [items]);
-  if (packs.length === 0) return null;
-
-  const standardLimit = packs.length;
-  const bacWaterLimit = packs.reduce((total, pack) => total + recommendedBacWaterQuantity(pack), 0);
-  const addRecommended = (slug: PackSupplySlug, limit: number) => {
-    const existing = items.find((item) => item.product.slug === slug)?.quantity ?? 0;
-    for (let quantity = existing; quantity < limit; quantity += 1) addToCart(packSupplies[slug], { silent: true });
-  };
-
-  return (
-    <section className="rounded-lg border border-primary/25 bg-primary/[0.03] p-4" data-testid="pack-supplies-rail">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-primary">Pack-only supplies</p>
-      <h2 className="mt-1 font-display text-base font-semibold text-foreground">Complete your qualifying peptide pack</h2>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-        These supplies are available only with your 3-, 5-, or 10-pack peptide purchase and are not sold separately.
-      </p>
-      <ul className="mt-3 space-y-3">
-        {PACK_SUPPLY_SLUGS.map((slug) => {
-          const supply = packSupplies[slug];
-          const limit = slug === "bac-water-bacteriostatic" ? bacWaterLimit : standardLimit;
-          const current = items.find((item) => item.product.slug === slug)?.quantity ?? 0;
-          return (
-            <li key={slug} className="flex items-center gap-3">
-              <img src={supply.image} alt="" className="h-11 w-11 rounded-md object-cover" loading="lazy" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-foreground">{supply.name}</p>
-                <p className="text-[11px] text-muted-foreground">Recommended: {limit} · {format(supply.price)} each</p>
-              </div>
-              <button type="button" onClick={() => addRecommended(slug, limit)} disabled={current >= limit}
-                className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-background px-2 py-1.5 text-[11px] font-semibold text-primary hover:bg-primary/5 disabled:cursor-default disabled:opacity-60"
-                aria-label={`Add ${limit} ${supply.name} to order`}>
-                <Plus className="h-3 w-3" /> {current >= limit ? `Added ${current}` : `Add ${limit}`}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
+  if (!items.length) return null;
+  const bac = packSupplies[BAC_SLUG];
+  const current = items.find((item) => item.product.slug === BAC_SLUG);
+  return <section className="my-3 rounded-lg border border-primary/25 bg-primary/[0.03] p-4" data-testid="pack-supplies-rail">
+    <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Optional add-on - sold separately</p>
+    <h2 className="mt-1 font-display text-base font-semibold">BAC water 10 ml - {format(bac.price)} per vial</h2>
+    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{BAC_NOTICE}</p>
+    <p className="mt-1 text-xs text-muted-foreground">Only paid add-ons count towards the free-delivery threshold.</p>
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      {!current ? <button type="button" onClick={() => addToCart(bac, { silent: true })} className="min-h-[44px] rounded-lg border border-primary px-4 text-sm font-semibold text-primary" aria-label="Add BAC water 10 ml">Add BAC water - {format(bac.price)}</button> : <>
+        <button type="button" aria-label="Decrease BAC water quantity" onClick={() => updateQuantity(current.lineId, current.quantity - 1)} className="min-h-[44px] min-w-[44px] rounded-lg border p-3"><Minus className="h-4 w-4" /></button>
+        <span aria-live="polite" className="px-2 text-sm font-semibold">{current.quantity} vial{current.quantity === 1 ? "" : "s"} - {format(current.quantity * bac.price)}</span>
+        <button type="button" aria-label="Increase BAC water quantity" disabled={current.quantity >= 99} onClick={() => updateQuantity(current.lineId, current.quantity + 1)} className="min-h-[44px] min-w-[44px] rounded-lg border p-3"><Plus className="h-4 w-4" /></button>
+        <button type="button" aria-label="Remove BAC water" onClick={() => removeFromCart(current.lineId)} className="min-h-[44px] rounded-lg border px-3 text-xs">Remove</button>
+      </>}
+    </div>
+  </section>;
 }

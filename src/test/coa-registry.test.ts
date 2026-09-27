@@ -23,7 +23,7 @@ describe("COA registry", () => {
     {
       shortCode: "z01",
       productSlug: "tz2-tirz",
-      productSku: "RTT-TZ2-5",
+      productSku: "SOURCE-T120-20",
       taskNumber: "164662",
       sampleReference: "T120",
       verificationUrl: "https://verify.janoshik.com/tests/164662_D9DXNXDK1YM4",
@@ -41,7 +41,7 @@ describe("COA registry", () => {
     const record = staticCoas.find((item) => item.shortCode === "t01");
     expect(record).toMatchObject({
       productSlug: "tesamorelin",
-      productSku: "RTT-TES-5",
+      productSku: "SOURCE-TSM10",
       taskNumber: "164644",
       sampleReference: "TSM10",
       verificationUrl: "https://verify.janoshik.com/tests/164644_ILEI5C8YKHME",
@@ -52,16 +52,23 @@ describe("COA registry", () => {
     for (const record of staticCoas) {
       expect(record.sourceNote).toContain("not a unique PSA vial or lot");
     }
-    expect(getCoasForProduct("tesamorelin")[0].sourceNote).toContain("batch field is blank");
+    expect(staticCoas.find(c=>c.shortCode === "t01")!.sourceNote).toContain("batch field is blank");
     expect(getCoasForProduct("mots-c")[0].sourceNote).toContain("batch is reported as Unknown");
     expect(getCoasForProduct("rt3-reta")[0].sourceNote).toContain("batch is reported as Unknown");
-    expect(getCoasForProduct("tz2-tirz")[0].sourceNote).toContain("the PSA-listed product is 5 mg per vial");
+    expect(staticCoas.find(c=>c.shortCode === "z01")!.sourceNote).toContain("the currently listed Tirzepatide is 10 mg per vial");
+  });
+
+  it("never associates a wrong-strength source report with the current offer", () => {
+    expect(getCoasForProduct("tesamorelin")).toEqual([]);
+    expect(getCoasForProduct("tz2-tirz")).toEqual([]);
+    expect(staticCoas.find(c=>c.shortCode === "t01")!.strength).toBe("10 mg");
+    expect(staticCoas.find(c=>c.shortCode === "z01")!.strength).toBe("20 mg");
   });
 
   it("aligns the product purity display with the published report", () => {
-    expect(getProductBySlug("tesamorelin")?.purity).toBe("98.43–98.59% HPLC");
+    expect(getProductBySlug("tesamorelin")?.purity).toBeUndefined();
     expect(getProductBySlug("mots-c")?.purity).toBe("99.098% HPLC");
     expect(getProductBySlug("rt3-reta")?.purity).toBe("99.060% HPLC");
-    expect(getProductBySlug("tz2-tirz")?.purity).toBe("99.867–99.899% published report");
+    expect(getProductBySlug("tz2-tirz")?.purity).toBeUndefined();
   });
 });

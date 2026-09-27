@@ -1,5 +1,5 @@
 // Single-market shipping (South Africa, ZAR-only).
-import { PRICING } from "../../supabase/functions/_shared/pricing";
+import { PRICING, shippingForSubtotal, roundCents } from "../../supabase/functions/_shared/pricing";
 
 export type ShippingCountry = "South Africa";
 
@@ -30,10 +30,11 @@ export function isSupportedCountry(c: string | null | undefined): c is ShippingC
 export function getShippingCost(cartTotalZar: number, country: string): number | null {
   if (country !== "South Africa") return null;
   const rule = SHIPPING_RULES["South Africa"];
-  return cartTotalZar >= rule.freeOver ? 0 : rule.flat;
+  return shippingForSubtotal(cartTotalZar);
 }
 
 export function amountToFreeShipping(cartTotalZar: number): number {
   const rule = SHIPPING_RULES["South Africa"];
-  return Math.max(0, rule.freeOver - cartTotalZar);
+  if (!Number.isFinite(cartTotalZar) || cartTotalZar < 0) throw new Error("Invalid merchandise total");
+  return Math.max(0, roundCents(rule.freeOver - roundCents(cartTotalZar)));
 }

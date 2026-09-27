@@ -7,15 +7,15 @@ describe("shop catalog categories", () => {
     expect(categories).toContain("Wellness & Longevity");
   });
 
-  it("Recovery includes KPV, Thymosin Alpha-1, ARA-290", () => {
+  it("Recovery includes only stocked KPV", () => {
     const slugs = getProductsByCategory("Recovery").map((p) => p.slug);
-    expect(slugs).toEqual(expect.arrayContaining(["kpv", "thymosin-alpha-1", "ara-290"]));
+    expect(slugs).toEqual(["kpv"]);
   });
 
-  it("Wellness & Longevity includes SS-31, Pinealon, Epitalon, Selank, Semax", () => {
+  it("Wellness & Longevity contains only stocked MOTS-C, KLOW and SS-31", () => {
     const slugs = getProductsByCategory("Wellness & Longevity").map((p) => p.slug);
     expect(slugs).toEqual(
-      expect.arrayContaining(["ss-31", "pinealon", "epitalon", "selank", "semax"]),
+      ["mots-c", "klow80", "ss-31"],
     );
   });
 });

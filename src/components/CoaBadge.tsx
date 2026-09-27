@@ -7,7 +7,7 @@ import { BadgeCheck, FlaskConical, ShieldCheck } from "lucide-react";
  * until then the badge communicates status without inventing a dead link.
  */
 export default function CoaBadge({
-  purity = "≥99% HPLC",
+  purity = "Matching-strength report pending",
   coaUrl,
 }: {
   purity?: string;
@@ -21,18 +21,17 @@ export default function CoaBadge({
         </div>
         <div className="flex-1">
           <p className="flex items-center gap-1.5 font-display text-sm font-bold text-foreground">
-            <BadgeCheck className="h-4 w-4 text-trust" /> Independently lab-tested by Janoshik
+            <BadgeCheck className="h-4 w-4 text-trust" /> {coaUrl ? "Published Janoshik source report" : "Matching-strength report pending"}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {purity} is the result currently associated with this product. Open the published
-            source report where available and check its sample or lot scope before relying on it.
+            {coaUrl ? `${purity}. Open the published source report and check its sample and batch scope before relying on it.` : "No matching-strength report is linked to this offer. Historical reports in the archive are not verification of the current vial or lot."}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm">
               <ShieldCheck className="h-3 w-3 text-trust" /> {purity}
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm">
-              Janoshik verified
+              {coaUrl ? "Check sample and batch scope" : "Not linked to this offer"}
             </span>
             {coaUrl ? (
               <a

@@ -1,8 +1,9 @@
+import { BAC_SLUG, DISCOUNT_POLICY, DELIVERY_NOTICE } from "../../supabase/functions/_shared/catalog-release";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Shield, Truck, Star, Repeat, Zap } from "lucide-react";
 import ProductImageZoom from "@/components/ProductImageZoom";
 
-import { getProductBySlug, products } from "@/data/products";
+import { getProductBySlug, products, productInclusions } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
@@ -44,9 +45,6 @@ export default function ProductPage() {
   const { setLastViewed } = useLastViewedProduct();
   const [added, setAdded] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
-  const [purchaseMode, setPurchaseMode] = useState<"one-time" | "subscribe">("one-time");
-  const [intervalWeeks, setIntervalWeeks] = useState<4 | 8 | 12>(8);
-  const [subBusy, setSubBusy] = useState(false);
   const [globalFaqs, setGlobalFaqs] = useState<CmsFaq[]>([]);
 
 
@@ -59,6 +57,8 @@ export default function ProductPage() {
       .order("display_order")
       .then(({ data }) => setGlobalFaqs(data ?? []));
   }, []);
+
+  useEffect(() => { setSelectedVariant(0); setAdded(false); }, [slug]);
 
   // Register this product as the "last viewed" for the site-wide follower.
   useEffect(() => {
@@ -76,6 +76,7 @@ export default function ProductPage() {
   if (!product) {
     return (
       <div className="container py-20 text-center">
+        <SEO title="Product not currently available" description="This product is not part of the current catalogue." path={`/product/${slug}`} noindex />
         <h1 className="font-display text-2xl font-bold text-foreground">Product Not Found</h1>
         <Link to={marketPath("/shop", market)} className="mt-4 inline-flex items-center gap-2 text-primary hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Shop
@@ -84,12 +85,8 @@ export default function ProductPage() {
     );
   }
 
-  const subDiscountPct = 12;
-  const basePrice = product.variants ? product.variants[selectedVariant].price : product.price;
-  const currentPrice =
-    purchaseMode === "subscribe"
-      ? Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100
-      : basePrice;
+  const basePrice = product.variants?.[selectedVariant]?.price ?? product.price;
+  const currentPrice = basePrice;
   const selectedVariantMeta = product.variants?.[selectedVariant];
   const singleVialPrice =
     product.variants?.find((v) => v.pack === 1)?.price ?? product.price;
@@ -115,33 +112,6 @@ export default function ProductPage() {
     // UI (e.g. StickyProductCTA) somehow fires this handler.
     if (!product.inStock) return;
     const variantLabel = product.variants?.[selectedVariant]?.label;
-    if (purchaseMode === "subscribe") {
-      if (!user) {
-        navigate(`/auth?redirect=/product/${product.slug}`);
-        return;
-      }
-      setSubBusy(true);
-      const { error } = await supabase.from("subscriptions").insert({
-        user_id: user.id,
-        product_slug: product.slug,
-        variant_label: variantLabel ?? null,
-        interval_weeks: intervalWeeks,
-        discount_pct: subDiscountPct,
-        next_charge_at: null,
-        status: "pending",
-      });
-      setSubBusy(false);
-      if (error) {
-        toast({ title: "Couldn't create subscription", description: error.message, variant: "destructive" });
-        return;
-      }
-      toast({
-        title: "Subscription request saved",
-        description: "We'll confirm billing and the first delivery before activating it. You have not been charged.",
-      });
-      navigate("/account");
-      return;
-    }
     addToCart(product, { variantLabel, unitPrice: currentPrice });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -212,12 +182,12 @@ export default function ProductPage() {
               {display(currentPrice).primary}
             </p>
 
-            <CoaBadge purity={product.purity ?? "HPLC result published"} coaUrl={primaryCoa?.verificationUrl} />
+            <CoaBadge purity={product.purity ?? "Matching-strength report pending"} coaUrl={primaryCoa?.verificationUrl} />
 
             {/* Report-scope strip — never invent a lot or imply unique-vial authentication. */}
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 rounded-md border border-border bg-muted/30 p-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
               <div><dt className="inline text-foreground/60">SAMPLE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa?.sampleReference ?? "NOT PUBLISHED"}</dd></div>
-              <div><dt className="inline text-foreground/60">PURITY</dt> <dd className="inline font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd></div>
+              <div><dt className="inline text-foreground/60">PURITY</dt> <dd className="inline font-semibold text-foreground">{product.purity ?? "Matching report pending"}</dd></div>
               <div><dt className="inline text-foreground/60">COA</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? `TASK ${primaryCoa.taskNumber}` : "PENDING"}</dd></div>
               <div><dt className="inline text-foreground/60">SCOPE</dt> <dd className="inline font-semibold text-foreground">{primaryCoa ? "SOURCE REPORT" : "NOT LINKED"}</dd></div>
             </dl>
@@ -338,6 +308,7 @@ export default function ProductPage() {
               </div>
             )}
 
+            <p className="mt-4 text-sm font-semibold text-primary" data-testid="selected-inclusions">{product.slug === BAC_SLUG ? "BAC water: 10 ml per vial, sold separately" : `${selectedVariantMeta?.pack ?? 1} vial${(selectedVariantMeta?.pack ?? 1) === 1 ? "" : "s"}; ${product.strength} in each vial. BAC water sold separately.`}</p>
             {/* Benefits */}
             <ul className="mt-6 flex flex-col gap-2">
               {product.benefits.map((b, i) => (
@@ -352,77 +323,16 @@ export default function ProductPage() {
               <StockBadge product={product} size="md" />
             </div>
 
-            {/* Purchase mode — Subscribe & save */}
-            {product.inStock && (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-card shadow-card">
-                <div className="flex items-center justify-between bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary">
-                  <span>Subscription request</span>
-                  <span>Save {subDiscountPct}% after activation</span>
-                </div>
-                <div className="grid grid-cols-2">
-                  <button
-                    onClick={() => setPurchaseMode("one-time")}
-                    className={`flex flex-col items-start gap-1 p-4 text-left transition-all ${
-                      purchaseMode === "one-time" ? "bg-background" : "opacity-70 hover:opacity-100"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 text-sm font-bold text-foreground">
-                      <Zap className="h-4 w-4" /> One-time
-                    </span>
-                    <span className="font-display text-base font-bold text-foreground">{format(basePrice)}</span>
-                  </button>
-                  <button
-                    onClick={() => setPurchaseMode("subscribe")}
-                    className={`flex flex-col items-start gap-1 border-l border-border p-4 text-left transition-all ${
-                      purchaseMode === "subscribe" ? "bg-primary/5 ring-2 ring-primary" : "opacity-70 hover:opacity-100"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 text-sm font-bold text-primary">
-                      <Repeat className="h-4 w-4" /> Subscribe &amp; save {subDiscountPct}%
-                    </span>
-                    <span className="font-display text-base font-bold text-foreground">
-                      {format(Math.round(basePrice * (1 - subDiscountPct / 100) * 100) / 100)}
-                    </span>
-                  </button>
-                </div>
-                {purchaseMode === "subscribe" && (
-                  <div className="border-t border-border bg-background/50 px-4 py-3">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Preferred delivery frequency
-                    </label>
-                    <div className="mt-2 flex gap-2">
-                      {[4, 8, 12].map((w) => (
-                        <button
-                          key={w}
-                          onClick={() => setIntervalWeeks(w as 4 | 8 | 12)}
-                          className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition-all ${
-                            intervalWeeks === w
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card text-foreground hover:bg-muted"
-                          }`}
-                        >
-                          {w} weeks
-                        </button>
-                      ))}
-                    </div>
-                    <p className="mt-2 text-[11px] text-muted-foreground">
-                      No charge now. We confirm the first delivery before activation; cancel anytime from your account.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+            <p className="mt-5 rounded-lg border border-border p-3 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
 
             {/* Primary CTA — Add to Cart */}
             <button
                 onClick={handleAdd}
-                disabled={!product.inStock || subBusy}
+                disabled={!product.inStock}
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 text-center font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
               >
                 {!product.inStock ? (
                   "Pre-Order — Reserve Yours!"
-                ) : purchaseMode === "subscribe" ? (
-                  subBusy ? "Saving…" : <><Repeat className="h-4 w-4" /> Request subscription · save {subDiscountPct}%</>
                 ) : added ? (
                   "✓ Added to Cart!"
                 ) : (
@@ -432,12 +342,12 @@ export default function ProductPage() {
 
             {/* Trust */}
             <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {product.purity ?? "HPLC result published"} — published report available</span>
+              <span className="flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> {primaryCoa ? "Published source report - check its scope" : "Matching-strength report pending"}</span>
               <Link to="/testing" className="flex items-center gap-1 hover:text-foreground">
-                <CheckCircle className="h-3.5 w-3.5" /> Janoshik Analytical · published source report
+                <CheckCircle className="h-3.5 w-3.5" /> Historical source-report archive
               </Link>
-              <span className="flex items-center gap-1 rounded-lg bg-primary/5 px-2 py-1 font-semibold text-primary"><Truck className="h-3.5 w-3.5" /> 🇿🇦 Free shipping over R1,500 across South Africa</span>
-              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Price includes VAT — what you see is what you pay</span>
+              <span className="flex items-center gap-1 rounded-lg bg-primary/5 px-2 py-1 font-semibold text-primary"><Truck className="h-3.5 w-3.5" /> {DELIVERY_NOTICE}</span>
+              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> ZAR product total; delivery is calculated from your final basket</span>
             </div>
 
             {/* SKU / CAS / Class footer */}
@@ -470,7 +380,7 @@ export default function ProductPage() {
               <div>
                 <h3 className="font-display text-base font-semibold text-foreground">What's Included</h3>
                 <ul className="mt-3 flex flex-col gap-2">
-                  {product.whatsIncluded.map((item, i) => (
+                  {productInclusions(product, selectedVariantMeta?.pack ?? 1).map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {item}
                     </li>
@@ -526,7 +436,7 @@ export default function ProductPage() {
               )}
               <div className="flex items-center justify-between gap-4 p-4 text-sm">
                 <dt className="text-muted-foreground">Purity</dt>
-                <dd className="font-semibold text-foreground">{product.purity ?? "≥99% HPLC"}</dd>
+                <dd className="font-semibold text-foreground">{product.purity ?? "Matching report pending"}</dd>
               </div>
               {product.storage && (
                 <div className="flex items-center justify-between gap-4 p-4 text-sm">

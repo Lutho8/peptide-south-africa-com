@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 import storefrontHandler from "../../api/eft-create-order.ts";
+import { CATALOG_VERSION } from "../../supabase/functions/_shared/catalog-release.ts";
 import {
   CHECKOUT_POLICY_VERSION,
   REPORT_SCOPE_VERSION,
@@ -31,7 +32,6 @@ const shopper = createClient(supabaseUrl, publishableKey, {
 });
 
 let userId;
-
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
@@ -40,30 +40,18 @@ async function invokeDeployedStorefront(accessToken, body) {
   const statusMarker = "__EFT_CANARY_HTTP_STATUS__";
   const command = process.platform === "win32" ? "npx.cmd" : "npx";
   const args = ["--yes", "vercel@59.16.0", "curl", "/api/eft-create-order", "--deployment", storefrontUrl, "--yes", "--", "--silent", "--show-error", "--request", "POST", "--header", `Authorization: Bearer ${accessToken}`, "--header", "Content-Type: application/json", "--data-binary", JSON.stringify(body), "--write-out", `\n${statusMarker}%{http_code}`];
-
   const result = await new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      env: process.env,
-      stdio: ["ignore", "pipe", "pipe"],
-      windowsHide: true,
-    });
+    const child = spawn(command, args, { env: process.env, stdio: ["ignore", "pipe", "pipe"], windowsHide: true });
     let stdout = "";
     let stderr = "";
     child.stdout.setEncoding("utf8");
     child.stderr.setEncoding("utf8");
-    child.stdout.on("data", (chunk) => {
-      stdout += chunk;
-    });
-    child.stderr.on("data", (chunk) => {
-      stderr += chunk;
-    });
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
     child.on("error", reject);
     child.on("close", (code) => resolve({ code, stdout, stderr }));
   });
-
-  if (result.code !== 0) {
-    throw new Error(`Vercel canary request failed: ${result.stderr.trim() || `exit ${result.code}`}`);
-  }
+  if (result.code !== 0) throw new Error(`Vercel canary request failed: ${result.stderr.trim() || `exit ${result.code}`}`);
   const markerIndex = result.stdout.lastIndexOf(statusMarker);
   assert(markerIndex >= 0, "Vercel canary response did not include an HTTP status");
   const responseBody = result.stdout.slice(0, markerIndex).trim();
@@ -77,10 +65,7 @@ async function invokeStorefront(accessToken, body) {
   if (storefrontUrl) return invokeDeployedStorefront(accessToken, body);
   const request = new Request(`${storefrontUrl || "http://localhost"}/api/eft-create-order`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const response = await storefrontHandler(request);
@@ -91,11 +76,7 @@ async function invokeStorefront(accessToken, body) {
 async function reconcile(body) {
   const response = await fetch(`${supabaseUrl}/functions/v1/eft-reconcile`, {
     method: "POST",
-    headers: {
-      apikey: publishableKey,
-      "Content-Type": "application/json",
-      "x-eft-secret": reconcileSecret,
-    },
+    headers: { apikey: publishableKey, "Content-Type": "application/json", "x-eft-secret": reconcileSecret },
     body: JSON.stringify(body),
   });
   const data = await response.json().catch(() => null);
@@ -109,12 +90,8 @@ async function deleteRows(table, column, value) {
 
 async function cleanup() {
   if (!userId) return;
-  const { data: orders, error: orderLookupError } = await admin
-    .from("orders")
-    .select("id")
-    .eq("user_id", userId);
+  const { data: orders, error: orderLookupError } = await admin.from("orders").select("id").eq("user_id", userId);
   if (orderLookupError) throw new Error(`Sandbox cleanup could not list orders: ${orderLookupError.code || orderLookupError.message}`);
-
   const orderIds = (orders || []).map((order) => order.id);
   await admin.from("email_outbox").update({ status: "cancelled" }).eq("user_id", userId);
   await deleteRows("email_outbox", "user_id", userId);
@@ -132,35 +109,21 @@ let contractError;
 try {
   const unauthenticated = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
     method: "POST",
-    headers: {
-      apikey: publishableKey,
-      "x-checkout-store-secret": checkoutStoreSecret,
-      "Content-Type": "application/json",
-    },
+    headers: { apikey: publishableKey, "x-checkout-store-secret": checkoutStoreSecret, "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
   assert(unauthenticated.status === 401, `Unauthenticated checkout returned HTTP ${unauthenticated.status} instead of 401`);
-
   const { data: created, error: createError } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { synthetic: true, source: "eft-sandbox-contract" },
+    email, password, email_confirm: true, user_metadata: { synthetic: true, source: "eft-sandbox-contract" },
   });
   if (createError || !created.user) throw new Error(`Synthetic user creation failed: ${createError?.message || "no user returned"}`);
   userId = created.user.id;
-
   const { data: session, error: signInError } = await shopper.auth.signInWithPassword({ email, password });
   if (signInError || !session.session?.access_token) throw new Error(`Synthetic user sign-in failed: ${signInError?.message || "no access token"}`);
   const accessToken = session.session.access_token;
-
   const authenticatedDirect = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      apikey: publishableKey,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${accessToken}`, apikey: publishableKey, "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
   assert(authenticatedDirect.status === 403, `Direct authenticated checkout returned HTTP ${authenticatedDirect.status} instead of 403`);
@@ -170,37 +133,32 @@ try {
   const requestId = randomUUID();
   const validBody = {
     requestId,
-    selections: [{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1, unitPrice: 1 }],
+    catalogVersion: CATALOG_VERSION,
+    selections: [{ kind: "item", slug: "ghk-cu-50mg", sku: "RTT-GHK-50", variantLabel: "Single Vial", quantity: 1, unitPrice: 1 }],
     amount: 1,
-    firstName: "EFT",
-    lastName: "Contract",
-    email,
+    firstName: "EFT", lastName: "Contract", email,
     consent: {
-      researchPurchaseAcknowledged: true,
-      marketingConsent: false,
-      policyVersion: CHECKOUT_POLICY_VERSION,
-      reportScopeVersion: REPORT_SCOPE_VERSION,
+      researchPurchaseAcknowledged: true, marketingConsent: false,
+      policyVersion: CHECKOUT_POLICY_VERSION, reportScopeVersion: REPORT_SCOPE_VERSION,
       clientAcceptedAt: new Date().toISOString(),
     },
   };
   const first = await invokeStorefront(accessToken, validBody);
   assert(first.response.status === 200, `Valid checkout returned HTTP ${first.response.status} (${first.data?.code || "no code"})`);
   assert(first.data?.ok === true, "Valid checkout did not return ok=true");
-  assert(first.data?.amount === 719, `Server amount mismatch: expected 719, received ${first.data?.amount}`);
+  // Independently specified owner-approved R700 single plus R89 delivery.
+  assert(first.data?.amount === 789, `Server amount mismatch: expected 789, received ${first.data?.amount}`);
   assert(/^[0-9a-f-]{36}$/i.test(first.data?.order_id || ""), "Valid checkout did not return an order UUID");
   assert(/^PSA-[0-9A-HJKMNP-TV-Z]{6}$/.test(first.data?.payment_reference || ""), "Payment reference format mismatch");
   assert(typeof first.data?.bank?.account_name === "string" && first.data.bank.account_name.length > 0, "Bank account name missing");
   assert(typeof first.data?.bank?.account_number === "string" && first.data.bank.account_number.length > 0, "Bank account number missing");
   assert(typeof first.data?.bank?.branch_code === "string" && first.data.bank.branch_code.length > 0, "Bank branch code missing");
 
-  const { data: stored, error: storedError } = await admin
-    .from("orders")
-    .select("id, user_id, total, currency, checkout_request_id")
-    .eq("id", first.data.order_id)
-    .single();
+  const { data: stored, error: storedError } = await admin.from("orders")
+    .select("id, user_id, total, currency, checkout_request_id").eq("id", first.data.order_id).single();
   if (storedError || !stored) throw new Error(`Authoritative order lookup failed: ${storedError?.code || storedError?.message || "not found"}`);
   assert(stored.user_id === userId, "Authoritative order belongs to the wrong user");
-  assert(Number(stored.total) === 719, `Stored order total mismatch: ${stored.total}`);
+  assert(Number(stored.total) === 789, `Stored order total mismatch: ${stored.total}`);
   assert(stored.currency === "ZAR", `Stored order currency mismatch: ${stored.currency}`);
   assert(stored.checkout_request_id === requestId, "Stored checkout request ID mismatch");
 
@@ -208,115 +166,81 @@ try {
   assert(replay.response.status === 200, `Idempotent replay returned HTTP ${replay.response.status}`);
   assert(replay.data?.order_id === first.data.order_id, "Idempotent replay created a second order");
   assert(replay.data?.payment_reference === first.data.payment_reference, "Idempotent replay changed the payment reference");
-
   const conflict = await invokeStorefront(accessToken, {
-    ...validBody,
-    selections: [{ kind: "item", slug: "mots-c", variantLabel: "Single Vial", quantity: 1 }],
+    ...validBody, selections: [{ kind: "item", slug: "mots-c", variantLabel: "Single Vial", quantity: 1 }],
   });
   assert(conflict.response.status === 409 && conflict.data?.code === "ORDER_CONFLICT", "Stale request ID was not rejected with ORDER_CONFLICT");
-
   const manipulated = await invokeStorefront(accessToken, {
-    ...validBody,
-    requestId: randomUUID(),
-    selections: [{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "3-Pack for R1", quantity: 1 }],
+    ...validBody, requestId: randomUUID(), selections: [{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "3-Pack for R1", quantity: 1 }],
   });
   assert(manipulated.response.status === 400 && manipulated.data?.code === "INVALID_CART", "Manipulated variant was not rejected");
 
+  for (const extra of [{ catalogVersion: "old-catalogue" }, { discountCode: "EXTRA12" }, { subscriptionDiscount: 12 }]) {
+    const rejected = await invokeStorefront(accessToken, { ...validBody, ...extra, requestId: randomUUID() });
+    assert(rejected.response.status === 409 && rejected.data?.code === "CATALOGUE_OR_DISCOUNT_CHANGED", "Stale catalogue or stacked discount was not rejected");
+  }
+  for (const selections of [
+    [{ kind: "item", slug: "kpv", sku: "PSA-KPV-10", variantLabel: "Single Vial", quantity: 1 }],
+    [{ kind: "item", slug: "glow70", variantLabel: "Single Vial", quantity: 1 }],
+    [{ kind: "mix_bundle", size: 10, slugs: Array(10).fill("ghk-cu-50mg") }],
+  ]) {
+    const rejected = await invokeStorefront(accessToken, { ...validBody, requestId: randomUUID(), selections });
+    assert(rejected.response.status === 400 && rejected.data?.code === "INVALID_CART", "Unavailable strength, product or pack reached order creation");
+  }
   const directResearchProduct = await invokeStorefront(accessToken, {
-    ...validBody,
-    requestId: randomUUID(),
-    selections: [{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }],
+    ...validBody, requestId: randomUUID(), selections: [{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }],
   });
   assert(directResearchProduct.response.ok && directResearchProduct.data?.ok === true, "Published research product did not proceed through checkout");
 
   const receivedAt = new Date().toISOString();
   const syntheticDeposit = {
-    amount: first.data.amount,
-    reference: first.data.payment_reference,
-    payer_name: "PSA SYNTHETIC PAID ORDER SMOKE",
-    received_at: receivedAt,
+    amount: first.data.amount, reference: first.data.payment_reference,
+    payer_name: "PSA SYNTHETIC PAID ORDER SMOKE", received_at: receivedAt,
     raw: { synthetic_test: true, source: "eft-sandbox-contract" },
   };
-
   const mismatch = await reconcile({
-    order_id: first.data.order_id,
-    reference: first.data.payment_reference,
+    order_id: first.data.order_id, reference: first.data.payment_reference,
     deposits: [{ ...syntheticDeposit, amount: first.data.amount - 1 }],
   });
   assert(mismatch.response.status === 200 && mismatch.data?.ok === true, "Amount-mismatch reconciliation failed unexpectedly");
   assert(mismatch.data?.matched === 0 && mismatch.data?.still_unmatched === 1, "Amount mismatch was not left unmatched");
   assert(mismatch.data?.order_state?.payment_status === "awaiting_eft", "Amount mismatch changed payment status");
-
-  const paid = await reconcile({
-    order_id: first.data.order_id,
-    reference: first.data.payment_reference,
-    deposits: [syntheticDeposit],
-  });
+  const paid = await reconcile({ order_id: first.data.order_id, reference: first.data.payment_reference, deposits: [syntheticDeposit] });
   assert(paid.response.status === 200 && paid.data?.ok === true, `Paid reconciliation returned HTTP ${paid.response.status}`);
   assert(paid.data?.inserted === 1 && paid.data?.matched === 1, "Valid deposit did not settle exactly one order");
   assert(paid.data?.order_state?.payment_status === "complete", "CRM order did not reach complete");
   assert(paid.data?.order_state?.payment_settled_at, "CRM order has no settlement timestamp");
-
-  const { data: paidOrder, error: paidOrderError } = await admin
-    .from("orders")
-    .select("status, paid_at")
-    .eq("id", first.data.order_id)
-    .single();
+  const { data: paidOrder, error: paidOrderError } = await admin.from("orders").select("status, paid_at").eq("id", first.data.order_id).single();
   if (paidOrderError || !paidOrder) throw new Error(`Paid storefront order lookup failed: ${paidOrderError?.message || "not found"}`);
   assert(paidOrder.status === "paid" && paidOrder.paid_at, "Storefront order did not reach paid with paid_at");
-
-  const { data: revenueEvents, error: revenueError } = await admin
-    .from("analytics_events")
-    .select("event, props")
-    .eq("props->>order_id", first.data.order_id)
-    .in("event", ["bank_deposit_verified", "payin_completed"]);
+  const { data: revenueEvents, error: revenueError } = await admin.from("analytics_events").select("event, props")
+    .eq("props->>order_id", first.data.order_id).in("event", ["bank_deposit_verified", "payin_completed"]);
   if (revenueError) throw new Error(`Revenue-event lookup failed: ${revenueError.message}`);
   assert(revenueEvents?.length === 2, `Expected two derived revenue events, received ${revenueEvents?.length || 0}`);
   assert(new Set(revenueEvents.map(({ event }) => event)).size === 2, "Derived revenue events were duplicated");
-
-  const { data: confirmation, error: confirmationError } = await admin
-    .from("email_outbox")
-    .select("template, status")
-    .eq("idempotency_key", `order_confirmation:${first.data.order_id}`)
-    .single();
+  const { data: confirmation, error: confirmationError } = await admin.from("email_outbox").select("template, status")
+    .eq("idempotency_key", `order_confirmation:${first.data.order_id}`).single();
   if (confirmationError || !confirmation) throw new Error(`Confirmation lookup failed: ${confirmationError?.message || "not found"}`);
   assert(confirmation.template === "order_confirmation" && confirmation.status === "queued", "Order confirmation was not queued");
-
-  const { data: fulfilment, error: fulfilmentError } = await admin
-    .from("integration_logs")
-    .select("status, payload")
-    .eq("integration", "eft")
-    .eq("action", "reconcile")
-    .eq("status", "matched")
+  const { data: fulfilment, error: fulfilmentError } = await admin.from("integration_logs").select("status, payload")
+    .eq("integration", "eft").eq("action", "reconcile").eq("status", "matched")
     .contains("payload", { orderId: first.data.order_id, synthetic_test: true });
   if (fulfilmentError) throw new Error(`Fulfilment lookup failed: ${fulfilmentError.message}`);
   assert(fulfilment?.length === 1, "Synthetic fulfilment record was not written exactly once");
-
-  const replayDeposit = await reconcile({
-    order_id: first.data.order_id,
-    reference: first.data.payment_reference,
-    deposits: [syntheticDeposit],
-  });
+  const replayDeposit = await reconcile({ order_id: first.data.order_id, reference: first.data.payment_reference, deposits: [syntheticDeposit] });
   assert(replayDeposit.data?.duplicates === 1 && replayDeposit.data?.matched === 0, "Duplicate deposit was not deduplicated");
-
-  const { count: finalRevenueCount, error: finalRevenueError } = await admin
-    .from("analytics_events")
-    .select("id", { count: "exact", head: true })
-    .eq("props->>order_id", first.data.order_id)
+  const { count: finalRevenueCount, error: finalRevenueError } = await admin.from("analytics_events")
+    .select("id", { count: "exact", head: true }).eq("props->>order_id", first.data.order_id)
     .in("event", ["bank_deposit_verified", "payin_completed"]);
   if (finalRevenueError) throw new Error(`Final revenue-event count failed: ${finalRevenueError.message}`);
   assert(finalRevenueCount === 2, "Deposit replay duplicated derived revenue events");
-
-  console.log(`EFT sandbox contract passed: ${storefrontUrl ? "deployed Vercel" : "local storefront"} API to Edge checkout and synthetic pending-to-paid settlement verified end to end.`);
+  console.log(`EFT sandbox contract passed: ${storefrontUrl ? "deployed Vercel" : "local storefront"} API to Edge checkout and synthetic pending-to-paid settlement verified end to end; stale strengths, unavailable packs and stacked discounts rejected.`);
 } catch (error) {
   contractError = error;
 } finally {
-  try {
-    await cleanup();
-  } catch (cleanupError) {
+  try { await cleanup(); } catch (cleanupError) {
     if (!contractError) contractError = cleanupError;
     else console.error(cleanupError instanceof Error ? cleanupError.message : "Sandbox cleanup failed");
   }
 }
-
 if (contractError) throw contractError;

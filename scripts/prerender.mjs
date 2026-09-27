@@ -1,3 +1,4 @@
+import { LIVE_CATALOG } from "../supabase/functions/_shared/catalog-release.ts";
 // Build-time prerendering for the SPA.
 //
 // Pipeline (wired into `build` after `vite build`):
@@ -69,7 +70,7 @@ function blogSlugs() {
 }
 
 async function main() {
-  const productRoutes = extractSlugs("src/data/products.ts").map((s) => `/product/${s}`);
+  const productRoutes = Object.keys(LIVE_CATALOG).map((s) => `/product/${s}`);
   const blogRoutes = blogSlugs().map((s) => `/blog/${s}`);
   const routes = [...staticRoutes, ...productRoutes, ...blogRoutes];
 

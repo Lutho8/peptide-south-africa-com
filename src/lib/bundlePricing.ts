@@ -1,8 +1,7 @@
-// Bundle pricing engine — 3-tier architecture.
+// Bundle pricing engine — 3-pack / 5-pack architecture.
 //
 //   3-Pack (per-product)      → 15% off  (built into product variants, ×0.85)
 //   5-Pack Pick & Mix         → 20% off  (any 5 vials across the catalog)
-//   10-Pack "Researcher Value"→ 30% off  (any 10 vials across the catalog)
 //
 // All prices are ZAR and VAT-inclusive (15%) — never display excl. VAT.
 
@@ -12,7 +11,6 @@ import { PRICING, quoteMixSlugs, roundCents, type MixBundleSize } from "../../su
 /** Discount multiplier per pick & mix bundle size. */
 export const MIX_BUNDLE_TIERS = {
   5: { multiplier: 1 - PRICING.packDiscounts[5], discountPct: PRICING.packDiscounts[5] * 100, label: "5-Pack Pick & Mix" },
-  10: { multiplier: 1 - PRICING.packDiscounts[10], discountPct: PRICING.packDiscounts[10] * 100, label: "10-Pack Researcher Value" },
 } as const;
 export type { MixBundleSize };
 
@@ -91,13 +89,13 @@ export const CURATED_STACKS: CuratedStack[] = [
     id: "recovery",
     name: "Recovery Stack",
     tagline: "Tissue repair & recovery focus",
-    slugs: ["bpc-tb500-blend", "tesamorelin", "ghk-cu-50mg", "glow70", "mots-c"],
+    slugs: ["bpc-tb500-blend", "tesamorelin", "ghk-cu-50mg", "ss-31", "mots-c"],
   },
   {
     id: "longevity",
     name: "Longevity Stack",
     tagline: "Aging & cellular renewal protocol",
-    slugs: ["klow80", "mots-c", "ghk-cu-50mg", "glow70", "tesamorelin"],
+    slugs: ["klow80", "mots-c", "ghk-cu-50mg", "ss-31", "tesamorelin"],
   },
 ];
 

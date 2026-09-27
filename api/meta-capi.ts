@@ -1,5 +1,5 @@
-import { sendMetaCapiEvent } from "./_shared/metaCapi";
-import { isRateLimited } from "./_shared/rateLimit";
+import { sendMetaCapiEvent } from "./_shared/metaCapi.js";
+import { isRateLimited } from "./_shared/rateLimit.js";
 
 export const config = { runtime: "edge" };
 

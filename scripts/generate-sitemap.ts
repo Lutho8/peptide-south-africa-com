@@ -1,3 +1,4 @@
+import { LIVE_CATALOG } from "../supabase/functions/_shared/catalog-release.ts";
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks).
 // Writes public/sitemap.xml from a static route list + product slugs
 // extracted from src/data/products.ts. Avoids importing the products
@@ -49,14 +50,7 @@ const staticEntries: SitemapEntry[] = [
 ];
 
 
-function extractProductSlugs(): string[] {
-  const src = readFileSync(resolve("src/data/products.ts"), "utf8");
-  const slugs = new Set<string>();
-  for (const match of src.matchAll(/slug:\s*["']([^"']+)["']/g)) {
-    slugs.add(match[1]);
-  }
-  return [...slugs];
-}
+function extractProductSlugs(): string[] { return Object.keys(LIVE_CATALOG); }
 
 /** Read every blog post file for its slug + updatedAt/publishedAt (for <lastmod>). */
 function extractBlogPosts(): BlogEntry[] {

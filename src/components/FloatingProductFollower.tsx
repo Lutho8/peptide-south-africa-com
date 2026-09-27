@@ -1,3 +1,4 @@
+import { getProductBySlug } from "@/data/products";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X, ShoppingCart } from "lucide-react";
@@ -33,7 +34,8 @@ export default function FloatingProductFollower() {
     };
   }, []);
 
-  if (!lastViewed || dismissed) return null;
+  const current = lastViewed ? getProductBySlug(lastViewed.slug) : undefined;
+  if (!lastViewed || dismissed || !current) return null;
 
   // Hide on routes where it would be noise or duplicate
   const hideRoutes = ["/cart", "/checkout"];
@@ -42,7 +44,7 @@ export default function FloatingProductFollower() {
 
   const visible = mounted && scrolled;
   const outOfStock = lastViewed.inStock === false;
-  const priceLabel = display(lastViewed.price).primary;
+  const priceLabel = display(current.variants?.[0]?.price ?? current.price).primary;
 
   const handlePrimary = () => {
     if (outOfStock) {
@@ -50,17 +52,7 @@ export default function FloatingProductFollower() {
       dismiss();
       return;
     }
-    // Minimal cart payload — uses canonical price; real variant selection lives on PDP.
-    addToCart(
-      {
-        id: lastViewed.slug,
-        slug: lastViewed.slug,
-        name: lastViewed.name,
-        image: lastViewed.image,
-        price: lastViewed.price,
-      } as never,
-      { unitPrice: lastViewed.price, silent: true },
-    );
+    addToCart(current, { variantLabel: current.variants?.[0]?.label, silent: true });
     setIsCartOpen(true);
     dismiss();
   };
@@ -78,7 +70,7 @@ export default function FloatingProductFollower() {
     >
       <div className="pointer-events-auto grid w-[340px] grid-cols-[64px_1fr] gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-card-hover backdrop-blur-lg">
         <Link to={`/product/${lastViewed.slug}`} className="block overflow-hidden rounded-lg bg-muted">
-          <img src={lastViewed.image} alt="" className="h-16 w-16 object-cover" loading="lazy" />
+          <img src={current.image} alt="" className="h-16 w-16 object-cover" loading="lazy" />
         </Link>
         <div className="min-w-0">
           <div className="flex items-start justify-between gap-2">
@@ -90,7 +82,7 @@ export default function FloatingProductFollower() {
                 to={`/product/${lastViewed.slug}`}
                 className="block truncate font-display text-sm font-semibold text-foreground hover:text-primary"
               >
-                {lastViewed.name}
+                {current.name}
               </Link>
             </div>
             <button

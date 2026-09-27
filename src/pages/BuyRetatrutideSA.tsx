@@ -1,38 +1,13 @@
+import { getProductBySlug } from "@/data/products";
+import { productSchema } from "@/lib/seo";
+import { formatZAR } from "@/lib/price";
+import { BAC_NOTICE, DELIVERY_NOTICE, DISCOUNT_POLICY } from "../../supabase/functions/_shared/catalog-release";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { Shield, CheckCircle, Truck, MapPin, FlaskConical, ArrowRight } from "lucide-react";
 
-const PRODUCT_LD = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "GGG-3 (Retatrutide)",
-  "description": "Buy Retatrutide (GGG-3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier.",
-  "brand": {
-    "@type": "Brand",
-    "name": "Peptide South Africa"
-  },
-  "offers": {
-    "@type": "AggregateOffer",
-    "priceCurrency": "ZAR",
-    "lowPrice": "1250",
-    "highPrice": "3450",
-    "availability": "https://schema.org/InStock",
-    "areaServed": {
-      "@type": "Country",
-      "name": "South Africa"
-    },
-    "seller": {
-      "@type": "Organization",
-      "name": "Peptide South Africa",
-      "url": "https://www.peptide-south-africa.com"
-    }
-  },
-  "additionalProperty": [
-    { "@type": "PropertyValue", "name": "Purity", "value": "≥99%" },
-    { "@type": "PropertyValue", "name": "Category", "value": "GLP-1 / GIP / Glucagon triple agonist" },
-    { "@type": "PropertyValue", "name": "Testing", "value": "Third-party HPLC tested at Janoshik Analytical" }
-  ]
-};
+const product = getProductBySlug("rt3-reta")!;
+const PRODUCT_LD = productSchema(product);
 
 const BREADCRUMB_LD = {
   "@context": "https://schema.org",
@@ -49,7 +24,7 @@ export default function BuyRetatrutideSA() {
     <>
       <SEO
         title="Buy Retatrutide in South Africa | GGG-3 Research Peptide"
-        description="Buy Retatrutide (GGG-3) in South Africa. ZAR pricing, same-day dispatch, third-party HPLC tested ≥99% purity. SA's only local research peptide supplier."
+        description={`${product.name}: current South African single-vial, 3-pack and 5-pack prices. BAC water sold separately. Check report availability.`}
         path="/buy-retatrutide-south-africa"
         type="product"
         keywords="buy retatrutide south africa, retatrutide SA, GGG-3 peptide south africa, retatrutide ZAR, GLP-1 peptide south africa"
@@ -73,15 +48,15 @@ export default function BuyRetatrutideSA() {
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4">
               <MapPin className="w-3 h-3" /> Cape Town, South Africa
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Buy Retatrutide in South Africa</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl">Retatrutide (GGG-3) is a triple agonist targeting GLP-1, GIP, and glucagon receptors — making it one of the most researched metabolic compounds of 2025/2026. Each vial is HPLC-tested to ≥99% purity at Janoshik Analytical.</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{product.name} in South Africa</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl">{product.shortDescription} Current offer: {product.strength} per vial. {product.documentationPending ? "Matching-strength source documentation pending." : "Source report available; check its sample and batch scope."}</p>
           </div>
 
           {/* Trust bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
-              { icon: <Shield className="w-5 h-5 text-primary" />, text: "≥99% Purity" },
-              { icon: <FlaskConical className="w-5 h-5 text-primary" />, text: "HPLC Tested" },
+              { icon: <Shield className="w-5 h-5 text-primary" />, text: "Explicit vial strength" },
+              { icon: <FlaskConical className="w-5 h-5 text-primary" />, text: "Check report status" },
               { icon: <MapPin className="w-5 h-5 text-primary" />, text: "SA-Based Supplier" },
               { icon: <Truck className="w-5 h-5 text-primary" />, text: "ZAR Pricing" },
             ].map((item, i) => (
@@ -96,22 +71,21 @@ export default function BuyRetatrutideSA() {
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 mb-8 shadow-card">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-foreground mb-1">GGG-3 (Retatrutide)</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">{product.name}</h2>
                 <p className="text-sm text-muted-foreground">GLP-1 / GIP / Glucagon triple agonist</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">R1250</p>
+                <p className="text-2xl font-bold text-foreground">{formatZAR(product.price)}</p>
                 <p className="text-xs text-muted-foreground">ZAR · single vial</p>
               </div>
             </div>
 
             <ul className="space-y-2 mb-6">
               {[
-                "Third-party HPLC tested at Janoshik Analytical",
-                "Certificate of Analysis included with every order",
-                "South Africa-based supplier — ZAR pricing, no forex fees",
-                "Batch-certified ≥99% purity guaranteed",
-                "Fast local dispatch from Cape Town",
+                `${product.strength} in each vial; current SKU ${product.sku}`,
+                "3-pack: 15% off. 5-pack: 20% off. Pack totals rounded once.",
+                BAC_NOTICE, DELIVERY_NOTICE, DISCOUNT_POLICY,
+                product.documentationPending ? "Matching-strength report pending; historical reports are not proof of this offer." : "Source report available: check the named sample and batch scope.",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-foreground">
                   <CheckCircle className="w-4 h-4 text-primary mt-0.5 shrink-0" />
@@ -156,7 +130,7 @@ export default function BuyRetatrutideSA() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Do I need BAC water?</h3>
-                <p className="text-sm text-muted-foreground">Yes — all lyophilised peptides require bacteriostatic water for reconstitution. BAC water is available from most compounding pharmacies in South Africa. See our <Link to="/blog/peptide-vial-shelf-life-storage" className="text-primary hover:underline">reconstitution guide</Link> for step-by-step instructions.</p>
+                <p className="text-sm text-muted-foreground">{BAC_NOTICE}</p>
               </div>
             </div>
           </div>
