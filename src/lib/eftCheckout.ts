@@ -1,3 +1,4 @@
+import { CATALOG_VERSION } from "../../supabase/functions/_shared/catalog-release";
 import { supabase } from "@/integrations/supabase/client";
 import type { CartItem } from "@/context/CartContext";
 import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
@@ -99,7 +100,7 @@ export function toCheckoutSelections(items: CartItem[]): CheckoutSelection[] {
       seenBundles.add(item.bundleId);
       const lines = items.filter((candidate) => candidate.bundleId === item.bundleId);
       const size = lines.length as MixBundleSize;
-      if (size !== 5 && size !== 10) throw new Error("Bundle selection is stale. Please rebuild the pack.");
+      if (size !== 5) throw new Error("Bundle selection is stale. Please rebuild the pack.");
       if (lines.some((line) => line.quantity !== 1)) {
         throw new Error("Bundle quantity is stale. Please rebuild the pack.");
       }
@@ -109,6 +110,7 @@ export function toCheckoutSelections(items: CartItem[]): CheckoutSelection[] {
     selections.push({
       kind: "item",
       slug: item.product.slug,
+      sku: item.product.sku,
       variantLabel: item.variantLabel ?? null,
       quantity: item.quantity,
     });
@@ -125,6 +127,7 @@ function newRequestId(): string {
 
 export function getOrCreateEftRequestId(selections: CheckoutSelection[], form: CheckoutForm): string {
   const fingerprint = JSON.stringify({
+    catalogVersion: CATALOG_VERSION,
     selections,
     customer: {
       firstName: form.firstName.trim(),
@@ -194,6 +197,7 @@ export async function startEftCheckout({
     },
     body: JSON.stringify({
       requestId,
+      catalogVersion: CATALOG_VERSION,
       selections,
       firstName: form.firstName,
       lastName: form.lastName,

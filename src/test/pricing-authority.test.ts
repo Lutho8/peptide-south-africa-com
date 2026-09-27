@@ -47,7 +47,7 @@ describe("authoritative server pricing", () => {
   });
 
   it("prices a single-vial selection from the catalog", () => {
-    expect(quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1 }]).subtotal).toBe(630);
+    expect(quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1 }]).subtotal).toBe(700);
   });
 
   it.each([
@@ -64,7 +64,7 @@ describe("authoritative server pricing", () => {
   it("prices a 3-pack at exactly 15% off", () => {
     const quote = quoteCheckout([{ kind: "item", slug: "ghk-cu-50mg", variantLabel: "3-Pack", quantity: 1 }]);
     expect(quote.subtotal).toBe(packPrice("ghk-cu-50mg", 3));
-    expect(quote.savings).toBe(630 * 3 - quote.subtotal);
+    expect(quote.savings).toBe(700 * 3 - quote.subtotal);
   });
 
   it("supports mixed eligible single and 3-pack selections without mixing unit levels", () => {
@@ -72,11 +72,11 @@ describe("authoritative server pricing", () => {
       { kind: "item", slug: "ghk-cu-50mg", variantLabel: "Single Vial", quantity: 1 },
       { kind: "item", slug: "tesamorelin", variantLabel: "3-Pack", quantity: 1 },
     ]);
-    expect(quote.subtotal).toBe(630 + packPrice("tesamorelin", 3));
+    expect(quote.subtotal).toBe(700 + packPrice("tesamorelin", 3));
   });
 
   it("applies the 5-pack discount exactly once", () => {
-    const slugs = ["mots-c", "ghk-cu-50mg", "glow70", "tesamorelin", "bpc-tb500-blend"];
+    const slugs = ["mots-c", "ghk-cu-50mg", "ss-31", "tesamorelin", "bpc-tb500-blend"];
     const mix = quoteMixSlugs(slugs, 5);
     const checkout = quoteCheckout([{ kind: "mix_bundle", size: 5, slugs }]);
     expect(mix.total).toBe(Math.round(mix.subtotal * 0.8));
@@ -84,14 +84,14 @@ describe("authoritative server pricing", () => {
     expect(checkout.savings).toBe(mix.savings);
   });
 
-  it("applies the 10-pack discount exactly once", () => {
+  it("rejects the removed 10-pack even in a direct API quote", () => {
     const slugs = Array(10).fill("ghk-cu-50mg");
-    expect(quoteCheckout([{ kind: "mix_bundle", size: 10, slugs }]).subtotal).toBe(4410);
+    expect(() => quoteCheckout([{ kind: "mix_bundle", size: 10 as never, slugs }])).toThrow();
   });
 
   it("rounds pack and mixed-bundle totals to whole rand", () => {
     expect(Number.isInteger(packPrice("tesamorelin", 3))).toBe(true);
-    expect(Number.isInteger(quoteMixSlugs(Array(10).fill("tesamorelin"), 10).total)).toBe(true);
+    expect(Number.isInteger(quoteMixSlugs(Array(5).fill("tesamorelin"), 5).total)).toBe(true);
   });
 
   it("recalculates quantity changes on the server", () => {
@@ -103,12 +103,12 @@ describe("authoritative server pricing", () => {
   it("ignores a stale client price and serializes only the selection", () => {
     const selections = toCheckoutSelections([cartLine("ghk-cu-50mg", "Single Vial", 999)]);
     expect(selections[0]).not.toHaveProperty("unitPrice");
-    expect(quoteCheckout(selections).subtotal).toBe(630);
+    expect(quoteCheckout(selections).subtotal).toBe(700);
   });
 
   it("ignores a manipulated client price and rejects a manipulated variant", () => {
     const selections = toCheckoutSelections([cartLine("ghk-cu-50mg", "3-Pack", 1)]);
-    expect(quoteCheckout(selections).subtotal).toBe(1607);
+    expect(quoteCheckout(selections).subtotal).toBe(1785);
     expect(() => variantPrice("ghk-cu-50mg", "100-Pack")).toThrow(/Invalid variant/);
   });
 
@@ -132,35 +132,24 @@ describe("authoritative server pricing", () => {
 
   it("allows every published peptide to proceed through direct checkout", () => {
     expect(() => quoteCheckout([{ kind: "item", slug: "rt3-reta", variantLabel: "Single Vial", quantity: 1 }])).not.toThrow();
-    expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "glow70", "klow80"], 5)).not.toThrow();
+    expect(() => quoteMixSlugs(["tz2-tirz", "mots-c", "ghk-cu-50mg", "ss-31", "klow80"], 5)).not.toThrow();
     expect(PRICING.consultOnlySlugs).toHaveLength(0);
   });
 
-  it("permits pack supplies only with a qualifying peptide pack", () => {
-    for (const slug of [
-      "bac-water-bacteriostatic",
-      "alcohol-swabs-20",
-      "glass-cartridge-3ml",
-      "peptide-pen-needles-10",
-      "insulin-syringes-5",
-    ]) {
-      expect(() => quoteCheckout([{ kind: "item", slug, quantity: 1 }])).toThrow(/only be ordered with/);
-    }
+  it("BAC can be sold independently with no automatic accessory quantity", () => {
+    const q = quoteCheckout([{kind: "item", slug: "bac-water-bacteriostatic",quantity:1}]);
+    expect(q.subtotal).toBe(210); expect(q.savings).toBe(0); expect(q.shipping).toBe(89);
+    for(const slug of ["alcohol-swabs-20","glass-cartridge-3ml","peptide-pen-needles-10","insulin-syringes-5"])
+      expect(()=>quoteCheckout([{kind:"item",slug,quantity:1}])).toThrow(/not currently offered/);
   });
-
-  it("prices the 3-pack BAC-water recommendation and caps it server-side", () => {
-    const selections = [
-      { kind: "item" as const, slug: "ghk-cu-50mg", variantLabel: "3-Pack", quantity: 1 },
-      { kind: "item" as const, slug: "bac-water-bacteriostatic", quantity: 2 },
-    ];
-    expect(quoteCheckout(selections).subtotal).toBe(packPrice("ghk-cu-50mg", 3) + 178);
-    expect(() => quoteCheckout([...selections.slice(0, 1), { kind: "item", slug: "bac-water-bacteriostatic", quantity: 3 }])).toThrow(/exceeds the allowance/);
+  it("adds only chosen BAC quantities to the pack without discounting BAC",()=>{
+    const pack={kind:"item" as const,slug:"ghk-cu-50mg",variantLabel:"3-Pack",quantity:1};
+    const plain=quoteCheckout([pack]);
+    const added=quoteCheckout([pack,{kind:"item",slug:"bac-water-bacteriostatic",quantity:3}]);
+    expect(added.subtotal).toBe(plain.subtotal+630); expect(added.savings).toBe(plain.savings);
   });
-
-  it("uses 3 BAC-water units for a 5-pack and 5 for a 10-pack", () => {
-    const five = Array(5).fill("ghk-cu-50mg");
-    const ten = Array(10).fill("ghk-cu-50mg");
-    expect(() => quoteCheckout([{ kind: "mix_bundle", size: 5, slugs: five }, { kind: "item", slug: "bac-water-bacteriostatic", quantity: 3 }])).not.toThrow();
-    expect(() => quoteCheckout([{ kind: "mix_bundle", size: 10, slugs: ten }, { kind: "item", slug: "bac-water-bacteriostatic", quantity: 5 }])).not.toThrow();
+  it("BAC cannot be a pack variant or count toward a mixed five",()=>{
+    expect(()=>variantPrice("bac-water-bacteriostatic","3-Pack")).toThrow();
+    expect(()=>quoteMixSlugs(["bac-water-bacteriostatic",...Array(4).fill("mots-c")],5)).toThrow();
   });
 });

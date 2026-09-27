@@ -34,17 +34,21 @@ function renderBuilder(route = "/build-your-stack") {
 }
 
 describe("BuildYourStackPage", () => {
-  it("renders 5 selector slots by default and switches to 10", () => {
+  it("rejects hidden and BAC prefills", () => {
+    renderBuilder("/build-your-stack?prefill=glow70");
+    expect((screen.getByLabelText("Vial 1") as HTMLSelectElement).value).toBe("");
+  });
+  it("renders only five peptide slots and has no 10-pack option", () => {
     renderBuilder();
     expect(screen.getAllByLabelText(/Vial \d+/)).toHaveLength(5);
-    fireEvent.click(screen.getByRole("button", { name: /10-Pack · 30% off/ }));
-    expect(screen.getAllByLabelText(/Vial \d+/)).toHaveLength(10);
+    expect(screen.queryByRole("button", { name: /10-Pack/ })).toBeNull();
+    expect(screen.queryByRole("option", { name: /BAC water/ })).toBeNull();
   });
 
   it("prefills slot 1 from the ?prefill= query param", () => {
-    renderBuilder("/build-your-stack?prefill=selank");
+    renderBuilder("/build-your-stack?prefill=kpv");
     const first = screen.getByLabelText("Vial 1") as HTMLSelectElement;
-    expect(first.value).toBe("selank");
+    expect(first.value).toBe("kpv");
   });
 
   it("includes current research-vendor catalogue products in bundle selection", () => {
@@ -58,7 +62,7 @@ describe("BuildYourStackPage", () => {
 
   it("adds a complete in-stock 5-pack to the cart as grouped bundle lines", () => {
     renderBuilder();
-    const slugs = ["selank", "semax", "pinealon", "epitalon", "kpv"]; // all in stock
+    const slugs = ["ss-31", "mots-c", "ghk-cu-50mg", "tesamorelin", "kpv"]; // all in stock
     slugs.forEach((slug, i) => {
       fireEvent.change(screen.getByLabelText(`Vial ${i + 1}`), { target: { value: slug } });
     });
@@ -76,7 +80,7 @@ describe("BuildYourStackPage", () => {
       "klow80",
       "mots-c",
       "ghk-cu-50mg",
-      "glow70",
+      "ss-31",
       "tesamorelin",
     ]);
     // tesamorelin is purchasable again as a pre-order (founder directive

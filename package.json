@@ -7,13 +7,13 @@
     "predev": "node --experimental-strip-types scripts/generate-sitemap.ts",
     "prebuild": "node scripts/apply-production-migration.mjs && node --experimental-strip-types scripts/generate-sitemap.ts",
     "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs && node scripts/check-bundle-budget.mjs",
+    "build": "vite build && node --experimental-strip-types scripts/prerender.mjs && node scripts/check-bundle-budget.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prerender": "node scripts/prerender.mjs"
+    "prerender": "node --experimental-strip-types scripts/prerender.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -1,3 +1,6 @@
+import PackSuppliesRail from "@/components/PackSuppliesRail";
+import { BAC_SLUG, DISCOUNT_POLICY } from "../../supabase/functions/_shared/catalog-release";
+import { variantPack } from "../../supabase/functions/_shared/pricing";
 import { Link } from "react-router-dom";
 import { Minus, Plus, X, ArrowLeft, ShoppingBag, Gift, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -30,10 +33,10 @@ export default function CartPage() {
   });
   const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
   const cartUnits = items.reduce((sum, item) => {
-    const pack = Number(item.variantLabel?.match(/(\d+)\s*-?\s*Pack/i)?.[1] ?? 1);
+    const pack = item.product.slug === BAC_SLUG ? 0 : item.bundleId ? 1 : variantPack(item.variantLabel);
     return sum + pack * item.quantity;
   }, 0);
-  const anchorSlug = items[0]?.product.slug;
+  const anchorSlug = items.find((i) => i.product.slug !== BAC_SLUG)?.product.slug;
 
   if (items.length === 0) {
     return (
@@ -127,7 +130,9 @@ export default function CartPage() {
           ))}
         </div>
 
-        {anchorSlug && cartUnits < 5 && (
+        <PackSuppliesRail />
+              <p className="my-3 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
+              {anchorSlug && cartUnits < 5 && (
           <Link
             to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
             className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-4"
@@ -160,14 +165,14 @@ export default function CartPage() {
         <div className="mt-6 rounded-lg border border-border bg-card p-6">
           {specialOffer > 0 && (
             <div className="mb-2 flex justify-between text-sm">
-              <span className="font-semibold text-destructive">Special Offer</span>
+              <span className="font-semibold text-destructive">Pack savings (already included)</span>
               <span className="font-semibold text-destructive" data-testid="cart-special-offer">−{format(specialOffer)}</span>
             </div>
           )}
           <div className="flex justify-between text-lg font-bold text-foreground">
             <span>Subtotal</span><span data-testid="cart-subtotal">{format(subtotal)}</span>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
+          <p className="mt-1 text-xs text-muted-foreground">Delivery calculated from the final basket after discounts and paid add-ons</p>
           <Link
             to={mp("/checkout")}
             className="mt-5 block w-full rounded-lg bg-hero-gradient py-4 text-center font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90"

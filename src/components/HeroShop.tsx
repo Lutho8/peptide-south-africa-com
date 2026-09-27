@@ -123,7 +123,7 @@ export default function HeroShop() {
             <span className="inline-flex items-center gap-1 font-semibold text-white">
               <CheckCircle2 className="h-3.5 w-3.5 text-[#00d4aa]" /> Prices include VAT — what you see is what you pay
             </span>
-            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free shipping over R1,500</span>
+            <span className="inline-flex items-center gap-1"><Truck className="h-3.5 w-3.5" /> Free shipping from R1,500 after discounts and paid add-ons</span>
             <span className="inline-flex items-center gap-1">
               <FlaskConical className="h-3.5 w-3.5" /> Research use only · not for human consumption
             </span>

@@ -1,3 +1,4 @@
+import { isLivePeptide, DISCOUNT_POLICY, DELIVERY_NOTICE } from "../../supabase/functions/_shared/catalog-release";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle, ChevronDown, Info, Layers, ShoppingCart, Sparkles, Truck, X } from "lucide-react";
@@ -21,7 +22,7 @@ import { formatZarWhole } from "../../supabase/functions/_shared/pricing";
 /** One selector slot: a product slug or empty. */
 type Slot = string | "";
 
-const selectableProducts = products;
+const selectableProducts = products.filter((p) => isLivePeptide(p.slug));
 const selectableSlugs = new Set(selectableProducts.map((product) => product.slug));
 const eligibleCuratedStacks = CURATED_STACKS.filter((stack) => stack.slugs.every((slug) => selectableSlugs.has(slug)));
 
@@ -113,8 +114,8 @@ export default function BuildYourStackPage() {
   return (
     <div className="pb-28 md:pb-0">
       <SEO
-        title="Build Your Own Peptide Stack | 5-Pack 20% Off · 10-Pack 30% Off"
-        description="South Africa's only peptide pick & mix. Choose any 5 vials for 20% off or any 10 for 30% off. VAT-inclusive pricing, free nationwide shipping, 99%+ HPLC purity."
+        title="Build Your Own Peptide Stack | 5-Pack 20% Off"
+        description="Choose five currently listed peptide vials for 20% off. BAC water is sold separately. Delivery depends on the final discounted basket."
         path="/build-your-stack"
       />
       <JsonLd
@@ -122,7 +123,7 @@ export default function BuildYourStackPage() {
           "@context": "https://schema.org",
           "@type": "WebPage",
           name: "Build Your Own Peptide Stack",
-          description: "Pick & mix peptide bundles — 5-Pack at 20% off, 10-Pack at 30% off.",
+          description: "Peptide-only 5-pack pick and mix at 20% off; BAC water sold separately.",
         }}
       />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Build Your Stack" }]} />
@@ -138,7 +139,7 @@ export default function BuildYourStackPage() {
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground/85 sm:text-base">
             Pick any {size} vials from the catalog — mix products or repeat your favourite —
-            and save {tier.discountPct}% off single-vial pricing. Prices include VAT.
+            and save {tier.discountPct}% off single-vial pricing. BAC water is sold separately.
           </p>
           <div className="mx-auto mt-5 flex max-w-xs items-center justify-center gap-1 rounded-full border border-white/25 bg-white/10 p-1 backdrop-blur">
             {(Object.keys(MIX_BUNDLE_TIERS) as unknown as MixBundleSize[]).map((s) => {
@@ -300,11 +301,12 @@ export default function BuildYourStackPage() {
             )}
           </button>
           <div className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-trust" /> Free shipping — every pack clears the R1,500 threshold</span>
-            <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> Prices include VAT — what you see is what you pay</span>
-            <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> 99%+ HPLC tested by Janoshik — COA on every batch</span>
+            <span className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-trust" /> {DELIVERY_NOTICE}</span>
+            <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> 5 selected peptide vials; BAC water is not included</span>
+            <span className="flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-trust" /> Current report availability is shown on each product page</span>
             <a href="https://peptide-south-africa.co.za/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary"><CheckCircle className="h-3.5 w-3.5 text-trust" /> Free Peptide Tracker included with every pack</a>
           </div>
+          <p className="mt-4 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
           <p className="mt-4 text-[10px] text-muted-foreground">
             For research purposes only. Not for human use or consumption.{" "}
             <Link to="/shop" className="text-primary hover:underline">Prefer single vials or 3-packs? Shop the catalog →</Link>

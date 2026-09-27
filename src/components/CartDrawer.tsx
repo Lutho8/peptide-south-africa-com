@@ -1,3 +1,6 @@
+import PackSuppliesRail from "@/components/PackSuppliesRail";
+import { BAC_SLUG, DISCOUNT_POLICY } from "../../supabase/functions/_shared/catalog-release";
+import { variantPack } from "../../supabase/functions/_shared/pricing";
 import { X, Minus, Plus, ShoppingBag, Gift, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
@@ -25,7 +28,7 @@ export default function CartDrawer() {
   const { market } = useMarket();
   const mp = (p: string) => marketPath(p, market);
 
-  const anchorSlug = items[0]?.product.slug;
+  const anchorSlug = items.find((i) => i.product.slug !== BAC_SLUG)?.product.slug;
   const singles = items.filter((i) => !i.bundleId);
   const bundleIds = [...new Set(items.filter((i) => i.bundleId).map((i) => i.bundleId as string))];
   const bundles = bundleIds.map((id) => {
@@ -40,7 +43,7 @@ export default function CartDrawer() {
   });
   const specialOffer = Math.round(cartBundleSavings(items) * 100) / 100;
   const cartUnits = items.reduce((sum, item) => {
-    const pack = Number(item.variantLabel?.match(/(\d+)\s*-?\s*Pack/i)?.[1] ?? 1);
+    const pack = item.product.slug === BAC_SLUG ? 0 : item.bundleId ? 1 : variantPack(item.variantLabel);
     return sum + pack * item.quantity;
   }, 0);
 
@@ -137,6 +140,8 @@ export default function CartDrawer() {
                 ))}
               </div>
 
+              <PackSuppliesRail />
+              <p className="my-3 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
               {anchorSlug && cartUnits < 5 && (
                 <Link
                   to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
@@ -172,14 +177,14 @@ export default function CartDrawer() {
             <div className="border-t border-border p-4">
               {specialOffer > 0 && (
                 <div className="mb-2 flex justify-between text-sm">
-                  <span className="font-semibold text-destructive">Special Offer</span>
+                  <span className="font-semibold text-destructive">Pack savings (already included)</span>
                   <span className="font-semibold text-destructive">−{format(specialOffer)}</span>
                 </div>
               )}
               <div className="mb-1 flex justify-between text-base font-bold text-foreground">
                 <span>Subtotal</span><span>{format(subtotal)}</span>
               </div>
-              <p className="mb-4 text-xs text-muted-foreground">Shipping & taxes calculated at checkout</p>
+              <p className="mb-4 text-xs text-muted-foreground">Delivery calculated from the final basket after discounts and paid add-ons</p>
 
               <ExpressEftButton onNavigate={() => setIsCartOpen(false)} className="mb-3" />
 

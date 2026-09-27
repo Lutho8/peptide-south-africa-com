@@ -26,3 +26,12 @@ export function liveListing(slug: string) {
 export const DISCOUNT_POLICY = "One applicable discount per purchase. Published pack savings are already included; no additional subscription, coupon or referral discount applies. BAC water is never discounted.";
 export const BAC_NOTICE = "BAC water 10 ml is sold separately at R210 per vial. It is not included in peptide packs, does not count as a peptide vial, and receives no pack or promotional discount.";
 export const DELIVERY_NOTICE = "Free South African delivery on merchandise totals of R1,500 or more after discounts and paid add-ons. Below R1,500, delivery is R89.";
+
+/** Prevent old clients silently buying a changed strength or stacking discounts. */
+export function validateStorefrontRequest(body: Record<string, unknown>): void {
+  if (body.catalogVersion !== CATALOG_VERSION) throw new Error("The catalogue changed. Refresh the page and rebuild your cart before checkout.");
+  for (const key of ["discountCode", "discount_code", "coupon", "couponCode", "promoCode", "subscriptionDiscount", "discountPct", "discountAmount", "discounts"]) {
+    const value = body[key];
+    if (value !== undefined && value !== null && value !== "" && value !== 0 && value !== false) throw new Error(DISCOUNT_POLICY);
+  }
+}

@@ -1,3 +1,4 @@
+import { validateStorefrontRequest } from "../_shared/catalog-release.ts";
 // Creates a storefront order for direct EFT payment into the Capitec business account.
 // EFT order initialisation. The frontend submits price-free product, variant,
 // quantity and bundle selections. This function recomputes the payable amount,
@@ -74,6 +75,10 @@ Deno.serve(async (req)=>{
       error: 'email required',
       code: 'BAD_REQUEST'
     }, 400);
+    const isPetsRequest = Array.isArray(selections) && selections.length > 0 && selections.every((s) => s?.kind === "item" && typeof s.slug === "string" && s.slug.startsWith("pets-"));
+    if (!isPetsRequest) {
+      try { validateStorefrontRequest(body); } catch (error) { return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409); }
+    }
     let quote;
     try {
       quote = quoteCheckout(selections);

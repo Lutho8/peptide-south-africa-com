@@ -7,16 +7,7 @@ const expectedAvailability = PREORDER_MODE
   ? "https://schema.org/PreOrder"
   : "https://schema.org/InStock";
 
-const slugs = [
-  "kpv",
-  "thymosin-alpha-1",
-  "ara-290",
-  "ss-31",
-  "pinealon",
-  "epitalon",
-  "selank",
-  "semax",
-];
+const slugs = products.map((p) => p.slug);
 
 describe("new peptide JSON-LD Product schema", () => {
   for (const slug of slugs) {

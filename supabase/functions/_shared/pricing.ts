@@ -75,6 +75,7 @@ export function quoteMixSlugs(slugs: string[], size: MixBundleSize) {
   if (size !== 5) throw new Error("Only the 5-pack pick and mix is offered");
   if (!Array.isArray(slugs) || slugs.length !== 5) throw new Error("A 5-pack needs exactly 5 products");
   const subtotal = slugs.reduce((sum, slug) => {
+    if (isDirectOnlySlug(slug)) throw new Error("This product is not eligible for peptide bundles");
     if (typeof slug !== "string" || !isLivePeptide(slug)) throw new Error("Only currently listed peptides can be included in a peptide bundle; BAC is separate");
     return sum + catalogPrice(slug);
   }, 0);
@@ -111,7 +112,7 @@ export function quoteCheckout(selections: CheckoutSelection[]): ServerCheckoutQu
       const pack = variantPack(selection.variantLabel);
       subtotal += amount * quantity;
       savings += Math.max(0, catalogPrice(selection.slug) * pack - amount) * quantity;
-      descriptions.push(`${listing?.name ?? selection.slug} (${pack} vial${pack === 1 ? "" : "s"}${listing ? `; ${listing.sku}` : ""}) x${quantity}`);
+      descriptions.push(listing ? `${listing.name} (${pack} vial${pack === 1 ? "" : "s"}; ${listing.sku}) x${quantity}` : `${selection.slug}${selection.variantLabel ? ` (${selection.variantLabel})` : ""} x${quantity}`);
     } else if (selection.kind === "mix_bundle") {
       const quote = quoteMixSlugs(selection.slugs, selection.size);
       subtotal += quote.total * quantity;

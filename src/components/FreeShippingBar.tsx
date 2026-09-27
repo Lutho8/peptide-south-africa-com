@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import { SHIPPING_RULES } from "@/lib/shipping";
+import { SHIPPING_RULES, amountToFreeShipping } from "@/lib/shipping";
 import { formatZAR } from "@/lib/price";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ interface Props {
 export default function FreeShippingBar({ subtotalEur, subtotalZar, className }: Props) {
   const rule = SHIPPING_RULES["South Africa"];
   const subtotal = subtotalZar ?? subtotalEur ?? 0;
-  const remaining = Math.max(0, rule.freeOver - subtotal);
+  const remaining = amountToFreeShipping(subtotal);
   const pct = Math.min(100, (subtotal / rule.freeOver) * 100);
   const unlocked = remaining <= 0;
 
@@ -37,6 +37,7 @@ export default function FreeShippingBar({ subtotalEur, subtotalZar, className }:
         </span>
       </div>
       <Progress value={pct} className="h-2" />
+      <p className="mt-2 text-xs text-muted-foreground">R1,500 or more after discounts and paid add-ons, excluding delivery.</p>
       {!unlocked && (
         <p className="mt-1.5 text-xs text-muted-foreground">
           Only {formatZAR(remaining)} to go for free delivery anywhere in South Africa.
