@@ -1,29 +1,46 @@
-name: Read catalogue deployment failure
+name: Reproduce catalogue Vercel build
 on:
   push:
     branches: [chore/inspect-catalogue-deployment-20260927]
 permissions:
   contents: read
 jobs:
-  read-build-log:
+  reproduce:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 07df024401a04297703aaaa10186aa5769e3033e
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Inspect failed preview without deploying or changing settings
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          cache: npm
+      - name: Save exact review source without credentials
+        run: git archive --format=tar.gz -o /tmp/psa-review-source.tgz HEAD
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Create isolated local build settings (not hosted project settings)
         run: |
-          : "${VERCEL_TOKEN:?Existing VERCEL_TOKEN is not available}"
-          printf 'Configured team ID: %s\nConfigured project ID: %s\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID"
-          npx --yes vercel@59.16.0 inspect dpl_GzHYU4yGYKxGgF2xuPcK3TAve5zQ --logs 2>&1 | tee /tmp/vercel-catalogue-build.log
-      - uses: actions/upload-artifact@v4
+          mkdir -p .vercel
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          writeFileSync('.vercel/project.json', JSON.stringify({projectId:'prj_5BvjL0zY2hVAdlhpJ9DXYedY9MsQ',orgId:'team_JzyUL68zQD7Lo7gKWPiWxar7',projectName:'peptide-south-africa-com',settings:{framework:'vite',buildCommand:'npm run build',outputDirectory:'dist',installCommand:'npm ci',nodeVersion:'22.x',rootDirectory:null}}));
+          writeFileSync('.vercel/.env.preview.local', 'VERCEL_ENV=preview\n');
+          NODE
+      - name: Build all Vercel outputs including API functions (no deployment)
+        shell: bash
+        run: |
+          set -o pipefail
+          npx --yes vercel@59.16.0 build --no-color 2>&1 | tee /tmp/vercel-catalogue-build.log
+        env:
+          VERCEL_TELEMETRY_DISABLED: 1
+      - name: Export reproduction evidence
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: catalogue-vercel-build-log
-          path: /tmp/vercel-catalogue-build.log
+          name: psa-vercel-reproduction
+          path: |
+            /tmp/psa-review-source.tgz
+            /tmp/vercel-catalogue-build.log
           retention-days: 2
