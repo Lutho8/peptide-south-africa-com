@@ -1,8 +1,10 @@
 import { Plus, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { packSupplies } from "@/data/packSupplies";
 import { BAC_SLUG, BAC_NOTICE } from "../../supabase/functions/_shared/catalog-release";
+import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 export default function PackSuppliesRail() {
   const { items, addToCart, updateQuantity, removeFromCart } = useCart();
   const { format } = useCurrency();
@@ -10,8 +12,18 @@ export default function PackSuppliesRail() {
   const bac = packSupplies[BAC_SLUG];
   const current = items.find((item) => item.product.slug === BAC_SLUG);
   return <section className="my-3 rounded-lg border border-primary/25 bg-primary/[0.03] p-4" data-testid="pack-supplies-rail">
-    <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Optional add-on - sold separately</p>
-    <h2 className="mt-1 font-display text-base font-semibold">BAC water 10 ml - {format(bac.price)} per vial</h2>
+    <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Optional product recommendation</p>
+    <div className="mt-3 flex items-center gap-3">
+      <Link to={`/product/${BAC_SLUG}`} className={`${vialTileFrameClasses} block h-20 w-20 shrink-0`} data-testid={VIAL_TEST_ID} aria-label="View BAC water 10 ml product">
+        <span aria-hidden className={vialAccentBarSmClasses} />
+        <img src={bac.image} alt="BAC water 10 ml" width={80} height={80} className="h-full w-full object-contain" loading="lazy" />
+      </Link>
+      <div>
+        <h2 className="font-display text-base font-semibold"><Link to={`/product/${BAC_SLUG}`} className="hover:underline">BAC water 10 ml</Link></h2>
+        <p className="mt-1 text-sm font-semibold text-primary">{format(bac.price)} per vial</p>
+        <p className="mt-1 text-xs text-muted-foreground">Sold separately. Add only if needed.</p>
+      </div>
+    </div>
     <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{BAC_NOTICE}</p>
     <p className="mt-1 text-xs text-muted-foreground">Only paid add-ons count towards the free-delivery threshold.</p>
     <div className="mt-3 flex flex-wrap items-center gap-2">

@@ -315,7 +315,7 @@ export default function CheckoutPage() {
             </form>
           </div>
 
-          <aside className="flex flex-col gap-4">
+          <aside className="order-first flex flex-col gap-4 lg:order-none">
             <div className="rounded-lg border border-border bg-card p-6">
               <h2 className="font-display text-base font-semibold text-foreground">Your order</h2>
               <div className="mt-4 flex flex-col gap-3">

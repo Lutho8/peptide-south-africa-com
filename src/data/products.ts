@@ -571,8 +571,8 @@ export const products: Product[] = [
       // Purchases are not a physical stock count. Preserve availability/preorder
       // without borrowing numeric stock counts from another strength.
       stock: undefined, documentationPending,
-      image: p.slug === "tesamorelin" ? "/products/tesamorelin-5mg.svg"
-        : p.slug === "kpv" ? "/products/kpv-5mg.svg" : p.image,
+      image: p.slug === "tesamorelin" ? "/products/tesamorelin-5mg.webp"
+        : p.slug === "kpv" ? "/products/kpv-5mg.webp" : p.image,
       purity: documentationPending ? undefined : p.purity,
       description: p.slug === "klow80"
         ? "KLOW is an 80 mg peptide blend per vial: GHK-Cu 50 mg + TB-500 10 mg + BPC-157 10 mg + KPV 10 mg. Supplied for laboratory research. It is not the GLOW blend."

@@ -163,6 +163,7 @@ export default function ProductPage() {
           {/* Image — sticks on desktop so the product follows the user as they scroll. */}
           <div className="md:sticky md:top-24 md:self-start">
             <ProductImageZoom src={product.image} alt={product.name} media={productMedia} />
+            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Product illustration. Refer to the listed strength and matching batch documentation.</p>
           </div>
 
 
