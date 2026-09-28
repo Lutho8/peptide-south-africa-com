@@ -103,7 +103,8 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.match(await page.getByTestId('mix-total').innerText(),/4,060/);
  assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth),false);
  await page.screenshot({path:`${out}/${name}-builder.png`,fullPage:false});
- await gotoReady('/product/glow70');
+ // Retired products may return a static 404 without the React app or cookie UI.
+ await page.goto(base+'/product/glow70', {waitUntil:'networkidle'});
  await page.getByRole('heading',{name:/^(Product Not Found|Page not found)$/i}).waitFor();
  assert.equal(await page.getByRole('button',{name:'Add to Cart',exact:true}).count(),0);
  assert.deepEqual(errors,[]);
