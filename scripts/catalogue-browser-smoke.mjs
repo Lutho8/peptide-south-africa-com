@@ -16,9 +16,23 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
    if (u.origin !== new URL(base).origin) return route.abort();
    return route.continue();
  });
- await context.addInitScript(()=>{localStorage.setItem('psa.tracker-bonus.seen','1');});
+ await context.addInitScript(()=>{
+   localStorage.setItem('psa.tracker-bonus.seen','1');
+   localStorage.removeItem('psa-cookie-consent');
+   localStorage.removeItem('rtt-cookie-consent');
+ });
  const page=await context.newPage();
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ // Production serves prerendered HTML before React attaches event handlers.
+ // The cookie dialog mounts only in a client effect. Dismissing it proves
+ // client interaction is ready; visible SSR product markup alone does not.
+ const gotoReady = async (path) => {
+   await page.goto(base+path, {waitUntil:'networkidle'});
+   const consent=page.getByRole('dialog',{name:'Cookie preferences',exact:true});
+   await expect(consent).toBeVisible({timeout:15000});
+   await consent.getByRole('button',{name:'Decline cookies',exact:true}).click();
+   await expect(consent).toBeHidden();
+ };
  // A full navigation must not race React's effect that persists cart changes.
  // Assert the actual stored cart instead of masking a lost click with a delay.
  const waitForStoredQuantity = async (slug, quantity) => {
@@ -27,18 +41,18 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
      return items.filter(item=>item.product.slug===slug).reduce((sum,item)=>sum+item.quantity,0);
    },slug), {timeout:10000,message:`Persist ${slug} quantity ${quantity} before navigation`}).toBe(quantity);
  };
- await page.goto(base+'/product/bac-water-bacteriostatic');
+ await gotoReady('/product/bac-water-bacteriostatic');
  await page.getByTestId('selected-inclusions').waitFor();
  assert.match(await page.getByTestId('selected-inclusions').innerText(),/10 ml per vial, sold separately/);
  assert.equal(await page.getByRole('button',{name:/3-Pack|5-Pack/}).count(),0);
  await page.getByRole('button',{name:'Add to Cart',exact:true}).first().click();
  await waitForStoredQuantity('bac-water-bacteriostatic',1);
- await page.goto(base+'/cart');
+ await gotoReady('/cart');
  await page.getByTestId('cart-subtotal').waitFor();
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/210/);
  await page.getByRole('button',{name:'Remove BAC water',exact:true}).click();
  await waitForStoredQuantity('bac-water-bacteriostatic',0);
- await page.goto(base+'/product/tesamorelin');
+ await gotoReady('/product/tesamorelin');
  await page.getByRole('heading',{name:'Tesamorelin 5 mg',exact:true}).waitFor();
  assert.equal(await page.locator('img[src*="tesamorelin-5mg.webp"]').count()>0,true);
  const close=page.getByRole('button',{name:/close/i});
@@ -51,11 +65,11 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await page.getByRole('button',{name:/Single Vial/}).click();
  assert.match(await page.getByTestId('selected-inclusions').innerText(),/1 vial; 5 mg/);
  await page.screenshot({path:`${out}/${name}-tesamorelin.png`,fullPage:false});
- await page.goto(base+'/product/kpv');
+ await gotoReady('/product/kpv');
  await page.getByTestId('selected-inclusions').waitFor();
  await page.getByRole('button',{name:'Add to Cart',exact:true}).first().click();
  await waitForStoredQuantity('kpv',1);
- await page.goto(base+'/cart');
+ await gotoReady('/cart');
  await page.getByTestId('cart-subtotal').waitFor();
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/1[,\s]007/);
  await page.getByRole('button',{name:'Add BAC water 10 ml',exact:true}).click();
@@ -66,7 +80,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/1[,\s]637/);
  assert.match(await page.getByTestId('free-shipping-bar').innerText(),/unlocked free shipping/);
  await waitForStoredQuantity('bac-water-bacteriostatic',3);
- await page.goto(base+'/checkout');
+ await gotoReady('/checkout');
  await page.getByTestId('pack-supplies-rail').waitFor();
  assert.match(await page.getByTestId('pack-supplies-rail').innerText(),/3 vials/);
  await page.getByRole('button',{name:'Remove BAC water',exact:true}).click();
@@ -78,7 +92,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await recommendation.getByRole('button',{name:'Remove BAC water',exact:true}).click();
  assert.match(await page.getByTestId('checkout-total').innerText(),/1[,\s]096/);
  await page.screenshot({path:`${out}/${name}-checkout.png`,fullPage:false});
- await page.goto(base+'/build-your-stack');
+ await gotoReady('/build-your-stack');
  await page.getByLabel('Vial 1',{exact:true}).waitFor();
  assert.equal(await page.getByRole('button',{name:/10-Pack/}).count(),0);
  const options=await page.getByLabel('Vial 1',{exact:true}).locator('option').evaluateAll(os=>os.map(o=>o.value));
@@ -89,7 +103,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.match(await page.getByTestId('mix-total').innerText(),/4,060/);
  assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>window.innerWidth),false);
  await page.screenshot({path:`${out}/${name}-builder.png`,fullPage:false});
- await page.goto(base+'/product/glow70');
+ await gotoReady('/product/glow70');
  await page.getByRole('heading',{name:/^(Product Not Found|Page not found)$/i}).waitFor();
  assert.equal(await page.getByRole('button',{name:'Add to Cart',exact:true}).count(),0);
  assert.deepEqual(errors,[]);
