@@ -1,4 +1,4 @@
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const base = process.env.CATALOGUE_TEST_URL || 'http://127.0.0.1:4173';
@@ -19,15 +19,25 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await context.addInitScript(()=>{localStorage.setItem('psa.tracker-bonus.seen','1');});
  const page=await context.newPage();
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ // A full navigation must not race React's effect that persists cart changes.
+ // Assert the actual stored cart instead of masking a lost click with a delay.
+ const waitForStoredQuantity = async (slug, quantity) => {
+   await expect.poll(() => page.evaluate(slug => {
+     const items=JSON.parse(localStorage.getItem('psa.cart.v1') || '[]');
+     return items.filter(item=>item.product.slug===slug).reduce((sum,item)=>sum+item.quantity,0);
+   },slug), {timeout:10000,message:`Persist ${slug} quantity ${quantity} before navigation`}).toBe(quantity);
+ };
  await page.goto(base+'/product/bac-water-bacteriostatic');
  await page.getByTestId('selected-inclusions').waitFor();
  assert.match(await page.getByTestId('selected-inclusions').innerText(),/10 ml per vial, sold separately/);
  assert.equal(await page.getByRole('button',{name:/3-Pack|5-Pack/}).count(),0);
  await page.getByRole('button',{name:'Add to Cart',exact:true}).first().click();
+ await waitForStoredQuantity('bac-water-bacteriostatic',1);
  await page.goto(base+'/cart');
  await page.getByTestId('cart-subtotal').waitFor();
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/210/);
  await page.getByRole('button',{name:'Remove BAC water',exact:true}).click();
+ await waitForStoredQuantity('bac-water-bacteriostatic',0);
  await page.goto(base+'/product/tesamorelin');
  await page.getByRole('heading',{name:'Tesamorelin 5 mg',exact:true}).waitFor();
  assert.equal(await page.locator('img[src*="tesamorelin-5mg.webp"]').count()>0,true);
@@ -44,6 +54,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await page.goto(base+'/product/kpv');
  await page.getByTestId('selected-inclusions').waitFor();
  await page.getByRole('button',{name:'Add to Cart',exact:true}).first().click();
+ await waitForStoredQuantity('kpv',1);
  await page.goto(base+'/cart');
  await page.getByTestId('cart-subtotal').waitFor();
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/1[,\s]007/);
@@ -54,6 +65,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await page.getByRole('button',{name:'Increase BAC water quantity',exact:true}).click();
  assert.match(await page.getByTestId('cart-subtotal').innerText(),/1[,\s]637/);
  assert.match(await page.getByTestId('free-shipping-bar').innerText(),/unlocked free shipping/);
+ await waitForStoredQuantity('bac-water-bacteriostatic',3);
  await page.goto(base+'/checkout');
  await page.getByTestId('pack-supplies-rail').waitFor();
  assert.match(await page.getByTestId('pack-supplies-rail').innerText(),/3 vials/);
