@@ -1,0 +1,78 @@
+name: Supabase staging deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: Full commit SHA approved for staging
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy approved commit to Supabase staging
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+      STAGING_PROJECT_ID: ${{ secrets.STAGING_PROJECT_ID }}
+      STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+      STAGING_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.STAGING_SUPABASE_PUBLISHABLE_KEY }}
+
+    steps:
+      - name: Check out selected commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Verify approved commit and staging target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_SHA}" = "${{ inputs.expected_commit }}"
+          test -n "${STAGING_PROJECT_ID}"
+          test "${STAGING_PROJECT_ID}" != "eutszmrsukoqqeilzrbv"
+          test -n "${STAGING_SUPABASE_URL}"
+          test -n "${STAGING_SUPABASE_PUBLISHABLE_KEY}"
+
+      - name: Install pinned Supabase CLI
+        uses: supabase/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf # v2.1.1
+        with:
+          version: 2.113.0
+
+      - name: Link staging project
+        run: supabase link --project-ref "$STAGING_PROJECT_ID"
+
+      - name: Preview migrations
+        run: supabase db push --dry-run
+
+      - name: Apply migrations
+        run: supabase db push
+
+      - name: Deploy Edge Functions
+        run: supabase functions deploy --project-ref "$STAGING_PROJECT_ID" --use-api
+
+      - name: Verify migration and function state
+        run: |
+          supabase migration list
+          supabase functions list --project-ref "$STAGING_PROJECT_ID"
+
+      - name: Read-only Data API smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            --get "${STAGING_SUPABASE_URL}/rest/v1/testimonials" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1" \
+            --header "apikey: ${STAGING_SUPABASE_PUBLISHABLE_KEY}" \
+            --header "Authorization: Bearer ${STAGING_SUPABASE_PUBLISHABLE_KEY}" \
+            --output /dev/null
