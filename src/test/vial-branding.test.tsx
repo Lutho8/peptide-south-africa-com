@@ -96,6 +96,24 @@ describe("vial branding — white + light-teal medical/luxury tokens", () => {
     expect(picture?.querySelector("img")).toHaveAttribute("src", product.image);
   });
 
+  it("publishes responsive sources for every live vial still backed by a catalogue JPEG", () => {
+    const optimizedSlugs = [
+      "rt3-reta",
+      "tz2-tirz",
+      "mots-c",
+      "bpc-tb500-blend",
+      "ss-31",
+    ];
+
+    for (const slug of optimizedSlugs) {
+      const product = products.find((item) => item.slug === slug);
+      expect(product, slug).toBeDefined();
+      expect(product?.image, slug).toMatch(/\.jpg$/);
+      expect(product?.imageSources?.avif?.srcSet, slug).toMatch(/320w, .*640w, .*1024w$/);
+      expect(product?.imageSources?.webp?.srcSet, slug).toMatch(/320w, .*640w, .*1024w$/);
+    }
+  });
+
   it("shared vialDesign module exposes stable token strings", async () => {
     const mod = await import("@/lib/vialDesign");
     // Every frame variant carries the studio-plate essentials.

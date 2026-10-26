@@ -1,21 +1,11 @@
 import productRt3 from "@/assets/vials/rt3.jpg";
 import productGhk from "@/assets/vials/ghk-copper-blue.webp";
-import productGhkAvif from "@/assets/vials/ghk-copper-blue.avif";
-import productGhkAvif320 from "@/assets/vials/ghk-copper-blue-320.avif";
-import productGhkAvif640 from "@/assets/vials/ghk-copper-blue-640.avif";
-import productGhkWebp320 from "@/assets/vials/ghk-copper-blue-320.webp";
-import productGhkWebp640 from "@/assets/vials/ghk-copper-blue-640.webp";
 import productTesa from "@/assets/vials/tesa.jpg";
 import productTz2 from "@/assets/vials/tz2.jpg";
 import productMots from "@/assets/vials/mots.jpg";
 import productBpc from "@/assets/vials/bpc.jpg";
 import productGlow from "@/assets/vials/glow.jpg";
 import productKlow from "@/assets/vials/klow-copper-blue.webp";
-import productKlowAvif from "@/assets/vials/klow-copper-blue.avif";
-import productKlowAvif320 from "@/assets/vials/klow-copper-blue-320.avif";
-import productKlowAvif640 from "@/assets/vials/klow-copper-blue-640.avif";
-import productKlowWebp320 from "@/assets/vials/klow-copper-blue-320.webp";
-import productKlowWebp640 from "@/assets/vials/klow-copper-blue-640.webp";
 import productKpv from "@/assets/vials/kpv.jpg";
 import productTha1 from "@/assets/vials/tha1.jpg";
 import productAra290 from "@/assets/vials/ara290.jpg";
@@ -24,6 +14,7 @@ import productPinealon from "@/assets/vials/pinealon.jpg";
 import productEpitalon from "@/assets/vials/epitalon.jpg";
 import productSelank from "@/assets/vials/selank.jpg";
 import productSemax from "@/assets/vials/semax.jpg";
+import { responsiveVialSources } from "@/lib/responsiveVialImages";
 import { packSupplies } from "./packSupplies";
 import { BAC_SLUG, isLivePeptide, liveListing } from "../../supabase/functions/_shared/catalog-release";
 import { catalogPrice, packPrice } from "../../supabase/functions/_shared/pricing";
@@ -136,6 +127,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("rt3-reta"),
     priceRange: rangeFromVariants(rt3Variants),
     image: productRt3,
+    imageSources: responsiveVialSources("rt3"),
     category: "GLP",
     tag: "Best Seller",
     purity: "99.060% HPLC",
@@ -167,17 +159,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("ghk-cu-50mg"),
     priceRange: rangeFromVariants(ghkVariants),
     image: productGhk,
-    imageSources: {
-      avif: {
-        src: productGhkAvif,
-        srcSet: `${productGhkAvif320} 320w, ${productGhkAvif640} 640w, ${productGhkAvif} 1254w`,
-      },
-      webp: {
-        src: productGhk,
-        srcSet: `${productGhkWebp320} 320w, ${productGhkWebp640} 640w, ${productGhk} 1254w`,
-      },
-      sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
-    },
+    imageSources: responsiveVialSources("ghk-copper-blue", 1254),
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -233,6 +215,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("tz2-tirz"),
     priceRange: rangeFromVariants(tz2Variants),
     image: productTz2,
+    imageSources: responsiveVialSources("tz2"),
     category: "GLP",
     tag: "Pre-Order",
     purity: "99.867–99.899% published report",
@@ -261,6 +244,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("mots-c"),
     priceRange: rangeFromVariants(motsVariants),
     image: productMots,
+    imageSources: responsiveVialSources("mots"),
     category: "Wellness & Longevity",
     tag: "Pre-Order",
     purity: "99.098% HPLC",
@@ -289,6 +273,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("bpc-tb500-blend"),
     priceRange: rangeFromVariants(bpcVariants),
     image: productBpc,
+    imageSources: responsiveVialSources("bpc"),
     category: "Healing",
     tag: "Pre-Order",
     purity: "≥99%",
@@ -322,6 +307,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("glow70"),
     priceRange: rangeFromVariants(glowVariants),
     image: productGlow,
+    imageSources: responsiveVialSources("glow"),
     category: "Skin & Hair",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -348,17 +334,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("klow80"),
     priceRange: rangeFromVariants(klowVariants),
     image: productKlow,
-    imageSources: {
-      avif: {
-        src: productKlowAvif,
-        srcSet: `${productKlowAvif320} 320w, ${productKlowAvif640} 640w, ${productKlowAvif} 1254w`,
-      },
-      webp: {
-        src: productKlow,
-        srcSet: `${productKlowWebp320} 320w, ${productKlowWebp640} 640w, ${productKlow} 1254w`,
-      },
-      sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
-    },
+    imageSources: responsiveVialSources("klow-copper-blue", 1254),
     category: "Wellness & Longevity",
     tag: "Pre-Order",
     purity: "≥99%",
@@ -412,6 +388,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("thymosin-alpha-1"),
     priceRange: rangeFromVariants(tha1Variants),
     image: productTha1,
+    imageSources: responsiveVialSources("tha1"),
     category: "Recovery",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -439,6 +416,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("ara-290"),
     priceRange: rangeFromVariants(ara290Variants),
     image: productAra290,
+    imageSources: responsiveVialSources("ara290"),
     category: "Recovery",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -466,6 +444,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("ss-31"),
     priceRange: rangeFromVariants(ss31Variants),
     image: productSs31,
+    imageSources: responsiveVialSources("ss31"),
     category: "Wellness & Longevity",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -493,6 +472,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("pinealon"),
     priceRange: rangeFromVariants(pinealonVariants),
     image: productPinealon,
+    imageSources: responsiveVialSources("pinealon"),
     category: "Wellness & Longevity",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -520,6 +500,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("epitalon"),
     priceRange: rangeFromVariants(epitalonVariants),
     image: productEpitalon,
+    imageSources: responsiveVialSources("epitalon"),
     category: "Wellness & Longevity",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -547,6 +528,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("selank"),
     priceRange: rangeFromVariants(selankVariants),
     image: productSelank,
+    imageSources: responsiveVialSources("selank"),
     category: "Wellness & Longevity",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
@@ -574,6 +556,7 @@ const sourceProducts: Product[] = [
     price: catalogPrice("semax"),
     priceRange: rangeFromVariants(semaxVariants),
     image: productSemax,
+    imageSources: responsiveVialSources("semax"),
     category: "Wellness & Longevity",
     purity: "≥99%",
     storage: "Refrigerate after reconstitution.",
