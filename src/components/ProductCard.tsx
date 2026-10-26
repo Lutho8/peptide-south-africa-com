@@ -6,6 +6,7 @@ import type { Product, Variant } from "@/data/products";
 import { useCurrency } from "@/context/CurrencyContext";
 import StockBadge from "@/components/StockBadge";
 import TrackBadge from "@/components/TrackBadge";
+import ProductPicture from "@/components/ProductPicture";
 import { VIAL_TEST_ID, vialFrame } from "@/lib/vialDesign";
 
 export default function ProductCard({ product, recommendation = false }: { product: Product; recommendation?: boolean }) {
@@ -59,8 +60,9 @@ export default function ProductCard({ product, recommendation = false }: { produ
         {/* Teal accent band on the right edge — echoes the physical box */}
         <span aria-hidden className={bar} />
         <span aria-hidden className={dot} />
-        <img
+        <ProductPicture
           src={product.image}
+          sources={product.imageSources}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
