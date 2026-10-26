@@ -86,6 +86,7 @@ describe("release contracts", () => {
     const baselineGuard = read("scripts/ci/verify-declarative-baseline.mjs");
     const config = read("supabase/config.toml");
     expect(workflow).toContain("Verify declarative production baseline");
+    expect(workflow).toContain("if: github.event_name == 'push' || github.event_name == 'pull_request'");
     expect(workflow).toContain('project_id = "eft-declarative-sandbox-ci"');
     expect(workflow).toContain("Refusing to rewrite an unexpected Supabase project_id");
     expect(workflow).toContain("supabase db schema declarative sync");
