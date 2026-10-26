@@ -1,10 +1,5 @@
-/**
- * Store-wide pre-order mode (founder directive 2026-08-31).
- * While PREORDER_MODE is true, every product is purchasable as a pre-order:
- * customers reserve now and orders ship once inventory is restocked.
- * Set PREORDER_MODE to false to restore normal in-stock behavior.
- */
-export const PREORDER_MODE = true;
+/** Store-wide pre-order mode. Inventory was confirmed available on 2026-10-26. */
+export const PREORDER_MODE = false;
 
 export const PREORDER_BADGE_TEXT = "Pre-Order — Reserve Yours!";
 export const PREORDER_BANNER_TEXT =

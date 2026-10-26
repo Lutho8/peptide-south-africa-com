@@ -2,19 +2,20 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import StockBadge from "@/components/StockBadge";
 import { products } from "@/data/products";
-import { PREORDER_MODE, PREORDER_BADGE_TEXT } from "@/lib/preorder";
+import { PREORDER_MODE } from "@/lib/preorder";
 
 /**
  * Out-of-stock purchase guards (added 2026-08-29 for RT3) are exercised with a
- * synthetic out-of-stock product so they stay verified while the whole catalog
- * is purchasable as pre-orders (PREORDER_MODE, founder directive 2026-08-31).
+ * synthetic out-of-stock product while the released catalogue remains in stock.
  */
 const syntheticOutOfStock = { inStock: false, stock: 0 };
 
 describe("out-of-stock guards (synthetic product)", () => {
-  it("every catalog product is in stock during the pre-order restock window", () => {
+  it("publishes every released catalogue product as in stock", () => {
     for (const p of products) {
       expect(p.inStock, p.slug).toBe(true);
+      expect(p.tag, p.slug).not.toBe("Pre-Order");
+      expect(JSON.stringify(p.faqs), p.slug).not.toMatch(/pre-?order|next certified batch/i);
     }
   });
 
@@ -25,15 +26,14 @@ describe("out-of-stock guards (synthetic product)", () => {
 });
 
 describe("StockBadge", () => {
-  it("renders the pre-order badge for every product while PREORDER_MODE is on", () => {
-    expect(PREORDER_MODE).toBe(true);
+  it("keeps store-wide pre-order mode off", () => {
+    expect(PREORDER_MODE).toBe(false);
     render(<StockBadge product={syntheticOutOfStock} />);
-    expect(screen.getByText(PREORDER_BADGE_TEXT)).toBeInTheDocument();
-    expect(screen.queryByText("Out of Stock")).not.toBeInTheDocument();
+    expect(screen.getByText("Pre-Order — Reserve Yours!")).toBeInTheDocument();
   });
 
-  it("renders the same pre-order badge for an in-stock catalog product", () => {
+  it("renders an in-stock badge for a released catalogue product", () => {
     render(<StockBadge product={products[0]} />);
-    expect(screen.getByText(PREORDER_BADGE_TEXT)).toBeInTheDocument();
+    expect(screen.getByText("In Stock")).toBeInTheDocument();
   });
 });

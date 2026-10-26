@@ -568,9 +568,9 @@ export const products: Product[] = [
     return {
       ...p, name: listing.name, sku: listing.sku, strength: listing.strength,
       price: listing.price, priceRange: rangeFromVariants(variants), variants,
-      // Purchases are not a physical stock count. Preserve availability/preorder
-      // without borrowing numeric stock counts from another strength.
-      stock: undefined, documentationPending,
+      // The released catalogue is available for immediate checkout. Keep exact
+      // quantities out of the storefront unless a SKU-level count is verified.
+      inStock: true, stock: undefined, tag: undefined, documentationPending,
       image: p.slug === "tesamorelin" ? "/products/tesamorelin-5mg.webp"
         : p.slug === "kpv" ? "/products/kpv-5mg.webp" : p.image,
       purity: documentationPending ? undefined : p.purity,
@@ -578,7 +578,7 @@ export const products: Product[] = [
         ? "KLOW is an 80 mg peptide blend per vial: GHK-Cu 50 mg + TB-500 10 mg + BPC-157 10 mg + KPV 10 mg. Supplied for laboratory research. It is not the GLOW blend."
         : p.slug === "kpv" ? p.description.replace(/10\s?mg/gi, "5 mg") : p.description,
       whatsIncluded: ["Sealed peptide vials in the selected pack quantity", "BAC water sold separately; no reconstitution kit included", "Storage information"],
-      faqs: [...p.faqs.filter((f) => !/purity|COA|report|guarantee|certified/i.test(f.question + f.answer)),
+      faqs: [...p.faqs.filter((f) => !/purity|COA|report|guarantee|certified|pre-?order|next batch/i.test(f.question + f.answer)),
         { question: "What does the pack contain?", answer: `Each vial contains ${listing.strength}. A 3-pack contains 3 vials; a 5-pack contains 5 vials. BAC water is optional and sold separately at R210 per 10 ml vial.` },
         { question: "Does a lab report match this offer?", answer: documentationPending
           ? "A matching-strength report is pending. Historical source reports remain in the testing archive and do not authenticate this offered strength, vial or lot."
