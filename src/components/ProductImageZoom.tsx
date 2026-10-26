@@ -79,7 +79,13 @@ export default function ProductImageZoom({ src, alt, sources, media }: Props) {
           className={`relative h-16 w-16 overflow-hidden rounded-lg border bg-white ${activeIndex === index ? "border-primary ring-2 ring-primary/20" : "border-border"}`}
           aria-label={`View ${item.label ?? item.alt}`}
         >
-          <img src={item.src} alt="" className={`h-full w-full ${item.fit === "contain" ? "object-contain" : "object-cover"}`} />
+          <ProductPicture
+            src={item.src}
+            sources={index === 0 ? sources : undefined}
+            sizes="64px"
+            alt=""
+            className={`h-full w-full ${item.fit === "contain" ? "object-contain" : "object-cover"}`}
+          />
         </button>
       ))}
       {active.href && (

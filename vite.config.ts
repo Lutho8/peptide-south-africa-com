@@ -23,6 +23,13 @@ export default defineConfig({
   },
   plugins: [react()],
   build: {
+    assetsInlineLimit(filePath) {
+      // Data URLs contain commas that are ambiguous inside srcset values.
+      // Keep responsive vial candidates as real files so browsers can select
+      // the intended width without falling back to the legacy image.
+      if (/[\\/]src[\\/]assets[\\/]vials[\\/].+\.(avif|webp)$/i.test(filePath)) return false;
+      return undefined;
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {

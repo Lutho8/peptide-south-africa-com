@@ -1,5 +1,6 @@
 import { useCurrency } from "@/context/CurrencyContext";
 import type { Product } from "@/data/products";
+import ProductPicture from "@/components/ProductPicture";
 
 interface Props {
   product: Product;
@@ -26,8 +27,10 @@ export default function StickyProductCTA({ product, variantLabel, price, added, 
       aria-label="Purchase this product"
     >
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <img
+        <ProductPicture
           src={product.image}
+          sources={product.imageSources}
+          sizes="48px"
           alt=""
           className="h-12 w-12 flex-shrink-0 rounded-md object-cover"
         />
