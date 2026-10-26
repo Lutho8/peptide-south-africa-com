@@ -73,7 +73,9 @@ jobs:
         run: node scripts/ci/verify-declarative-baseline.mjs
 
       - name: Require schema and migration changes together
-        if: github.event_name != 'workflow_dispatch'
+        # Scheduled canaries and manual runs have no meaningful `before` SHA.
+        # Run this commit-range guard only for events that provide one.
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         shell: bash
         env:
           DIFF_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
