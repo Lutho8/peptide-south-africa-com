@@ -22,14 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
       - name: Lint migrations (syntax)
         run: |
-          # Static syntax/policy lint via supabase db lint requires a DB.
-          # We at least sanity-check that every CREATE TABLE in public has a
-          # matching GRANT in the same migration.
+          # supabase db lint requires a running database. This repository-owned
+          # static check verifies that each public CREATE TABLE has a matching
+          # GRANT in the same migration without external CLI installation.
           node scripts/security/scan-migrations.mjs
 
   secret-scan:
