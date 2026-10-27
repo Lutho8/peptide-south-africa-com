@@ -141,6 +141,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductIma
     <img
       alt="Vial"
       class="h-full w-full object-cover transition-transform duration-300 ease-out"
+      decoding="sync"
       sizes="(min-width: 1024px) 50vw, 100vw"
       src="/x.jpg"
       style="transform: scale(1); transform-origin: center center;"
