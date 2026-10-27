@@ -113,27 +113,47 @@ export default function ProductImageZoom({ src, alt, sources, media }: Props) {
     setLightboxOrigin(`${x}% ${y}%`);
   };
 
-  if (isMobile) {
-    return (
-      <>
-        <div>
-          <div
-            className={`${vialZoomFrameClasses} cursor-pointer`}
-            onClick={() => setLightboxOpen(true)}
-            data-testid={VIAL_TEST_ID}
-          >
-            <span aria-hidden className={vialAccentBarLgClasses} />
-            <span aria-hidden className={vialAccentDotLgClasses} />
-            <ProductPicture src={active.src} sources={activeIndex === 0 ? sources : undefined} sizes="(min-width: 1024px) 50vw, 100vw" alt={active.alt} className={`h-full w-full ${active.fit === "contain" ? "object-contain bg-white" : "object-cover"}`} />
-            {navigation}
-            <div className={vialZoomChipClasses}>
-              <ZoomIn className="h-3.5 w-3.5" /> Tap to zoom
+  return (
+    <>
+      <div>
+        <div
+          ref={containerRef}
+          className={`${vialZoomFrameClasses} ${isMobile ? "cursor-pointer" : "cursor-zoom-in"}`}
+          onClick={isMobile ? () => setLightboxOpen(true) : undefined}
+          onMouseEnter={isMobile ? undefined : () => setZoomed(true)}
+          onMouseLeave={isMobile ? undefined : () => setZoomed(false)}
+          onMouseMove={isMobile ? undefined : handleMouseMove}
+          data-testid={VIAL_TEST_ID}
+        >
+          <span aria-hidden className={`${vialAccentBarLgClasses} z-10`} />
+          <span aria-hidden className={`${vialAccentDotLgClasses} z-10`} />
+          <ProductPicture
+            src={active.src}
+            sources={activeIndex === 0 ? sources : undefined}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            alt={active.alt}
+            width={1024}
+            height={1024}
+            className={active.fit === "contain"
+              ? "h-full w-full object-contain bg-white transition-transform duration-300 ease-out"
+              : "h-full w-full object-cover transition-transform duration-300 ease-out"}
+            style={{
+              transform: !isMobile && zoomed ? "scale(2.5)" : "scale(1)",
+              transformOrigin: origin,
+            }}
+          />
+          {navigation}
+          {(isMobile || !zoomed) && (
+            <div className={`${vialZoomChipClasses} animate-fade-in`}>
+              <ZoomIn className="h-3.5 w-3.5" />
+              {isMobile ? "Tap to zoom" : "Hover to zoom"}
             </div>
-          </div>
-          {thumbnails}
+          )}
         </div>
+        {thumbnails}
+      </div>
 
-        {lightboxOpen && (
+      {isMobile && lightboxOpen && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
             onClick={() => { setLightboxOpen(false); setLightboxZoomed(false); }}
@@ -167,44 +187,7 @@ export default function ProductImageZoom({ src, alt, sources, media }: Props) {
               </p>
             )}
           </div>
-        )}
-      </>
-    );
-  }
-
-  return (
-    <div>
-      <div
-        ref={containerRef}
-        className={`${vialZoomFrameClasses} cursor-zoom-in`}
-        onMouseEnter={() => setZoomed(true)}
-        onMouseLeave={() => setZoomed(false)}
-        onMouseMove={handleMouseMove}
-        data-testid={VIAL_TEST_ID}
-      >
-        <span aria-hidden className={`${vialAccentBarLgClasses} z-10`} />
-        <span aria-hidden className={`${vialAccentDotLgClasses} z-10`} />
-        <ProductPicture
-          src={active.src}
-          sources={activeIndex === 0 ? sources : undefined}
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          alt={active.alt}
-          className={active.fit === "contain"
-            ? "h-full w-full object-contain bg-white transition-transform duration-300 ease-out"
-            : "h-full w-full object-cover transition-transform duration-300 ease-out"}
-          style={{
-            transform: zoomed ? "scale(2.5)" : "scale(1)",
-            transformOrigin: origin,
-          }}
-        />
-        {navigation}
-        {!zoomed && (
-          <div className={`${vialZoomChipClasses} animate-fade-in`}>
-            <ZoomIn className="h-3.5 w-3.5" /> Hover to zoom
-          </div>
-        )}
-      </div>
-      {thumbnails}
-    </div>
+      )}
+    </>
   );
 }
