@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,7 +19,7 @@ import DiscountPopup from "@/components/DiscountPopup";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
-import { capturePartnerAttribution } from "@/lib/partnerAttribution";
+import PartnerReferralConsent from "@/components/PartnerReferralConsent";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
 // lazy modules before writing complete SEO HTML for public routes.
@@ -84,16 +84,12 @@ function RouteLoadingFallback() {
   );
 }
 
-function PartnerAttributionCapture() {
-  useEffect(() => { capturePartnerAttribution(); }, []);
-  return null;
-}
 
 export default function AppShell() {
   return (
     <CurrencyProvider>
       <AuthProvider>
-        <PartnerAttributionCapture />
+        <PartnerReferralConsent />
         <CartProvider>
           <LastViewedProductProvider>
             <Toaster />

@@ -51,6 +51,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [partnerCode, setPartnerCode] = useState("");
 
   const [form, setForm] = useState<CheckoutForm>(() => {
     if (typeof window === "undefined") return emptyForm;
@@ -127,7 +128,7 @@ export default function CheckoutPage() {
     const offer = currentOffer();
     trackEvent({ event: "checkout_started", props: { displayed_price_zar: shippingMath.grandTotal, item_count: items.length, ...(offer ? { offer_id: offer.offer_id } : {}) } });
     try {
-      const state = await startEftCheckout({ items, form });
+      const state = await startEftCheckout({ items, form, partnerCode });
       try {
         window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
       } catch {
@@ -176,6 +177,7 @@ export default function CheckoutPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
             <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
+              <label className="text-sm">Partner code (optional)<input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className="mt-2 block w-full rounded border p-3" /><span className="text-xs text-muted-foreground">Identifies your referring partner; it does not apply a discount.</span></label>
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="font-display text-base font-semibold text-foreground">
                   1. Where should we send your confirmation?

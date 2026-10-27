@@ -1,6 +1,6 @@
 # Affiliate programme launch decisions
 
-Production financial activation remains blocked until the founder approves the exact versioned policy covering attribution precedence, cookie duration, repeat orders, eligible product value, tier thresholds, validation period, refund treatment, payout cutoff, minimum balance and dispute window. Existing individual agreements continue to control their holders.
+Founder approved `wellness-b2b-v2.0-2026-10-27` on 27 October 2026, then set the attribution cookie to strictly 30 days for all partners: flat 20%; eligible merchandise after discounts excluding delivery and refunded value; entered code over latest valid click; fresh attribution for repeat orders; 14-day validation; monthly ZAR EFT at a R500 available balance; proportional partial-refund adjustments; no launch tiers or automatic customer discount.
 
 Approval must produce a new policy version and an agreement hash. Activation is a separate database change setting `partner_programmes.financial_activation` for `wellness_b2b`; do not change it through the browser. Payout preparation and payment confirmation remain separate operations.
 

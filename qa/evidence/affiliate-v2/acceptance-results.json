@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "baseCommit": "1c3a3ad17affaaa4fa95c2a373b34e187e510d36",
+  "workingChanges": true,
+  "unitTests": {
+    "files": 36,
+    "tests": 289,
+    "pass": true
+  },
+  "typecheck": {
+    "app": true,
+    "api": true
+  },
+  "build": {
+    "routes": 71,
+    "bundleBudget": true
+  },
+  "sql": {
+    "database": "isolated Docker postgres psa_partner_release_20261027",
+    "rolledBack": true,
+    "journeys": [
+      "facility",
+      "creator",
+      "hybrid",
+      "legacy"
+    ],
+    "checks": [
+      "unpaid has no commission",
+      "cleared R1000 produces R200 once",
+      "ownership RLS",
+      "financial ACL",
+      "14-day hold",
+      "refund adjustment released with original",
+      "partial refund replay",
+      "R500 threshold",
+      "monthly statement",
+      "NULL settlement reference rejected",
+      "idempotent paid confirmation"
+    ]
+  },
+  "termsSha256": "45b6ed75d96f6361ce1f99c4cdae473a27783c80971eaf8f62e2ca5a0725e160"
+}

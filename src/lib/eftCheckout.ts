@@ -1,6 +1,5 @@
 import { CATALOG_VERSION } from "../../supabase/functions/_shared/catalog-release";
 import { supabase } from "@/integrations/supabase/client";
-import { capturePartnerAttribution } from "@/lib/partnerAttribution";
 import type { CartItem } from "@/context/CartContext";
 import { SHIPPING_RULES, getShippingCost } from "@/lib/shipping";
 import { validateCheckout, type CheckoutForm } from "@/lib/checkoutSchema";
@@ -86,6 +85,7 @@ export function checkoutTotals(totalPrice: number) {
 }
 
 interface StartEftArgs {
+  partnerCode?: string;
   items: CartItem[];
   form: CheckoutForm;
 }
@@ -180,6 +180,7 @@ function clearEftRequestId(requestId: string): void {
 export async function startEftCheckout({
   items,
   form,
+  partnerCode,
 }: StartEftArgs): Promise<EftInstructionsState> {
   const selections = toCheckoutSelections(items);
   // Local quote is display-only. The server endpoint independently recomputes
@@ -203,7 +204,7 @@ export async function startEftCheckout({
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
-      partnerAttribution: capturePartnerAttribution(),
+      partnerCode,
       consent: {
         researchPurchaseAcknowledged: form.researchPurchaseAcknowledged,
         marketingConsent: form.marketingConsent,

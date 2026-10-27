@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Building2, Check, Megaphone, ShieldCheck } from "lucide-react";
 import SEO from "@/components/SEO";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 type PartnerType = "facility" | "creator";
@@ -23,16 +22,19 @@ export default function AffiliatePage() {
     const links = String(form.get("profile_links") || "").split(/[,\n]/).map((v) => v.trim()).filter(Boolean);
     const raw = Object.fromEntries(form.entries());
     setBusy(true);
-    // Generated database types are updated after the staged migration is applied.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).rpc("submit_partner_application_v2", { payload: {
-      ...raw, partner_types: types, profile_links: links,
-      regulated_professional: form.get("regulated_professional") === "on",
-      enquiry_only: form.get("enquiry_only") === "on",
-      marketing_consent: form.get("marketing_consent") === "on",
-    }});
-    setBusy(false);
-    if (error) { toast({ title: "Application not submitted", description: error.message, variant: "destructive" }); return; }
+    try {
+      const response = await fetch("/api/partner-application", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        ...raw, partner_types: types, profile_links: links,
+        regulated_professional: form.get("regulated_professional") === "on",
+        enquiry_only: form.get("enquiry_only") === "on",
+        marketing_consent: form.get("marketing_consent") === "on",
+      }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Please try again.");
+    } catch (error) {
+      toast({ title: "Application not submitted", description: error instanceof Error ? error.message : "Please try again.", variant: "destructive" });
+      return;
+    } finally { setBusy(false); }
     setSubmitted(true);
     toast({ title: "Application received", description: "Review and agreement acceptance are still required." });
   };
@@ -60,10 +62,10 @@ export default function AffiliatePage() {
       {submitted ? <div className="mt-8 rounded-xl border border-[#149F99] bg-[#E8F7F5] p-6"><h3 className="text-xl font-bold">Application received</h3><p className="mt-2">Review, agreement acceptance and approval are required before partner access becomes active.</p></div> :
       <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border bg-card p-6 md:grid-cols-2">
         <label className="text-sm font-medium">Contact name<input required name="contact_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Email<input required type="email" name="email" maxLength={255} className="mt-1 w-full rounded-lg border bg-background p-3"/></label>
-        <label className="text-sm font-medium">Phone (optional)<input name="phone" maxLength={40} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Location<input name="location" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label>
-        {types.includes("facility") && <><label className="text-sm font-medium">Trading or facility name<input name="facility_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Facility / practice type<input name="facility_type" maxLength={100} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
-        {types.includes("creator") && <><label className="text-sm font-medium">Public creator / display name<input name="creator_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Content niche<input name="content_niche" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium md:col-span-2">Platform or profile links<textarea name="profile_links" rows={2} className="mt-1 w-full rounded-lg border bg-background p-3" placeholder="One per line"/></label><label className="text-sm font-medium">Audience size (optional)<input name="audience_size" maxLength={80} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Audience geography (optional)<input name="audience_geography" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
-        <label className="text-sm font-medium md:col-span-2">How will you introduce the programme?<textarea name="promotion_approach" maxLength={1000} rows={3} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden"/>
+        <label className="text-sm font-medium">Phone (optional)<input name="phone" maxLength={40} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Location<input required name="location" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label>
+        {types.includes("facility") && <><label className="text-sm font-medium">Trading or facility name<input required name="facility_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Facility / practice type<input required name="facility_type" maxLength={100} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
+        {types.includes("creator") && <><label className="text-sm font-medium">Public creator / display name<input required name="creator_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Content niche<input required name="content_niche" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium md:col-span-2">Platform or profile links<textarea required name="profile_links" rows={2} className="mt-1 w-full rounded-lg border bg-background p-3" placeholder="One per line"/></label><label className="text-sm font-medium">Audience size (optional)<input name="audience_size" maxLength={80} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Audience geography (optional)<input name="audience_geography" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
+        <label className="text-sm font-medium md:col-span-2">How will you introduce the programme?<textarea required name="promotion_approach" maxLength={1000} rows={3} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden"/>
         <label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="regulated_professional"/> I am applying in a regulated professional capacity (reviewed separately).</label><label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="enquiry_only"/> Use an education/enquiry-only route if paid participation is not permitted.</label>
         <label className="flex gap-2 text-sm md:col-span-2"><input required type="checkbox" name="application_terms"/> I accept the <Link to="/affiliate/terms" className="underline">application and programme terms</Link>.</label><label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="marketing_consent"/> Send optional marketing updates (separate consent).</label>
         <button disabled={busy} className="rounded-lg bg-[#082B57] px-5 py-3 font-bold text-white disabled:opacity-50 md:col-span-2">{busy?"Submitting…":"Submit application"}</button>

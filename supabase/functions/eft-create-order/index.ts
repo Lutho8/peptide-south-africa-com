@@ -7,7 +7,7 @@ import { validateStorefrontRequest } from "../_shared/catalog-release.ts";
 // payment_status='awaiting_eft', payment_reference='PSA-XXXXXX'), enqueues the EFT
 // instruction email, and returns the bank details for the instructions page.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { PRICING, quoteCheckout } from '../_shared/pricing.ts';
+import { PRICING, quoteCheckout, variantPrice } from '../_shared/pricing.ts';
 import { validatePetsFulfilment } from '../_shared/pets-fulfilment.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -240,8 +240,9 @@ Deno.serve(async (req)=>{
         const { error: attributionError } = await admin.rpc('freeze_partner_attribution', {
           p_order_id: orderId, p_programme_key: 'wellness_b2b', p_referral_code: code,
           p_campaign_key: campaign, p_method: method, p_storefront: 'main',
-          p_commissionable_value_cents: Math.round(Number(quote.subtotal) * 100),
-          p_policy_version: 'wellness-partner-policy-v2-staged'
+          p_commissionable_value_cents: Math.round((Number(quote.subtotal) - selections.reduce((sum, line) => sum + (line.kind === "item" && line.slug === "bac-water-bacteriostatic" ? variantPrice(line.slug, line.variantLabel) * line.quantity : 0), 0)) * 100),
+          p_policy_version: 'wellness-b2b-v2.0-2026-10-27',
+          p_click_id: method === 'entered_code' ? null : partnerAttribution.click_id ?? null
         });
         if (attributionError) {
           await admin.from('integration_logs').insert({ integration: 'partner_programme', action: 'freeze-attribution', status: 'rejected', payload: { orderId, code, reason: attributionError.message } });

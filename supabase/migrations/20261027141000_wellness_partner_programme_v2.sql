@@ -32,6 +32,30 @@ create table if not exists public.partner_accounts (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.partner_policies (
+  id uuid primary key default gen_random_uuid(),
+  programme_id uuid not null references public.partner_programmes(id) on delete restrict,
+  policy_version text not null,
+  commission_rate_bps integer not null check (commission_rate_bps = 2000),
+  attribution_window_days integer not null check (attribution_window_days = 30),
+  validation_days integer not null check (validation_days = 14),
+  minimum_payout_cents bigint not null check (minimum_payout_cents = 50000),
+  payout_frequency text not null check (payout_frequency = 'monthly_zar_eft'),
+  repeat_order_rule text not null check (repeat_order_rule = 'fresh_attribution_required'),
+  code_precedence text not null check (code_precedence = 'entered_code_over_latest_click'),
+  customer_discount_bps integer not null default 0 check (customer_discount_bps = 0),
+  active boolean not null default false,
+  approved_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (programme_id, policy_version)
+);
+create unique index if not exists partner_policies_one_active_idx on public.partner_policies(programme_id) where active;
+
+insert into public.partner_policies(programme_id,policy_version,commission_rate_bps,attribution_window_days,validation_days,minimum_payout_cents,payout_frequency,repeat_order_rule,code_precedence,customer_discount_bps,active,approved_at)
+select id,'wellness-b2b-v2.0-2026-10-27',2000,30,14,50000,'monthly_zar_eft','fresh_attribution_required','entered_code_over_latest_click',0,true,now()
+from public.partner_programmes where programme_key='wellness_b2b'
+on conflict(programme_id,policy_version) do nothing;
+
 create table if not exists public.partner_applications_v2 (
   id uuid primary key default gen_random_uuid(),
   programme_id uuid not null references public.partner_programmes(id) on delete restrict,
@@ -113,6 +137,7 @@ create table if not exists public.partner_order_attributions (
   enrolment_id uuid not null references public.partner_enrolments(id) on delete restrict,
   campaign_id uuid references public.partner_campaigns(id) on delete set null,
   storefront text not null check (storefront in ('main','pets')),
+  click_id uuid,
   attribution_method text not null check (attribution_method in ('entered_code','referral_click','qr')),
   commissionable_value_cents bigint not null check (commissionable_value_cents >= 0),
   commission_rate_bps integer not null check (commission_rate_bps between 0 and 10000),
@@ -157,6 +182,7 @@ create table if not exists public.partner_payout_statements (
 
 alter table public.partner_programmes enable row level security;
 alter table public.partner_accounts enable row level security;
+alter table public.partner_policies enable row level security;
 alter table public.partner_applications_v2 enable row level security;
 alter table public.partner_enrolments enable row level security;
 alter table public.partner_agreement_acceptances enable row level security;
@@ -169,7 +195,9 @@ revoke all on table public.partner_programmes, public.partner_accounts, public.p
   public.partner_enrolments, public.partner_agreement_acceptances, public.partner_campaigns,
   public.partner_order_attributions, public.partner_commission_ledger, public.partner_payout_statements
 from public, anon, authenticated;
+revoke all on table public.partner_policies from public, anon, authenticated;
 grant select on table public.partner_programmes to anon, authenticated;
+grant select on table public.partner_policies to authenticated;
 grant select on table public.partner_accounts, public.partner_enrolments, public.partner_agreement_acceptances,
   public.partner_campaigns, public.partner_order_attributions, public.partner_commission_ledger,
   public.partner_payout_statements to authenticated;
@@ -177,6 +205,7 @@ grant all on table public.partner_programmes, public.partner_accounts, public.pa
   public.partner_enrolments, public.partner_agreement_acceptances, public.partner_campaigns,
   public.partner_order_attributions, public.partner_commission_ledger, public.partner_payout_statements to service_role;
 grant all on table public.partner_accounts to service_role;
+grant all on table public.partner_policies to service_role;
 grant all on table public.partner_applications_v2 to service_role;
 grant all on table public.partner_enrolments to service_role;
 grant all on table public.partner_agreement_acceptances to service_role;
@@ -186,6 +215,9 @@ grant all on table public.partner_commission_ledger to service_role;
 grant all on table public.partner_payout_statements to service_role;
 
 create policy partner_programmes_public_read on public.partner_programmes for select using (true);
+create policy partner_policies_partner_read on public.partner_policies for select to authenticated using (
+  exists (select 1 from public.partner_enrolments e join public.partner_accounts a on a.id=e.partner_account_id where e.programme_id=partner_policies.programme_id and a.auth_user_id=(select auth.uid()))
+);
 create policy partner_accounts_owner_read on public.partner_accounts for select to authenticated using (auth_user_id = (select auth.uid()));
 create policy partner_enrolments_owner_read on public.partner_enrolments for select to authenticated using (
   exists (select 1 from public.partner_accounts a where a.id = partner_enrolments.partner_account_id and a.auth_user_id = (select auth.uid()))
@@ -236,35 +268,39 @@ begin
   ) returning id into v_id;
   return v_id;
 end $$;
-revoke all on function public.submit_partner_application_v2(jsonb) from public;
-grant execute on function public.submit_partner_application_v2(jsonb) to anon, authenticated, service_role;
+revoke all on function public.submit_partner_application_v2(jsonb) from public, anon, authenticated;
+grant execute on function public.submit_partner_application_v2(jsonb) to service_role;
 
 create or replace function public.freeze_partner_attribution(
   p_order_id uuid, p_programme_key text, p_referral_code text, p_campaign_key text,
-  p_method text, p_storefront text, p_commissionable_value_cents bigint, p_policy_version text
+  p_method text, p_storefront text, p_commissionable_value_cents bigint, p_policy_version text, p_click_id uuid default null
 ) returns uuid language plpgsql security definer set search_path='' as $$
-declare v_programme public.partner_programmes; v_enrolment public.partner_enrolments; v_campaign uuid; v_id uuid;
+declare v_programme public.partner_programmes; v_enrolment public.partner_enrolments; v_policy public.partner_policies; v_campaign uuid; v_id uuid;
 begin
   if auth.role() <> 'service_role' then raise exception 'service role required'; end if;
   select * into v_programme from public.partner_programmes where programme_key=p_programme_key and storefront=p_storefront;
   if v_programme.id is null then raise exception 'programme/storefront mismatch'; end if;
+  select * into v_policy from public.partner_policies where programme_id=v_programme.id and active;
+  if v_policy.id is null or v_policy.policy_version<>p_policy_version then raise exception 'inactive or invalid policy'; end if;
   select * into v_enrolment from public.partner_enrolments where programme_id=v_programme.id and upper(referral_code)=upper(btrim(p_referral_code)) and status='approved';
-  if v_enrolment.id is null or v_enrolment.commission_rate_bps is null then raise exception 'invalid partner code'; end if;
-  if p_campaign_key is not null then select id into v_campaign from public.partner_campaigns where enrolment_id=v_enrolment.id and campaign_key=p_campaign_key and active; end if;
-  insert into public.partner_order_attributions(order_id,programme_id,enrolment_id,campaign_id,storefront,attribution_method,commissionable_value_cents,commission_rate_bps,policy_version)
-  values(p_order_id,v_programme.id,v_enrolment.id,v_campaign,p_storefront,p_method,p_commissionable_value_cents,v_enrolment.commission_rate_bps,p_policy_version)
+  if v_enrolment.id is null then raise exception 'invalid partner code'; end if;
+  if not exists(select 1 from public.partner_agreement_acceptances where enrolment_id=v_enrolment.id and terms_version=v_policy.policy_version) then raise exception 'Current agreement required'; end if;
+  if p_campaign_key is not null then select id into v_campaign from public.partner_campaigns where enrolment_id=v_enrolment.id and campaign_key=p_campaign_key and active; if v_campaign is null then raise exception 'Invalid campaign'; end if; end if;
+  if p_method in ('referral_click','qr') and not exists(select 1 from public.partner_referral_clicks c where c.id=p_click_id and c.enrolment_id=v_enrolment.id and c.programme_id=v_programme.id and c.created_at<=now() and c.expires_at>now() and c.created_at>now()-interval '30 days' and c.method=p_method and c.campaign_key is not distinct from p_campaign_key) then raise exception 'Expired or invalid click'; end if;
+  insert into public.partner_order_attributions(order_id,programme_id,enrolment_id,campaign_id,storefront,click_id,attribution_method,commissionable_value_cents,commission_rate_bps,policy_version)
+  values(p_order_id,v_programme.id,v_enrolment.id,v_campaign,p_storefront,p_click_id,p_method,p_commissionable_value_cents,coalesce(v_enrolment.commission_rate_bps,v_policy.commission_rate_bps),p_policy_version)
   on conflict(order_id) do nothing returning id into v_id;
   if v_id is null then select id into v_id from public.partner_order_attributions where order_id=p_order_id; end if;
   return v_id;
 end $$;
-revoke all on function public.freeze_partner_attribution(uuid,text,text,text,text,text,bigint,text) from public, anon, authenticated;
-grant execute on function public.freeze_partner_attribution(uuid,text,text,text,text,text,bigint,text) to service_role;
+revoke all on function public.freeze_partner_attribution(uuid,text,text,text,text,text,bigint,text,uuid) from public, anon, authenticated;
+grant execute on function public.freeze_partner_attribution(uuid,text,text,text,text,text,bigint,text,uuid) to service_role;
 
 create or replace function public.record_verified_partner_commission()
 returns trigger language plpgsql security definer set search_path='' as $$
 declare v_attr public.partner_order_attributions; v_programme public.partner_programmes; v_amount bigint;
 begin
-  if old.payment_status is distinct from 'complete' and new.payment_status='complete' then
+  if old.payment_status='awaiting_eft' and new.payment_status='complete' and new.payment_method='eft_capitec' then
     select * into v_attr from public.partner_order_attributions where order_id=new.order_id::uuid;
     if v_attr.id is not null then
       select * into v_programme from public.partner_programmes where id=v_attr.programme_id;

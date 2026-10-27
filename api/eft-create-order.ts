@@ -1,3 +1,4 @@
+import { resolvePartnerAttribution } from "./_shared/partnerAttribution.js";
 import { CATALOG_VERSION, validateStorefrontRequest } from "../supabase/functions/_shared/catalog-release.ts";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -52,7 +53,7 @@ export default async function handler(request: Request): Promise<Response> {
       lastName?: unknown;
       email?: unknown;
       consent?: unknown;
-      partnerAttribution?: unknown;
+      partnerCode?: unknown;
     } | null;
     try { validateStorefrontRequest((body ?? {}) as Record<string, unknown>); } catch (error) {
       return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409);
@@ -89,6 +90,12 @@ export default async function handler(request: Request): Promise<Response> {
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+    let partnerAttribution;
+    try { partnerAttribution = await resolvePartnerAttribution(admin, request, body.partnerCode); }
+    catch (error) {
+      const invalid = error instanceof Error && error.message === "PARTNER_CODE_INVALID";
+      return json({ error: invalid ? "That partner code is not active. Correct it or remove it to continue." : "Partner attribution is temporarily unavailable. Please retry.", code: invalid ? "PARTNER_CODE_INVALID" : "PARTNER_UNAVAILABLE" }, invalid ? 400 : 503);
+    }
     const orderPayload = {
       user_id: userData.user.id,
       checkout_request_id: requestId,
@@ -198,7 +205,7 @@ export default async function handler(request: Request): Promise<Response> {
         firstName: typeof body.firstName === "string" ? body.firstName : "",
         lastName: typeof body.lastName === "string" ? body.lastName : "",
         email: body.email,
-        partnerAttribution: body.partnerAttribution,
+        partnerAttribution,
       }),
     });
     const settlement = await settlementResponse.json().catch(() => null) as Record<string, unknown> | null;
