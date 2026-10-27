@@ -118,10 +118,10 @@ jobs:
             --no-apply \
             --name ci_declarative_production_baseline 2> "$RUNNER_TEMP/declarative-baseline-error.log"; then
             # Keep the failure visible without requiring authenticated log downloads.
-            while IFS= read -r line; do
-              line="${line//%/%25}"
-              printf '::error title=Declarative baseline::%s\n' "$line"
-            done < <(tail -n 30 "$RUNNER_TEMP/declarative-baseline-error.log")
+            detail="$(tail -n 12 "$RUNNER_TEMP/declarative-baseline-error.log")"
+            detail="${detail//%/%25}"
+            detail="${detail//$'\n'/%0A}"
+            printf '::error title=Declarative baseline::%s\n' "$detail"
             exit 1
           fi
 
