@@ -69,6 +69,11 @@ jobs:
         with:
           version: 2.117.0
 
+      - name: Restore Supabase image registry fallback
+        # setup-cli pins GHCR, which can throttle shared runners. An empty
+        # override restores the CLI's ECR -> GHCR -> Docker Hub fallback.
+        run: echo "SUPABASE_INTERNAL_IMAGE_REGISTRY=" >> "$GITHUB_ENV"
+
       - name: Verify declarative production baseline
         run: node scripts/ci/verify-declarative-baseline.mjs
 
