@@ -124,7 +124,7 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductCar
 
 exports[`vial branding — white + light-teal medical/luxury tokens > ProductImageZoom (desktop) uses the shared vial tokens 1`] = `
 <div
-  class="group relative overflow-hidden bg-vial-surface shadow-vial rounded-xl border border-vial-border cursor-zoom-in"
+  class="group relative overflow-hidden bg-vial-surface shadow-vial aspect-square rounded-xl border border-vial-border cursor-zoom-in"
   data-testid="vial-frame"
 >
   <span
@@ -141,10 +141,11 @@ exports[`vial branding — white + light-teal medical/luxury tokens > ProductIma
     <img
       alt="Vial"
       class="h-full w-full object-cover transition-transform duration-300 ease-out"
-      decoding="sync"
+      height="1024"
       sizes="(min-width: 1024px) 50vw, 100vw"
       src="/x.jpg"
       style="transform: scale(1); transform-origin: center center;"
+      width="1024"
     />
   </picture>
   <div

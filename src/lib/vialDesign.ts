@@ -21,7 +21,7 @@ export const vialCardFrameClasses =
 
 /** Zoom variant (used on PDP media gallery). Border via `border`. */
 export const vialZoomFrameClasses =
-  `group ${FRAME_BASE} rounded-xl border border-vial-border`;
+  `group ${FRAME_BASE} aspect-square rounded-xl border border-vial-border`;
 
 /** Compact tile variant (used in cart drawer / cart page / checkout summary). */
 export const vialTileFrameClasses =

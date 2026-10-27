@@ -132,7 +132,8 @@ export default function ProductImageZoom({ src, alt, sources, media }: Props) {
             sources={activeIndex === 0 ? sources : undefined}
             sizes="(min-width: 1024px) 50vw, 100vw"
             alt={active.alt}
-            decoding="sync"
+            width={1024}
+            height={1024}
             className={active.fit === "contain"
               ? "h-full w-full object-contain bg-white transition-transform duration-300 ease-out"
               : "h-full w-full object-cover transition-transform duration-300 ease-out"}
