@@ -13,6 +13,8 @@ on:
       - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
       - "scripts/ci/verify-declarative-baseline.mjs"
+      - "scripts/ci/restore-partner-acl.mjs"
+      - "supabase/tests/partner_programme_acceptance.sql"
       - "supabase/config.toml"
       - "supabase/schemas/**"
       - "supabase/roles.sql"
@@ -30,6 +32,8 @@ on:
       - "package-lock.json"
       - "scripts/ci/eft-sandbox-contract.mjs"
       - "scripts/ci/verify-declarative-baseline.mjs"
+      - "scripts/ci/restore-partner-acl.mjs"
+      - "supabase/tests/partner_programme_acceptance.sql"
       - "supabase/config.toml"
       - "supabase/schemas/**"
       - "supabase/roles.sql"
@@ -135,9 +139,14 @@ jobs:
             echo "Expected exactly one generated baseline migration, found $generated_count" >&2
             exit 1
           fi
+          node scripts/ci/restore-partner-acl.mjs "$(find supabase/migrations -maxdepth 1 -type f -name '*_ci_declarative_production_baseline.sql')"
 
       - name: Start isolated local Supabase from baseline
         run: supabase start
+
+      - name: Verify partner journeys and permissions against the complete baseline
+        shell: bash
+        run: docker exec -i supabase_db_eft-declarative-sandbox-ci psql -U postgres -d postgres -v ON_ERROR_STOP=1 < supabase/tests/partner_programme_acceptance.sql
 
       - name: Export ephemeral local credentials
         shell: bash

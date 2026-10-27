@@ -1,6 +1,21 @@
 -- Run only in an isolated synthetic database. No real payments or personal data.
 begin;
 select set_config('request.jwt.claim.role','service_role',true);
+-- Seed only within this rolled-back synthetic transaction for clean baselines.
+insert into public.partner_programmes (programme_key, name, storefront, accepting_applications, financial_activation)
+values
+  ('wellness_b2b', 'Wellness, Fitness & Creator Partner Programme', 'main', true, false),
+  ('pets_b2b', 'Peptides4Pets Partner Programme', 'pets', false, false)
+on conflict (programme_key) do update set
+  name = excluded.name,
+  storefront = excluded.storefront;
+
+insert into public.partner_policies(programme_id,policy_version,commission_rate_bps,attribution_window_days,validation_days,minimum_payout_cents,payout_frequency,repeat_order_rule,code_precedence,customer_discount_bps,active,approved_at,terms_sha256)
+select id,'wellness-b2b-v2.0-2026-10-27',2000,30,14,50000,'monthly_zar_eft','fresh_attribution_required','entered_code_over_latest_click',0,true,now(),'45b6ed75d96f6361ce1f99c4cdae473a27783c80971eaf8f62e2ca5a0725e160'
+from public.partner_programmes where programme_key='wellness_b2b'
+on conflict(programme_id,policy_version) do nothing;
+
+
 update public.partner_programmes set financial_activation=true where programme_key='wellness_b2b';
 create temp table journey_ids(kind text,usr uuid,enrolment uuid,ord uuid);
 do $$
@@ -21,7 +36,7 @@ begin
  perform public.accept_partner_agreement(enr);
  perform public.create_partner_campaign(enr,'fixture','Synthetic campaign','website');
  insert into public.orders(id,user_id,total) values(oid,uid,1000);
- insert into public.psa_orders(order_id,payment_status,payment_method) values(oid::text,'awaiting_eft','eft_capitec');
+ insert into public.psa_orders(order_id,order_total,payment_status,payment_method) values(oid::text,1000,'awaiting_eft','eft_capitec');
  perform public.freeze_partner_attribution(oid,'wellness_b2b','QA'||upper(kind),'fixture','entered_code','main',100000,'wellness-b2b-v2.0-2026-10-27');
  if exists(select 1 from public.partner_commission_ledger where order_id=oid) then raise exception 'Unpaid order earned'; end if;
  update public.psa_orders set payment_status='complete' where order_id=oid::text;
@@ -75,7 +90,7 @@ begin
  -- Three additional synthetic earned commissions supply threshold, through real settlement trigger.
  for n in 1..3 loop
  oid:=gen_random_uuid(); insert into public.orders(id,user_id,total) select oid,usr,1000 from journey_ids where kind='facility';
- insert into public.psa_orders(order_id,payment_status,payment_method) values(oid::text,'awaiting_eft','eft_capitec');
+ insert into public.psa_orders(order_id,order_total,payment_status,payment_method) values(oid::text,1000,'awaiting_eft','eft_capitec');
  perform public.freeze_partner_attribution(oid,'wellness_b2b','QAFACILITY',null,'entered_code','main',100000,'wellness-b2b-v2.0-2026-10-27');
  update public.psa_orders set payment_status='complete' where order_id=oid::text;
  end loop;
