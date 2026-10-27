@@ -67,7 +67,7 @@ Deno.serve(async (req)=>{
       }, 503);
     }
     const body = await req.json().catch(()=>({}));
-    const { requestId, orderId: requestedOrderId, selections, firstName, lastName, email, fulfilment } = body ?? {};
+    const { requestId, orderId: requestedOrderId, selections, firstName, lastName, email, fulfilment, partnerAttribution } = body ?? {};
     if (typeof requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: 'invalid checkout request', code: 'BAD_REQUEST' }, 400);
     }
@@ -231,6 +231,22 @@ Deno.serve(async (req)=>{
       return json({
         error: 'Order could not be prepared for EFT. Please try again.'
       }, 500);
+    }
+    if (!petsCheckout && partnerAttribution?.code) {
+      const code = String(partnerAttribution.code).trim().toUpperCase();
+      const campaign = partnerAttribution.campaign == null ? null : String(partnerAttribution.campaign).trim();
+      const method = ['entered_code','referral_click','qr'].includes(partnerAttribution.method) ? partnerAttribution.method : 'referral_click';
+      if (/^[A-Z0-9_-]{3,80}$/.test(code) && (!campaign || /^[a-z0-9][a-z0-9_-]{0,63}$/.test(campaign))) {
+        const { error: attributionError } = await admin.rpc('freeze_partner_attribution', {
+          p_order_id: orderId, p_programme_key: 'wellness_b2b', p_referral_code: code,
+          p_campaign_key: campaign, p_method: method, p_storefront: 'main',
+          p_commissionable_value_cents: Math.round(Number(quote.subtotal) * 100),
+          p_policy_version: 'wellness-partner-policy-v2-staged'
+        });
+        if (attributionError) {
+          await admin.from('integration_logs').insert({ integration: 'partner_programme', action: 'freeze-attribution', status: 'rejected', payload: { orderId, code, reason: attributionError.message } });
+        }
+      }
     }
     const customerName = [
       firstName,

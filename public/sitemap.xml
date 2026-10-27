@@ -170,6 +170,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/privacy" />
   </url>
   <url>
+    <loc>https://www.peptide-south-africa.com/affiliate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/affiliate" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/affiliate" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/affiliate" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/affiliate/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/affiliate/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/affiliate/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/affiliate/terms" />
+  </url>
+  <url>
     <loc>https://www.peptide-south-africa.com/product/rt3-reta</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

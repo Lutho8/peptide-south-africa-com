@@ -1,389 +1,73 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { z } from "zod";
-import {
-  ArrowRight, DollarSign, Clock, Gift, Megaphone, Users, Award,
-  Wallet, ShieldCheck, TrendingUp, MessageCircle, Sparkles, Check,
-} from "lucide-react";
+import { Building2, Check, Megaphone, ShieldCheck } from "lucide-react";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = [
-  {
-    name: "Starter",
-    rate: "20%",
-    eyebrow: "Anyone with an audience",
-    perks: ["20% commission on every sale", "60-day cookie window", "Personal dashboard & link", "Monthly payouts"],
-    cta: "Apply now",
-    highlight: false,
-  },
-  {
-    name: "Pro",
-    rate: "25%",
-    eyebrow: "After R20,000 referred",
-    perks: ["25% commission + recurring on repeat orders", "Custom discount code (10% off)", "Free product for content", "Priority WhatsApp support"],
-    cta: "Unlock at R20,000",
-    highlight: true,
-  },
-  {
-    name: "Elite",
-    rate: "30%",
-    eyebrow: "Coaches, GPs, clinics & creators 5k+",
-    perks: ["30% commission + lifetime recurring", "Co-marketing & feature on site", "Bulk pricing for clinic patients", "Dedicated affiliate manager"],
-    cta: "Talk to us",
-    highlight: false,
-  },
+type PartnerType = "facility" | "creator";
+const paths = [
+  { type: "facility" as const, icon: Building2, title: "Facilities & practitioners", headline: "Add value beyond every session.", body: "Give your clients a clear information resource and earn from qualifying referrals.", action: "Apply as a facility" },
+  { type: "creator" as const, icon: Megaphone, title: "Creators & influencers", headline: "Turn trusted content into opportunity.", body: "Share approved educational content with your audience and track earnings from qualifying referrals.", action: "Apply as a creator" },
 ];
-
-const perks = [
-  { icon: TrendingUp, title: "Real-time dashboard", desc: "Track clicks, conversions and earnings live." },
-  { icon: Clock, title: "60-day cookie", desc: "Twice the industry standard. We credit you for repeat visitors." },
-  { icon: Wallet, title: "Monthly payouts", desc: "EFT (SA ZAR). R500 minimum." },
-  { icon: Gift, title: "Free product for content", desc: "Sample kit shipped after your first 3 referrals." },
-  { icon: Megaphone, title: "Swipe-file & creatives", desc: "On-brand reels, banners and copy ready to post." },
-  { icon: MessageCircle, title: "Dedicated manager", desc: "Direct WhatsApp line with your affiliate manager." },
-  { icon: ShieldCheck, title: "Transparent attribution", desc: "Last-click + post-purchase code matching. No stolen sales." },
-  { icon: Sparkles, title: "Exclusive launches", desc: "Early access to new peptides and bundles before public drop." },
-];
-
-const audiences = [
-  { title: "GPs & clinicians", desc: "Refer compliant, lab-tested research peptides to qualified patients." },
-  { title: "Coaches & PTs", desc: "Plug protocols into your weight-loss and recovery programs." },
-  { title: "Biohackers & creators", desc: "Educate your audience with content that converts." },
-  { title: "Gyms & studios", desc: "Co-branded landing pages for your members." },
-];
-
-const steps = [
-  { n: "01", t: "Apply", d: "60-second form. Most decisions in 24h." },
-  { n: "02", t: "Get approved", d: "Receive your link, code, and dashboard." },
-  { n: "03", t: "Share", d: "Post, DM, or refer in-clinic. We track everything." },
-  { n: "04", t: "Get paid", d: "Monthly payouts. No caps. No clawbacks on completed orders." },
-];
-
-const faqs = [
-  { q: "How much can I realistically earn?", a: "Active affiliates with engaged audiences (5k–20k) typically earn R8,000–R50,000/month at the Pro tier. Top creators clear R100k+." },
-  { q: "What's the cookie window?", a: "60 days from last click — twice the industry default of 30 days." },
-  { q: "When and how do I get paid?", a: "Payouts go out on the 1st of each month for the prior month's confirmed orders, via EFT in ZAR." },
-  { q: "Are refunded orders clawed back?", a: "Only if refunded inside the 14-day window. After that, your commission is locked." },
-  { q: "Can I run paid ads on your brand name?", a: "No bidding on 'Peptide South Africa' or close variants. Other paid traffic is welcome — just check with us first." },
-  { q: "Do you support international affiliates?", a: "We currently pay out via South African EFT in ZAR. International affiliates can join — payouts are made into a local ZAR-receiving account of your choosing." },
-];
-
-const applicationSchema = z.object({
-  name: z.string().trim().min(2, "Name is too short").max(100),
-  email: z.string().trim().email("Invalid email").max(255),
-  channel: z.string().trim().min(2, "Tell us your channel").max(100),
-  audience_size: z.string().trim().max(50).optional(),
-  link: z.string().trim().url("Must be a valid URL").max(500).optional().or(z.literal("")),
-  message: z.string().trim().max(1000).optional(),
-});
 
 export default function AffiliatePage() {
   const { toast } = useToast();
-  const [submitting, setSubmitting] = useState(false);
+  const [types, setTypes] = useState<PartnerType[]>(["facility"]);
+  const [busy, setBusy] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  // Earnings calculator
-  const [refs, setRefs] = useState(20);
-  const [aov, setAov] = useState(1500);
-  const [rate, setRate] = useState(0.25);
-  const monthly = useMemo(() => Math.round(refs * aov * rate), [refs, aov, rate]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const payload = {
-      name: String(fd.get("name") || ""),
-      email: String(fd.get("email") || ""),
-      channel: String(fd.get("channel") || ""),
-      audience_size: String(fd.get("audience_size") || ""),
-      link: String(fd.get("link") || ""),
-      message: String(fd.get("message") || ""),
-    };
-    const parsed = applicationSchema.safeParse(payload);
-    if (!parsed.success) {
-      toast({ title: "Check your details", description: parsed.error.issues[0]?.message, variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    const { error } = await supabase.from("affiliate_applications").insert({
-      name: parsed.data.name,
-      email: parsed.data.email,
-      channel: parsed.data.channel,
-      audience_size: parsed.data.audience_size || null,
-      link: parsed.data.link || null,
-      message: parsed.data.message || null,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast({ title: "Something went wrong", description: error.message, variant: "destructive" });
-      return;
-    }
+  const choose = (type: PartnerType | "both") => setTypes(type === "both" ? ["facility", "creator"] : [type]);
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const links = String(form.get("profile_links") || "").split(/[,\n]/).map((v) => v.trim()).filter(Boolean);
+    const raw = Object.fromEntries(form.entries());
+    setBusy(true);
+    // Generated database types are updated after the staged migration is applied.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any).rpc("submit_partner_application_v2", { payload: {
+      ...raw, partner_types: types, profile_links: links,
+      regulated_professional: form.get("regulated_professional") === "on",
+      enquiry_only: form.get("enquiry_only") === "on",
+      marketing_consent: form.get("marketing_consent") === "on",
+    }});
+    setBusy(false);
+    if (error) { toast({ title: "Application not submitted", description: error.message, variant: "destructive" }); return; }
     setSubmitted(true);
-    toast({ title: "Application received", description: "We'll reply within 24 hours." });
+    toast({ title: "Application received", description: "Review and agreement acceptance are still required." });
   };
-
-  return (
-    <>
-      <SEO
-        title="Affiliate Program — Earn 20–30% with Peptide South Africa"
-        description="Earn 20–30% commission promoting lab-tested research peptides. 60-day cookie, monthly payouts, dedicated manager. Apply in 60 seconds."
-        path="/affiliate"
-      />
-
-      {/* HERO */}
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#0a2540] via-[#0e3050] to-[#00665e] text-white">
-        <div className="container px-4 py-20 md:py-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider backdrop-blur">
-              <DollarSign className="h-3.5 w-3.5" /> Affiliate program
-            </span>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] md:text-6xl">
-              Earn up to <span className="text-[#00d4aa]">30%</span> on every order.
-            </h1>
-            <p className="mt-5 text-base text-white/80 md:text-lg">
-              Promote lab-tested research peptides trusted by 1,200+ researchers and clinicians.
-              Industry-leading commissions, 60-day cookie, and monthly payouts in ZAR.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a href="#apply" className="inline-flex items-center gap-2 rounded-xl bg-[#00d4aa] px-6 py-3.5 text-sm font-bold text-[#0a2540] shadow-glow transition-all hover:opacity-90 active:scale-95">
-                Apply in 60 seconds <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="#tiers" className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur hover:bg-white/10">
-                See commission tiers
-              </a>
-            </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/70">
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[#00d4aa]" /> No application fee</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[#00d4aa]" /> 60-day cookie</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[#00d4aa]" /> Monthly payouts</span>
-              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-[#00d4aa]" /> Global</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TIERS */}
-      <section id="tiers" className="bg-background">
-        <div className="container px-4 py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Commission tiers</p>
-            <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">Better than the industry — by design.</h2>
-            <p className="mt-3 text-muted-foreground">Most competitors offer a flat 15% with a 30-day cookie. We start at 20% and scale to 30% with lifetime recurring.</p>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {tiers.map((t) => (
-              <div
-                key={t.name}
-                className={`relative rounded-2xl border p-6 ${t.highlight ? "border-primary bg-primary/5 shadow-glow" : "border-border bg-card"}`}
-              >
-                {t.highlight && (
-                  <span className="absolute -top-3 left-6 rounded-full bg-hero-gradient px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">Most popular</span>
-                )}
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t.eyebrow}</p>
-                <div className="mt-3 flex items-baseline gap-2">
-                  <span className="font-display text-5xl font-bold text-foreground">{t.rate}</span>
-                  <span className="text-sm text-muted-foreground">commission</span>
-                </div>
-                <h3 className="mt-1 font-display text-lg font-bold text-foreground">{t.name}</h3>
-                <ul className="mt-5 flex flex-col gap-2.5">
-                  {t.perks.map((p) => (
-                    <li key={p} className="flex gap-2 text-sm text-muted-foreground">
-                      <Check className="h-4 w-4 shrink-0 text-trust" /> <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-                <a href="#apply" className={`mt-6 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold ${t.highlight ? "bg-hero-gradient text-primary-foreground" : "border border-border text-foreground hover:bg-muted"}`}>
-                  {t.cta}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PERKS */}
-      <section className="bg-muted/30">
-        <div className="container px-4 py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">What you get</h2>
-            <p className="mt-3 text-muted-foreground">Everything you need to promote with confidence — and get paid on time.</p>
-          </div>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {perks.map((p) => (
-              <div key={p.title} className="rounded-2xl border border-border bg-card p-5">
-                <p.icon className="h-6 w-6 text-primary" />
-                <h3 className="mt-3 font-display text-base font-bold text-foreground">{p.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="bg-background">
-        <div className="container px-4 py-20">
-          <h2 className="text-center font-display text-3xl font-bold md:text-4xl">How it works</h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-4">
-            {steps.map((s) => (
-              <div key={s.n} className="rounded-2xl border border-border bg-card p-6">
-                <span className="font-display text-3xl font-bold text-primary">{s.n}</span>
-                <h3 className="mt-2 font-display text-lg font-bold text-foreground">{s.t}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CALCULATOR */}
-      <section className="bg-gradient-to-br from-[#0a2540] to-[#00665e] text-white">
-        <div className="container px-4 py-20">
-          <div className="mx-auto max-w-4xl">
-            <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">Earnings calculator</p>
-              <h2 className="mt-2 font-display text-3xl font-bold md:text-4xl">See what you could earn</h2>
-            </div>
-            <div className="mt-10 grid gap-8 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur md:grid-cols-2 md:p-10">
-              <div className="space-y-6">
-                <div>
-                  <label className="flex justify-between text-sm font-semibold">
-                    <span>Referrals per month</span><span>{refs}</span>
-                  </label>
-                  <input type="range" min={1} max={200} value={refs} onChange={(e) => setRefs(+e.target.value)} className="mt-2 w-full accent-[#00d4aa]" />
-                </div>
-                <div>
-                  <label className="flex justify-between text-sm font-semibold">
-                    <span>Average order value (R)</span><span>R{aov}</span>
-                  </label>
-                  <input type="range" min={500} max={8000} step={100} value={aov} onChange={(e) => setAov(+e.target.value)} className="mt-2 w-full accent-[#00d4aa]" />
-                </div>
-                <div>
-                  <label className="flex justify-between text-sm font-semibold">
-                    <span>Tier</span>
-                    <span>{Math.round(rate * 100)}%</span>
-                  </label>
-                  <div className="mt-2 flex gap-2">
-                    {[{ r: 0.2, l: "Starter" }, { r: 0.25, l: "Pro" }, { r: 0.3, l: "Elite" }].map((x) => (
-                      <button key={x.l} type="button" onClick={() => setRate(x.r)} className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold ${rate === x.r ? "bg-[#00d4aa] text-[#0a2540]" : "border border-white/20 text-white/80"}`}>
-                        {x.l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col items-center justify-center rounded-xl bg-black/20 p-8 text-center">
-                <p className="text-sm font-semibold uppercase tracking-wider text-white/70">Estimated monthly</p>
-                <p className="mt-2 font-display text-6xl font-bold text-[#00d4aa]">R{monthly.toLocaleString()}</p>
-                <p className="mt-4 text-xs text-white/60">Annual potential: R{(monthly * 12).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AUDIENCES */}
-      <section className="bg-background">
-        <div className="container px-4 py-20">
-          <h2 className="text-center font-display text-3xl font-bold md:text-4xl">Built for</h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {audiences.map((a) => (
-              <div key={a.title} className="rounded-2xl border border-border bg-card p-6">
-                <Users className="h-5 w-5 text-primary" />
-                <h3 className="mt-3 font-display text-base font-bold text-foreground">{a.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{a.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* APPLY */}
-      <section id="apply" className="bg-muted/30">
-        <div className="container px-4 py-20">
-          <div className="mx-auto max-w-2xl">
-            <div className="text-center">
-              <Award className="mx-auto h-10 w-10 text-primary" />
-              <h2 className="mt-3 font-display text-3xl font-bold md:text-4xl">Apply to join</h2>
-              <p className="mt-3 text-muted-foreground">Most applications are reviewed within 24 hours.</p>
-            </div>
-
-            {submitted ? (
-              <div className="mt-10 rounded-2xl border border-trust/30 bg-trust/5 p-8 text-center">
-                <Check className="mx-auto h-10 w-10 text-trust" />
-                <h3 className="mt-3 font-display text-xl font-bold text-foreground">You're in the queue 🎉</h3>
-                <p className="mt-2 text-muted-foreground">We'll email you within 24 hours with next steps.</p>
-                <Link to="/" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-                  Back to home <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="mt-10 grid gap-4 rounded-2xl border border-border bg-card p-6 md:p-8">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm">
-                    <span className="text-foreground font-medium">Full name *</span>
-                    <input name="name" required maxLength={100} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                  </label>
-                  <label className="text-sm">
-                    <span className="text-foreground font-medium">Email *</span>
-                    <input name="email" type="email" required maxLength={255} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                  </label>
-                </div>
-                <label className="text-sm">
-                  <span className="text-foreground font-medium">Channel / role *</span>
-                  <input name="channel" required placeholder="Instagram, YouTube, clinic, podcast..." maxLength={100} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                </label>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm">
-                    <span className="text-foreground font-medium">Audience size</span>
-                    <input name="audience_size" placeholder="e.g. 12k IG followers" maxLength={50} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                  </label>
-                  <label className="text-sm">
-                    <span className="text-foreground font-medium">Profile / website</span>
-                    <input name="link" type="url" placeholder="https://..." maxLength={500} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                  </label>
-                </div>
-                <label className="text-sm">
-                  <span className="text-foreground font-medium">Why are you a good fit?</span>
-                  <textarea name="message" rows={4} maxLength={1000} className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-                </label>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-hero-gradient py-3.5 text-sm font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
-                >
-                  {submitting ? "Submitting…" : <>Submit application <ArrowRight className="h-4 w-4" /></>}
-                </button>
-                <p className="text-center text-xs text-muted-foreground">
-                  By applying you accept the affiliate <Link to="/terms" className="underline">terms</Link>.
-                </p>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="bg-background">
-        <div className="container px-4 py-20">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="text-center font-display text-3xl font-bold md:text-4xl">Affiliate FAQ</h2>
-            <div className="mt-10 space-y-3">
-              {faqs.map((f) => (
-                <details key={f.q} className="group rounded-xl border border-border bg-card p-5 open:shadow-sm">
-                  <summary className="cursor-pointer list-none font-display text-base font-semibold text-foreground">
-                    {f.q}
-                  </summary>
-                  <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+  return <>
+    <SEO title="Wellness, Fitness & Creator Partner Programme" description="One Peptide South Africa partner programme for wellness facilities, practitioners, creators and influencers." path="/affiliate" />
+    <section className="bg-[#082B57] text-white"><div className="container px-4 py-16 text-center md:py-24">
+      <img src="/logo-horizontal.png" alt="Peptide South Africa" className="mx-auto h-12 w-auto rounded bg-white p-2" />
+      <p className="mt-6 text-xs font-bold uppercase tracking-[.25em] text-[#55C8BE]">Partner programme</p>
+      <h1 className="mx-auto mt-3 max-w-4xl font-display text-4xl font-bold md:text-6xl">Inspire your community. Earn with Peptide South Africa.</h1>
+      <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">For wellness and fitness facilities, creators and influencers. Share clear peptide information and earn from qualifying referrals.</p>
+      <div className="mt-8 flex justify-center gap-3"><a href="#apply" className="rounded-lg bg-[#55C8BE] px-5 py-3 font-bold text-[#082B57]">Become a partner</a><Link to="/affiliate/dashboard" className="rounded-lg border border-white/40 px-5 py-3 font-semibold">Partner login</Link></div>
+    </div></section>
+    <section className="container px-4 py-16"><div className="grid gap-6 md:grid-cols-2">{paths.map(({type,icon:Icon,title,headline,body,action}) => <article key={type} className="rounded-2xl border bg-card p-7 shadow-sm"><Icon className="h-9 w-9 text-[#149F99]"/><p className="mt-5 text-xs font-bold uppercase tracking-wider text-[#149F99]">{title}</p><h2 className="mt-2 text-2xl font-bold">{headline}</h2><p className="mt-3 text-muted-foreground">{body}</p><button onClick={()=>{choose(type); document.getElementById("apply")?.scrollIntoView({behavior:"smooth"});}} className="mt-6 font-bold text-[#082B57] underline">{action}</button></article>)}</div></section>
+    <section className="bg-[#E8F7F5]"><div className="container grid gap-8 px-4 py-16 md:grid-cols-2">
+      <div><h2 className="text-3xl font-bold">A clear, accountable way to share</h2><ul className="mt-6 space-y-4">{[
+        "Clients and audiences get an approved information destination and clear purchasing path.",
+        "Approved partners get specific links, codes, QR assets and transparent reporting.",
+        "You share approved material; PSA handles the storefront, payment verification and fulfilment.",
+        "Participation does not authorise diagnosis, prescribing, treatment claims, brand bidding or paid media.",
+      ].map(x=><li key={x} className="flex gap-3"><Check className="mt-1 h-5 w-5 shrink-0 text-[#149F99]"/><span>{x}</span></li>)}</ul></div>
+      <div className="rounded-2xl bg-white p-7"><ShieldCheck className="h-9 w-9 text-[#149F99]"/><h2 className="mt-4 text-2xl font-bold">How qualifying earnings work</h2><p className="mt-3 text-muted-foreground">Attribution is saved before payment. Earnings begin only after independently verified cleared payment, then move through validation, availability, payout reservation and paid states. Refund adjustments remain visible.</p><p className="mt-4 text-sm">Rates, validation periods and payout rules are those in your accepted agreement. Applying does not create approval or alter an existing entitlement.</p><Link to="/affiliate/terms" className="mt-5 inline-block font-bold text-[#082B57] underline">Read programme terms</Link></div>
+    </div></section>
+    <section id="apply" className="container px-4 py-16"><div className="mx-auto max-w-3xl"><p className="text-xs font-bold uppercase tracking-wider text-[#149F99]">One programme, tailored onboarding</p><h2 className="mt-2 text-3xl font-bold">Become a partner</h2>
+      <div className="mt-6 grid grid-cols-3 gap-2">{([["facility","Facility / practitioner"],["creator","Creator / influencer"],["both","Both"]] as const).map(([v,label])=><button type="button" key={v} onClick={()=>choose(v)} aria-pressed={v==="both"?types.length===2:types.length===1&&types[0]===v} className={`rounded-lg border p-3 text-sm font-semibold ${(v==="both"?types.length===2:types.length===1&&types[0]===v)?"border-[#149F99] bg-[#E8F7F5]":"bg-white"}`}>{label}</button>)}</div>
+      {submitted ? <div className="mt-8 rounded-xl border border-[#149F99] bg-[#E8F7F5] p-6"><h3 className="text-xl font-bold">Application received</h3><p className="mt-2">Review, agreement acceptance and approval are required before partner access becomes active.</p></div> :
+      <form onSubmit={submit} className="mt-8 grid gap-5 rounded-2xl border bg-card p-6 md:grid-cols-2">
+        <label className="text-sm font-medium">Contact name<input required name="contact_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Email<input required type="email" name="email" maxLength={255} className="mt-1 w-full rounded-lg border bg-background p-3"/></label>
+        <label className="text-sm font-medium">Phone (optional)<input name="phone" maxLength={40} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Location<input name="location" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label>
+        {types.includes("facility") && <><label className="text-sm font-medium">Trading or facility name<input name="facility_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Facility / practice type<input name="facility_type" maxLength={100} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
+        {types.includes("creator") && <><label className="text-sm font-medium">Public creator / display name<input name="creator_name" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Content niche<input name="content_niche" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium md:col-span-2">Platform or profile links<textarea name="profile_links" rows={2} className="mt-1 w-full rounded-lg border bg-background p-3" placeholder="One per line"/></label><label className="text-sm font-medium">Audience size (optional)<input name="audience_size" maxLength={80} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><label className="text-sm font-medium">Audience geography (optional)<input name="audience_geography" maxLength={160} className="mt-1 w-full rounded-lg border bg-background p-3"/></label></>}
+        <label className="text-sm font-medium md:col-span-2">How will you introduce the programme?<textarea name="promotion_approach" maxLength={1000} rows={3} className="mt-1 w-full rounded-lg border bg-background p-3"/></label><input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden"/>
+        <label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="regulated_professional"/> I am applying in a regulated professional capacity (reviewed separately).</label><label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="enquiry_only"/> Use an education/enquiry-only route if paid participation is not permitted.</label>
+        <label className="flex gap-2 text-sm md:col-span-2"><input required type="checkbox" name="application_terms"/> I accept the <Link to="/affiliate/terms" className="underline">application and programme terms</Link>.</label><label className="flex gap-2 text-sm md:col-span-2"><input type="checkbox" name="marketing_consent"/> Send optional marketing updates (separate consent).</label>
+        <button disabled={busy} className="rounded-lg bg-[#082B57] px-5 py-3 font-bold text-white disabled:opacity-50 md:col-span-2">{busy?"Submitting…":"Submit application"}</button>
+      </form>}
+    </div></section>
+  </>;
 }

@@ -43,6 +43,7 @@ const staticRoutes = [
   "/privacy",
   "/impressum",
   "/affiliate",
+  "/affiliate/terms",
   "/community",
   "/buy-retatrutide-south-africa",
   "/buy-bpc-157-south-africa",

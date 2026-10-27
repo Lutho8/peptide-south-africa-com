@@ -52,6 +52,7 @@ export default async function handler(request: Request): Promise<Response> {
       lastName?: unknown;
       email?: unknown;
       consent?: unknown;
+      partnerAttribution?: unknown;
     } | null;
     try { validateStorefrontRequest((body ?? {}) as Record<string, unknown>); } catch (error) {
       return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409);
@@ -197,6 +198,7 @@ export default async function handler(request: Request): Promise<Response> {
         firstName: typeof body.firstName === "string" ? body.firstName : "",
         lastName: typeof body.lastName === "string" ? body.lastName : "",
         email: body.email,
+        partnerAttribution: body.partnerAttribution,
       }),
     });
     const settlement = await settlementResponse.json().catch(() => null) as Record<string, unknown> | null;

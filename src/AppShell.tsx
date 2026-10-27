@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,6 +19,7 @@ import DiscountPopup from "@/components/DiscountPopup";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
+import { capturePartnerAttribution } from "@/lib/partnerAttribution";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
 // lazy modules before writing complete SEO HTML for public routes.
@@ -39,6 +40,8 @@ const BlogIndexPage = lazy(() => import("@/pages/BlogIndexPage"));
 const BlogPostPage = lazy(() => import("@/pages/BlogPostPage"));
 const EditorialPolicyPage = lazy(() => import("@/pages/EditorialPolicyPage"));
 const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
+const AffiliateTermsPage = lazy(() => import("@/pages/AffiliateTermsPage"));
+const AffiliateDashboardPage = lazy(() => import("@/pages/AffiliateDashboardPage"));
 const BuyRetatrutideSA = lazy(() => import("@/pages/BuyRetatrutideSA"));
 const BuyBpc157SA = lazy(() => import("@/pages/BuyBpc157SA"));
 const BuyTirzepatideSA = lazy(() => import("@/pages/BuyTirzepatideSA"));
@@ -81,10 +84,16 @@ function RouteLoadingFallback() {
   );
 }
 
+function PartnerAttributionCapture() {
+  useEffect(() => { capturePartnerAttribution(); }, []);
+  return null;
+}
+
 export default function AppShell() {
   return (
     <CurrencyProvider>
       <AuthProvider>
+        <PartnerAttributionCapture />
         <CartProvider>
           <LastViewedProductProvider>
             <Toaster />
@@ -122,6 +131,8 @@ export default function AppShell() {
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/editorial-policy" element={<EditorialPolicyPage />} />
                 <Route path="/affiliate" element={<AffiliatePage />} />
+                <Route path="/affiliate/terms" element={<AffiliateTermsPage />} />
+                <Route path="/affiliate/dashboard" element={<AffiliateDashboardPage />} />
                 <Route path="/buy-retatrutide-south-africa" element={<BuyRetatrutideSA />} />
                 <Route path="/buy-bpc-157-south-africa" element={<BuyBpc157SA />} />
                 <Route path="/buy-tirzepatide-south-africa" element={<BuyTirzepatideSA />} />

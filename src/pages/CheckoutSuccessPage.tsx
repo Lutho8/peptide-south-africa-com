@@ -149,7 +149,7 @@ export default function CheckoutSuccessPage() {
               <p className="mt-3 text-xs text-muted-foreground">
                 Refer at scale?{" "}
                 <Link to={mp("/affiliate")} className="font-semibold text-primary hover:underline">
-                  Join the affiliate programme — 20–35% commission <ArrowRight className="inline h-3 w-3" />
+                  Join the Wellness, Fitness & Creator Partner Programme <ArrowRight className="inline h-3 w-3" />
                 </Link>
               </p>
             </div>

@@ -16,6 +16,7 @@
     { "source": "/track-order", "destination": "/index.html" },
     { "source": "/account", "destination": "/index.html" },
     { "source": "/auth", "destination": "/index.html" },
+    { "source": "/affiliate/dashboard", "destination": "/index.html" },
     { "source": "/admin", "destination": "/index.html" },
     { "source": "/admin/:path*", "destination": "/index.html" }
   ],
@@ -42,6 +43,10 @@
     },
     {
       "source": "/auth/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
+    },
+    {
+      "source": "/affiliate/dashboard",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }]
     },
     {

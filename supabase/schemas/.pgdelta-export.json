@@ -198,6 +198,7 @@
     "tracker/functions/read_email_batch.sql",
     "tracker/functions/schedule_bloodwork_reminders.sql",
     "tracker/functions/update_updated_at_column.sql",
+    "public/partner_programme_v2.sql",
     "_cluster/publications.sql"
   ],
   "profile": "supabase",
@@ -398,6 +399,7 @@
     "tracker/tables/water_intake.sql",
     "tracker/types/app_role.sql",
     "tracker/types/subscription_plan.sql",
-    "tracker/types/subscription_status.sql"
+    "tracker/types/subscription_status.sql",
+    "public/partner_programme_v2.sql"
   ]
 }
