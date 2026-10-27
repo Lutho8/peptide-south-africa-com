@@ -1,0 +1,18 @@
+[
+  {
+    "kind": "facility",
+    "url": "http://127.0.0.1:5185/?partner=QAFACILITY&via=qr"
+  },
+  {
+    "kind": "creator",
+    "url": "http://127.0.0.1:5185/?partner=QACREATOR&via=qr"
+  },
+  {
+    "kind": "hybrid",
+    "url": "http://127.0.0.1:5185/?partner=QAHYBRID&via=qr"
+  },
+  {
+    "kind": "legacy",
+    "url": "http://127.0.0.1:5185/?partner=QALEGACY&via=qr"
+  }
+]

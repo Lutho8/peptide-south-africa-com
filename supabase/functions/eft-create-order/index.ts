@@ -201,6 +201,27 @@ Deno.serve(async (req)=>{
         }
       });
     }
+    // Freeze attribution before a payable EFT record or instructions exist.
+    if (!petsCheckout && partnerAttribution?.code) {
+      const code = String(partnerAttribution.code).trim().toUpperCase();
+      const campaign = partnerAttribution.campaign == null ? null : String(partnerAttribution.campaign).trim();
+      const method = ['entered_code','referral_click','qr'].includes(partnerAttribution.method) ? partnerAttribution.method : 'referral_click';
+      if (/^[A-Z0-9_-]{3,80}$/.test(code) && (!campaign || /^[a-z0-9][a-z0-9_-]{0,63}$/.test(campaign))) {
+        const { error: attributionError } = await admin.rpc('freeze_partner_attribution', {
+          p_order_id: orderId, p_programme_key: 'wellness_b2b', p_referral_code: code,
+          p_campaign_key: campaign, p_method: method, p_storefront: 'main',
+          p_commissionable_value_cents: Math.round((Number(quote.subtotal) - selections.reduce((sum, line) => sum + (line.kind === "item" && line.slug === "bac-water-bacteriostatic" ? variantPrice(line.slug, line.variantLabel) * line.quantity : 0), 0)) * 100),
+          p_policy_version: 'wellness-b2b-v2.0-2026-10-27',
+          p_click_id: method === 'entered_code' ? null : partnerAttribution.click_id ?? null
+        });
+        if (attributionError) {
+          console.error('Partner attribution could not be frozen');
+          return json({ error: 'Referral could not be saved. Please retry checkout.', code: 'PARTNER_UNAVAILABLE' }, 503);
+        }
+      } else {
+        return json({ error: 'Invalid partner referral.', code: 'PARTNER_CODE_INVALID' }, 400);
+      }
+    }
     // Generate a unique payment reference (retry on psa_orders.payment_reference conflict).
     let paymentReference = '';
     for(let attempt = 0; attempt < 5; attempt++){
@@ -231,23 +252,6 @@ Deno.serve(async (req)=>{
       return json({
         error: 'Order could not be prepared for EFT. Please try again.'
       }, 500);
-    }
-    if (!petsCheckout && partnerAttribution?.code) {
-      const code = String(partnerAttribution.code).trim().toUpperCase();
-      const campaign = partnerAttribution.campaign == null ? null : String(partnerAttribution.campaign).trim();
-      const method = ['entered_code','referral_click','qr'].includes(partnerAttribution.method) ? partnerAttribution.method : 'referral_click';
-      if (/^[A-Z0-9_-]{3,80}$/.test(code) && (!campaign || /^[a-z0-9][a-z0-9_-]{0,63}$/.test(campaign))) {
-        const { error: attributionError } = await admin.rpc('freeze_partner_attribution', {
-          p_order_id: orderId, p_programme_key: 'wellness_b2b', p_referral_code: code,
-          p_campaign_key: campaign, p_method: method, p_storefront: 'main',
-          p_commissionable_value_cents: Math.round((Number(quote.subtotal) - selections.reduce((sum, line) => sum + (line.kind === "item" && line.slug === "bac-water-bacteriostatic" ? variantPrice(line.slug, line.variantLabel) * line.quantity : 0), 0)) * 100),
-          p_policy_version: 'wellness-b2b-v2.0-2026-10-27',
-          p_click_id: method === 'entered_code' ? null : partnerAttribution.click_id ?? null
-        });
-        if (attributionError) {
-          await admin.from('integration_logs').insert({ integration: 'partner_programme', action: 'freeze-attribution', status: 'rejected', payload: { orderId, code, reason: attributionError.message } });
-        }
-      }
     }
     const customerName = [
       firstName,

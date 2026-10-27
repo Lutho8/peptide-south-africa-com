@@ -32,6 +32,22 @@ begin
  insert into journey_ids values(kind,uid,enr,oid);
  end loop;
 end $$;
+-- Server-enforced attribution boundary and professional review.
+do $$
+declare enr uuid; uid uuid; oid uuid; clk uuid; app uuid;
+begin
+ select enrolment,usr into enr,uid from journey_ids where kind='creator';
+ insert into public.partner_referral_clicks(programme_id,enrolment_id,referral_code,campaign_key,method,created_at,expires_at)
+ select programme_id,enr,'QACREATOR','fixture','qr',now()-interval '30 days',now() from public.partner_enrolments where id=enr returning id into clk;
+ oid:=gen_random_uuid(); insert into public.orders(id,user_id,total) values(oid,uid,1000);
+ begin perform public.freeze_partner_attribution(oid,'wellness_b2b','QACREATOR','fixture','qr','main',100000,'wellness-b2b-v2.0-2026-10-27',clk); raise exception 'Expired click accepted'; exception when raise_exception then if sqlerrm not like 'Expired or invalid click%' then raise; end if; end;
+ update public.partner_referral_clicks set created_at=now(),expires_at=now()+interval '30 days' where id=clk;
+ perform public.freeze_partner_attribution(oid,'wellness_b2b','QACREATOR','fixture','qr','main',100000,'wellness-b2b-v2.0-2026-10-27',clk);
+ if not exists(select 1 from public.partner_order_attributions where order_id=oid and click_id=clk and enrolment_id=enr) then raise exception 'QR attribution incorrect'; end if;
+ begin perform public.freeze_partner_attribution(gen_random_uuid(),'wellness_b2b','QACREATOR',null,'entered_code','pets',100000,'wellness-b2b-v2.0-2026-10-27'); raise exception 'Pets origin allowed'; exception when raise_exception then if sqlerrm not like 'programme/storefront mismatch%' then raise; end if; end;
+ app:=public.submit_partner_application_v2(jsonb_build_object('email','professional@example.invalid','contact_name','Synthetic professional','partner_types','["creator"]'::jsonb,'regulated_professional',true));
+ begin perform public.approve_partner_application(app,uid,'QAPRO'); raise exception 'Professional bypass accepted'; exception when raise_exception then if sqlerrm not like 'Professional clearance required%' then raise; end if; end;
+end $$;
 -- RLS actual-role tests: another partner and Pets cannot be read; writes denied.
 select set_config('request.jwt.claim.sub',(select usr::text from journey_ids where kind='facility'),true);
 set local role authenticated;
@@ -67,6 +83,10 @@ begin
  stmt:=public.prepare_partner_payout(enr,'2026-09-01','2026-09-30');
  if (select amount_cents from public.partner_payout_statements where id=stmt)<>75000 then raise exception 'Statement incorrect'; end if;
  if public.prepare_partner_payout(enr,'2026-09-01','2026-09-30')<>stmt then raise exception 'Duplicate statement'; end if;
+ perform public.cancel_partner_payout(stmt,true);
+ if exists(select 1 from public.partner_commission_ledger where statement_id=stmt) then raise exception 'Failed payout retained reserved entries'; end if;
+ if public.prepare_partner_payout(enr,'2026-09-01','2026-09-30')<>stmt then raise exception 'Retry duplicated statement'; end if;
+ if (select status from public.partner_payout_statements where id=stmt)<>'reserved' then raise exception 'Failed statement not reserved on retry'; end if;
  begin perform public.confirm_partner_payout(stmt,null); raise exception 'Null reference accepted'; exception when raise_exception then if sqlerrm not like 'Reserved statement%' then raise; end if; end;
  perform public.confirm_partner_payout(stmt,'SYNTHETIC-NO-MONEY-MOVED');
  perform public.confirm_partner_payout(stmt,'SYNTHETIC-NO-MONEY-MOVED');

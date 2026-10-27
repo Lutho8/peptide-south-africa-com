@@ -1,0 +1,29 @@
+{
+  "source": "isolated Postgres acceptance fixtures replayed through browser API interception",
+  "results": [
+    {
+      "kind": "facility",
+      "pendingCents": 20000,
+      "displayedR200": true,
+      "qrGenerated": true
+    },
+    {
+      "kind": "creator",
+      "pendingCents": 20000,
+      "displayedR200": true,
+      "qrGenerated": true
+    },
+    {
+      "kind": "hybrid",
+      "pendingCents": 20000,
+      "displayedR200": true,
+      "qrGenerated": true
+    },
+    {
+      "kind": "legacy",
+      "pendingCents": 20000,
+      "displayedR200": true,
+      "qrGenerated": true
+    }
+  ]
+}
