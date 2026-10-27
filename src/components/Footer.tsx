@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Mail, Globe2, Phone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMarket, marketPath } from "@/hooks/useMarket";
-import { captureLead } from "@/lib/nocobase";
 import PaymentMethodsBanner from "@/components/PaymentMethodsBanner";
 import { businessInfo } from "@/data/businessInfo";
 
@@ -22,10 +21,11 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      captureLead({ source: "newsletter", email });
+      const { captureLead } = await import("@/lib/nocobase");
+      void captureLead({ source: "newsletter", email });
       setSubscribed(true);
       setEmail("");
     }

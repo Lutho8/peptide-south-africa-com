@@ -22,13 +22,6 @@ export type AnalyticsEvent =
 const SESSION_KEY = "psa_analytics_sid";
 const OFFER_KEY = "psa_selected_offer";
 
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-    _fbq?: unknown;
-  }
-}
-
 /** Meta standard-event mapping. Unlisted events fire as trackCustom so they
  * still show up in Events Manager without polluting Meta's standard-event set.
  * Purchase is deliberately absent: EFT instructions being shown is not
@@ -40,42 +33,6 @@ const META_STANDARD_EVENT: Partial<Record<AnalyticsEvent["event"], string>> = {
   book_consult_clicked: "Lead",
   checkout_started: "InitiateCheckout",
 };
-
-let pixelInitAttempted = false;
-
-/**
- * Injects the Meta Pixel base code, gated on VITE_META_PIXEL_ID being set.
- * No-ops (and never throws) when the env var is absent, so this is safe to
- * ship ahead of Business Manager access — flipping the env var is all that's
- * needed to activate it later.
- */
-export function initMetaPixel(): void {
-  if (pixelInitAttempted) return;
-  pixelInitAttempted = true;
-  const pixelId = import.meta.env.VITE_META_PIXEL_ID;
-  if (!pixelId || typeof window === "undefined") return;
-  try {
-    if (window.fbq) return;
-    const fbq = function (...args: unknown[]) {
-      const q = (fbq as unknown as { queue: unknown[][] }).queue;
-      q.push(args);
-    } as unknown as Window["fbq"] & { queue: unknown[][]; loaded: boolean; version: string; push: Window["fbq"] };
-    fbq!.queue = [];
-    fbq!.loaded = true;
-    fbq!.version = "2.0";
-    fbq!.push = fbq!;
-    window.fbq = fbq;
-    window._fbq = fbq;
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
-    window.fbq("init", pixelId);
-    window.fbq("track", "PageView");
-  } catch {
-    // Pixel bootstrap must never break the app.
-  }
-}
 
 function sessionId(): string {
   try {

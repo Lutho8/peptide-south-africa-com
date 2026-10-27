@@ -1,5 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
-
 export type NocobaseAction =
   | "lead.upsert"
   | "order.created"
@@ -43,6 +41,7 @@ export function tagsForSource(source: LeadSource): string[] {
  */
 export async function syncToNocobase(action: NocobaseAction, payload: Record<string, unknown>) {
   try {
+    const { supabase } = await import("@/integrations/supabase/client");
     const { error } = await supabase.functions.invoke("nocobase-sync", {
       body: { action, payload },
     });

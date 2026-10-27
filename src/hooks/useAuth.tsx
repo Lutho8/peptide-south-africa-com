@@ -1,6 +1,6 @@
 import { createContext, startTransition, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { afterInitialPagePaint } from "@/lib/afterInitialPagePaint";
 
 interface AuthCtx {
   session: Session | null;
@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Defer queries with setTimeout to avoid deadlock with onAuthStateChange
     setTimeout(async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
       const { data: roleData } = await supabase
         .from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
       startTransition(() => setIsAdmin(!!roleData));
@@ -59,42 +60,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-      startTransition(() => {
-        setSession(sess);
-        setUser(sess?.user ?? null);
-      });
-      checkRoleAndOrders(sess?.user?.id);
-      // Push new signups to Nocobase CRM
-      if (event === "SIGNED_IN" && sess?.user) {
-        const isNew = sess.user.created_at &&
-          Date.now() - new Date(sess.user.created_at).getTime() < 60_000;
-        if (isNew) {
-          import("@/lib/nocobase").then(({ captureLead }) => {
-            captureLead({
-              source: "signup",
-              email: sess.user.email ?? null,
-              extra: { user_id: sess.user.id },
-            });
+    let active = true;
+    let unsubscribe: (() => void) | undefined;
+
+    const cancelInitialization = afterInitialPagePaint(() => {
+      void import("@/integrations/supabase/client").then(({ supabase }) => {
+        if (!active) return;
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
+          startTransition(() => {
+            setSession(sess);
+            setUser(sess?.user ?? null);
           });
-        }
-      }
-    });
+          void checkRoleAndOrders(sess?.user?.id);
+          if (event === "SIGNED_IN" && sess?.user) {
+            const isNew = sess.user.created_at &&
+              Date.now() - new Date(sess.user.created_at).getTime() < 60_000;
+            if (isNew) {
+              import("@/lib/nocobase").then(({ captureLead }) => {
+                void captureLead({
+                  source: "signup",
+                  email: sess.user.email ?? null,
+                  extra: { user_id: sess.user.id },
+                });
+              });
+            }
+          }
+        });
 
-    supabase.auth.getSession().then(({ data: { session: sess } }) => {
-      startTransition(() => {
-        setSession(sess);
-        setUser(sess?.user ?? null);
-        setLoading(false);
+        unsubscribe = () => subscription.unsubscribe();
+        void supabase.auth.getSession().then(({ data: { session: sess } }) => {
+          if (!active) return;
+          startTransition(() => {
+            setSession(sess);
+            setUser(sess?.user ?? null);
+            setLoading(false);
+          });
+          void checkRoleAndOrders(sess?.user?.id);
+        });
       });
-      checkRoleAndOrders(sess?.user?.id);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      active = false;
+      cancelInitialization();
+      unsubscribe?.();
+    };
   }, []);
 
   const refreshOrders = async () => {
     if (!user) return;
+    const { supabase } = await import("@/integrations/supabase/client");
     const { count } = await supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
     const has = (count ?? 0) > 0;
     setHasFirstOrder(has);
@@ -105,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (user) window.localStorage.removeItem(cacheKey(user.id));
     } catch { /* ignore */ }
+    const { supabase } = await import("@/integrations/supabase/client");
     await supabase.auth.signOut();
   };
 

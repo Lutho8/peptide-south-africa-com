@@ -1,24 +1,18 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { CartProvider } from "@/context/CartContext";
 import { LastViewedProductProvider } from "@/context/LastViewedProductContext";
-import FloatingProductFollower from "@/components/FloatingProductFollower";
-import FloatingTrustBadge from "@/components/FloatingTrustBadge";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Footer from "@/components/Footer";
-import StickyMobileCTA from "@/components/StickyMobileCTA";
 import CartDrawer from "@/components/CartDrawer";
 import PostAddUpsellModal from "@/components/PostAddUpsellModal";
-import DiscountPopup from "@/components/DiscountPopup";
-import CookieConsent from "@/components/CookieConsent";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import PreferredSourcesButton from "@/components/PreferredSourcesButton";
+import DeferredSiteExtras from "@/components/DeferredSiteExtras";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
 // lazy modules before writing complete SEO HTML for public routes.
@@ -89,7 +83,6 @@ export default function AppShell() {
           <LastViewedProductProvider>
             <Toaster />
             <Sonner />
-            <DiscountPopup />
             <AnnouncementBar />
             <Header />
             <CartDrawer />
@@ -149,12 +142,7 @@ export default function AppShell() {
               <PreferredSourcesButton />
             </div>
             <Footer />
-            <StickyMobileCTA />
-            <FloatingProductFollower />
-            <FloatingTrustBadge />
-            <CookieConsent />
-            <WhatsAppButton />
-            <Analytics />
+            <DeferredSiteExtras />
           </LastViewedProductProvider>
         </CartProvider>
       </AuthProvider>

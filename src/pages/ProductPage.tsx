@@ -15,7 +15,6 @@ import QuizResultBanner from "@/components/QuizResultBanner";
 import RelatedContent from "@/components/RelatedContent";
 import { productSchema, entityClusters } from "@/lib/seo";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { supabase } from "@/integrations/supabase/client";
 import StockBadge from "@/components/StockBadge";
 import TrackBadge from "@/components/TrackBadge";
 import DeliveryReturnsAccordion from "@/components/DeliveryReturnsAccordion";
@@ -29,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLastViewedProduct } from "@/context/LastViewedProductContext";
 import TrustComplianceSection from "@/components/TrustComplianceSection";
 import { getCoasForProduct } from "@/data/coas";
+import { afterInitialPagePaint } from "@/lib/afterInitialPagePaint";
 
 interface CmsFaq { question: string; answer: string }
 
@@ -49,13 +49,23 @@ export default function ProductPage() {
 
 
   useEffect(() => {
-    supabase
-      .from("product_faqs")
-      .select("question, answer")
-      .eq("scope", "global")
-      .eq("is_published", true)
-      .order("display_order")
-      .then(({ data }) => setGlobalFaqs(data ?? []));
+    let active = true;
+    const cancelQuery = afterInitialPagePaint(() => {
+      void import("@/integrations/supabase/client").then(({ supabase }) =>
+        supabase
+          .from("product_faqs")
+          .select("question, answer")
+          .eq("scope", "global")
+          .eq("is_published", true)
+          .order("display_order"),
+      ).then(({ data }) => {
+        if (active) setGlobalFaqs(data ?? []);
+      });
+    });
+    return () => {
+      active = false;
+      cancelQuery();
+    };
   }, []);
 
   useEffect(() => { setSelectedVariant(0); setAdded(false); }, [slug]);

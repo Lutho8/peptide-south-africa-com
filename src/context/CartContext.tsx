@@ -3,7 +3,6 @@ import { getProductBySlug, type Product } from "@/data/products";
 import { BAC_SLUG } from "../../supabase/functions/_shared/catalog-release";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { PRICING, catalogPrice, quoteMixSlugs, roundCents, variantPrice, type MixBundleSize } from "../../supabase/functions/_shared/pricing";
 
 export interface CartItem {
@@ -271,6 +270,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     if (snapTimer.current) clearTimeout(snapTimer.current);
     snapTimer.current = setTimeout(async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
       if (items.length === 0) {
         await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
         lastSentSig.current = null;
