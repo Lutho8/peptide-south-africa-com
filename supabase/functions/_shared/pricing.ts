@@ -10,7 +10,7 @@ export const PRICING = {
     full12Week: { offerId: "weight_loss_12_week_4999", amount: 4999, label: "Full 12-week program" },
   },
   consultOnlySlugs: [],
-  directOnlySlugs: ["pets-bpc-157", "pets-kpv", "pets-recovery-blend", "pets-immune-thymogen", "pets-mobility-collagen"],
+  directOnlySlugs: ["pets-bpc-157", "pets-kpv", "pets-recovery-blend", "pets-immune-thymogen"],
   packDiscounts: { 3: 0.15, 5: 0.20 },
   // Dormant source prices remain readable for historical catalogue records.
   // variantPrice/quoteCheckout, not this raw lookup, enforce sale eligibility.

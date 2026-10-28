@@ -55,10 +55,13 @@ describe("authoritative server pricing", () => {
     ["pets-kpv", 795],
     ["pets-recovery-blend", 1195],
     ["pets-immune-thymogen", 845],
-    ["pets-mobility-collagen", 395],
   ])("prices the live Pets product %s without accepting a client amount", (slug, amount) => {
     const quote = quoteCheckout([{ kind: "item", slug, quantity: 1 }]);
     expect(quote.subtotal).toBe(amount);
+  });
+
+  it("rejects retired Pets collagen at checkout", () => {
+    expect(() => quoteCheckout([{ kind: "item", slug: "pets-mobility-collagen", quantity: 1 }])).toThrow("Product is not currently offered");
   });
 
   it("prices a 3-pack at exactly 15% off", () => {
