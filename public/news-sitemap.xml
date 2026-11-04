@@ -1,3 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/cerebrolysin-peptide-research-south-africa</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Peptide South Africa</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-11-04</news:publication_date>
+      <news:title>What is Cerebrolysin? Stroke research and product identity</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/epithalon-peptide-research-south-africa</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Peptide South Africa</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-11-04</news:publication_date>
+      <news:title>What is Epithalon? Circadian rhythm research and evidence</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/pinealon-peptide-research-south-africa</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Peptide South Africa</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-11-04</news:publication_date>
+      <news:title>What is Pinealon? Cell research and the limits of sleep claims</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/selank-peptide-research-south-africa</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Peptide South Africa</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-11-04</news:publication_date>
+      <news:title>What is Selank? Anxiety research and unanswered sleep questions</news:title>
+    </news:news>
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/blog/semax-peptide-research-south-africa</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Peptide South Africa</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-11-04</news:publication_date>
+      <news:title>What is Semax? A guide to neuropeptide research</news:title>
+    </news:news>
+  </url>
 </urlset>

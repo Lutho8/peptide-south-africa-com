@@ -33,6 +33,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (/src[\\/]data[\\/]blog[\\/]posts[\\/](epithalon|pinealon|selank|semax|cerebrolysin)-peptide-research-south-africa\.ts$/.test(id)) return "dusk-research";
           if (!id.includes("node_modules")) return undefined;
           // Stable, rarely-changing vendor code split away from app code that
           // changes on every deploy — lets returning visitors reuse a cached
