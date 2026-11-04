@@ -579,7 +579,7 @@ const sourceProducts: Product[] = [
     id: "dusk-cerebrolysin", name: "Cerebrolysin", slug: "cerebrolysin",
     shortDescription: "A supplier-labelled peptide preparation offered for laboratory neurobiology research.",
     description: "This 60 mg research listing is a supplier-labelled peptide preparation. Published Cerebrolysin studies concern specific pharmaceutical preparations; their findings cannot establish the identity, composition, safety or performance of this vial. It is not offered as an equivalent to a licensed medicine. Matching analytical documentation is pending.",
-    price: catalogPrice("cerebrolysin"), image: "/products/cerebrolysin-60mg.svg",
+    price: catalogPrice("cerebrolysin"), image: "/products/cerebrolysin-60mg-v2.jpg",
     category: "Wellness & Longevity", compoundClass: "Peptide preparation", track: "RUO",
     storage: "Follow the supplied storage label.",
     benefits: ["Laboratory neurobiology research", "Peptide preparation characterisation"],

@@ -58,7 +58,7 @@ export default function DuskCollectionPage() {
   const [enlarged, setEnlarged] = useState(false);
   const chart = charts[activeChart];
   return <div className="dusk-page">
-    <SEO title="DUSK Collection — A Question About Rest" description="Discover the story behind DUSK. Explore Epithalon, Pinealon, Selank, Semax and Cerebrolysin, with research context, clear limitations and single-vial ZAR prices." path="/dusk" image="https://www.peptide-south-africa.com/dusk/combined-dusk-blend.jpg" />
+    <SEO title="DUSK Collection — A Question About Rest" description="Discover the story behind DUSK. Explore Epithalon, Pinealon, Selank, Semax and Cerebrolysin, with research context, clear limitations and single-vial ZAR prices." path="/dusk" image={getProductBySlug("selank")?.image} />
     <section className="dusk-hero">
       <div className="dusk-wrap dusk-hero-grid">
         <div>
