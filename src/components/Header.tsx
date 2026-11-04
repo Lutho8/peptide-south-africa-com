@@ -34,6 +34,7 @@ const DROPDOWNS: Dropdown[] = [
   {
     label: "Wellness & Longevity",
     items: [
+      { label: "DUSK Collection", to: "/dusk", desc: "The story, the research, five compounds" },
       { label: "MOTS-C", to: "/product/mots-c", desc: "Mitochondrial research peptide" },
       { label: "KLOW80", to: "/product/klow80", desc: "Research peptide blend" },
       { label: "GHK-Cu", to: "/product/ghk-cu-50mg", desc: "Copper peptide research" },

@@ -1,5 +1,5 @@
 /** Owner-approved storefront catalogue. Historical orders are never rewritten. */
-export const CATALOG_VERSION = "psa-sa-stock-2026-09-27";
+export const CATALOG_VERSION = "psa-dusk-2026-11-04";
 export const BAC_SLUG = "bac-water-bacteriostatic";
 export const LIVE_CATALOG = {
   "rt3-reta": { name: "Retatrutide (GGG-3) 10 mg", sku: "RTT-GGG-10", strength: "10 mg", mgPerVial: 10, price: 1250 },
@@ -11,6 +11,11 @@ export const LIVE_CATALOG = {
   "ss-31": { name: "SS-31 10 mg", sku: "PSA-SS31-10", strength: "10 mg", mgPerVial: 10, price: 1150 },
   "ghk-cu-50mg": { name: "GHK-Cu 50 mg", sku: "RTT-GHK-50", strength: "50 mg", mgPerVial: 50, price: 700 },
   "bpc-tb500-blend": { name: "BPC-157 + TB-500 5 mg + 5 mg", sku: "RTT-BTB-10", strength: "5 mg + 5 mg", mgPerVial: 10, price: 950 },
+  selank: { name: "Selank 10 mg", sku: "PSA-SLK-10", strength: "10 mg", mgPerVial: 10, price: 799 },
+  semax: { name: "Semax 10 mg", sku: "PSA-SMX-10", strength: "10 mg", mgPerVial: 10, price: 699 },
+  cerebrolysin: { name: "Cerebrolysin 60 mg", sku: "PSA-CER-60", strength: "60 mg", mgPerVial: 60, price: 599 },
+  epitalon: { name: "Epithalon 10 mg", sku: "PSA-EPI-10", strength: "10 mg", mgPerVial: 10, price: 599 },
+  pinealon: { name: "Pinealon 10 mg", sku: "PSA-PIN-10", strength: "10 mg", mgPerVial: 10, price: 620 },
   "bac-water-bacteriostatic": { name: "BAC water 10 ml", sku: "PSA-BAC-10ML", strength: "10 ml", mgPerVial: 0, price: 210 },
 } as const;
 export type LiveSlug = keyof typeof LIVE_CATALOG;

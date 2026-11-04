@@ -575,6 +575,20 @@ const sourceProducts: Product[] = [
     inStock: true,
     stock: 24,
   },
+  {
+    id: "dusk-cerebrolysin", name: "Cerebrolysin", slug: "cerebrolysin",
+    shortDescription: "A supplier-labelled peptide preparation offered for laboratory neurobiology research.",
+    description: "This 60 mg research listing is a supplier-labelled peptide preparation. Published Cerebrolysin studies concern specific pharmaceutical preparations; their findings cannot establish the identity, composition, safety or performance of this vial. It is not offered as an equivalent to a licensed medicine. Matching analytical documentation is pending.",
+    price: catalogPrice("cerebrolysin"), image: "/products/cerebrolysin-60mg.svg",
+    category: "Wellness & Longevity", compoundClass: "Peptide preparation", track: "RUO",
+    storage: "Follow the supplied storage label.",
+    benefits: ["Laboratory neurobiology research", "Peptide preparation characterisation"],
+    whatsIncluded: ["1 × 60 mg research vial", "Storage information"],
+    whoItsFor: ["Laboratory researchers"], howItWorks: ["Review compound identity and available documentation", "Follow institutional research procedures"],
+    faqs: [{ question: "Is this equivalent to pharmaceutical Cerebrolysin?", answer: "No equivalence has been established. This supplier-labelled 60 mg research vial must not be treated as the pharmaceutical preparation used in clinical studies." }],
+    inStock: true,
+  },
+
 ];
 
 

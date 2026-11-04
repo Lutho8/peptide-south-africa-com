@@ -12,10 +12,10 @@ describe("shop catalog categories", () => {
     expect(slugs).toEqual(["kpv"]);
   });
 
-  it("Wellness & Longevity contains only stocked MOTS-C, KLOW and SS-31", () => {
+  it("Wellness & Longevity includes the DUSK collection alongside existing longevity products", () => {
     const slugs = getProductsByCategory("Wellness & Longevity").map((p) => p.slug);
     expect(slugs).toEqual(
-      ["mots-c", "klow80", "ss-31"],
+      ["mots-c", "klow80", "ss-31", "pinealon", "epitalon", "selank", "semax", "cerebrolysin"],
     );
   });
 });

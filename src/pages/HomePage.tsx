@@ -97,6 +97,12 @@ export default function HomePage() {
         shopHref="/shop?category=Longevity"
         accent="longevity"
       />
+      <section className="bg-[#041b36] text-[#ffffff]">
+        <div className="container flex flex-col gap-6 px-6 py-14 md:flex-row md:items-center md:justify-between">
+          <div><p className="text-xs uppercase tracking-[.25em] text-[#55c8be]">New · Wellness &amp; Longevity</p><h2 className="mt-3 font-display text-4xl">Meet DUSK.</h2><p className="mt-3 max-w-xl text-[#c7dedf]">A personal question about rest. An honest look at the research. Five compounds to explore.</p></div>
+          <Link to="/dusk" className="inline-flex items-center gap-3 self-start rounded-full bg-[#55c8be] px-7 py-4 font-semibold text-[#041b36]">Discover the collection <ArrowRight size={18} /></Link>
+        </div>
+      </section>
       <CategoryShowcase
         eyebrow="Recovery"
         title="Repair and recovery pathway research."

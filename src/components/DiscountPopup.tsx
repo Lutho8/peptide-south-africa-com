@@ -11,6 +11,7 @@ export default function DiscountPopup() {
 
   useEffect(() => {
     const suppressed = [
+      "/dusk",
       "/checkout",
       "/cart",
       "/account",

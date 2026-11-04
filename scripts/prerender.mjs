@@ -28,6 +28,7 @@ const TMP = resolve(".ssr-tmp");
 const staticRoutes = [
   "/",
   "/shop",
+  "/dusk",
   "/build-your-stack",
   "/blog",
   "/editorial-policy",

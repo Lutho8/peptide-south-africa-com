@@ -26,6 +26,7 @@ interface BlogEntry {
 }
 
 const staticEntries: SitemapEntry[] = [
+  { path: "/dusk", lastmod: "2026-11-04", changefreq: "monthly", priority: "0.9" },
   { path: "/", changefreq: "daily", priority: "1.0" },
   { path: "/shop", changefreq: "daily", priority: "0.9" },
   { path: "/build-your-stack", changefreq: "weekly", priority: "0.85" },

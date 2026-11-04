@@ -23,6 +23,7 @@ import PartnerReferralConsent from "@/components/PartnerReferralConsent";
 
 // Every route is a separate client chunk. Build-time rendering waits for all
 // lazy modules before writing complete SEO HTML for public routes.
+const DuskCollectionPage = lazy(() => import("@/pages/DuskCollectionPage"));
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ShopPage = lazy(() => import("@/pages/ShopPage"));
 const BuildYourStackPage = lazy(() => import("@/pages/BuildYourStackPage"));
@@ -103,6 +104,7 @@ export default function AppShell() {
               <Suspense fallback={<RouteLoadingFallback />}>
                 <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/dusk" element={<DuskCollectionPage />} />
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/build-your-stack" element={<BuildYourStackPage />} />
                 <Route path="/5-pack" element={<BuildYourStackPage />} />

@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://www.peptide-south-africa.com/dusk</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/dusk" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/dusk" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/dusk" />
+  </url>
+  <url>
     <loc>https://www.peptide-south-africa.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -256,6 +265,46 @@
     <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
     <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/bpc-tb500-blend" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/selank</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/selank" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/selank" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/selank" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/semax</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/semax" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/semax" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/semax" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/cerebrolysin</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/cerebrolysin" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/cerebrolysin" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/cerebrolysin" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/epitalon</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/epitalon" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/epitalon" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/epitalon" />
+  </url>
+  <url>
+    <loc>https://www.peptide-south-africa.com/product/pinealon</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.peptide-south-africa.com/product/pinealon" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.peptide-south-africa.com/product/pinealon" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.peptide-south-africa.com/product/pinealon" />
   </url>
   <url>
     <loc>https://www.peptide-south-africa.com/product/bac-water-bacteriostatic</loc>
