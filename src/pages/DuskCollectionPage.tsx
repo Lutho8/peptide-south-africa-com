@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowDown, ArrowRight, Moon, Plus, BookOpen, MessageCircle, Expand } from "lucide-react";
 import SEO from "@/components/SEO";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -33,6 +33,7 @@ const faqs = [
 export function DuskProductCard({product,topic,note,label}:{product:Product;topic:string;note:string;label:string}) {
   const [selectedPack,setSelectedPack]=useState<1|3|5>(3);
   const {addToCart}=useCart();
+  const navigate=useNavigate();
   const {frame,bar,dot}=vialFrame("md");
   const selected=product.variants!.find(variant=>variant.pack===selectedPack)!;
   const savings=product.price*selectedPack-selected.price;
@@ -45,8 +46,9 @@ export function DuskProductCard({product,topic,note,label}:{product:Product;topi
         {([3,5,1] as const).map(pack=>{const variant=product.variants!.find(v=>v.pack===pack)!;return <button key={pack} type="button" aria-pressed={selectedPack===pack} onClick={()=>setSelectedPack(pack)} aria-label={`${product.name} ${variant.label}`}><span><strong>{variant.label}</strong><small>{pack===3?"Recommended · 15% off":pack===5?"Best value · 20% off":"One vial"}</small></span><b>{money(variant.price)}</b></button>;})}
       </div>
       <p className="dusk-price" aria-live="polite">{money(selected.price)}<span> / {selected.label}</span></p>
-      <p className="dusk-pack-saving">{savings>0 ? `Save ${money(savings)} · ${selectedPack} vials, ${product.strength} per vial` : `1 vial · ${product.strength} per vial`}</p>
-      <button type="button" className="dusk-button" onClick={()=>addToCart(product,{variantLabel:selected.label,unitPrice:selected.price})} aria-label={`Add ${product.name} ${selected.label} to cart`}>Add {selected.label} <Plus size={17}/></button><Link className="dusk-detail-link" to={`/product/${product.slug}`}>View product details <ArrowRight size={14}/></Link><p className="dusk-documentation">Matching-strength documentation pending</p>
+      <p className="dusk-pack-saving">{savings>0 ? `Save ${money(savings)} · R${(selected.price/selectedPack).toFixed(2)} per vial · ${product.strength} each` : `1 vial · ${product.strength} per vial`}</p>
+      <p className="dusk-delivery">{selected.price>=1500 ? 'Free delivery included' : `Delivery R89 · Total ${money(selected.price+89)}`} · EFT payment</p>
+      <button type="button" className="dusk-button" onClick={()=>addToCart(product,{variantLabel:selected.label,unitPrice:selected.price})} aria-label={`Add ${product.name} ${selected.label} to cart`}>Add {selected.label} <Plus size={17}/></button><button type="button" className="dusk-buy-now" onClick={()=>{addToCart(product,{variantLabel:selected.label,unitPrice:selected.price,silent:true});navigate('/checkout');}}>Buy {selected.label} now <ArrowRight size={16}/></button><Link className="dusk-detail-link" to={`/product/${product.slug}`}>View product details <ArrowRight size={14}/></Link><p className="dusk-documentation">Matching-strength documentation pending</p>
     </div>
   </article>;
 }
@@ -64,13 +66,19 @@ export default function DuskCollectionPage() {
           <p className="dusk-wordmark">DUSK</p>
           <h1>The day slows down.<br /><em>The questions begin.</em></h1>
           <p className="dusk-intro">What connects stress, our internal clock and the way we rest? A personal question became a closer look at peptide research.</p>
-          <div className="dusk-actions"><a className="dusk-button" href="#collection">Explore the collection <ArrowRight size={18} /></a><a className="dusk-text-link" href="#story">Read the story <ArrowDown size={16} /></a></div>
+          <div className="dusk-actions"><a className="dusk-button" href="#collection">Choose your pack <ArrowRight size={18} /></a><a className="dusk-text-link" href="#story">Read the story <ArrowDown size={16} /></a></div>
           <p className="dusk-small dusk-hero-notice">Five separate research products. 3-packs save 15%; 5-packs save 20%.<br />Laboratory research only · not for human use.</p>
         </div>
         <div className="dusk-orbit" aria-hidden="true"><div className="dusk-orbit-ring" /><div className="dusk-moon" /><span className="dusk-orbit-label">A different perspective<br />on the evening.</span><span className="dusk-orbit-foot">CURIOSITY MEETS RESEARCH / 01</span></div>
       </div>
     </section>
-    <div className="dusk-index"><div className="dusk-wrap"><a href="#story">01 / The story</a><a href="#research">02 / The evidence</a><a href="#charts">03 / The charts</a><a href="#collection">04 / The collection</a></div></div>
+    <div className="dusk-index"><div className="dusk-wrap"><a href="#collection">01 / Shop DUSK</a><a href="#story">02 / The story</a><a href="#research">03 / The evidence</a><a href="#charts">04 / The charts</a></div></div>
+    <section id="collection" className="dusk-shop dusk-section"><div className="dusk-wrap">
+      <div className="dusk-section-head"><div><p className="dusk-eyebrow">Meet the DUSK Collection</p><h2>One collection.<br /><em>Five lines of enquiry.</em></h2></div><p>Separate vials. Clear strengths. Choose a recommended 3-pack, a 5-pack for the best price per vial, or a single vial. No premixed DUSK blend is offered.</p></div>
+      <div className="dusk-products">{collection.map(item=>{const product=getProductBySlug(item.slug);return product ? <DuskProductCard key={item.slug} product={product} topic={item.topic} note={item.note} label={item.label} /> : null;})}</div>
+      <div className="dusk-mix"><div><p className="dusk-eyebrow">Your research, your selection</p><h3>Prefer a mixed 5-pack?</h3><p>Choose five eligible vials across the catalogue and save 20% with the existing Pick &amp; Mix offer.</p></div><Link className="dusk-button" to="/build-your-stack">Build your 5-pack <ArrowRight size={17}/></Link></div>
+      <p className="dusk-shop-foot">Prices include VAT. BAC water sold separately. Delivery R89 below R1,500; free from R1,500 after discounts and paid add-ons. Research use only.</p>
+    </div></section>
     <section id="story" className="dusk-wrap dusk-section dusk-story">
       <div><p className="dusk-eyebrow">A note from Lutho / Founder</p><h2>A personal question.<br /><em>A closer look<br />at rest.</em></h2></div>
       <div className="dusk-prose"><p>“I started paying closer attention to my sleep. Over three months of personal tracking, I found myself asking what happens before the night begins — and how daytime stress follows us into it.”</p><p>That curiosity became DUSK: a collection shaped by reading about circadian rhythms, stress signalling and neural resilience.</p><p>“My hypothesis centres on the transition into sleep. Could that window help us understand what follows? It is a question I’m exploring, not a result I can promise.”</p><p className="dusk-signature">Lutho <span>Founder, Peptide South Africa</span></p><div className="dusk-note">Every person is different. Personal tracking and blood markers need clinical context; they cannot establish a safe peptide dose or prove a treatment works.</div></div>
@@ -89,13 +97,8 @@ export default function DuskCollectionPage() {
       <figure className="dusk-chart"><button type="button" className="dusk-chart-image" onClick={()=>setEnlarged(true)} aria-label={`Enlarge ${chart.title}`}><img src={chart.src} width="2048" height="1374" loading="lazy" alt={`${chart.title}: founder-supplied, unvalidated research hypothesis chart`} /><span><Expand size={16} /> View full size</span></button><figcaption><BookOpen size={21} /><p>{chart.caption}</p></figcaption></figure>
       <Dialog open={enlarged} onOpenChange={setEnlarged}><DialogContent className="max-h-[95vh] max-w-[96vw] overflow-auto"><DialogTitle>{chart.title} — unvalidated founder model</DialogTitle><img src={chart.src} alt={`${chart.title} full-size research hypothesis`} /><p className="text-sm">{chart.caption}</p></DialogContent></Dialog>
     </section>
-    <section id="collection" className="dusk-shop dusk-section"><div className="dusk-wrap">
-      <div className="dusk-section-head"><div><p className="dusk-eyebrow">Meet the DUSK Collection</p><h2>One collection.<br /><em>Five lines of enquiry.</em></h2></div><p>Separate vials. Clear strengths. Choose a recommended 3-pack, a 5-pack for the best price per vial, or a single vial. No premixed DUSK blend is offered.</p></div>
-      <div className="dusk-products">{collection.map(item=>{const product=getProductBySlug(item.slug);return product ? <DuskProductCard key={item.slug} product={product} topic={item.topic} note={item.note} label={item.label} /> : null;})}</div>
-      <div className="dusk-mix"><div><p className="dusk-eyebrow">Your research, your selection</p><h3>Prefer a mixed 5-pack?</h3><p>Choose five eligible vials across the catalogue and save 20% with the existing Pick &amp; Mix offer.</p></div><Link className="dusk-button" to="/build-your-stack">Build your 5-pack <ArrowRight size={17}/></Link></div>
-      <p className="dusk-shop-foot">Prices include VAT. BAC water sold separately. Delivery R89 below R1,500; free from R1,500 after discounts and paid add-ons. Research use only.</p>
-    </div></section>
     <section className="dusk-wrap dusk-section dusk-faq"><div><p className="dusk-eyebrow">A clearer starting point</p><h2>Good questions<br /><em>come first.</em></h2><a className="dusk-whatsapp" href="https://wa.me/27721242377?text=Hi%20Lutho%2C%20I%27m%20exploring%20the%20DUSK%20Collection.%20Can%20you%20help%20with%20product%20and%20batch%20documentation%3F" target="_blank" rel="noreferrer"><MessageCircle size={20}/> Ask about the collection <ArrowRight size={17}/></a></div><div>{faqs.map(([question,answer])=><details key={question}><summary>{question}<Plus size={18}/></summary><p>{answer}</p></details>)}</div></section>
+    <div className="dusk-mobile-shop"><a href="#collection">Choose your DUSK pack <ArrowRight size={17}/></a><span>3-pack saves 15% · 5-pack saves 20%</span></div>
     <section className="dusk-closing"><div className="dusk-wrap"><Moon size={32}/><h2>Stay curious.<br /><em>Follow the evidence.</em></h2><p>DUSK begins with a question. Explore the research, understand its limits and review the product records.</p><a href="#collection" className="dusk-button">Explore DUSK <ArrowRight size={18}/></a><p className="dusk-small">Not medical advice. Supplied for lawful laboratory research only.<br />Not for human use or consumption.</p></div></section>
   </div>;
 }

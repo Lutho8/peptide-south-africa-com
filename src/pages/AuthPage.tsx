@@ -11,7 +11,10 @@ export default function AuthPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [params] = useSearchParams();
-  const redirect = params.get("redirect") || "/";
+  const requestedRedirect = params.get("redirect") || params.get("next") || "/";
+  const redirect = requestedRedirect.startsWith("/") && !requestedRedirect.startsWith("//") && !requestedRedirect.includes("\\") ? requestedRedirect : "/";
+  const checkout = redirect === "/checkout";
+  const [confirmationSent, setConfirmationSent] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,13 +29,18 @@ export default function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}${redirect}` },
         });
         if (error) throw error;
-        toast({ title: "Welcome!", description: "Account created — your free Peptide Tracker is ready." });
+        if (!data.session) {
+          setConfirmationSent(true);
+          toast({ title: "Check your email", description: "Confirm your email to continue. Your cart is saved in this browser." });
+          return;
+        }
+        toast({ title: "Account ready", description: checkout ? "Continue to your saved checkout." : "Welcome to Peptide South Africa." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -55,7 +63,7 @@ export default function AuthPage() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth` },
+        options: { redirectTo: `${window.location.origin}/auth?redirect=${encodeURIComponent(redirect)}` },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
@@ -76,14 +84,15 @@ export default function AuthPage() {
       <div className="container flex min-h-[80vh] items-center justify-center py-12">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
         <h1 className="font-display text-2xl font-bold text-foreground">
-          {mode === "signin" ? "Sign in" : "Create your account"}
+          {checkout ? "Continue to checkout" : mode === "signin" ? "Sign in" : "Create your account"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {mode === "signup"
+          {checkout ? "Sign in or create an account to track your order. Your cart stays saved." : mode === "signup"
             ? "Create an account to reorder, manage subscriptions, open published source reports and start your free Peptide Tracker."
             : "Welcome back. Your orders, subscriptions, COAs and free Peptide Tracker are waiting."}
         </p>
 
+        {confirmationSent && <p role="status" className="mt-4 rounded-lg bg-primary/10 p-4 text-sm">Check your inbox for a confirmation link, then return here. Your cart is saved. Already confirmed? Sign in below.</p>}
         <button
           onClick={handleGoogle}
           disabled={busy}
@@ -138,7 +147,7 @@ export default function AuthPage() {
         </button>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          <Link to="/" className="hover:underline">← Back to shop</Link>
+          <Link to={checkout ? "/cart" : "/shop"} className="hover:underline">{checkout ? "← Back to your cart" : "← Back to shop"}</Link>
         </p>
       </div>
     </div>

@@ -1,9 +1,12 @@
+import { validateDelivery } from "./_shared/delivery.js";
 import { resolvePartnerAttribution } from "./_shared/partnerAttribution.js";
-import { CATALOG_VERSION, validateStorefrontRequest } from "../supabase/functions/_shared/catalog-release.ts";
+import { CATALOG_VERSION, validateStorefrontRequest, liveListing, BAC_SLUG } from "../supabase/functions/_shared/catalog-release.ts";
 import { createClient } from "@supabase/supabase-js";
 import {
   PRICING,
   quoteCheckout,
+  variantPrice,
+  quoteMixSlugs,
   type CheckoutSelection,
 } from "../supabase/functions/_shared/pricing.js";
 import {
@@ -54,6 +57,7 @@ export default async function handler(request: Request): Promise<Response> {
       email?: unknown;
       consent?: unknown;
       partnerCode?: unknown;
+      delivery?: unknown;
     } | null;
     try { validateStorefrontRequest((body ?? {}) as Record<string, unknown>); } catch (error) {
       return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409);
@@ -65,6 +69,9 @@ export default async function handler(request: Request): Promise<Response> {
     if (typeof body?.email !== "string" || !body.email.trim()) {
       return json({ error: "Email is required.", code: "BAD_REQUEST" }, 400);
     }
+    let delivery;
+    try { delivery = validateDelivery(body.delivery); }
+    catch (error) { return json({error: error instanceof Error ? error.message : 'Check your delivery address.', code: 'INVALID_DELIVERY'}, 400); }
     const consent = body?.consent;
     if (!isValidCheckoutConsent(consent)) {
       return json({
@@ -98,6 +105,12 @@ export default async function handler(request: Request): Promise<Response> {
     }
     const orderPayload = {
       user_id: userData.user.id,
+      customer_name: [body.firstName, body.lastName].filter(v => typeof v === 'string').join(' ').trim().slice(0,160),
+      customer_email: body.email.trim().toLowerCase(),
+      shipping_address: delivery,
+      order_items: body.selections.map(selection => selection.kind === 'item'
+        ? { kind: 'item', slug: selection.slug, sku: liveListing(selection.slug)?.sku, name: liveListing(selection.slug)?.name ?? selection.slug, variantLabel: selection.variantLabel ?? null, quantity: selection.quantity, unit_price: variantPrice(selection.slug, selection.variantLabel), is_accessory: selection.slug === BAC_SLUG }
+        : { kind: 'mix_bundle', size: selection.size, slugs: selection.slugs, name: '5-Pack Pick & Mix', quantity: selection.quantity ?? 1, unit_price: quoteMixSlugs(selection.slugs, selection.size).total, is_accessory: false }),
       checkout_request_id: requestId,
       total: quote.total,
       discount_code: null,
@@ -114,7 +127,7 @@ export default async function handler(request: Request): Promise<Response> {
 
     let { data: order, error: orderError } = await admin
       .from("orders")
-      .select("id, user_id, total, currency, order_description")
+      .select("id, user_id, total, currency, order_description, shipping_address")
       .eq("checkout_request_id", requestId)
       .maybeSingle();
 
@@ -122,14 +135,14 @@ export default async function handler(request: Request): Promise<Response> {
       const inserted = await admin
         .from("orders")
         .insert(orderPayload)
-        .select("id, user_id, total, currency, order_description")
+        .select("id, user_id, total, currency, order_description, shipping_address")
         .single();
       order = inserted.data;
       orderError = inserted.error;
       if (orderError?.code === "23505") {
         const raced = await admin
           .from("orders")
-          .select("id, user_id, total, currency, order_description")
+          .select("id, user_id, total, currency, order_description, shipping_address")
           .eq("checkout_request_id", requestId)
           .maybeSingle();
         order = raced.data;
@@ -146,7 +159,8 @@ export default async function handler(request: Request): Promise<Response> {
       && String(order.currency).toUpperCase() === PRICING.currency
       && Math.abs(Number(order.total) - quote.total) <= 0.01
       && String(order.order_description ?? "") === quote.description;
-    if (!requestMatches) {
+    const addressMatches = Object.entries(delivery).every(([key,value]) => order.shipping_address?.[key] === value);
+    if (!requestMatches || !addressMatches) {
       return json({ error: "Checkout request conflicts with an earlier cart.", code: "ORDER_CONFLICT" }, 409);
     }
 

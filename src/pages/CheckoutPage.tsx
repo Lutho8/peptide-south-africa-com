@@ -4,7 +4,6 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Lock, Loader2, Landmark } from "lucide-react";
 import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
-import PackSuppliesRail from "@/components/PackSuppliesRail";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -18,7 +17,6 @@ import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/li
 import {
   CHECKOUT_CONSENT_STATEMENTS,
   CHECKOUT_POLICY_VERSION,
-  REPORT_SCOPE_VERSION,
 } from "../../supabase/functions/_shared/checkout-consent";
 import {
   CHECKOUT_FORM_KEY as FORM_KEY,
@@ -108,6 +106,11 @@ export default function CheckoutPage() {
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({ title: "Sign in to finish", description: "One quick step before payment.", variant: "destructive" });
+      navigate("/auth?redirect=/checkout");
+      return;
+    }
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
@@ -117,11 +120,6 @@ export default function CheckoutPage() {
         el?.focus();
         el?.scrollIntoView({ behavior: "smooth", block: "center" });
       });
-      return;
-    }
-    if (!user) {
-      toast({ title: "Sign in to finish", description: "One quick step before payment.", variant: "destructive" });
-      navigate("/auth?next=/checkout");
       return;
     }
     setBusy(true);
@@ -134,8 +132,9 @@ export default function CheckoutPage() {
       } catch {
         /* storage unavailable */
       }
-      await refreshOrders();
-      await supabase.from("cart_snapshots").delete().eq("user_id", user.id);
+      // Order success must not depend on account refresh or cart cleanup.
+      void refreshOrders().catch(() => {});
+      void Promise.resolve(supabase.from("cart_snapshots").delete().eq("user_id", user.id)).catch(() => {});
       clearCart();
       navigate("/checkout/eft-instructions", { state });
     } catch (err) {
@@ -170,14 +169,15 @@ export default function CheckoutPage() {
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-bold text-foreground">Almost there</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Four clear steps to place your research order from Cape Town.
+            Review your details, place your order, then pay by EFT using your unique reference.
           </p>
         </div>
 
+        {!user && <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5"><div><h2 className="font-semibold">Sign in to continue</h2><p className="mt-1 text-sm text-muted-foreground">Your cart and any details you enter here stay saved.</p></div><Link className="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground" to="/auth?redirect=/checkout">Sign in / create account</Link></div>}
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
             <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
-              <label className="text-sm">Partner code (optional)<input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className="mt-2 block w-full rounded border p-3" /><span className="text-xs text-muted-foreground">Identifies your referring partner; it does not apply a discount.</span></label>
+              <details><summary className="cursor-pointer text-sm text-muted-foreground">Have a partner code?</summary><label className="mt-3 block text-sm">Partner code (optional)<input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className="mt-2 block w-full rounded border p-3" /><span className="text-xs text-muted-foreground">Identifies your referring partner; it does not apply a discount.</span></label></details>
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="font-display text-base font-semibold text-foreground">
                   1. Where should we send your confirmation?
@@ -231,7 +231,7 @@ export default function CheckoutPage() {
                       onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
                     {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
                   </div>
-                  <p className="text-xs text-muted-foreground">Delivered across South Africa in 1–3 business days.</p>
+                  <p className="text-xs text-muted-foreground">Delivery across South Africa. Dispatch follows payment verification; delivery timing depends on your location.</p>
                 </div>
               </section>
 
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
                   3. Research purchase acknowledgement
                 </h2>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Confirm the combined statement below. We save an immutable receipt with the policy version, full statement text and acceptance time against your order.
+                  Please confirm these purchase terms to continue. Marketing updates are optional.
                 </p>
                 <div className="mt-4 space-y-3">
                   <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-background p-3.5">
@@ -279,9 +279,7 @@ export default function CheckoutPage() {
                     <span className="text-xs leading-relaxed text-foreground">{CHECKOUT_CONSENT_STATEMENTS.marketing}</span>
                   </label>
                 </div>
-                <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-                  Terms {CHECKOUT_POLICY_VERSION} · report scope {REPORT_SCOPE_VERSION}
-                </p>
+
               </section>
 
               <section className="rounded-lg border border-border bg-card p-6">
@@ -304,12 +302,12 @@ export default function CheckoutPage() {
                 </p>
               </section>
 
-              <button type="submit" disabled={busy}
+              <button type={user ? "submit" : "button"} onClick={!user ? () => navigate("/auth?redirect=/checkout") : undefined} disabled={busy}
                 className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 data-testid="pay-now-button">
                 {busy
                   ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
-                  : (<><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
+                  : (<><Landmark className="h-4 w-4" /> {user ? "Place order — get EFT details" : "Sign in to continue"} · {formatZAR(shippingMath.grandTotal)}</>)}
               </button>
               <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                 <Lock className="h-3.5 w-3.5" /> Secure checkout · EFT bank transfer · ZAR
@@ -340,7 +338,7 @@ export default function CheckoutPage() {
               <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
                 {specialOffer > 0 && (
                   <div className="flex justify-between font-semibold text-destructive">
-                    <span>Special Offer</span><span>−{formatZAR(specialOffer)}</span>
+                    <span>Pack savings (included)</span><span>{formatZAR(specialOffer)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-muted-foreground">
@@ -357,17 +355,17 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-            <PackSuppliesRail />
+
           </aside>
         </div>
 
         {/* Mobile sticky pay bar */}
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-          <button type="submit" form="checkout-form" disabled={busy}
+          <button type={user ? "submit" : "button"} form="checkout-form" onClick={!user ? () => navigate("/auth?redirect=/checkout") : undefined} disabled={busy}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
             {busy
               ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
-              : (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
+              : (<>{user ? "Place order — get EFT details" : "Sign in to continue"} · {formatZAR(shippingMath.grandTotal)}</>)}
           </button>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
             <Lock className="h-3 w-3" /> Secure checkout · EFT bank transfer · ZAR

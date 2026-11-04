@@ -16,6 +16,8 @@ describe("DUSK pack purchasing",()=>{
     expect(screen.getByRole("button",{name:"Selank 10 mg 5-Pack"})).toHaveAttribute("aria-pressed","true");
     fireEvent.click(screen.getByRole("button",{name:"Add Selank 10 mg 5-Pack to cart"}));
     expect(addToCart).toHaveBeenLastCalledWith(product,{variantLabel:"5-Pack",unitPrice:3196});
+    fireEvent.click(screen.getByRole("button",{name:"Buy 5-Pack now"}));
+    expect(addToCart).toHaveBeenLastCalledWith(product,{variantLabel:"5-Pack",unitPrice:3196,silent:true});
     fireEvent.click(screen.getByRole("button",{name:"Selank 10 mg Single Vial"}));
     fireEvent.click(screen.getByRole("button",{name:"Add Selank 10 mg Single Vial to cart"}));
     expect(addToCart).toHaveBeenLastCalledWith(product,{variantLabel:"Single Vial",unitPrice:799});

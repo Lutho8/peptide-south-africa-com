@@ -135,6 +135,7 @@ export function getOrCreateEftRequestId(selections: CheckoutSelection[], form: C
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),
     },
+    delivery: { address_line_1: form.address1.trim(), city: form.city.trim(), province: form.region.trim(), postal_code: form.postalCode.trim() },
     consent: {
       policyVersion: CHECKOUT_POLICY_VERSION,
       reportScopeVersion: REPORT_SCOPE_VERSION,
@@ -205,6 +206,7 @@ export async function startEftCheckout({
       lastName: form.lastName,
       email: form.email,
       partnerCode,
+      delivery: { address_line_1: form.address1.trim(), city: form.city.trim(), province: form.region.trim(), postal_code: form.postalCode.trim() },
       consent: {
         researchPurchaseAcknowledged: form.researchPurchaseAcknowledged,
         marketingConsent: form.marketingConsent,

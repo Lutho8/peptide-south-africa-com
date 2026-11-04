@@ -66,6 +66,12 @@ describe("research checkout consent", () => {
     expect(edgeSource).not.toContain("req.headers.get('apikey') !== serviceRoleKey");
   });
 
+  it("uses a new request when delivery changes", () => {
+    const selections = [{ kind: "item" as const, slug: "selank", variantLabel: "3-Pack", quantity: 1 }];
+    const initial = getOrCreateEftRequestId(selections, completeForm);
+    expect(getOrCreateEftRequestId(selections, {...completeForm, address1: "2 Laboratory Road"})).not.toBe(initial);
+  });
+
   it("uses a new idempotency key when the optional marketing choice changes", () => {
     const selections = [{ kind: "item" as const, slug: "bpc-157", variantLabel: null, quantity: 1 }];
     const initial = getOrCreateEftRequestId(selections, completeForm);
