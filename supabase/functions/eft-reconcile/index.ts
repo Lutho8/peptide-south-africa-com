@@ -158,42 +158,14 @@ Deno.serve(async (req) => {
 
       // ── Match: settle the order ─────────────────────────────────────────
       const now = new Date().toISOString();
-      const { data: settledOrder, error: updErr } = await supabase
-        .from('psa_orders')
-        .update({ payment_status: 'complete', payment_settled_at: now })
-        .eq('order_id', order.order_id)
-        .eq('payment_status', 'awaiting_eft')
-        .select('order_id')
-        .maybeSingle(); // guard against double-settle
-
-      if (updErr || !settledOrder) {
-        console.error('psa_orders settle failed:', updErr?.message ?? 'order was already settled');
-        summary.errors.push(`settlement: ${updErr?.message ?? 'order was already settled'}`);
+      const { data: settled, error: settleError } = await supabase.rpc('settle_eft_order_atomic', {
+        p_order_id: order.order_id, p_deposit_id: dep.id,
+      });
+      if (settleError || settled !== true) {
+        console.error('Atomic EFT settlement failed:', settleError?.message ?? 'already settled or no longer matches');
+        summary.errors.push(`settlement: ${settleError?.message ?? 'already settled or no longer matches'}`);
         summary.still_unmatched++;
         continue;
-      }
-
-      await supabase
-        .from('bank_deposits')
-        .update({ status: 'matched', matched_order_id: String(order.order_id) })
-        .eq('id', dep.id);
-
-      // Mirror the confirmed payment onto the storefront's own orders row
-      // (order_id carries the same UUID as orders.id — see eft-create-order),
-      // which drives OrderStatusPage and the customer_profiles/retention
-      // triggers that key off orders.status = 'paid'.
-      const { error: ordersUpdateErr } = await supabase
-        .from('orders')
-        .update({ status: 'paid', paid_at: now })
-        .eq('id', order.order_id)
-        .eq('status', 'pending');
-      if (ordersUpdateErr) {
-        console.error('orders payment-status sync failed:', ordersUpdateErr.message);
-        await supabase.from('integration_logs').insert({
-          integration: 'eft', action: 'reconcile',
-          status: 'orders_status_sync_failed',
-          payload: { orderId: order.order_id, error: ordersUpdateErr.message },
-        });
       }
 
       // Secret-authenticated synthetic payment smoke tests exercise the full

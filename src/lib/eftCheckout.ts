@@ -30,6 +30,7 @@ export type EftInstructionsState = {
   amount: number;
   paymentReference: string;
   bank: EftBankDetails;
+  trackingUrl?: string | null;
 };
 
 export const emptyCheckoutForm: CheckoutForm = {
@@ -191,11 +192,10 @@ export async function startEftCheckout({
 
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
-  if (!accessToken) throw new Error("Your session has expired. Please sign in again.");
   const response = await fetch("/api/eft-create-order", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -228,6 +228,7 @@ export async function startEftCheckout({
     amount: data.amount,
     paymentReference: data.payment_reference,
     bank: data.bank,
+    trackingUrl: data.tracking_url ?? null,
   };
 }
 

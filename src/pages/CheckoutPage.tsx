@@ -106,11 +106,6 @@ export default function CheckoutPage() {
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast({ title: "Sign in to finish", description: "One quick step before payment.", variant: "destructive" });
-      navigate("/auth?redirect=/checkout");
-      return;
-    }
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
@@ -133,8 +128,10 @@ export default function CheckoutPage() {
         /* storage unavailable */
       }
       // Order success must not depend on account refresh or cart cleanup.
-      void refreshOrders().catch(() => {});
-      void Promise.resolve(supabase.from("cart_snapshots").delete().eq("user_id", user.id)).catch(() => {});
+      if (user) {
+        void refreshOrders().catch(() => {});
+        void Promise.resolve(supabase.from("cart_snapshots").delete().eq("user_id", user.id)).catch(() => {});
+      }
       clearCart();
       navigate("/checkout/eft-instructions", { state });
     } catch (err) {
@@ -173,7 +170,7 @@ export default function CheckoutPage() {
           </p>
         </div>
 
-        {!user && <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5"><div><h2 className="font-semibold">Sign in to continue</h2><p className="mt-1 text-sm text-muted-foreground">Your cart and any details you enter here stay saved.</p></div><Link className="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground" to="/auth?redirect=/checkout">Sign in / create account</Link></div>}
+        {!user && <p className="mb-6 text-sm text-muted-foreground">Checking out as a guest. Already have an account? <Link className="text-primary underline" to="/auth?redirect=/checkout">Sign in</Link></p>}
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
             <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
@@ -302,12 +299,12 @@ export default function CheckoutPage() {
                 </p>
               </section>
 
-              <button type={user ? "submit" : "button"} onClick={!user ? () => navigate("/auth?redirect=/checkout") : undefined} disabled={busy}
+              <button type="submit" disabled={busy}
                 className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 data-testid="pay-now-button">
                 {busy
                   ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
-                  : (<><Landmark className="h-4 w-4" /> {user ? "Place order — get EFT details" : "Sign in to continue"} · {formatZAR(shippingMath.grandTotal)}</>)}
+                  : (<><Landmark className="h-4 w-4" /> Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
               </button>
               <p className="hidden lg:flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                 <Lock className="h-3.5 w-3.5" /> Secure checkout · EFT bank transfer · ZAR
@@ -361,11 +358,11 @@ export default function CheckoutPage() {
 
         {/* Mobile sticky pay bar */}
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-          <button type={user ? "submit" : "button"} form="checkout-form" onClick={!user ? () => navigate("/auth?redirect=/checkout") : undefined} disabled={busy}
+          <button type="submit" form="checkout-form" disabled={busy}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
             {busy
               ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
-              : (<>{user ? "Place order — get EFT details" : "Sign in to continue"} · {formatZAR(shippingMath.grandTotal)}</>)}
+              : (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
           </button>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
             <Lock className="h-3 w-3" /> Secure checkout · EFT bank transfer · ZAR

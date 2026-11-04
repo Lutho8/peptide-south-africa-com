@@ -1,75 +1,17 @@
-import { useState } from "react";
-import { Package, Search } from "lucide-react";
-import SEO from "@/components/SEO";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import SEO from '@/components/SEO';
 
+type Result = {status:string;total:number;currency:string};
 export default function TrackOrderPage() {
-  const [orderId, setOrderId] = useState("");
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-
-  return (
-    <>
-      <SEO title="Track Your Order — Peptide South Africa" description="Track your peptide order. Same-day dispatch in South Africa (before 14:00 SAST) · 1–3 business days nationwide." path="/track-order" />
-      <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Track Order", href: "/track-order" }]} />
-      <div className="container py-16">
-      <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Package className="h-8 w-8" />
-        </div>
-        <h1 className="font-display text-3xl font-bold text-foreground">Track Your Order</h1>
-        <p className="mt-2 text-muted-foreground">
-          Enter your order details below to check the status of your shipment.
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4 text-left">
-          <div>
-            <label htmlFor="orderId" className="block text-sm font-medium text-foreground">Order ID</label>
-            <input
-              id="orderId"
-              type="text"
-              value={orderId}
-              onChange={(e) => setOrderId(e.target.value)}
-              placeholder="e.g. RTT-20260321-001"
-              required
-              className="mt-1 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="The email used for your order"
-              required
-              className="mt-1 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <button
-            type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-semibold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-95"
-          >
-            <Search className="h-4 w-4" /> Track Order
-          </button>
-        </form>
-
-        {submitted && (
-          <div className="mt-8 rounded-lg border border-border bg-card p-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              No order found with those details. Please double-check your Order ID and email address, or contact us at{" "}
-              <a href="mailto:support@peptide-south-africa.com" className="text-primary hover:underline">support@peptide-south-africa.com</a>.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-    </>
-  );
+ const [result,setResult]=useState<Result|null>(null);
+ const [message,setMessage]=useState('Checking your order…');
+ useEffect(()=>{
+   const token=window.location.hash.slice(1);
+   if (!token) {setMessage('Open the secure tracking link in your order confirmation email. If you need help, contact us.');return;}
+   fetch('/api/guest-order-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token}),referrerPolicy:'no-referrer'})
+    .then(async r=>{const data=await r.json();if(!r.ok) throw new Error(data.error || 'Tracking temporarily unavailable.');setResult(data);setMessage('');})
+    .catch(e=>setMessage(e instanceof Error ? e.message : 'Tracking temporarily unavailable.'));
+ },[]);
+ return <><SEO title="Track your order" description="Check your order status" path="/track-order" noindex/><div className="container py-20"><div className="mx-auto max-w-md rounded-2xl border bg-card p-7"><h1 className="font-display text-3xl font-bold">Track your order</h1>{message && <p role="status" className="mt-5 text-muted-foreground">{message}</p>}{result && <div className="mt-5 space-y-3"><p>Order status: <strong>{result.status === 'pending' ? 'Awaiting EFT payment' : result.status}</strong></p><p>Total: <strong>R{Number(result.total).toFixed(2)}</strong></p><p className="text-sm text-muted-foreground">Payment is confirmed only after the matching deposit is verified.</p></div>}<p className="mt-6 text-sm"><a className="text-primary underline" href="mailto:support@peptide-south-africa.com">Contact support</a> · <Link className="text-primary underline" to="/shop">Continue shopping</Link></p></div></div></>;
 }

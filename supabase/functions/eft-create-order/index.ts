@@ -43,20 +43,17 @@ Deno.serve(async (req)=>{
       error: 'Your session has expired. Please sign in again.',
       code: 'AUTH_REQUIRED'
     }, 401);
-    const supabase = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_ANON_KEY'), {
-      global: {
-        headers: {
-          Authorization: authHeader
-        }
-      }
-    });
-    const token = authHeader.replace('Bearer ', '');
-    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
-    if (userErr || !userData?.user) return json({
-      error: 'Your session has expired. Please sign in again.',
-      code: 'AUTH_REQUIRED'
-    }, 401);
-    const userId = userData.user.id;
+    const body = await req.json().catch(()=>({}));
+    const guestOrder = body?.guestOrder === true;
+    let userId: string | null = null;
+    if (guestOrder) {
+      if (authHeader !== `Bearer ${serviceRoleKey}`) return json({error:'Invalid guest checkout',code:'AUTH_REQUIRED'},401);
+    } else {
+      const supabase = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_ANON_KEY'), { global: { headers: { Authorization: authHeader } } });
+      const { data: userData, error: userErr } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+      if (userErr || !userData?.user) return json({error:'Your session has expired. Please sign in again.',code:'AUTH_REQUIRED'},401);
+      userId = userData.user.id;
+    }
     const accountName = Deno.env.get('EFT_ACCOUNT_NAME');
     const accountNumber = Deno.env.get('EFT_ACCOUNT_NUMBER');
     const branchCode = Deno.env.get('EFT_BRANCH_CODE');
@@ -66,7 +63,6 @@ Deno.serve(async (req)=>{
       code: 'EFT_NOT_CONFIGURED'
       }, 503);
     }
-    const body = await req.json().catch(()=>({}));
     const { requestId, orderId: requestedOrderId, selections, firstName, lastName, email, fulfilment, partnerAttribution } = body ?? {};
     if (typeof requestId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: 'invalid checkout request', code: 'BAD_REQUEST' }, 400);
@@ -93,6 +89,7 @@ Deno.serve(async (req)=>{
     );
     let fulfilmentRow = null;
     if (petsCheckout) {
+      if (!userId) return json({error:'Please sign in for Pets checkout',code:'AUTH_REQUIRED'},401);
       try {
         fulfilmentRow = validatePetsFulfilment(fulfilment, userId, String(email));
       } catch (error) {
@@ -284,6 +281,7 @@ Deno.serve(async (req)=>{
       `Reference: ${paymentReference}`,
       ``,
       `Use the reference exactly as shown so our team can verify the matching bank deposit.`,
+      ...(guestOrder && typeof body.trackingUrl === 'string' && body.trackingUrl.startsWith('https://www.peptide-south-africa.com/track-order#') ? ['', `Track your order: ${body.trackingUrl}`] : []),
       dispatchLine,
       ``,
       `— ${storefrontName}`

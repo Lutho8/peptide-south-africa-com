@@ -1,3 +1,4 @@
+import { createGuestTrackingToken } from "./_shared/guestTracking.js";
 import { validateDelivery } from "./_shared/delivery.js";
 import { resolvePartnerAttribution } from "./_shared/partnerAttribution.js";
 import { CATALOG_VERSION, validateStorefrontRequest, liveListing, BAC_SLUG } from "../supabase/functions/_shared/catalog-release.ts";
@@ -30,22 +31,18 @@ export default async function handler(request: Request): Promise<Response> {
 
   try {
     const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return json({ error: "Your session has expired. Please sign in again.", code: "AUTH_REQUIRED" }, 401);
-    }
 
     const supabaseUrl = requiredEnv("SUPABASE_URL");
     const anonKey = requiredEnv("SUPABASE_ANON_KEY");
     const serviceRoleKey = requiredEnv("SUPABASE_SERVICE_ROLE_KEY");
     const checkoutStoreSecret = requiredEnv("CHECKOUT_STORE_SECRET");
-    const token = authHeader.slice("Bearer ".length);
-    const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data: userData, error: userError } = await authClient.auth.getUser(token);
-    if (userError || !userData.user) {
-      return json({ error: "Your session has expired. Please sign in again.", code: "AUTH_REQUIRED" }, 401);
+    let userId: string | null = null;
+    if (authHeader) {
+      if (!authHeader.startsWith("Bearer ")) return json({error:"Invalid session.",code:"AUTH_REQUIRED"},401);
+      const authClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false, autoRefreshToken: false } });
+      const {data, error} = await authClient.auth.getUser(authHeader.slice(7));
+      if (error || !data.user) return json({error:"Your session has expired. Please sign in again.",code:"AUTH_REQUIRED"},401);
+      userId = data.user.id;
     }
 
     const body = await request.json().catch(() => null) as {
@@ -97,6 +94,15 @@ export default async function handler(request: Request): Promise<Response> {
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+    if (!userId) {
+      const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+      if (!ip) return json({error:"Unable to verify checkout. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
+      const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`checkout:${checkoutStoreSecret}:${ip}`));
+      const rateKey = `checkout:${Array.from(new Uint8Array(hash)).map(v=>v.toString(16).padStart(2,"0")).join("")}`;
+      const {data:allowed,error:rateError}=await admin.rpc("bump_community_rate",{_ip_hash:rateKey,_limit:20,_window_minutes:60});
+      if (rateError || typeof allowed !== "boolean") return json({error:"Checkout temporarily unavailable. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
+      if (!allowed) return json({error:"Too many attempts. Please try again later.",code:"RATE_LIMITED"},429);
+    }
     let partnerAttribution;
     try { partnerAttribution = await resolvePartnerAttribution(admin, request, body.partnerCode); }
     catch (error) {
@@ -104,7 +110,7 @@ export default async function handler(request: Request): Promise<Response> {
       return json({ error: invalid ? "That partner code is not active. Correct it or remove it to continue." : "Partner attribution is temporarily unavailable. Please retry.", code: invalid ? "PARTNER_CODE_INVALID" : "PARTNER_UNAVAILABLE" }, invalid ? 400 : 503);
     }
     const orderPayload = {
-      user_id: userData.user.id,
+      user_id: userId,
       customer_name: [body.firstName, body.lastName].filter(v => typeof v === 'string').join(' ').trim().slice(0,160),
       customer_email: body.email.trim().toLowerCase(),
       shipping_address: delivery,
@@ -155,7 +161,7 @@ export default async function handler(request: Request): Promise<Response> {
       return json({ error: "Order could not be created. Please try again." }, 500);
     }
 
-    const requestMatches = order.user_id === userData.user.id
+    const requestMatches = order.user_id === userId
       && String(order.currency).toUpperCase() === PRICING.currency
       && Math.abs(Number(order.total) - quote.total) <= 0.01
       && String(order.order_description ?? "") === quote.description;
@@ -174,7 +180,7 @@ export default async function handler(request: Request): Promise<Response> {
       return json({ error: "Your acknowledgements could not be recorded. Please try again." }, 500);
     }
     if (existingConsent) {
-      const consentMatches = existingConsent.user_id === userData.user.id
+      const consentMatches = existingConsent.user_id === userId
         && existingConsent.policy_version === consent.policyVersion
         && existingConsent.report_scope_version === consent.reportScopeVersion
         && existingConsent.marketing_consent === consent.marketingConsent;
@@ -184,7 +190,7 @@ export default async function handler(request: Request): Promise<Response> {
     } else {
       const { error: consentInsertError } = await admin.from("checkout_consents").insert({
         order_id: order.id,
-        user_id: userData.user.id,
+        user_id: userId,
         policy_version: consent.policyVersion,
         report_scope_version: consent.reportScopeVersion,
         age_confirmed: consent.researchPurchaseAcknowledged,
@@ -204,10 +210,12 @@ export default async function handler(request: Request): Promise<Response> {
 
     // The existing settlement function remains the EFT-bank-details and email
     // boundary. It can trust this price because this server created the order.
+    const trackingToken = !userId ? await createGuestTrackingToken(order.id, serviceRoleKey) : null;
+    const trackingUrl = trackingToken ? `https://www.peptide-south-africa.com/track-order#${trackingToken}` : null;
     const settlementResponse = await fetch(`${supabaseUrl}/functions/v1/eft-create-order`, {
       method: "POST",
       headers: {
-        Authorization: authHeader,
+        Authorization: authHeader ?? `Bearer ${serviceRoleKey}`,
         apikey: serviceRoleKey,
         "x-checkout-store-secret": checkoutStoreSecret,
         "Content-Type": "application/json",
@@ -220,6 +228,8 @@ export default async function handler(request: Request): Promise<Response> {
         lastName: typeof body.lastName === "string" ? body.lastName : "",
         email: body.email,
         partnerAttribution,
+        guestOrder: !userId,
+        trackingUrl,
       }),
     });
     const settlement = await settlementResponse.json().catch(() => null) as Record<string, unknown> | null;
@@ -234,7 +244,7 @@ export default async function handler(request: Request): Promise<Response> {
     // issued, not that money has landed. Purchase fires from
     // supabase/functions/eft-reconcile once a matching bank deposit settles
     // the order.
-    return json({ ...settlement, order_id: order.id, amount: quote.total });
+    return json({ ...settlement, order_id: order.id, amount: quote.total, tracking_url: trackingUrl });
   } catch (error) {
     console.error("eft-create-order failed", error instanceof Error ? error.message : "unknown error");
     return json({ error: "Checkout is temporarily unavailable. Please try again." }, 500);

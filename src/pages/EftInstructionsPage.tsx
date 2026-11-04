@@ -237,6 +237,7 @@ export default function EftInstructionsPage() {
             </p>
           </div>
 
+          {data.trackingUrl && <p className="mt-4 text-sm text-center"><a href={data.trackingUrl} className="text-primary underline">Track this order securely</a> · Save your confirmation email to return later.</p>}
           {/* Bank details */}
           <div className="mt-6 rounded-lg border border-border bg-card p-6">
             <h2 className="font-display text-lg font-semibold text-foreground">Bank details</h2>
