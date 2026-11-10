@@ -129,8 +129,7 @@ Rollback app first; retain campaign records/audit evidence. No other campaigns
 need to be removed or rewritten to back out the new route.
 
 VERIFICATION
-Local full suite initially passed 332 tests; six additional UI tests subsequently
-passed with the DUSK API/schema tests (18 targeted tests total).
+Local full suite passed 338 tests across 46 files, including 18 DUSK tests.
 TypeScript app/API checks and scoped ESLint passed. Production build prerendered
 82/82 routes and passed the bundle budget. Static migration/AI-input checks passed.
 Synthetic local hook/body assembly succeeded and emitted SHA-256 provenance.
@@ -145,3 +144,13 @@ Dependency install reported 27 existing vulnerabilities (7 moderate,18 high,2 cr
 No packages or lockfile changed; broad dependency remediation is outside this change.
 No live admin/browser-to-API round trip or production release is claimed without
 an accessible deployment and an authorized signed-in test session.
+
+RELEASE FOLLOW-UP
+Draft PR: https://github.com/Lutho8/peptide-south-africa-com/pull/71
+The Git integration successfully created a Vercel preview for commit 600b3f7:
+https://peptide-south-africa-com-git-codex-dusk-58b7cb-lutho8s-projects.vercel.app
+This preview redirects to Vercel SSO; protected preview functionality is unverified.
+Production has not been promoted. CI required the declarative schema mirror and
+manifest entry alongside the migration; these have been added without changing
+the already-applied database migration. Local browser verification confirmed the
+anonymous dashboard sign-in gate and campaign measurement control render.
