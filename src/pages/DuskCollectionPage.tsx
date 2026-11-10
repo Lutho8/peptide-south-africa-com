@@ -1,3 +1,4 @@
+import DuskCampaignMeasurement from "@/components/DuskCampaignMeasurement";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowDown, ArrowRight, Moon, Plus, BookOpen, MessageCircle, Expand } from "lucide-react";
@@ -85,6 +86,7 @@ export default function DuskCollectionPage() {
     </section>
     <section id="research" className="dusk-evidence dusk-section"><div className="dusk-wrap">
       <div className="dusk-section-head"><div><p className="dusk-eyebrow">Start with what is known</p><h2>Three research threads.<br /><em>Different levels of evidence.</em></h2></div><p>The original DUSK idea brings together Epithalon, Pinealon and Selank. Their individual studies do not validate a combined sleep protocol.</p></div>
+      <DuskCampaignMeasurement />
       <div className="dusk-evidence-grid">
         <article><span className="dusk-pill">Animal research</span><span className="dusk-number">01</span><h3>Epithalon</h3><p className="dusk-card-sub">The internal-clock question</p><p>In older rhesus monkeys, researchers reported changes in evening melatonin and cortisol rhythms. That does not demonstrate better sleep in people.</p><a href="https://pubmed.ncbi.nlm.nih.gov/11550036/" target="_blank" rel="noreferrer">Read the original study <ArrowRight size={15} /></a></article>
         <article><span className="dusk-pill">Limited human research</span><span className="dusk-number">02</span><h3>Selank</h3><p className="dusk-card-sub">The stress-response question</p><p>A small study of 62 patients compared Selank with medazepam for anxiety symptoms. It was not a trial of DUSK or proof of improved sleep architecture.</p><a href="https://pubmed.ncbi.nlm.nih.gov/18454096/" target="_blank" rel="noreferrer">Read the original study <ArrowRight size={15} /></a></article>

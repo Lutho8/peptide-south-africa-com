@@ -1,0 +1,155 @@
+DUSK / Pinealon production workflow
+
+STATUS
+Implemented: existing-app admin route /admin/dusk-campaign; admin-authenticated API;
+three reviewed-script candidates; one shared scientific narration; render metadata
+and human approval workflow; optimistic revision checks; database audit trigger;
+consent-based campaign events and counts; local brief export and video assembly.
+Rendering and publication are manual. No autonomous AI provider or Buzz connector
+is active. An approved database record does not mean that a video is published.
+
+EXISTING APP / BRAND
+Source: Lutho8/peptide-south-africa-com, starting commit
+71fa3e1b455360fbe29cdf1d9e11635a899279cc.
+Live /dusk returned HTTP 200 with server: Vercel and matching page title.
+Use existing dusk.css navy #041b36, teal #55c8be, mist #e8f7f5 and ice #f4f8f8;
+existing font stack Inter / Avenir Next with restrained serif emphasis.
+CSS identifies this as stakeholder brand kit v3.2; original kit not retrieved.
+Do not mark brand review complete from the CSS alone.
+
+ASSET AUDIT
+The earlier chat returns assistant reference placeholders, not the actual replies.
+Pinealon_DUSK_Video_Production_Kit.zip, named first-cut MP4 and original brand kit
+were not retrievable. Their contents, rights and quality are unverified.
+Recovered attachment: ScreenRecording_11-08-2026 20-12-28_1.mp4, 50.80 seconds,
+512 x 632, 30fps, H.264 + AAC. Sampled frames at 3,12,24,36,48 seconds show an
+Epithalon/telomere explainer, word-by-word captions and animated scientific imagery.
+This is a visual reference, not verified Pinealon footage. Do not reuse telomerase,
+DNA rejuvenation or human-benefit claims for Pinealon; do not reuse third-party
+footage/music without rights. Original narration has not been fully transcribed.
+YouTube uJuxenfe-NU was inaccessible to the web tool; no content review is claimed.
+
+SCIENTIFIC CONTENT
+Primary source: https://pubmed.ncbi.nlm.nih.gov/21978084/
+Khavinson et al., 2011, Rejuvenation Research, DOI 10.1089/rej.2011.1172.
+This is cell work on oxidative stress and cell survival. It does not establish
+clinical safety/efficacy, improved sleep, melatonin support or a validated DUSK
+combination. Keep the limitation spoken and visible. No dosing, injection advice,
+clinical equivalence, purity or sterility claims. Generated imagery is illustrative.
+The 2012 rat study https://pubmed.ncbi.nlm.nih.gov/22567179/ is background only;
+it does not justify human cognition or sleep claims and is not used in this script.
+
+PRODUCTION STEPS
+1. Recover and inspect the original production kit, first cut, brand kit and rights.
+2. Export the three briefs:
+   node --experimental-strip-types scripts/dusk/export-briefs.ts work/dusk-briefs
+   All variants use the same BODY and body_sha256. Hook h1 = molecular curiosity;
+   h2 = evidence literacy; h3 = compound introduction. CTA and shared body stay fixed.
+3. In the admin dashboard, read the hook, shared body and primary paper; mark each
+   script reviewed. Agent output is a draft, never an approval.
+4. Use a licensed narration voice and locked transcript. Render one shared body
+   master. Make three short hook clips. Keep disclaimers readable, captions clear,
+   and text inside platform safe areas. Source timings are editorial targets,
+   not verified voice timings. Create final SRT from locked audio, not estimates.
+5. Runway is technically suitable for licensed source-image motion/backgrounds.
+   Official API: https://docs.dev.runwayml.com/api/
+   Getting started: https://docs.dev.runwayml.com/guides/using-the-api/
+   API access requires Runway Dev credentials/credits; none available here.
+   Preserve exact labels via editor compositing; generated labels are unreliable.
+   No provider-specific API integration or paid generation was executed.
+6. Local assembly (requires ffmpeg, or DUSK_FFMPEG pointing to its executable):
+   node scripts/dusk/assemble.mjs hook-h1.mp4 shared-body.mp4 h1.mp4
+   Repeat for h2/h3 using the exact same shared-body.mp4. Inputs must have audio.
+   The helper normalizes to 1080x1920 / 30fps / H.264 + AAC and writes a provenance
+   sidecar with hook, shared-body and final-cut SHA-256 values. It never overwrites
+   an existing MP4 or grants approval. Cropping, duration and audio need human QA.
+7. Archive the final files at dusk/pinealon/<name>.mp4 in your controlled asset
+   archive. The app stores relative archive references, not uploaded files or URLs.
+   Calculate the brand-kit and MP4 SHA-256 checksums. Review the actual playback,
+   narration, captions, rights and research framing. Record render metadata in the
+   dashboard; approve only that exact cut. An attestation is not automated file QA.
+8. Any change to the cut or scientific script requires returning to draft and
+   another review. The current script version is fixed: pinealon-research-v1.
+9. Manual publication: use the per-channel link from each JSON brief. Platform
+   eligibility and advertising review remain unverified. No posts or ads sent.
+10. Review consent-based reported landings and study clicks. Keep channel, spend,
+    impressions and verified purchases in their authoritative systems; this MVP
+    neither imports ad performance nor attributes revenue, and selects no winner.
+
+BUZZ
+The exact Buzz product/workspace is unidentified and no Buzz tools are connected.
+Do not assume buzz.ai, post.buzz, BuzzVideo AI and other Buzz products are the same.
+A future Buzz orchestrator can consume the JSON briefs, hand renders to an editor,
+then request human review. It should not receive a Supabase service-role key,
+admin session, publication credentials or authority to approve its own output.
+Use bounded jobs, a provider spend ceiling, persisted task IDs and explicit retry
+rules when adding generation. Blind retries may duplicate provider charges.
+
+ATTRIBUTION / PRIVACY / SECURITY
+Campaign: dusk-pinealon-01. variant_id h1/h2/h3 equals utm_content.
+utm_source is one of instagram/facebook/youtube/tiktok/organic; medium = video.
+Strict schemas reject arbitrary campaign IDs, personal fields and Purchase events.
+The new measurement control only appears for valid DUSK campaign links. It sends
+nothing until explicitly allowed for that page. Stop further measurement disables
+subsequent sends; it does not erase previously consented aggregate reports.
+No name, email, user ID, persistent tracking cookie or cross-page storage is added.
+The origin and IP-based limiter reduce casual abuse but are not authentication or
+a distributed bot defense. Reports can be spoofed and repeated; counts are events,
+not unique viewers. Do not use them for billing, affiliate payouts or health claims.
+Existing analytics, cookie banner, payment and other campaign flows are untouched.
+Admin API validates the bearer token with Supabase getUser and verifies user_roles.
+Tables have RLS and no anon/authenticated grants; only server service_role accesses.
+Audit function is SECURITY INVOKER in a non-exposed schema with empty search_path.
+API checks expected revision and reports a conflict rather than losing an update.
+Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel server environment
+only. Never use VITE_ for the service key or expose it to Buzz/browser code.
+No extra credentials were retrieved. Secrets were not added to this change.
+Suggested event retention is 90 days. No deletion schedule has been activated;
+operators should set their retention policy before collecting ongoing traffic.
+
+DATABASE / RELEASE
+Additive migration dusk_video_workflow was applied to Peptide South Africa project
+eutszmrsukoqqeilzrbv. It seeds exactly three draft records and alters no other
+campaign tables. Do not apply it twice. The local ledger filename was aligned
+with the verified remote migration version 20261110064745 assigned by the MCP tool.
+Release app and database independently; Vercel's existing prebuild script applies
+only an older pricing migration and does not apply this new migration.
+
+Vercel team returned team_JzyUL68zQD7Lo7gKWPiWxar7 but lists no projects.
+Repository workflow identifies project prj_5BvjL0zY2hVAdlhpJ9DXYedY9MsQ;
+get_project and the known previous deployment both return 404 via the connector.
+No VERCEL_TOKEN or RUNWAYML_API_SECRET was present in this process.
+Do not create a substitute project, promote an unverified build or claim release.
+The Git-connected preview may work independently; inspect its commit status.
+After access is restored: deploy the exact tested commit to preview, verify admin
+sign-in, non-admin denial, one workflow round trip and consent event ingestion,
+then stage production and promote only the tested production build.
+Rollback app first; retain campaign records/audit evidence. No other campaigns
+need to be removed or rewritten to back out the new route.
+
+VERIFICATION
+Local full suite passed 338 tests across 46 files, including 18 DUSK tests.
+TypeScript app/API checks and scoped ESLint passed. Production build prerendered
+82/82 routes and passed the bundle budget. Static migration/AI-input checks passed.
+Synthetic local hook/body assembly succeeded and emitted SHA-256 provenance.
+Synthetic clips are test fixtures and are not Pinealon campaign deliverables.
+Database read-back confirms h1/h2/h3 draft at revision 0, RLS enabled, and no anon
+or authenticated SELECT privileges on new tables. A service-role update plus audit
+trigger assertion passed inside a rolled-back transaction; no approval was left.
+Supabase security advisor had no new DUSK findings. Pre-existing findings remain,
+including public.psa_sku_sales SECURITY DEFINER view:
+https://supabase.com/docs/guides/database/database-linter?lint=0010_security_definer_view
+Dependency install reported 27 existing vulnerabilities (7 moderate,18 high,2 critical).
+No packages or lockfile changed; broad dependency remediation is outside this change.
+No live admin/browser-to-API round trip or production release is claimed without
+an accessible deployment and an authorized signed-in test session.
+
+RELEASE FOLLOW-UP
+Draft PR: https://github.com/Lutho8/peptide-south-africa-com/pull/71
+The Git integration successfully created a Vercel preview for commit 600b3f7:
+https://peptide-south-africa-com-git-codex-dusk-58b7cb-lutho8s-projects.vercel.app
+This preview redirects to Vercel SSO; protected preview functionality is unverified.
+Production has not been promoted. CI required the declarative schema mirror and
+manifest entry alongside the migration; these have been added without changing
+the already-applied database migration. Local browser verification confirmed the
+anonymous dashboard sign-in gate and campaign measurement control render.

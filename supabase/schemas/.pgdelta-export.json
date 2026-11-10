@@ -200,7 +200,8 @@
     "tracker/functions/update_updated_at_column.sql",
     "public/partner_programme_v2.sql",
     "_cluster/publications.sql",
-    "public/partner_programme_operations.sql"
+    "public/partner_programme_operations.sql",
+    "public/dusk_video_workflow.sql"
   ],
   "profile": "supabase",
   "defaultOwner": "postgres",
@@ -402,6 +403,7 @@
     "tracker/types/subscription_plan.sql",
     "tracker/types/subscription_status.sql",
     "public/partner_programme_v2.sql",
-    "public/partner_programme_operations.sql"
+    "public/partner_programme_operations.sql",
+    "public/dusk_video_workflow.sql"
   ]
 }
