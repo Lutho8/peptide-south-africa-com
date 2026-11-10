@@ -8,14 +8,17 @@ beforeEach(()=>{vi.stubGlobal('fetch',request);request.mockReset();request.mockR
 describe('DUSK measurement UI',()=>{
  it('makes no measurement request without consent, stops after withdrawal',async()=>{
    const url=new URL(campaignLink('h2','instagram'));
-   render(<MemoryRouter initialEntries={[url.pathname+url.search]}><DuskCampaignMeasurement/></MemoryRouter>);
+   render(<MemoryRouter initialEntries={[url.pathname+url.search]}><section><DuskCampaignMeasurement/><a href="https://pubmed.ncbi.nlm.nih.gov/21978084/">Existing study link</a></section></MemoryRouter>);
    expect(request).not.toHaveBeenCalled();
    fireEvent.click(screen.getByText('Allow measurement for this page'));
    await waitFor(()=>expect(request).toHaveBeenCalledTimes(1));
    expect(JSON.parse(request.mock.calls[0][1].body).attribution.variant_id).toBe('h2');
+   fireEvent.click(screen.getByText('Existing study link'));
+   await waitFor(()=>expect(request).toHaveBeenCalledTimes(2));
+   expect(JSON.parse(request.mock.calls[1][1].body).event).toBe('research_source_click');
    fireEvent.click(screen.getByText('Stop further measurement'));
    fireEvent.click(screen.getByText('Read the Pinealon cell study'));
-   expect(request).toHaveBeenCalledTimes(1);
+   expect(request).toHaveBeenCalledTimes(2);
  });
  it('does not show measurement controls for another campaign',()=>{
    const {container}=render(<MemoryRouter initialEntries={['/dusk?utm_campaign=another']}><DuskCampaignMeasurement/></MemoryRouter>);
