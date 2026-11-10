@@ -110,9 +110,8 @@ operators should set their retention policy before collecting ongoing traffic.
 DATABASE / RELEASE
 Additive migration dusk_video_workflow was applied to Peptide South Africa project
 eutszmrsukoqqeilzrbv. It seeds exactly three draft records and alters no other
-campaign tables. Do not apply it twice. Reconcile local migration-history version
-with the remote version assigned by the MCP tool before a future CLI db push;
-use migration list/repair if needed, never rerun this non-idempotent DDL blindly.
+campaign tables. Do not apply it twice. The local ledger filename was aligned
+with the verified remote migration version 20261110064745 assigned by the MCP tool.
 Release app and database independently; Vercel's existing prebuild script applies
 only an older pricing migration and does not apply this new migration.
 
