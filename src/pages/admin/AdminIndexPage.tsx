@@ -36,6 +36,7 @@ export default function AdminIndexPage() {
   }, [user, isAdmin, loading]);
 
   const cards = [
+    { to: "/admin/dusk-campaign", icon: Activity, title: "DUSK Campaign Studio", desc: "Pinealon scripts, final-cut reviews and campaign measurement." },
     { to: "/admin/customers", icon: Users, title: "Customers (CRM)", desc: "Enriched lifetime records, segments, tags, timeline, manual credits." },
     { to: "/admin/lifecycle", icon: Activity, title: "Lifecycle Analytics", desc: "Storefront, consent, order, portal, tracker and repeat-purchase signals." },
     { to: "/admin/batches", icon: FlaskConical, title: "Lab Batches & COAs", desc: "Publish HPLC-tested batches and upload Janoshik COA PDFs." },

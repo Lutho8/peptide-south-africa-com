@@ -1,3 +1,4 @@
+import DuskCampaignMeasurement from "@/components/DuskCampaignMeasurement";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowDown, ArrowRight, Moon, Plus, BookOpen, MessageCircle, Expand } from "lucide-react";
@@ -83,6 +84,7 @@ export default function DuskCollectionPage() {
       <div><p className="dusk-eyebrow">A note from Lutho / Founder</p><h2>A personal question.<br /><em>A closer look<br />at rest.</em></h2></div>
       <div className="dusk-prose"><p>“I started paying closer attention to my sleep. Over three months of personal tracking, I found myself asking what happens before the night begins — and how daytime stress follows us into it.”</p><p>That curiosity became DUSK: a collection shaped by reading about circadian rhythms, stress signalling and neural resilience.</p><p>“My hypothesis centres on the transition into sleep. Could that window help us understand what follows? It is a question I’m exploring, not a result I can promise.”</p><p className="dusk-signature">Lutho <span>Founder, Peptide South Africa</span></p><div className="dusk-note">Every person is different. Personal tracking and blood markers need clinical context; they cannot establish a safe peptide dose or prove a treatment works.</div></div>
     </section>
+    <DuskCampaignMeasurement />
     <section id="research" className="dusk-evidence dusk-section"><div className="dusk-wrap">
       <div className="dusk-section-head"><div><p className="dusk-eyebrow">Start with what is known</p><h2>Three research threads.<br /><em>Different levels of evidence.</em></h2></div><p>The original DUSK idea brings together Epithalon, Pinealon and Selank. Their individual studies do not validate a combined sleep protocol.</p></div>
       <div className="dusk-evidence-grid">
