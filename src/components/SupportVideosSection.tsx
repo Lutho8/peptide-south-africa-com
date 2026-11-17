@@ -123,7 +123,7 @@ export default function SupportVideosSection({ embeddedInHero = false }: Support
           Hear directly from our community.
         </h2>
         <p className={`mt-3 text-sm sm:text-base ${embeddedInHero ? "text-white/80" : "text-muted-foreground"}`}>
-          Short customer-recorded videos about their experience with Peptide South Africa.
+          Archival customer recordings from Peptide South Africa. Services described reflect the time of recording. Some audio is muted for branding.
         </p>
         <p
           className={`mt-3 font-mono text-[10px] uppercase tracking-wider ${
