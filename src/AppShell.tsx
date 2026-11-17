@@ -63,6 +63,7 @@ const EftInstructionsPage = lazy(() => import("@/pages/EftInstructionsPage"));
 const TrackOrderPage = lazy(() => import("@/pages/TrackOrderPage"));
 const AccountPage = lazy(() => import("@/pages/AccountPage"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
+const AdminDuskCampaignPage = lazy(() => import("@/pages/admin/AdminDuskCampaignPage"));
 const AdminIndexPage = lazy(() => import("@/pages/admin/AdminIndexPage"));
 const AdminTestimonialsPage = lazy(() => import("@/pages/admin/AdminTestimonialsPage"));
 const AdminFAQsPage = lazy(() => import("@/pages/admin/AdminFAQsPage"));
@@ -144,6 +145,7 @@ export default function AppShell() {
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/community" element={<CommunityJoinPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/admin/dusk-campaign" element={<AdminDuskCampaignPage />} />
                 <Route path="/admin" element={<AdminIndexPage />} />
                 <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
                 <Route path="/admin/faqs" element={<AdminFAQsPage />} />
