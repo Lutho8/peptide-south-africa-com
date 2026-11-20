@@ -18,10 +18,12 @@ export default function TrackOrderPage() {
   const [result, setResult] = useState<Result | null>(null);
   const [message, setMessage] = useState("");
   const [refreshCount, setRefreshCount] = useState(0);
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     setResult(null);
     setMessage(token ? "Checking your order…" : "Open the secure link in your EFT instructions email to check your payment status.");
+    setChecking(Boolean(token));
     if (!token) return;
 
     const controller = new AbortController();
@@ -35,6 +37,10 @@ export default function TrackOrderPage() {
       .then(async (response) => {
         if (controller.signal.aborted) return;
         if (!response.ok) {
+          if (response.status === 429) {
+            setMessage("Please wait a minute before checking again.");
+            return;
+          }
           setMessage(response.status === 404
             ? "This tracking link is invalid or expired. Contact support for help locating your order."
             : "Order status is temporarily unavailable. Try checking again.");
@@ -47,6 +53,9 @@ export default function TrackOrderPage() {
       })
       .catch(() => {
         if (!controller.signal.aborted) setMessage("Order status is temporarily unavailable. Try checking again.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setChecking(false);
       });
     return () => controller.abort();
   }, [token, refreshCount]);
@@ -69,7 +78,7 @@ export default function TrackOrderPage() {
             )}
           </div>
           {token && (
-            <button type="button" className="mt-4 rounded-lg border px-4 py-2 text-sm font-semibold" onClick={() => setRefreshCount((count) => count + 1)}>
+            <button type="button" disabled={checking} className="mt-4 min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-60" onClick={() => setRefreshCount((count) => count + 1)}>
               Check again
             </button>
           )}

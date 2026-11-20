@@ -181,21 +181,35 @@ export function trackEvent(event: AnalyticsEvent): void {
   if (standardEvent && eventId) {
     void sendCapiRelay(standardEvent, eventId, metaPixelProps(event));
   }
-  void (async () => {
-    try {
-      const { data } = await supabase.auth.getSession();
-      const table = (supabase as unknown as { from: (name: string) => { insert: (row: unknown) => Promise<unknown> } }).from("analytics_events");
-      await table.insert({
-        event: event.event,
-        event_version: "1.0",
-        source: "storefront",
-        session_id: sessionId(),
-        user_id: data.session?.user.id ?? null,
-        order_id: "order_id" in event.props ? event.props.order_id : null,
-        props: event.props,
-      });
-    } catch {
-      // Analytics must never block the customer journey.
-    }
-  })();
+  void recordStorefrontEvent(event.event, event.props, "1.0");
+}
+
+// The installed database event vocabulary already permits checkout_started.
+// A distinct version and stage keep page entry out of the Meta submit metric.
+export function trackCheckoutEntry(): void {
+  if (typeof window === "undefined" || import.meta.env.MODE === "test") return;
+  const viewport = window.matchMedia("(min-width: 1024px)").matches ? "wide" : "narrow";
+  void recordStorefrontEvent("checkout_started", { stage: "checkout_entry", viewport }, "2.0");
+}
+
+async function recordStorefrontEvent(
+  event: AnalyticsEvent["event"],
+  props: Record<string, unknown>,
+  version: string,
+): Promise<void> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    const table = (supabase as unknown as { from: (name: string) => { insert: (row: unknown) => Promise<unknown> } }).from("analytics_events");
+    await table.insert({
+      event,
+      event_version: version,
+      source: "storefront",
+      session_id: sessionId(),
+      user_id: data.session?.user.id ?? null,
+      order_id: "order_id" in props ? props.order_id : null,
+      props,
+    });
+  } catch {
+    // Analytics must never block the customer journey.
+  }
 }

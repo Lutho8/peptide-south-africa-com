@@ -1,6 +1,7 @@
 import { createGuestTrackingToken } from "./_shared/guestTracking.js";
 import { validateDelivery } from "./_shared/delivery.js";
 import { resolvePartnerAttribution } from "./_shared/partnerAttribution.js";
+import { readJsonBody } from "./_shared/readJsonBody.js";
 import { CATALOG_VERSION, validateStorefrontRequest, liveListing, BAC_SLUG } from "../supabase/functions/_shared/catalog-release.ts";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -18,7 +19,7 @@ import {
 export const config = { runtime: "edge" };
 
 const json = (body: unknown, status = 200) =>
-  Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+  Response.json(body, { status, headers: { "Cache-Control": "private, no-store", ...(status === 429 ? { "Retry-After": "3600" } : {}) } });
 
 const requiredEnv = (name: string): string => {
   const value = process.env[name];
@@ -28,6 +29,18 @@ const requiredEnv = (name: string): string => {
 
 export default async function handler(request: Request): Promise<Response> {
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+  let payload: unknown;
+  try {
+    payload = await readJsonBody(request, 32 * 1024);
+  } catch (error) {
+    return error instanceof RangeError
+      ? json({ error: "This cart is too large to submit.", code: "REQUEST_TOO_LARGE" }, 413)
+      : json({ error: "Invalid checkout request.", code: "BAD_REQUEST" }, 400);
+  }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return json({ error: "Invalid checkout request.", code: "BAD_REQUEST" }, 400);
+  }
 
   try {
     const authHeader = request.headers.get("authorization");
@@ -45,7 +58,7 @@ export default async function handler(request: Request): Promise<Response> {
       userId = data.user.id;
     }
 
-    const body = await request.json().catch(() => null) as {
+    const body = payload as {
       catalogVersion?: unknown;
       requestId?: unknown;
       selections?: CheckoutSelection[];
@@ -55,7 +68,7 @@ export default async function handler(request: Request): Promise<Response> {
       consent?: unknown;
       partnerCode?: unknown;
       delivery?: unknown;
-    } | null;
+    };
     try { validateStorefrontRequest((body ?? {}) as Record<string, unknown>); } catch (error) {
       return json({ error: error instanceof Error ? error.message : "Invalid offer", code: "CATALOGUE_OR_DISCOUNT_CHANGED" }, 409);
     }
@@ -63,8 +76,9 @@ export default async function handler(request: Request): Promise<Response> {
     if (typeof requestId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) {
       return json({ error: "Invalid checkout request.", code: "BAD_REQUEST" }, 400);
     }
-    if (typeof body?.email !== "string" || !body.email.trim()) {
-      return json({ error: "Email is required.", code: "BAD_REQUEST" }, 400);
+    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    if (email.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json({ error: "Enter a valid email address.", code: "BAD_REQUEST" }, 400);
     }
     let delivery;
     try { delivery = validateDelivery(body.delivery); }
@@ -76,11 +90,6 @@ export default async function handler(request: Request): Promise<Response> {
         code: "CONSENT_REQUIRED",
       }, 400);
     }
-    if ((body?.selections ?? []).some((selection) =>
-      selection.kind === "item" && selection.slug.startsWith("pets-"))) {
-      return json({ error: "Please place Pets orders through the Pets store.", code: "INVALID_CART" }, 400);
-    }
-
     let quote;
     try {
       quote = quoteCheckout(body.selections ?? []);
@@ -90,19 +99,23 @@ export default async function handler(request: Request): Promise<Response> {
         code: "INVALID_CART",
       }, 400);
     }
+    if (body.selections.some((selection) => selection.kind === "item" && selection.slug.startsWith("pets-"))) {
+      return json({ error: "Please place Pets orders through the Pets store.", code: "INVALID_CART" }, 400);
+    }
 
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    if (!userId) {
-      const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-      if (!ip) return json({error:"Unable to verify checkout. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
-      const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`checkout:${checkoutStoreSecret}:${ip}`));
-      const rateKey = `checkout:${Array.from(new Uint8Array(hash)).map(v=>v.toString(16).padStart(2,"0")).join("")}`;
-      const {data:allowed,error:rateError}=await admin.rpc("bump_community_rate",{_ip_hash:rateKey,_limit:20,_window_minutes:60});
-      if (rateError || typeof allowed !== "boolean") return json({error:"Checkout temporarily unavailable. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
-      if (!allowed) return json({error:"Too many attempts. Please try again later.",code:"RATE_LIMITED"},429);
-    }
+    const ip = process.env.VERCEL === "1"
+      ? request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim()
+      : request.headers.get("x-real-ip")?.trim();
+    if (!userId && !ip) return json({error:"Unable to verify checkout. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
+    const identity = userId ? `account:${userId}` : ip;
+    const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`checkout:${checkoutStoreSecret}:${identity}`));
+    const rateKey = `checkout:${Array.from(new Uint8Array(hash)).map(v=>v.toString(16).padStart(2,"0")).join("")}`;
+    const {data:allowed,error:rateError}=await admin.rpc("bump_community_rate",{_ip_hash:rateKey,_limit:20,_window_minutes:60});
+    if (rateError || typeof allowed !== "boolean") return json({error:"Checkout temporarily unavailable. Please retry.",code:"RATE_LIMIT_UNAVAILABLE"},503);
+    if (!allowed) return json({error:"Too many attempts. Please try again later.",code:"RATE_LIMITED"},429);
     let partnerAttribution;
     try { partnerAttribution = await resolvePartnerAttribution(admin, request, body.partnerCode); }
     catch (error) {
@@ -112,7 +125,7 @@ export default async function handler(request: Request): Promise<Response> {
     const orderPayload = {
       user_id: userId,
       customer_name: [body.firstName, body.lastName].filter(v => typeof v === 'string').join(' ').trim().slice(0,160),
-      customer_email: body.email.trim().toLowerCase(),
+      customer_email: email,
       shipping_address: delivery,
       order_items: body.selections.map(selection => selection.kind === 'item'
         ? { kind: 'item', slug: selection.slug, sku: liveListing(selection.slug)?.sku, name: liveListing(selection.slug)?.name ?? selection.slug, variantLabel: selection.variantLabel ?? null, quantity: selection.quantity, unit_price: variantPrice(selection.slug, selection.variantLabel), is_accessory: selection.slug === BAC_SLUG }
@@ -133,7 +146,7 @@ export default async function handler(request: Request): Promise<Response> {
 
     let { data: order, error: orderError } = await admin
       .from("orders")
-      .select("id, user_id, total, currency, order_description, shipping_address")
+      .select("id, user_id, customer_email, total, currency, order_description, shipping_address")
       .eq("checkout_request_id", requestId)
       .maybeSingle();
 
@@ -141,14 +154,14 @@ export default async function handler(request: Request): Promise<Response> {
       const inserted = await admin
         .from("orders")
         .insert(orderPayload)
-        .select("id, user_id, total, currency, order_description, shipping_address")
+        .select("id, user_id, customer_email, total, currency, order_description, shipping_address")
         .single();
       order = inserted.data;
       orderError = inserted.error;
       if (orderError?.code === "23505") {
         const raced = await admin
           .from("orders")
-          .select("id, user_id, total, currency, order_description, shipping_address")
+          .select("id, user_id, customer_email, total, currency, order_description, shipping_address")
           .eq("checkout_request_id", requestId)
           .maybeSingle();
         order = raced.data;
@@ -162,6 +175,7 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     const requestMatches = order.user_id === userId
+      && order.customer_email?.trim().toLowerCase() === email
       && String(order.currency).toUpperCase() === PRICING.currency
       && Math.abs(Number(order.total) - quote.total) <= 0.01
       && String(order.order_description ?? "") === quote.description;
@@ -226,7 +240,7 @@ export default async function handler(request: Request): Promise<Response> {
         selections: body.selections,
         firstName: typeof body.firstName === "string" ? body.firstName : "",
         lastName: typeof body.lastName === "string" ? body.lastName : "",
-        email: body.email,
+        email,
         partnerAttribution,
         guestOrder: !userId,
         trackingUrl,

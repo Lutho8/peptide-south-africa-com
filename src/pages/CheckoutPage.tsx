@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,7 +8,7 @@ import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
 import { cartBundleSavings } from "@/lib/bundlePricing";
-import { currentOffer, trackEvent } from "@/lib/analytics";
+import { currentOffer, trackCheckoutEntry, trackEvent } from "@/lib/analytics";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
@@ -72,10 +72,17 @@ export default function CheckoutPage() {
     }
   });
   const [errors, setErrors] = useState<CheckoutErrors>({});
+  const entryTracked = useRef(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (!items.length || entryTracked.current) return;
+    entryTracked.current = true;
+    trackCheckoutEntry();
+  }, [items.length]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
