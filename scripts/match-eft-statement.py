@@ -45,11 +45,14 @@ def match(statement, orders):
 
     credits = []
     counts = Counter()
+    debit_refs = set()
     for line, row in statement:
         value = amount(row["amount"])
+        refs = set(ref.upper() for ref in REFERENCE.findall(row["reference"]))
+        if value < 0:
+            debit_refs.update(refs)
         if value <= 0:
             continue
-        refs = set(ref.upper() for ref in REFERENCE.findall(row["reference"]))
         counts.update(refs)
         credits.append((line, value, refs))
 
@@ -61,6 +64,8 @@ def match(statement, orders):
         candidates = awaiting[ref]
         if counts[ref] != 1:
             status = "review_multiple_credits"
+        elif ref in debit_refs:
+            status = "review_related_debit"
         elif len(candidates) > 1:
             status = "review_multiple_orders"
         elif not candidates:
