@@ -99,6 +99,7 @@ export default function AppShell() {
             <Sonner />
             <DiscountPopup />
             {focusedCheckout ? <header className="border-b border-border bg-card"><div className="container flex items-center justify-between gap-4 py-5"><Link to="/" className="font-display text-lg font-bold text-primary">Peptide South Africa</Link><a href="https://wa.me/27721242377" target="_blank" rel="noreferrer" className="text-sm text-primary underline">Need help?</a></div></header> : <><AnnouncementBar /><Header /></>}
+            <CookieConsent inline={focusedCheckout} />
             <CartDrawer />
             <PostAddUpsellModal />
             <main className="min-h-screen">
@@ -156,7 +157,6 @@ export default function AppShell() {
               </Suspense>
             </main>
             {focusedCheckout ? <footer className="container flex flex-wrap justify-center gap-5 py-8 pb-28 text-xs text-muted-foreground"><Link to="/shipping">Shipping</Link><Link to="/refund">Returns</Link><Link to="/terms">Terms</Link><Link to="/privacy">Privacy</Link><span>Peptide South Africa · EFT in ZAR</span></footer> : <><div className="container px-4 py-8"><PreferredSourcesButton /></div><Footer /><StickyMobileCTA />{pathname !== '/dusk' && <FloatingProductFollower />}<FloatingTrustBadge /></>}
-            <CookieConsent />
             {!focusedCheckout && <WhatsAppButton />}
             <Analytics />
           </LastViewedProductProvider>

@@ -10,10 +10,7 @@ interface Props {
   total: number;
 }
 
-/**
- * Sticky single-line order summary for mobile checkout. Keeps subtotal,
- * discounts and the final total visible while the shopper scrolls.
- */
+/** Expandable subtotal, discounts and shipping breakdown for mobile checkout. */
 export default function MobileOrderSummaryBar({
   subtotal,
   specialOffer,

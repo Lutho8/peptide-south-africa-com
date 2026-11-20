@@ -19,15 +19,14 @@ function readInitialDecision(): boolean {
   }
 }
 
-export default function CookieConsent() {
+export default function CookieConsent({ inline = false }: { inline?: boolean }) {
   // Synchronous init avoids the post-mount flash that can shift perceived layout.
   const [decided, setDecided] = useState<boolean>(() => readInitialDecision());
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (decided) return;
-    // Tiny delay so the banner doesn't compete with first paint, but never blocks layout
-    // (the wrapper is position:fixed and reserves no flow space).
+    // Show after the app mounts so prerendered markup and hydration agree.
     const t = setTimeout(() => setMounted(true), 800);
     return () => clearTimeout(t);
   }, [decided]);
@@ -47,7 +46,9 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-label="Cookie preferences"
-      className="fixed bottom-3 left-3 z-[60] max-w-[320px] rounded-full border border-border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/85"
+      className={inline
+        ? "mx-auto my-2 w-fit max-w-full rounded-full border border-border bg-card px-3 py-1.5"
+        : "fixed bottom-3 left-3 z-[60] max-w-[320px] rounded-full border border-border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/85"}
     >
       <div className="flex items-center gap-2">
         <p className="flex-1 text-[11px] leading-tight text-muted-foreground">

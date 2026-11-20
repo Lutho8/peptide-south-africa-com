@@ -86,8 +86,7 @@ async function run(viewport, label) {
   const closeUpsell = page.getByRole("button", { name: "Close", exact: true });
   await closeUpsell.waitFor({ timeout: 5000 });
   await closeUpsell.click();
-  const cartSummary = await page.getByText("Subtotal", { exact: true }).locator("..").innerText();
-  const cartTotal = (cartSummary.split(/\r?\n/).at(-1) ?? "").replace(/\s/g, "");
+  const cartTotal = (await page.getByTestId("cart-drawer-total").innerText()).replace(/\s/g, "");
   await page.getByRole("link", { name: /Checkout with details/i }).click();
   await page.waitForURL(/\/checkout$/);
   const checkoutTotal = (await page.getByTestId("checkout-total").innerText()).replace(/\s/g, "");

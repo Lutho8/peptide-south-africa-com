@@ -12,7 +12,7 @@ const shippingSchema = {
   name: "Shipping Policy — Peptide South Africa",
   url: `${SITE_URL}/shipping`,
   description:
-    "Peptide South Africa shipping policy: same-day dispatch from Cape Town, Aramex / PEP Paxi carriers, tracking, and free shipping from R1,500 after discounts and paid add-ons.",
+    "Peptide South Africa shipping policy: dispatch from Cape Town after EFT verification, courier tracking, and free shipping from R1,500 after discounts and paid add-ons.",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   publisher: { "@id": `${SITE_URL}/#organization` },
   about: { "@type": "Thing", name: "Shipping & Delivery" },
@@ -44,8 +44,7 @@ export default function ShippingPolicyPage() {
             <section>
               <h2 className="font-display text-lg font-semibold text-foreground">1. Order Processing &amp; Dispatch</h2>
               <ul className="mt-3 list-disc space-y-1 pl-5">
-                <li>Same-day dispatch on orders placed before <span className="font-semibold text-foreground">14:00 SAST</span>, Monday–Friday.</li>
-                <li>Orders placed after the cut-off ship on the next business day.</li>
+                <li>We prepare your order for dispatch after verifying your EFT payment.</li>
                 <li>No dispatch on Sundays or South African public holidays.</li>
               </ul>
               <p className="mt-3">Processing time refers to preparing and handing the package to the carrier; it does not include carrier transit time.</p>

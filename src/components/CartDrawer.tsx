@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import FrequentlyBoughtTogether from "@/components/FrequentlyBoughtTogether";
-import ExpressEftButton from "@/components/ExpressEftButton";
 import FreeShippingBar from "@/components/FreeShippingBar";
 
 import { useMarket, marketPath } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { checkoutTotals } from "@/lib/eftCheckout";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 export default function CartDrawer() {
@@ -25,6 +25,7 @@ export default function CartDrawer() {
     totalItems,
   } = useCart();
   const { format } = useCurrency();
+  const { ship, grandTotal, freeUnlocked } = checkoutTotals(subtotal);
   const { market } = useMarket();
   const mp = (p: string) => marketPath(p, market);
 
@@ -181,17 +182,21 @@ export default function CartDrawer() {
                   <span className="font-semibold text-destructive">−{format(specialOffer)}</span>
                 </div>
               )}
-              <div className="mb-1 flex justify-between text-base font-bold text-foreground">
+              <div className="mb-1 flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span><span>{format(subtotal)}</span>
               </div>
-              <p className="mb-4 text-xs text-muted-foreground">Delivery calculated from the final basket after discounts and paid add-ons</p>
-
-              <ExpressEftButton onNavigate={() => setIsCartOpen(false)} className="mb-3" />
+              <div className="mb-1 flex justify-between text-sm text-muted-foreground">
+                <span>Delivery</span><span>{freeUnlocked ? "Free" : format(ship)}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold text-foreground">
+                <span>Total</span><span data-testid="cart-drawer-total">{format(grandTotal)}</span>
+              </div>
+              <p className="mb-4 text-xs text-muted-foreground">Pay by EFT from your banking app.</p>
 
               <Link
                 to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full rounded-lg border border-border py-3.5 text-center text-sm font-bold uppercase tracking-wide text-foreground transition-colors hover:bg-muted"
+                className="block w-full rounded-lg bg-foreground py-3.5 text-center text-sm font-bold uppercase tracking-wide text-background transition-opacity hover:opacity-90"
               >
                 Checkout with details
               </Link>

@@ -104,16 +104,16 @@ export default function CheckoutPage() {
     );
   }
 
-  const handlePay = async (e: React.FormEvent) => {
+  const handlePay = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const checkoutForm = e.currentTarget;
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
-      toast({ title: "Almost there", description: "Check the highlighted fields.", variant: "destructive" });
       requestAnimationFrame(() => {
-        const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
-        el?.focus();
-        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        const field = checkoutForm.querySelector<HTMLElement>("[aria-invalid='true']");
+        field?.focus({ preventScroll: true });
+        field?.scrollIntoView({ block: "center" });
       });
       return;
     }
@@ -124,6 +124,11 @@ export default function CheckoutPage() {
       const state = await startEftCheckout({ items, form, partnerCode });
       try {
         window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
+        window.sessionStorage.setItem(FORM_KEY, JSON.stringify({
+          ...form,
+          researchPurchaseAcknowledged: false,
+          marketingConsent: false,
+        }));
       } catch {
         /* storage unavailable */
       }
@@ -151,8 +156,7 @@ export default function CheckoutPage() {
       <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
 
-      {/* Sticky mobile order summary */}
-      <div className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur-md lg:hidden">
+      <div className="border-b border-border bg-card lg:hidden">
         <MobileOrderSummaryBar
           subtotal={subtotal}
           specialOffer={specialOffer}
@@ -173,7 +177,7 @@ export default function CheckoutPage() {
         {!user && <p className="mb-6 text-sm text-muted-foreground">Checking out as a guest. Already have an account? <Link className="text-primary underline" to="/auth?redirect=/checkout">Sign in</Link></p>}
         <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="flex flex-col gap-6">
-            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
+            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6 [&_input]:scroll-mb-32 [&_select]:scroll-mb-32">
               <details><summary className="cursor-pointer text-sm text-muted-foreground">Have a partner code?</summary><label className="mt-3 block text-sm">Partner code (optional)<input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className="mt-2 block w-full rounded border p-3" /><span className="text-xs text-muted-foreground">Identifies your referring partner; it does not apply a discount.</span></label></details>
               <section className="rounded-lg border border-border bg-card p-6">
                 <h2 className="font-display text-base font-semibold text-foreground">
@@ -290,12 +294,12 @@ export default function CheckoutPage() {
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                       Pay directly from your banking app (Capitec, FNB, Standard Bank, Absa, Nedbank, TymeBank — any SA bank).
                       Place your order and we will show you our bank details and your unique payment reference on the next screen.
-                      Your order is reserved while your transfer clears.
+                      Your order will await payment while your transfer clears.
                     </p>
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Charged in <span className="font-semibold text-foreground">ZAR</span>. Orders are packed as soon as your payment reflects.
+                  Pay in <span className="font-semibold text-foreground">ZAR</span>. We prepare your order for dispatch after payment is verified.
                 </p>
               </section>
 
