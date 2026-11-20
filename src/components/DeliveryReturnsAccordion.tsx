@@ -32,7 +32,7 @@ export default function DeliveryReturnsAccordion({ defaultOpen = null, className
           <AccordionContent className="text-sm text-muted-foreground">
             <p className="mb-2 font-semibold text-foreground/90">🇿🇦 Cape Town, South Africa</p>
             <ul className="ml-1 flex flex-col gap-1.5">
-              <li>• Same-day dispatch on orders placed before 14:00 SAST (Mon–Fri).</li>
+              <li>• Dispatch follows EFT payment verification.</li>
               <li>• Local courier (The Courier Guy / Ramhis).</li>
               <li>• <span className="font-semibold text-foreground">1–3 business days</span> nationwide.</li>
               <li>• Flat <span className="font-semibold text-foreground">R89</span> · free shipping on orders over <span className="font-semibold text-foreground">R1,500</span>.</li>

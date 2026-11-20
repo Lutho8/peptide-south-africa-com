@@ -137,6 +137,7 @@ try {
     selections: [{ kind: "item", slug: "ghk-cu-50mg", sku: "RTT-GHK-50", variantLabel: "Single Vial", quantity: 1, unitPrice: 1 }],
     amount: 1,
     firstName: "EFT", lastName: "Contract", email,
+    delivery: { address_line_1: "1 Sandbox Road", city: "Cape Town", province: "Western Cape", postal_code: "8001" },
     consent: {
       researchPurchaseAcknowledged: true, marketingConsent: false,
       policyVersion: CHECKOUT_POLICY_VERSION, reportScopeVersion: REPORT_SCOPE_VERSION,

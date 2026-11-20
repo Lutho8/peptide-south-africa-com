@@ -4,6 +4,7 @@ import ts from 'typescript';
 import {it,expect} from 'vitest';
 import * as guestTracking from '../../api/_shared/guestTracking';
 import * as delivery from '../../api/_shared/delivery';
+import * as jsonBody from '../../api/_shared/readJsonBody';
 import * as pricing from '../../supabase/functions/_shared/pricing';
 import * as catalog from '../../supabase/functions/_shared/catalog-release';
 import * as consent from '../../supabase/functions/_shared/checkout-consent';
@@ -17,8 +18,8 @@ it('isolated order sandbox: both real handlers, packs, replay, stale cart, conse
  const createClient=(_url:string,_key:string,options:any)=>options?.global?{auth:{getUser:async()=>({data:{user:{id:uid}},error:null})}}:admin;
  const env={SUPABASE_URL:'https://sandbox.invalid',SUPABASE_ANON_KEY:'fixture',SUPABASE_SERVICE_ROLE_KEY:'fixture-service-role-key-is-over-32-characters',CHECKOUT_STORE_SECRET:'sandbox-only',EFT_ACCOUNT_NAME:'SANDBOX DO NOT PAY',EFT_ACCOUNT_NUMBER:'0000000000',EFT_BRANCH_CODE:'000000'};
  let edge:any;
- const requireMock=(name:string)=>name.includes('supabase-js')?{createClient}:name.includes('/guestTracking')?guestTracking:name.includes('/delivery')?delivery:name.includes('catalog-release')?catalog:name.includes('checkout-consent')?consent:name.includes('pricing')?pricing:name.includes('partnerAttribution')?{resolvePartnerAttribution:async()=>null}:{};
- const load=(file:string,extra:any={})=>{const exports:any={};vm.runInNewContext(ts.transpile(readFileSync(file,'utf8'),{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}),{exports,require:requireMock,Response,Request,crypto,console,TextEncoder,process:{env},Deno:{env:{get:(n:string)=>env[n as keyof typeof env]},serve:(h:any)=>{edge=h;}},...extra});return exports;};
+ const requireMock=(name:string)=>name.includes('supabase-js')?{createClient}:name.includes('/guestTracking')?guestTracking:name.includes('/delivery')?delivery:name.includes('/readJsonBody')?jsonBody:name.includes('catalog-release')?catalog:name.includes('checkout-consent')?consent:name.includes('pricing')?pricing:name.includes('partnerAttribution')?{resolvePartnerAttribution:async()=>null}:{};
+ const load=(file:string,extra:any={})=>{const exports:any={};vm.runInNewContext(ts.transpile(readFileSync(file,'utf8'),{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}),{exports,require:requireMock,Response,Request,RangeError,crypto,console,TextEncoder,process:{env},Deno:{env:{get:(n:string)=>env[n as keyof typeof env]},serve:(h:any)=>{edge=h;}},...extra});return exports;};
  load('supabase/functions/eft-create-order/index.ts');
  const api=load('api/eft-create-order.ts',{fetch:async(url:string,init:any)=>{expect(url).toBe('https://sandbox.invalid/functions/v1/eft-create-order');return edge(new Request(url,init));}}).default;
  const base={catalogVersion:catalog.CATALOG_VERSION,firstName:'Sandbox',lastName:'Test',email:'sandbox@example.invalid',delivery:{address_line_1:'1 Sandbox Road',city:'Cape Town',province:'Western Cape',postal_code:'8001'},consent:{researchPurchaseAcknowledged:true,marketingConsent:false,policyVersion:consent.CHECKOUT_POLICY_VERSION,reportScopeVersion:consent.REPORT_SCOPE_VERSION,clientAcceptedAt:new Date().toISOString()}};
