@@ -49,3 +49,24 @@ bank transaction time when recovering a timed-out operator request.
 - If a wrong deposit was submitted, stop fulfilment and escalate with the order
   ID, payment reference, and bank transaction identifier. Never edit production
   settlement rows by hand.
+
+## Match a bank statement for staff review
+
+1. Export posted transactions directly from Capitec Business. Check that the
+   account and statement period are correct. In a working CSV, map the bank
+   reference (or narration containing the full PSA reference) to `reference`
+   and the signed ZAR value to `amount`. Use decimal dots without grouping,
+   positive values for credits and negative values for debits. Keep the
+   original bank export open for review.
+2. Export `order_id,payment_reference,order_total,payment_status` from
+   `public.psa_orders` using authorized read-only reporting. Keep both
+   files and the report in an access-controlled folder outside the repository.
+3. Run `python3 scripts/match-eft-statement.py statement.csv awaiting-orders.csv`
+   and review the report. Use `--statement-delimiter ';'` if applicable.
+   `statement_line` identifies the source row in the working CSV. The script
+   proposes only exact amount and reference matches with one credit and one
+   awaiting order. Duplicate, conflicting and unmatched credits go to review.
+4. For each `candidate_staff_approval`, verify the original bank transaction
+   and its timestamp and confirm that it has settled and has not been reversed.
+   Submit that approved deposit individually through the procedure above.
+   The matcher reads local files only and has no access to payment credentials.
