@@ -52,8 +52,8 @@ export default function CartDrawer() {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-foreground/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
-      <div className="fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-md flex-col bg-card shadow-2xl pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed inset-0 z-[70] bg-foreground/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
+      <div className="fixed inset-y-0 right-0 z-[70] flex h-full w-full max-w-md flex-col bg-card shadow-2xl pb-[env(safe-area-inset-bottom)]">
         <div className="relative flex items-center justify-center border-b border-border p-4">
           <h2 className="font-display text-lg font-bold text-foreground">My Cart{totalItems > 0 ? ` (${totalItems})` : ""}</h2>
           <button
@@ -78,7 +78,7 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
               <FreeShippingBar subtotalZar={subtotal} className="mb-4" />
               <div className="flex flex-col gap-3">
                 {bundles.map((b) => (
@@ -173,9 +173,15 @@ export default function CartDrawer() {
                   <span className="block text-xs text-muted-foreground">Your digital progress companion.</span>
                 </span>
               </a>
+
+              {anchorSlug && (
+                <div className="mt-4">
+                  <FrequentlyBoughtTogether slug={anchorSlug} variant="single" />
+                </div>
+              )}
             </div>
 
-            <div className="border-t border-border p-4">
+            <div className="shrink-0 border-t border-border p-4">
               {specialOffer > 0 && (
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="font-semibold text-destructive">Pack savings (already included)</span>
@@ -196,17 +202,10 @@ export default function CartDrawer() {
               <Link
                 to={mp("/checkout")}
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full rounded-lg bg-foreground py-3.5 text-center text-sm font-bold uppercase tracking-wide text-background transition-opacity hover:opacity-90"
+                className="flex min-h-12 w-full items-center justify-center rounded-lg bg-foreground px-3 py-3 text-center text-sm font-bold uppercase tracking-wide text-background transition-opacity hover:opacity-90"
               >
-                Checkout with details
+                Continue to checkout
               </Link>
-
-
-              {anchorSlug && (
-                <div className="mt-4">
-                  <FrequentlyBoughtTogether slug={anchorSlug} variant="single" />
-                </div>
-              )}
             </div>
           </>
         )}

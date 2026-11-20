@@ -83,11 +83,8 @@ async function run(viewport, label) {
   await dismissOverlays(page);
   await page.getByRole("button", { name: /^Add to Cart$/i }).first().click();
   await page.getByRole("button", { name: /Open cart \(1 item\)/i }).waitFor();
-  const closeUpsell = page.getByRole("button", { name: "Close", exact: true });
-  await closeUpsell.waitFor({ timeout: 5000 });
-  await closeUpsell.click();
   const cartTotal = (await page.getByTestId("cart-drawer-total").innerText()).replace(/\s/g, "");
-  await page.getByRole("link", { name: /Checkout with details/i }).click();
+  await page.getByRole("link", { name: /Continue to checkout/i }).click();
   await page.waitForURL(/\/checkout$/);
   const checkoutTotal = (await page.getByTestId("checkout-total").innerText()).replace(/\s/g, "");
   assert(cartTotal === checkoutTotal, `${label}: cart ${cartTotal} != checkout ${checkoutTotal}`);

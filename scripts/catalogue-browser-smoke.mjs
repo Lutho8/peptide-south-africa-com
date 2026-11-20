@@ -8,7 +8,7 @@ const browser = await chromium.launch({headless:true,args:['--no-sandbox']});
 const results=[];
 try {
 for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]) {
- const context=await browser.newContext({viewport});
+ const context=await browser.newContext({viewport,hasTouch:name==='mobile',isMobile:name==='mobile'});
  // No real checkout submissions, marketing requests or external data mutations.
  await context.route('**/*',route=>{
    const req=route.request(), u=new URL(req.url());
@@ -101,9 +101,14 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  await expect(page.getByTestId('checkout-total')).toHaveText(/1[,\s]306/);
  await page.screenshot({path:`${out}/${name}-checkout.png`,fullPage:false});
  if (name === 'mobile') {
+   await page.getByRole('button',{name:/Order summary/}).tap();
+   await expect(page.getByTestId('checkout-total')).toBeVisible();
+   await page.getByRole('button',{name:/Order summary/}).tap();
+   await expect(page.getByTestId('checkout-total')).toBeHidden();
    const fixtureToken = 'checkout-browser-fixture';
    const fixtureReference = 'PSA-FIXTUR';
    let submissions = 0;
+   let requestId;
    let paymentStatus = 'pending';
    await page.route(base+'/api/eft-create-order', async route => {
      assert.equal(route.request().method(),'POST');
@@ -111,6 +116,12 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
      assert.equal(body.consent.researchPurchaseAcknowledged,true);
      assert.equal(body.delivery.postal_code,'8001');
      submissions++;
+     if (submissions === 1) {
+       requestId = body.requestId;
+       await route.fulfill({status:503,json:{error:'Payment is temporarily unavailable. Please try again shortly.'}});
+       return;
+     }
+     assert.equal(body.requestId,requestId);
      await route.fulfill({json:{
        order_id:'browser-fixture',amount:1306,payment_reference:fixtureReference,
        bank:{account_name:'Test only',bank:'Test only',account_number:'0000000000',branch_code:'000000'},
@@ -136,17 +147,20 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
      await page.getByLabel(label,{exact:true}).fill(value);
    }
    await page.getByLabel('Province',{exact:true}).selectOption('Western Cape');
-   const submit = page.getByRole('button',{name:/Place order.*get EFT details/i});
-   await submit.click();
+   const submit = page.getByRole('button',{name:/Place order/i});
+   await submit.tap();
    await expect(page.getByRole('alert').filter({hasText:'Confirm the research purchase acknowledgement'})).toBeVisible();
    const acknowledgement = page.getByRole('checkbox').first();
    await expect(acknowledgement).toBeFocused();
    assert.equal(submissions,0);
    await acknowledgement.check();
    await expect(cookieBanner).toBeVisible();
-   await submit.click();
+   await submit.tap();
+   await expect(page.getByText('Payment is temporarily unavailable. Please try again shortly.',{exact:true})).toBeVisible();
+   await expect(page.getByLabel('Email address',{exact:true})).toHaveValue('checkout-fixture@example.invalid');
+   await submit.tap();
    await expect(page.getByRole('heading',{name:'Pay by EFT',exact:true})).toBeVisible();
-   assert.equal(submissions,1);
+   assert.equal(submissions,2);
    const proofLink = page.getByRole('link',{name:'Send proof of payment'});
    const proofUrl = new URL(await proofLink.getAttribute('href'));
    assert.equal(proofUrl.origin,'https://wa.me');
@@ -155,19 +169,28 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
    await expect(page.getByRole('button',{name:"I've made the payment"})).toHaveCount(0);
    await expect(page.getByRole('link',{name:'Return to checkout'})).toHaveCount(0);
    const trackOrder = page.getByRole('link',{name:'Track this order securely'});
+   const orderStatus = page.getByRole('main').getByRole('status');
    await trackOrder.click();
-   await expect(page.getByRole('status')).toContainText('Awaiting EFT payment');
+   await expect(orderStatus).toContainText('Awaiting EFT payment');
    paymentStatus = 'paid';
    await page.getByRole('button',{name:'Check again'}).click();
-   await expect(page.getByRole('status')).toContainText('Payment confirmed');
+   await expect(orderStatus).toContainText('Payment confirmed');
    paymentStatus = 'expired';
    await page.getByRole('button',{name:'Check again'}).click();
-   await expect(page.getByRole('status')).toContainText('invalid or expired');
+   await expect(orderStatus).toContainText('invalid or expired');
    await page.goBack({waitUntil:'domcontentloaded'});
    await expect(page.getByRole('heading',{name:'Bank details',exact:true})).toBeVisible();
    await expect(trackOrder).toBeVisible();
    await page.goto(base+'/track-order', {waitUntil:'domcontentloaded'});
-   await expect(page.getByRole('status')).toContainText('secure link in your EFT instructions email');
+   await expect(orderStatus).toContainText('secure link in your EFT instructions email');
+   await page.goto(base+'/product/ghk-cu-50mg', {waitUntil:'domcontentloaded'});
+   await expect(cookieBanner).toBeVisible();
+   await page.getByRole('button',{name:'Add to Cart',exact:true}).first().tap();
+   await page.getByRole('link',{name:'Continue to checkout',exact:true}).tap();
+   await expect(page.getByRole('heading',{name:'Checkout',exact:true})).toBeVisible();
+   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+   await expect(page.getByRole('button',{name:'Close cart',exact:true})).toHaveCount(0);
+   await expect(page.getByLabel('Email address',{exact:true})).toHaveCSS('font-size','16px');
  }
  await gotoReady('/build-your-stack');
  await page.getByLabel('Vial 1',{exact:true}).waitFor();
@@ -186,7 +209,7 @@ for (const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{w
  assert.equal(await page.getByRole('button',{name:'Add to Cart',exact:true}).count(),0);
  assert.deepEqual(errors,[]);
  const checks = ['strengths','Tesamorelin 5 mg branded artwork','pack inclusions','no subscription or 10-pack','BAC standalone purchase','BAC optional canonical quantity','BAC cart recommendation add/remove','delivery add/remove recalculation','checkout','mixed-five R4060','hidden product route','no horizontal overflow','no runtime errors'];
- if (name === 'mobile') checks.push('cookie banner and validation recovery','simulated EFT payment handoff','guest status refresh and expired-link guidance');
+ if (name === 'mobile') checks.push('one-tap cart checkout with cookie banner visible','expandable mobile order summary','validation and failed-request recovery','simulated EFT payment handoff','guest status refresh and expired-link guidance');
  results.push({viewport:name,result:'passed',checks});
  await context.close();
 }
