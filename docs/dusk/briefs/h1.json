@@ -1,0 +1,73 @@
+{
+  "campaign_id": "dusk-pinealon-01",
+  "variant_id": "h1",
+  "script_version": "pinealon-research-v1",
+  "body_sha256": "4ef0a93809d6b6adbd755dfc495844632bdb9d9862260bca86a40a6b13ae20e3",
+  "status": "draft",
+  "narration": {
+    "hook": "Three amino acids. One research question: what can cells tell us?",
+    "body": "Pinealon is a synthetic tripeptide: glutamic acid, aspartic acid and arginine. A published cell study examined oxidative stress and cell survival. These laboratory findings do not establish a safe or effective treatment in people, or demonstrate improved sleep. DUSK brings the research questions together. Explore the evidence and its limits. Laboratory research only. Not for human use."
+  },
+  "source": "https://pubmed.ncbi.nlm.nih.gov/21978084/",
+  "shots": [
+    {
+      "seconds": "0–5",
+      "visual": "Exact supplied Pinealon packshot on existing DUSK navy background; subtle camera movement.",
+      "overlay": "Three amino acids. One research question: what can cells tell us?"
+    },
+    {
+      "seconds": "5–12",
+      "visual": "EDR / Glu–Asp–Arg typography. Abstract molecular forms, labelled illustrative.",
+      "overlay": "Pinealon · synthetic tripeptide"
+    },
+    {
+      "seconds": "12–24",
+      "visual": "Restrained lab imagery, no clinical before/after or human outcomes.",
+      "overlay": "Cell study · oxidative stress and cell survival\nPMID 21978084"
+    },
+    {
+      "seconds": "24–35",
+      "visual": "High-contrast evidence-limit card; do not imply sleep-stage changes.",
+      "overlay": "Laboratory findings do not establish human benefits."
+    },
+    {
+      "seconds": "35–45",
+      "visual": "Supplied logo and approved packshot. Research landing-page CTA.",
+      "overlay": "Explore the evidence and its limits.\nLaboratory research only · Not for human use."
+    }
+  ],
+  "persistent_disclaimer": "Laboratory research only · Not for human use",
+  "render_spec": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "format": "H.264 MP4 + AAC",
+    "target_seconds": 45,
+    "captions": "Burn in reviewed captions; provide separate timed SRT after narration is locked."
+  },
+  "caption": "Three amino acids. One research question: what can cells tell us? Explore Pinealon through a published cell study and its limitations. These findings do not establish safety or efficacy in people or validate DUSK as a sleep protocol. Laboratory research only; not for human use. Study: https://pubmed.ncbi.nlm.nih.gov/21978084/",
+  "links": {
+    "instagram": "https://www.peptide-south-africa.com/dusk?campaign_id=dusk-pinealon-01&variant_id=h1&utm_source=instagram&utm_medium=video&utm_campaign=dusk-pinealon-01&utm_content=h1#research",
+    "facebook": "https://www.peptide-south-africa.com/dusk?campaign_id=dusk-pinealon-01&variant_id=h1&utm_source=facebook&utm_medium=video&utm_campaign=dusk-pinealon-01&utm_content=h1#research",
+    "youtube": "https://www.peptide-south-africa.com/dusk?campaign_id=dusk-pinealon-01&variant_id=h1&utm_source=youtube&utm_medium=video&utm_campaign=dusk-pinealon-01&utm_content=h1#research",
+    "tiktok": "https://www.peptide-south-africa.com/dusk?campaign_id=dusk-pinealon-01&variant_id=h1&utm_source=tiktok&utm_medium=video&utm_campaign=dusk-pinealon-01&utm_content=h1#research",
+    "organic": "https://www.peptide-south-africa.com/dusk?campaign_id=dusk-pinealon-01&variant_id=h1&utm_source=organic&utm_medium=video&utm_campaign=dusk-pinealon-01&utm_content=h1#research"
+  },
+  "production_prompt": "Use only supplied, licensed brand assets. Animate background/lighting, preserving the exact vial and label through compositing. No generated label text, injection scenes, patient testimonials, health transformations, sleep benefits or medical-treatment claims. Add all scientific copy and disclaimers in the editor after generation.",
+  "gates": [
+    "Review original brand kit and rights",
+    "Review script and source",
+    "Create one shared scientific body master",
+    "Create three hook clips",
+    "Assemble and inspect each final cut",
+    "Record file and brand-kit checksums",
+    "Admin approves exact cut",
+    "Manual publishing only after platform review"
+  ],
+  "dependencies": [
+    "Original DUSK brand kit",
+    "Pinealon_DUSK_Video_Production_Kit.zip",
+    "First-cut MP4",
+    "Licensed voice/music assets"
+  ]
+}
