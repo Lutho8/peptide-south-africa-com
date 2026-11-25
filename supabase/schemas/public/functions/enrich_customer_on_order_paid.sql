@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION public.enrich_customer_on_order_paid()
   SET search_path TO 'public'
   AS $function$
 BEGIN
-  IF NEW.status = 'paid' AND (OLD.status IS DISTINCT FROM 'paid') THEN
+  IF NEW.user_id IS NOT NULL AND NEW.status = 'paid' AND (OLD.status IS DISTINCT FROM 'paid') THEN
     INSERT INTO public.customer_profiles (user_id, first_order_at, last_order_at, order_count, lifetime_value_zar)
     VALUES (NEW.user_id, NEW.paid_at, NEW.paid_at, 1, NEW.total)
     ON CONFLICT (user_id) DO UPDATE SET
