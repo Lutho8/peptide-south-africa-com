@@ -11,11 +11,13 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import FreeShippingBar from "@/components/FreeShippingBar";
 import { useMarket, marketPath, buildAlternates } from "@/hooks/useMarket";
 import { cartBundleSavings } from "@/lib/bundlePricing";
+import { checkoutTotals } from "@/lib/eftCheckout";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
 
 export default function CartPage() {
   const { items, removeFromCart, removeBundle, updateQuantity, subtotal } = useCart();
   const { format } = useCurrency();
+  const { ship, grandTotal, freeUnlocked } = checkoutTotals(subtotal);
   const { market, lang } = useMarket();
   const mp = (p: string) => marketPath(p, market);
 
@@ -130,9 +132,36 @@ export default function CartPage() {
           ))}
         </div>
 
-        <PackSuppliesRail />
-              <p className="my-3 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
-              {anchorSlug && cartUnits < 5 && (
+        <div className="mt-6 rounded-lg border border-border bg-card p-6">
+          {specialOffer > 0 && (
+            <div className="mb-2 flex justify-between text-sm">
+              <span className="font-semibold text-destructive">Pack savings (already included)</span>
+              <span className="font-semibold text-destructive" data-testid="cart-special-offer">−{format(specialOffer)}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Subtotal</span><span data-testid="cart-subtotal">{format(subtotal)}</span>
+          </div>
+          <div className="mt-1 flex justify-between text-sm text-muted-foreground">
+            <span>Delivery</span><span>{freeUnlocked ? "Free" : format(ship)}</span>
+          </div>
+          <div className="mt-2 flex justify-between text-lg font-bold text-foreground">
+            <span>Total</span><span data-testid="cart-total">{format(grandTotal)}</span>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">Pay by EFT from your banking app.</p>
+          <Link
+            to={mp("/checkout")}
+            className="mt-5 block w-full rounded-lg bg-hero-gradient py-4 text-center font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90"
+          >
+            Checkout
+          </Link>
+        </div>
+
+        <div className="mt-6">
+          <PackSuppliesRail />
+        </div>
+        <p className="my-3 text-xs text-muted-foreground">{DISCOUNT_POLICY}</p>
+        {anchorSlug && cartUnits < 5 && (
           <Link
             to={cartUnits < 3 ? mp(`/product/${anchorSlug}`) : "/build-your-stack"}
             className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 p-4"
@@ -161,25 +190,6 @@ export default function CartPage() {
             <span className="block text-sm text-muted-foreground">Open your digital progress companion at any time.</span>
           </span>
         </a>
-
-        <div className="mt-6 rounded-lg border border-border bg-card p-6">
-          {specialOffer > 0 && (
-            <div className="mb-2 flex justify-between text-sm">
-              <span className="font-semibold text-destructive">Pack savings (already included)</span>
-              <span className="font-semibold text-destructive" data-testid="cart-special-offer">−{format(specialOffer)}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-lg font-bold text-foreground">
-            <span>Subtotal</span><span data-testid="cart-subtotal">{format(subtotal)}</span>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">Delivery calculated from the final basket after discounts and paid add-ons</p>
-          <Link
-            to={mp("/checkout")}
-            className="mt-5 block w-full rounded-lg bg-hero-gradient py-4 text-center font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90"
-          >
-            Checkout
-          </Link>
-        </div>
 
         {anchorSlug && (
           <div className="mt-6">

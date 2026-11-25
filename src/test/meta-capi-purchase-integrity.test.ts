@@ -1,19 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const { insertAnalytics } = vi.hoisted(() => ({
+  insertAnalytics: vi.fn().mockResolvedValue({ data: null, error: null }),
+}));
+
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     auth: { getSession: vi.fn().mockResolvedValue({ data: { session: null } }) },
-    from: () => ({ insert: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+    from: () => ({ insert: insertAnalytics }),
   },
 }));
 
-import { trackEvent } from "@/lib/analytics";
+import { trackCheckoutEntry, trackEvent } from "@/lib/analytics";
 
 describe("Meta Purchase integrity — analytics.ts", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
   let fbqMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    insertAnalytics.mockClear();
     vi.stubEnv("MODE", "production");
     fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
     vi.stubGlobal("fetch", fetchMock);
@@ -87,6 +92,20 @@ describe("Meta Purchase integrity — analytics.ts", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
     expect(body.eventName).toBe("InitiateCheckout");
+  });
+
+  it("records mobile checkout entry without changing the Meta submission metric", async () => {
+    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: false }));
+    trackCheckoutEntry();
+    await vi.waitFor(() => expect(insertAnalytics).toHaveBeenCalledWith(expect.objectContaining({
+      event: "checkout_started",
+      event_version: "2.0",
+      source: "storefront",
+      order_id: null,
+      props: { stage: "checkout_entry", viewport: "narrow" },
+    })));
+    expect(fbqMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("still fires Lead for book_consult_clicked, unaffected by the Purchase change", async () => {

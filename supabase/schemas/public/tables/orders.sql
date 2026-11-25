@@ -1,6 +1,6 @@
 CREATE TABLE "public"."orders" (
   "id"                    uuid                     NOT NULL DEFAULT gen_random_uuid(),
-  "user_id"               uuid                     NOT NULL,
+  "user_id"               uuid,
   "total"                 numeric(12,2)            NOT NULL DEFAULT 0,
   "discount_code"         text,
   "created_at"            timestamp with time zone NOT NULL DEFAULT now(),

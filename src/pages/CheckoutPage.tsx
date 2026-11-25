@@ -1,16 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Lock, Loader2, Landmark } from "lucide-react";
-import MobileOrderSummaryBar from "@/components/MobileOrderSummaryBar";
+import { ChevronDown, Lock, Loader2, Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useToast } from "@/hooks/use-toast";
-import { amountToFreeShipping } from "@/lib/shipping";
 import { cartBundleSavings } from "@/lib/bundlePricing";
-import { currentOffer, trackEvent } from "@/lib/analytics";
+import { currentOffer, trackCheckoutEntry, trackEvent } from "@/lib/analytics";
 import { validateCheckout, type CheckoutForm, type CheckoutErrors, SA_PROVINCES } from "@/lib/checkoutSchema";
 import { formatZAR } from "@/lib/price";
 import { VIAL_TEST_ID, vialTileFrameClasses, vialAccentBarSmClasses } from "@/lib/vialDesign";
@@ -38,7 +36,7 @@ const errCopy: Record<string, string> = {
 };
 
 const inputCls =
-  "w-full rounded-lg border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive";
+  "w-full rounded-lg border border-input bg-background px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring aria-[invalid=true]:border-destructive";
 
 
 export default function CheckoutPage() {
@@ -49,6 +47,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [partnerCode, setPartnerCode] = useState("");
 
   const [form, setForm] = useState<CheckoutForm>(() => {
@@ -73,6 +72,17 @@ export default function CheckoutPage() {
     }
   });
   const [errors, setErrors] = useState<CheckoutErrors>({});
+  const entryTracked = useRef(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (!items.length || entryTracked.current) return;
+    entryTracked.current = true;
+    trackCheckoutEntry();
+  }, [items.length]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -91,7 +101,7 @@ export default function CheckoutPage() {
   const errText = (key?: string) => (key ? errCopy[key] ?? key : undefined);
 
   const shippingMath = useMemo(
-    () => ({ ...checkoutTotals(totalPrice), remaining: amountToFreeShipping(totalPrice) }),
+    () => checkoutTotals(totalPrice),
     [totalPrice],
   );
 
@@ -104,16 +114,16 @@ export default function CheckoutPage() {
     );
   }
 
-  const handlePay = async (e: React.FormEvent) => {
+  const handlePay = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const checkoutForm = e.currentTarget;
     const result = validateCheckout(form);
     if (result.ok === false) {
       setErrors(result.errors);
-      toast({ title: "Almost there", description: "Check the highlighted fields.", variant: "destructive" });
       requestAnimationFrame(() => {
-        const el = document.querySelector<HTMLInputElement>("[aria-invalid='true']");
-        el?.focus();
-        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        const field = checkoutForm.querySelector<HTMLElement>("[aria-invalid='true']");
+        field?.focus({ preventScroll: true });
+        field?.scrollIntoView({ block: "center" });
       });
       return;
     }
@@ -124,6 +134,11 @@ export default function CheckoutPage() {
       const state = await startEftCheckout({ items, form, partnerCode });
       try {
         window.sessionStorage.setItem(EFT_SESSION_KEY, JSON.stringify(state));
+        window.sessionStorage.setItem(FORM_KEY, JSON.stringify({
+          ...form,
+          researchPurchaseAcknowledged: false,
+          marketingConsent: false,
+        }));
       } catch {
         /* storage unavailable */
       }
@@ -151,49 +166,43 @@ export default function CheckoutPage() {
       <SEO title="Checkout" description="Complete your secure peptide order — discreet packaging, shipping across South Africa." path="/checkout" noindex />
       <Breadcrumbs crumbs={[{ label: "Home", href: "/" }, { label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
 
-      {/* Sticky mobile order summary */}
-      <div className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur-md lg:hidden">
-        <MobileOrderSummaryBar
-          subtotal={subtotal}
-          specialOffer={specialOffer}
-          shipping={shippingMath.ship}
-          freeShipping={shippingMath.freeUnlocked}
-          total={shippingMath.grandTotal}
-        />
-      </div>
-
-      <div className="container max-w-5xl py-8 pb-32 md:py-12 lg:pb-12">
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-bold text-foreground">Almost there</h1>
+      <div className="container max-w-5xl py-4 pb-32 md:py-12 lg:pb-12">
+        <div className="mb-4 text-center md:mb-8">
+          <h1 className="font-display text-3xl font-bold text-foreground">Checkout</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Review your details, place your order, then pay by EFT using your unique reference.
+            Enter your delivery details, then pay by EFT in your banking app.
           </p>
         </div>
 
-        {!user && <p className="mb-6 text-sm text-muted-foreground">Checking out as a guest. Already have an account? <Link className="text-primary underline" to="/auth?redirect=/checkout">Sign in</Link></p>}
-        <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+        {!user && <p className="mb-4 text-center text-sm text-muted-foreground">No account needed. Already have one? <Link className="text-primary underline" to="/auth?redirect=/checkout">Sign in</Link></p>}
+        <div className="grid gap-4 lg:grid-cols-[1fr_400px] lg:gap-8">
           <div className="flex flex-col gap-6">
-            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6">
-              <details><summary className="cursor-pointer text-sm text-muted-foreground">Have a partner code?</summary><label className="mt-3 block text-sm">Partner code (optional)<input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className="mt-2 block w-full rounded border p-3" /><span className="text-xs text-muted-foreground">Identifies your referring partner; it does not apply a discount.</span></label></details>
-              <section className="rounded-lg border border-border bg-card p-6">
+            <form id="checkout-form" onSubmit={handlePay} className="flex flex-col gap-6 [&_input]:scroll-mb-32 [&_select]:scroll-mb-32">
+              <section className="rounded-lg border border-border bg-card p-4 sm:p-6">
                 <h2 className="font-display text-base font-semibold text-foreground">
                   1. Where should we send your confirmation?
                 </h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <input required type="email" autoComplete="email" aria-label="Email address" placeholder="Email" value={form.email} onChange={(e) => setField("email", e.target.value)}
-                      aria-invalid={!!errors.email} className={inputCls} />
+                    <label className="block space-y-1 text-sm font-medium"><span>Email address</span>
+                      <input required type="email" autoComplete="email" value={form.email} onChange={(e) => setField("email", e.target.value)}
+                        aria-invalid={!!errors.email} className={inputCls} />
+                    </label>
                     {errors.email && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.email)}</p>}
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <input required autoComplete="given-name" aria-label="First name" placeholder="First name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
-                        aria-invalid={!!errors.firstName} className={inputCls} />
+                      <label className="block space-y-1 text-sm font-medium"><span>First name</span>
+                        <input required autoComplete="given-name" value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
+                          aria-invalid={!!errors.firstName} className={inputCls} />
+                      </label>
                       {errors.firstName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.firstName)}</p>}
                     </div>
                     <div>
-                      <input required autoComplete="family-name" aria-label="Last name" placeholder="Last name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
-                        aria-invalid={!!errors.lastName} className={inputCls} />
+                      <label className="block space-y-1 text-sm font-medium"><span>Last name</span>
+                        <input required autoComplete="family-name" value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
+                          aria-invalid={!!errors.lastName} className={inputCls} />
+                      </label>
                       {errors.lastName && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.lastName)}</p>}
                     </div>
                   </div>
@@ -204,35 +213,42 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <div>
-                    <input required autoComplete="street-address" aria-label="Street address" placeholder="Street address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
-                      aria-invalid={!!errors.address1} className={inputCls} />
+                    <label className="block space-y-1 text-sm font-medium"><span>Street address</span>
+                      <input required autoComplete="street-address" value={form.address1} onChange={(e) => setField("address1", e.target.value)}
+                        aria-invalid={!!errors.address1} className={inputCls} />
+                    </label>
                     {errors.address1 && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.address1)}</p>}
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-3 min-[400px]:grid-cols-2">
                     <div>
-                      <input required autoComplete="address-level2" aria-label="City" placeholder="City" value={form.city} onChange={(e) => setField("city", e.target.value)}
-                        aria-invalid={!!errors.city} className={inputCls} />
+                      <label className="block space-y-1 text-sm font-medium"><span>City</span>
+                        <input required autoComplete="address-level2" value={form.city} onChange={(e) => setField("city", e.target.value)}
+                          aria-invalid={!!errors.city} className={inputCls} />
+                      </label>
                       {errors.city && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.city)}</p>}
                     </div>
                     <div>
-                      <select required aria-label="Province" value={form.region} onChange={(e) => setField("region", e.target.value)}
+                      <label htmlFor="checkout-province" className="mb-1 block text-sm font-medium">Province</label>
+                      <select id="checkout-province" required autoComplete="address-level1" value={form.region} onChange={(e) => setField("region", e.target.value)}
                         aria-invalid={!!errors.region} className={inputCls}>
-                        <option value="">Province</option>
+                        <option value="">Select province</option>
                         {SA_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
                       </select>
                       {errors.region && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.region)}</p>}
                     </div>
                   </div>
                   <div>
-                    <input required inputMode="numeric" autoComplete="postal-code" aria-label="Postal code" placeholder="Postal code" value={form.postalCode}
-                      onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
+                    <label className="block space-y-1 text-sm font-medium"><span>Postal code</span>
+                      <input required inputMode="numeric" autoComplete="postal-code" value={form.postalCode}
+                        onChange={(e) => setField("postalCode", e.target.value)} aria-invalid={!!errors.postalCode} className={inputCls} />
+                    </label>
                     {errors.postalCode && <p role="alert" className="mt-1 text-xs text-destructive">{errText(errors.postalCode)}</p>}
                   </div>
                   <p className="text-xs text-muted-foreground">Delivery across South Africa. Dispatch follows payment verification; delivery timing depends on your location.</p>
                 </div>
               </section>
 
-              <section className="rounded-lg border border-border bg-card p-6">
+              <section className="rounded-lg border border-border bg-card p-4 sm:p-6">
                 <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
                   3. Research purchase acknowledgement
                 </h2>
@@ -279,7 +295,7 @@ export default function CheckoutPage() {
 
               </section>
 
-              <section className="rounded-lg border border-border bg-card p-6">
+              <section className="rounded-lg border border-border bg-card p-4 sm:p-6">
                 <h2 className="flex items-center gap-2 font-display text-base font-semibold text-foreground">
                   <Landmark className="h-4 w-4 text-primary" /> 4. Payment — EFT (direct bank transfer)
                 </h2>
@@ -290,14 +306,23 @@ export default function CheckoutPage() {
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                       Pay directly from your banking app (Capitec, FNB, Standard Bank, Absa, Nedbank, TymeBank — any SA bank).
                       Place your order and we will show you our bank details and your unique payment reference on the next screen.
-                      Your order is reserved while your transfer clears.
+                      Your order will await payment while your transfer clears.
                     </p>
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Charged in <span className="font-semibold text-foreground">ZAR</span>. Orders are packed as soon as your payment reflects.
+                  Pay in <span className="font-semibold text-foreground">ZAR</span>. We prepare your order for dispatch after payment is verified.
                 </p>
               </section>
+
+              <details>
+                <summary className="cursor-pointer text-sm text-muted-foreground">Have a partner code?</summary>
+                <label className="mt-3 block space-y-1 text-sm">
+                  <span>Partner code (optional)</span>
+                  <input value={partnerCode} onChange={e => setPartnerCode(e.target.value)} maxLength={80} className={inputCls} />
+                </label>
+                <p className="mt-1 text-xs text-muted-foreground">This credits the partner who referred you. Your total stays the same.</p>
+              </details>
 
               <button type="submit" disabled={busy}
                 className="hidden lg:inline-flex items-center justify-center gap-2 rounded-lg bg-hero-gradient py-4 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
@@ -313,7 +338,20 @@ export default function CheckoutPage() {
           </div>
 
           <aside className="order-first flex flex-col gap-4 lg:order-none">
-            <div className="rounded-lg border border-border bg-card p-6">
+            <button
+              type="button"
+              className="flex min-h-12 items-center justify-between gap-2 rounded-lg border border-border bg-card px-4 py-2 text-left text-sm font-semibold lg:hidden"
+              aria-expanded={summaryOpen}
+              aria-controls="checkout-order-summary"
+              onClick={() => setSummaryOpen((open) => !open)}
+            >
+              <span>Order summary</span>
+              <span className="flex items-center gap-2">
+                {formatZAR(shippingMath.grandTotal)}
+                <ChevronDown className={`h-4 w-4 ${summaryOpen ? "rotate-180" : ""}`} aria-hidden />
+              </span>
+            </button>
+            <div id="checkout-order-summary" className={`${summaryOpen ? "block" : "hidden"} rounded-lg border border-border bg-card p-4 sm:p-6 lg:block`}>
               <h2 className="font-display text-base font-semibold text-foreground">Your order</h2>
               <div className="mt-4 flex flex-col gap-3">
                 {items.map((item) => (
@@ -358,14 +396,14 @@ export default function CheckoutPage() {
 
         {/* Mobile sticky pay bar */}
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
-          <button type="submit" form="checkout-form" disabled={busy}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient py-3.5 font-bold uppercase tracking-wide text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
+          <button type="submit" form="checkout-form" disabled={busy} aria-describedby="mobile-payment-next"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-hero-gradient px-3 py-2 text-center font-bold text-primary-foreground shadow-glow transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
             {busy
               ? (<><Loader2 className="h-4 w-4 animate-spin" /> Reserving your order…</>)
-              : (<>Place order — get EFT details · {formatZAR(shippingMath.grandTotal)}</>)}
+              : (<>Place order · {formatZAR(shippingMath.grandTotal)}</>)}
           </button>
-          <p className="mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <Lock className="h-3 w-3" /> Secure checkout · EFT bank transfer · ZAR
+          <p id="mobile-payment-next" className="mt-1.5 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+            <Lock className="h-3 w-3" /> Get your EFT details next
           </p>
         </div>
       </div>

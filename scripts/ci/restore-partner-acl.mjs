@@ -6,5 +6,9 @@ if (!target || !target.endsWith('_ci_declarative_production_baseline.sql')) thro
 const acl = ['partner_programme_v2.sql', 'partner_programme_operations.sql']
   .flatMap(file => readFileSync(`supabase/schemas/public/${file}`, 'utf8').match(/^(?:revoke|grant)\s[\s\S]*?;/gmi) || []);
 if (acl.length < 20) throw new Error('Partner ACL source is incomplete');
-appendFileSync(target, '\n-- Reapply explicit partner ACL after managed default privileges.\n' + acl.join('\n') + '\n');
-console.log(`Restored ${acl.length} explicit partner ACL statements in the generated baseline.`);
+const settlementAcl = readFileSync('supabase/schemas/public/functions/settle_eft_order_atomic.sql', 'utf8')
+  .match(/^(?:revoke|grant)\s[\s\S]*?;/gmi) || [];
+if (settlementAcl.length !== 2) throw new Error('Settlement ACL source is incomplete');
+const explicitAcl = [...acl, ...settlementAcl];
+appendFileSync(target, '\n-- Reapply explicit ACL after managed default privileges.\n' + explicitAcl.join('\n') + '\n');
+console.log(`Restored ${explicitAcl.length} explicit ACL statements in the generated baseline.`);

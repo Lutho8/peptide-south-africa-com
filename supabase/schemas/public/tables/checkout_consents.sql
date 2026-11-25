@@ -1,7 +1,7 @@
 CREATE TABLE "public"."checkout_consents" (
   "id"                         bigint                   GENERATED ALWAYS AS IDENTITY NOT NULL,
   "order_id"                   uuid                     NOT NULL,
-  "user_id"                    uuid                     NOT NULL,
+  "user_id"                    uuid,
   "policy_version"             text                     NOT NULL,
   "report_scope_version"       text                     NOT NULL,
   "age_confirmed"              boolean                  NOT NULL,
